@@ -1,20 +1,21 @@
-Pikmin 2  
-[![Build Status]][actions] ![Code Progress] ![Data Progress] [![Discord Badge]][discord]
+New Play Control! Pikmin 2  
 =============
+<!-- [![Build Status]][actions] ![Code Progress] ![Data Progress] [![Discord Badge]][discord] -->
 
-[Build Status]: https://github.com/projectPiki/pikmin2/actions/workflows/build.yml/badge.svg
-[actions]: https://github.com/projectPiki/pikmin2/actions/workflows/build.yml
-[Code Progress]: https://img.shields.io/endpoint?label=Code&url=https%3A%2F%2Fprogress.deco.mp%2Fdata%2Fpikmin2%2FGPVE01%2Fdol%2F%3Fmode%3Dshield%26measure%3Dcode
-[Data Progress]: https://img.shields.io/endpoint?label=Data&url=https%3A%2F%2Fprogress.deco.mp%2Fdata%2Fpikmin2%2FGPVE01%2Fdol%2F%3Fmode%3Dshield%26measure%3Ddata
+<!-- [Build Status]: https://github.com/projectPiki/pik2wii/actions/workflows/build.yml/badge.svg -->
+<!-- [actions]: https://github.com/projectPiki/pik2wii/actions/workflows/build.yml -->
+<!-- [Code Progress]: https://img.shields.io/endpoint?label=Code&url=https%3A%2F%2Fprogress.deco.mp%2Fdata%2Fpik2wii%2FR92E01%2Fdol%2F%3Fmode%3Dshield%26measure%3Dcode -->
+<!-- [Data Progress]: https://img.shields.io/endpoint?label=Data&url=https%3A%2F%2Fprogress.deco.mp%2Fdata%2Fpik2wii%2FR92E01%2Fdol%2F%3Fmode%3Dshield%26measure%3Ddata -->
 [Discord Badge]: https://img.shields.io/discord/933849697485983765?color=%237289DA&logo=discord&logoColor=%23FFFFFF
 [discord]: https://discord.gg/CWKqYMePX8
 
-A work-in-progress decompilation of Pikmin 2.
+A work-in-progress decompilation of New Play Control! Pikmin 2 (USA).
+
+**SETUP IN PROGRESS.**
 
 Supported versions:
 
-- `GPVE01`: USA Retail
-- `GPVE01_D17`: USA Demo 17
+- `R92E01`: USA Retail
 
 Index
 -----
@@ -72,21 +73,20 @@ Building
 - Clone the repository:
 
   ```sh
-  git clone https://github.com/projectPiki/pikmin2.git
+  git clone https://github.com/projectPiki/pik2wii.git
   ```
 
-- Using [Dolphin Emulator](https://dolphin-emu.org/), extract your game's system data to `orig/GPVE01`. (Or `orig/GPVE01_D17` for demo)
+- Using [Dolphin Emulator](https://dolphin-emu.org/), extract your game's system data to `orig/R92E01`.
   - Right-click the game in Dolphin's game list and select `Properties`.
-  - Go to the `Filesystem` tab and right-click `Disc` -> `Extract System Data`.
+  - Go to the `Filesystem` tab and right-click `Data Partition` -> `Extract Entire Partition...`.
 ![Dolphin filesystem extract](assets/dolphin-extract.png)
-  - After extraction, the following file should exist: `orig/GPVE01/sys/main.dol`.
+  - After extraction, the following file should exist: `orig/R92E01/sys/main.dol`.
 - Configure:
 
   ```sh
   python configure.py
   ```
 
-  To use the demo version, add `--version GPVE01_D17`. Add `--help` to see all available options.
 - Build:
 
   ```sh
@@ -119,4 +119,4 @@ This:
 - Builds all assembly files in `asm`.
 - Builds all source files marked as `Equivalent` in `configure.py`.
 
-Once built with `ninja`, the new DOL will exist at `build/GPVE01/main.dol`.
+Once built with `ninja`, the new DOL will exist at `build/R92E01/main.dol`.
