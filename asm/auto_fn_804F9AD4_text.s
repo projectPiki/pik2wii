@@ -1,0 +1,94 @@
+.include "macros.inc"
+.file "auto_fn_804F9AD4_text"
+
+# 0x80006840 - 0x80006848
+.section extab, "a"
+.balign 4
+
+.obj "@etb_80006840", local
+.hidden "@etb_80006840"
+	.4byte 0x108A0000
+	.4byte 0x00000000
+.endobj "@etb_80006840"
+
+# 0x80006C80 - 0x80006C8C
+.section extabindex, "a"
+.balign 4
+
+.obj "@eti_80006C80", local
+.hidden "@eti_80006C80"
+	.4byte fn_804F9AD4
+	.4byte 0x000000FC
+	.4byte "@etb_80006840"
+.endobj "@eti_80006C80"
+
+# 0x804F9AD4 - 0x804F9BD0
+.text
+.balign 4
+
+.fn fn_804F9AD4, global
+/* 804F9AD4 004F52F4  94 21 FF C0 */	stwu r1, -0x40(r1)
+/* 804F9AD8 004F52F8  7C 08 02 A6 */	mflr r0
+/* 804F9ADC 004F52FC  90 01 00 44 */	stw r0, 0x44(r1)
+/* 804F9AE0 004F5300  DB E1 00 30 */	stfd f31, 0x30(r1)
+/* 804F9AE4 004F5304  F3 E1 00 38 */	psq_st f31, 0x38(r1), 0, qr0
+/* 804F9AE8 004F5308  DB C1 00 20 */	stfd f30, 0x20(r1)
+/* 804F9AEC 004F530C  F3 C1 00 28 */	psq_st f30, 0x28(r1), 0, qr0
+/* 804F9AF0 004F5310  C0 22 09 3C */	lfs f1, lbl_80675E1C@sda21(r0)
+/* 804F9AF4 004F5314  93 E1 00 1C */	stw r31, 0x1c(r1)
+/* 804F9AF8 004F5318  C0 02 09 38 */	lfs f0, lbl_80675E18@sda21(r0)
+/* 804F9AFC 004F531C  93 C1 00 18 */	stw r30, 0x18(r1)
+/* 804F9B00 004F5320  7C 7E 1B 78 */	mr r30, r3
+/* 804F9B04 004F5324  C3 E2 09 58 */	lfs f31, lbl_80675E38@sda21(r0)
+/* 804F9B08 004F5328  D0 23 00 48 */	stfs f1, 0x48(r3)
+/* 804F9B0C 004F532C  C3 C2 09 5C */	lfs f30, lbl_80675E3C@sda21(r0)
+/* 804F9B10 004F5330  D0 03 00 4C */	stfs f0, 0x4c(r3)
+/* 804F9B14 004F5334  80 6D AC 08 */	lwz r3, lbl_8066D408@sda21(r0)
+/* 804F9B18 004F5338  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 804F9B1C 004F533C  81 8C 00 08 */	lwz r12, 0x8(r12)
+/* 804F9B20 004F5340  7D 89 03 A6 */	mtctr r12
+/* 804F9B24 004F5344  4E 80 04 21 */	bctrl
+/* 804F9B28 004F5348  2C 03 00 00 */	cmpwi r3, 0x0
+/* 804F9B2C 004F534C  41 82 00 68 */	beq .L_804F9B94
+/* 804F9B30 004F5350  80 6D AC 08 */	lwz r3, lbl_8066D408@sda21(r0)
+/* 804F9B34 004F5354  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 804F9B38 004F5358  81 8C 00 08 */	lwz r12, 0x8(r12)
+/* 804F9B3C 004F535C  7D 89 03 A6 */	mtctr r12
+/* 804F9B40 004F5360  4E 80 04 21 */	bctrl
+/* 804F9B44 004F5364  80 83 00 00 */	lwz r4, 0x0(r3)
+/* 804F9B48 004F5368  3F E0 43 30 */	lis r31, 0x4330
+/* 804F9B4C 004F536C  80 6D AC 08 */	lwz r3, lbl_8066D408@sda21(r0)
+/* 804F9B50 004F5370  A0 04 00 06 */	lhz r0, 0x6(r4)
+/* 804F9B54 004F5374  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 804F9B58 004F5378  90 01 00 0C */	stw r0, 0xc(r1)
+/* 804F9B5C 004F537C  C8 22 09 50 */	lfd f1, lbl_80675E30@sda21(r0)
+/* 804F9B60 004F5380  93 E1 00 08 */	stw r31, 0x8(r1)
+/* 804F9B64 004F5384  81 8C 00 08 */	lwz r12, 0x8(r12)
+/* 804F9B68 004F5388  C8 01 00 08 */	lfd f0, 0x8(r1)
+/* 804F9B6C 004F538C  EF C0 08 28 */	fsubs f30, f0, f1
+/* 804F9B70 004F5390  7D 89 03 A6 */	mtctr r12
+/* 804F9B74 004F5394  4E 80 04 21 */	bctrl
+/* 804F9B78 004F5398  80 63 00 00 */	lwz r3, 0x0(r3)
+/* 804F9B7C 004F539C  93 E1 00 10 */	stw r31, 0x10(r1)
+/* 804F9B80 004F53A0  A0 03 00 04 */	lhz r0, 0x4(r3)
+/* 804F9B84 004F53A4  C8 22 09 50 */	lfd f1, lbl_80675E30@sda21(r0)
+/* 804F9B88 004F53A8  90 01 00 14 */	stw r0, 0x14(r1)
+/* 804F9B8C 004F53AC  C8 01 00 10 */	lfd f0, 0x10(r1)
+/* 804F9B90 004F53B0  EF E0 08 28 */	fsubs f31, f0, f1
+.L_804F9B94:
+/* 804F9B94 004F53B4  C0 02 09 3C */	lfs f0, lbl_80675E1C@sda21(r0)
+/* 804F9B98 004F53B8  D3 DE 00 54 */	stfs f30, 0x54(r30)
+/* 804F9B9C 004F53BC  D0 1E 00 50 */	stfs f0, 0x50(r30)
+/* 804F9BA0 004F53C0  D0 1E 00 58 */	stfs f0, 0x58(r30)
+/* 804F9BA4 004F53C4  D3 FE 00 5C */	stfs f31, 0x5c(r30)
+/* 804F9BA8 004F53C8  E3 E1 00 38 */	psq_l f31, 0x38(r1), 0, qr0
+/* 804F9BAC 004F53CC  CB E1 00 30 */	lfd f31, 0x30(r1)
+/* 804F9BB0 004F53D0  E3 C1 00 28 */	psq_l f30, 0x28(r1), 0, qr0
+/* 804F9BB4 004F53D4  CB C1 00 20 */	lfd f30, 0x20(r1)
+/* 804F9BB8 004F53D8  83 E1 00 1C */	lwz r31, 0x1c(r1)
+/* 804F9BBC 004F53DC  83 C1 00 18 */	lwz r30, 0x18(r1)
+/* 804F9BC0 004F53E0  80 01 00 44 */	lwz r0, 0x44(r1)
+/* 804F9BC4 004F53E4  7C 08 03 A6 */	mtlr r0
+/* 804F9BC8 004F53E8  38 21 00 40 */	addi r1, r1, 0x40
+/* 804F9BCC 004F53EC  4E 80 00 20 */	blr
+.endfn fn_804F9AD4

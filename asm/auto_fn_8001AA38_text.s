@@ -1,0 +1,95 @@
+.include "macros.inc"
+.file "auto_fn_8001AA38_text"
+
+# 0x8001AA38 - 0x8001AB7C
+.text
+.balign 4
+
+.fn fn_8001AA38, global
+/* 8001AA38 00016258  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 8001AA3C 0001625C  7C 08 02 A6 */	mflr r0
+/* 8001AA40 00016260  90 01 00 24 */	stw r0, 0x24(r1)
+/* 8001AA44 00016264  BF 41 00 08 */	stmw r26, 0x8(r1)
+/* 8001AA48 00016268  3F A0 80 5D */	lis r29, lbl_805D1C18@ha
+/* 8001AA4C 0001626C  3F 40 80 66 */	lis r26, lbl_8065F3F0@ha
+/* 8001AA50 00016270  3B C0 00 FF */	li r30, 0xff
+/* 8001AA54 00016274  3F E0 80 01 */	lis r31, fn_80008360@ha
+/* 8001AA58 00016278  3B BD 1C 18 */	addi r29, r29, lbl_805D1C18@l
+/* 8001AA5C 0001627C  38 7A F3 F0 */	addi r3, r26, lbl_8065F3F0@l
+/* 8001AA60 00016280  38 9F 83 60 */	addi r4, r31, fn_80008360@l
+/* 8001AA64 00016284  38 BD 00 00 */	addi r5, r29, 0x0
+/* 8001AA68 00016288  93 DA F3 F0 */	stw r30, lbl_8065F3F0@l(r26)
+/* 8001AA6C 0001628C  48 0E 91 ED */	bl __register_global_object
+/* 8001AA70 00016290  3C 60 FF 00 */	lis r3, 0xff00
+/* 8001AA74 00016294  3B 5A F3 F0 */	addi r26, r26, lbl_8065F3F0@l
+/* 8001AA78 00016298  38 03 00 FF */	addi r0, r3, 0xff
+/* 8001AA7C 0001629C  38 9F 83 60 */	addi r4, r31, fn_80008360@l
+/* 8001AA80 000162A0  90 1A 00 04 */	stw r0, 0x4(r26)
+/* 8001AA84 000162A4  38 7A 00 04 */	addi r3, r26, 0x4
+/* 8001AA88 000162A8  38 BD 00 0C */	addi r5, r29, 0xc
+/* 8001AA8C 000162AC  48 0E 91 CD */	bl __register_global_object
+/* 8001AA90 000162B0  3C 80 00 FF */	lis r4, 0xff
+/* 8001AA94 000162B4  38 7A 00 08 */	addi r3, r26, 0x8
+/* 8001AA98 000162B8  38 04 00 FF */	addi r0, r4, 0xff
+/* 8001AA9C 000162BC  38 BD 00 18 */	addi r5, r29, 0x18
+/* 8001AAA0 000162C0  90 1A 00 08 */	stw r0, 0x8(r26)
+/* 8001AAA4 000162C4  38 9F 83 60 */	addi r4, r31, fn_80008360@l
+/* 8001AAA8 000162C8  48 0E 91 B1 */	bl __register_global_object
+/* 8001AAAC 000162CC  3C 80 00 01 */	lis r4, 0x1
+/* 8001AAB0 000162D0  38 7A 00 0C */	addi r3, r26, 0xc
+/* 8001AAB4 000162D4  38 04 FF FF */	subi r0, r4, 0x1
+/* 8001AAB8 000162D8  38 BD 00 24 */	addi r5, r29, 0x24
+/* 8001AABC 000162DC  90 1A 00 0C */	stw r0, 0xc(r26)
+/* 8001AAC0 000162E0  38 9F 83 60 */	addi r4, r31, fn_80008360@l
+/* 8001AAC4 000162E4  48 0E 91 95 */	bl __register_global_object
+/* 8001AAC8 000162E8  3C 80 FF FF */	lis r4, 0xffff
+/* 8001AACC 000162EC  38 7A 00 10 */	addi r3, r26, 0x10
+/* 8001AAD0 000162F0  38 04 00 FF */	addi r0, r4, 0xff
+/* 8001AAD4 000162F4  38 BD 00 30 */	addi r5, r29, 0x30
+/* 8001AAD8 000162F8  90 1A 00 10 */	stw r0, 0x10(r26)
+/* 8001AADC 000162FC  38 9F 83 60 */	addi r4, r31, fn_80008360@l
+/* 8001AAE0 00016300  48 0E 91 79 */	bl __register_global_object
+/* 8001AAE4 00016304  3C 80 FF 01 */	lis r4, 0xff01
+/* 8001AAE8 00016308  38 7A 00 14 */	addi r3, r26, 0x14
+/* 8001AAEC 0001630C  38 04 FF FF */	subi r0, r4, 0x1
+/* 8001AAF0 00016310  38 BD 00 3C */	addi r5, r29, 0x3c
+/* 8001AAF4 00016314  90 1A 00 14 */	stw r0, 0x14(r26)
+/* 8001AAF8 00016318  38 9F 83 60 */	addi r4, r31, fn_80008360@l
+/* 8001AAFC 0001631C  48 0E 91 5D */	bl __register_global_object
+/* 8001AB00 00016320  38 00 FF FF */	li r0, -0x1
+/* 8001AB04 00016324  38 7A 00 18 */	addi r3, r26, 0x18
+/* 8001AB08 00016328  90 1A 00 18 */	stw r0, 0x18(r26)
+/* 8001AB0C 0001632C  38 9F 83 60 */	addi r4, r31, fn_80008360@l
+/* 8001AB10 00016330  38 BD 00 48 */	addi r5, r29, 0x48
+/* 8001AB14 00016334  48 0E 91 45 */	bl __register_global_object
+/* 8001AB18 00016338  3B 60 00 68 */	li r27, 0x68
+/* 8001AB1C 0001633C  38 00 00 83 */	li r0, 0x83
+/* 8001AB20 00016340  3B 80 00 E6 */	li r28, 0xe6
+/* 8001AB24 00016344  9B 7A 00 1C */	stb r27, 0x1c(r26)
+/* 8001AB28 00016348  38 7A 00 1C */	addi r3, r26, 0x1c
+/* 8001AB2C 0001634C  38 9F 83 60 */	addi r4, r31, fn_80008360@l
+/* 8001AB30 00016350  98 1A 00 1D */	stb r0, 0x1d(r26)
+/* 8001AB34 00016354  38 BD 00 54 */	addi r5, r29, 0x54
+/* 8001AB38 00016358  9B 9A 00 1E */	stb r28, 0x1e(r26)
+/* 8001AB3C 0001635C  9B DA 00 1F */	stb r30, 0x1f(r26)
+/* 8001AB40 00016360  48 0E 91 19 */	bl __register_global_object
+/* 8001AB44 00016364  38 00 00 AC */	li r0, 0xac
+/* 8001AB48 00016368  9B 9A 00 20 */	stb r28, 0x20(r26)
+/* 8001AB4C 0001636C  38 7A 00 20 */	addi r3, r26, 0x20
+/* 8001AB50 00016370  38 9F 83 60 */	addi r4, r31, fn_80008360@l
+/* 8001AB54 00016374  9B 7A 00 21 */	stb r27, 0x21(r26)
+/* 8001AB58 00016378  38 BD 00 60 */	addi r5, r29, 0x60
+/* 8001AB5C 0001637C  98 1A 00 22 */	stb r0, 0x22(r26)
+/* 8001AB60 00016380  9B DA 00 23 */	stb r30, 0x23(r26)
+/* 8001AB64 00016384  48 0E 90 F5 */	bl __register_global_object
+/* 8001AB68 00016388  BB 41 00 08 */	lmw r26, 0x8(r1)
+/* 8001AB6C 0001638C  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 8001AB70 00016390  7C 08 03 A6 */	mtlr r0
+/* 8001AB74 00016394  38 21 00 20 */	addi r1, r1, 0x20
+/* 8001AB78 00016398  4E 80 00 20 */	blr
+.endfn fn_8001AA38
+
+# 0x80534C90 - 0x80534C94
+.section .ctors, "a"
+.balign 4
+	.4byte fn_8001AA38

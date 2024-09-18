@@ -1,0 +1,35 @@
+.include "macros.inc"
+.file "auto_fn_804A97FC_text"
+
+# 0x804A97FC - 0x804A9850
+.text
+.balign 4
+
+.fn fn_804A97FC, global
+/* 804A97FC 004A501C  38 80 00 00 */	li r4, 0x0
+/* 804A9800 004A5020  3C 60 80 67 */	lis r3, lbl_8066AAA8@ha
+/* 804A9804 004A5024  98 8D A9 B0 */	stb r4, lbl_8066D1B0@sda21(r0)
+/* 804A9808 004A5028  39 0D A9 B0 */	li r8, lbl_8066D1B0@sda21
+/* 804A980C 004A502C  C0 03 AA A8 */	lfs f0, lbl_8066AAA8@l(r3)
+/* 804A9810 004A5030  3C C0 80 64 */	lis r6, lbl_80639498@ha
+/* 804A9814 004A5034  98 88 00 01 */	stb r4, 0x1(r8)
+/* 804A9818 004A5038  38 A6 94 98 */	addi r5, r6, lbl_80639498@l
+/* 804A981C 004A503C  38 E0 FF FF */	li r7, -0x1
+/* 804A9820 004A5040  38 00 00 01 */	li r0, 0x1
+/* 804A9824 004A5044  98 88 00 02 */	stb r4, 0x2(r8)
+/* 804A9828 004A5048  38 6D A9 B8 */	li r3, lbl_8066D1B8@sda21
+/* 804A982C 004A504C  90 ED A9 A0 */	stw r7, lbl_8066D1A0@sda21(r0)
+/* 804A9830 004A5050  D0 0D A9 A4 */	stfs f0, lbl_8066D1A4@sda21(r0)
+/* 804A9834 004A5054  D0 06 94 98 */	stfs f0, lbl_80639498@l(r6)
+/* 804A9838 004A5058  D0 05 00 04 */	stfs f0, 0x4(r5)
+/* 804A983C 004A505C  D0 05 00 08 */	stfs f0, 0x8(r5)
+/* 804A9840 004A5060  98 88 00 03 */	stb r4, 0x3(r8)
+/* 804A9844 004A5064  90 0D A9 B8 */	stw r0, lbl_8066D1B8@sda21(r0)
+/* 804A9848 004A5068  98 83 00 04 */	stb r4, 0x4(r3)
+/* 804A984C 004A506C  4E 80 00 20 */	blr
+.endfn fn_804A97FC
+
+# 0x80535014 - 0x80535018
+.section .ctors, "a"
+.balign 4
+	.4byte fn_804A97FC

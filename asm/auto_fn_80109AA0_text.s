@@ -1,0 +1,62 @@
+.include "macros.inc"
+.file "auto_fn_80109AA0_text"
+
+# 0x80006618 - 0x80006620
+.section extab, "a"
+.balign 4
+
+.obj "@etb_80006618", local
+.hidden "@etb_80006618"
+	.4byte 0x18080000
+	.4byte 0x00000000
+.endobj "@etb_80006618"
+
+# 0x80006AC4 - 0x80006AD0
+.section extabindex, "a"
+.balign 4
+
+.obj "@eti_80006AC4", local
+.hidden "@eti_80006AC4"
+	.4byte fn_80109AA0
+	.4byte 0x00000078
+	.4byte "@etb_80006618"
+.endobj "@eti_80006AC4"
+
+# 0x80109AA0 - 0x80109B18
+.text
+.balign 4
+
+.fn fn_80109AA0, global
+/* 80109AA0 001052C0  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 80109AA4 001052C4  7C 08 02 A6 */	mflr r0
+/* 80109AA8 001052C8  90 01 00 24 */	stw r0, 0x24(r1)
+/* 80109AAC 001052CC  93 E1 00 1C */	stw r31, 0x1c(r1)
+/* 80109AB0 001052D0  3F E0 80 57 */	lis r31, lbl_8056BD38@ha
+/* 80109AB4 001052D4  3B FF BD 38 */	addi r31, r31, lbl_8056BD38@l
+/* 80109AB8 001052D8  93 C1 00 18 */	stw r30, 0x18(r1)
+/* 80109ABC 001052DC  7C 9E 23 78 */	mr r30, r4
+/* 80109AC0 001052E0  38 80 FF FF */	li r4, -0x1
+/* 80109AC4 001052E4  93 A1 00 14 */	stw r29, 0x14(r1)
+/* 80109AC8 001052E8  7C 7D 1B 78 */	mr r29, r3
+/* 80109ACC 001052EC  38 7F 00 50 */	addi r3, r31, 0x50
+/* 80109AD0 001052F0  48 00 3B AD */	bl fn_8010D67C
+/* 80109AD4 001052F4  2C 03 00 00 */	cmpwi r3, 0x0
+/* 80109AD8 001052F8  41 80 00 0C */	blt .L_80109AE4
+/* 80109ADC 001052FC  38 60 FF FF */	li r3, -0x1
+/* 80109AE0 00105300  48 00 00 1C */	b .L_80109AFC
+.L_80109AE4:
+/* 80109AE4 00105304  3C 60 80 11 */	lis r3, fn_801099DC@ha
+/* 80109AE8 00105308  7F A5 EB 78 */	mr r5, r29
+/* 80109AEC 0010530C  7F C6 F3 78 */	mr r6, r30
+/* 80109AF0 00105310  38 9F 00 50 */	addi r4, r31, 0x50
+/* 80109AF4 00105314  38 63 99 DC */	addi r3, r3, fn_801099DC@l
+/* 80109AF8 00105318  4B FF F6 89 */	bl __pformatter_80109180
+.L_80109AFC:
+/* 80109AFC 0010531C  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 80109B00 00105320  83 E1 00 1C */	lwz r31, 0x1c(r1)
+/* 80109B04 00105324  83 C1 00 18 */	lwz r30, 0x18(r1)
+/* 80109B08 00105328  83 A1 00 14 */	lwz r29, 0x14(r1)
+/* 80109B0C 0010532C  7C 08 03 A6 */	mtlr r0
+/* 80109B10 00105330  38 21 00 20 */	addi r1, r1, 0x20
+/* 80109B14 00105334  4E 80 00 20 */	blr
+.endfn fn_80109AA0

@@ -1,0 +1,49 @@
+.include "macros.inc"
+.file "auto_03_804FB10C_text"
+
+# 0x804FB10C - 0x804FB1A0
+.text
+.balign 4
+
+.fn fn_804FB10C, global
+/* 804FB10C 004F692C  C0 A2 09 94 */	lfs f5, lbl_80675E74@sda21(r0)
+/* 804FB110 004F6930  C0 C4 00 00 */	lfs f6, 0x0(r4)
+/* 804FB114 004F6934  C0 84 00 04 */	lfs f4, 0x4(r4)
+/* 804FB118 004F6938  C0 64 00 08 */	lfs f3, 0x8(r4)
+/* 804FB11C 004F693C  C0 45 00 00 */	lfs f2, 0x0(r5)
+/* 804FB120 004F6940  C0 25 00 04 */	lfs f1, 0x4(r5)
+/* 804FB124 004F6944  C0 05 00 08 */	lfs f0, 0x8(r5)
+/* 804FB128 004F6948  D0 C3 00 00 */	stfs f6, 0x0(r3)
+/* 804FB12C 004F694C  D0 A3 00 10 */	stfs f5, 0x10(r3)
+/* 804FB130 004F6950  D0 A3 00 20 */	stfs f5, 0x20(r3)
+/* 804FB134 004F6954  D0 A3 00 04 */	stfs f5, 0x4(r3)
+/* 804FB138 004F6958  D0 83 00 14 */	stfs f4, 0x14(r3)
+/* 804FB13C 004F695C  D0 A3 00 24 */	stfs f5, 0x24(r3)
+/* 804FB140 004F6960  D0 A3 00 08 */	stfs f5, 0x8(r3)
+/* 804FB144 004F6964  D0 A3 00 18 */	stfs f5, 0x18(r3)
+/* 804FB148 004F6968  D0 63 00 28 */	stfs f3, 0x28(r3)
+/* 804FB14C 004F696C  D0 43 00 0C */	stfs f2, 0xc(r3)
+/* 804FB150 004F6970  D0 23 00 1C */	stfs f1, 0x1c(r3)
+/* 804FB154 004F6974  D0 03 00 2C */	stfs f0, 0x2c(r3)
+/* 804FB158 004F6978  4E 80 00 20 */	blr
+.endfn fn_804FB10C
+
+.fn fn_804FB15C, global
+/* 804FB15C 004F697C  C0 42 09 94 */	lfs f2, lbl_80675E74@sda21(r0)
+/* 804FB160 004F6980  C0 64 00 00 */	lfs f3, 0x0(r4)
+/* 804FB164 004F6984  C0 24 00 04 */	lfs f1, 0x4(r4)
+/* 804FB168 004F6988  C0 04 00 08 */	lfs f0, 0x8(r4)
+/* 804FB16C 004F698C  D0 63 00 00 */	stfs f3, 0x0(r3)
+/* 804FB170 004F6990  D0 43 00 04 */	stfs f2, 0x4(r3)
+/* 804FB174 004F6994  D0 43 00 08 */	stfs f2, 0x8(r3)
+/* 804FB178 004F6998  D0 43 00 10 */	stfs f2, 0x10(r3)
+/* 804FB17C 004F699C  D0 23 00 14 */	stfs f1, 0x14(r3)
+/* 804FB180 004F69A0  D0 43 00 18 */	stfs f2, 0x18(r3)
+/* 804FB184 004F69A4  D0 43 00 20 */	stfs f2, 0x20(r3)
+/* 804FB188 004F69A8  D0 43 00 24 */	stfs f2, 0x24(r3)
+/* 804FB18C 004F69AC  D0 03 00 28 */	stfs f0, 0x28(r3)
+/* 804FB190 004F69B0  D0 43 00 0C */	stfs f2, 0xc(r3)
+/* 804FB194 004F69B4  D0 43 00 1C */	stfs f2, 0x1c(r3)
+/* 804FB198 004F69B8  D0 43 00 2C */	stfs f2, 0x2c(r3)
+/* 804FB19C 004F69BC  4E 80 00 20 */	blr
+.endfn fn_804FB15C

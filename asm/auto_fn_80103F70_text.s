@@ -1,0 +1,62 @@
+.include "macros.inc"
+.file "auto_fn_80103F70_text"
+
+# 0x80006518 - 0x80006520
+.section extab, "a"
+.balign 4
+
+.obj "@etb_80006518", local
+.hidden "@etb_80006518"
+	.4byte 0x20080000
+	.4byte 0x00000000
+.endobj "@etb_80006518"
+
+# 0x80006944 - 0x80006950
+.section extabindex, "a"
+.balign 4
+
+.obj "@eti_80006944", local
+.hidden "@eti_80006944"
+	.4byte fn_80103F70
+	.4byte 0x00000078
+	.4byte "@etb_80006518"
+.endobj "@eti_80006944"
+
+# 0x80103F70 - 0x80103FE8
+.text
+.balign 4
+
+.fn fn_80103F70, global
+/* 80103F70 000FF790  94 21 FF E0 */	stwu r1, -0x20(r1)
+/* 80103F74 000FF794  7C 08 02 A6 */	mflr r0
+/* 80103F78 000FF798  90 01 00 24 */	stw r0, 0x24(r1)
+/* 80103F7C 000FF79C  7C 05 31 D6 */	mullw r0, r5, r6
+/* 80103F80 000FF7A0  93 E1 00 1C */	stw r31, 0x1c(r1)
+/* 80103F84 000FF7A4  93 C1 00 18 */	stw r30, 0x18(r1)
+/* 80103F88 000FF7A8  7C DE 33 78 */	mr r30, r6
+/* 80103F8C 000FF7AC  7F E3 02 14 */	add r31, r3, r0
+/* 80103F90 000FF7B0  93 A1 00 14 */	stw r29, 0x14(r1)
+/* 80103F94 000FF7B4  7C BD 2B 78 */	mr r29, r5
+/* 80103F98 000FF7B8  93 81 00 10 */	stw r28, 0x10(r1)
+/* 80103F9C 000FF7BC  7C 9C 23 78 */	mr r28, r4
+/* 80103FA0 000FF7C0  48 00 00 20 */	b .L_80103FC0
+.L_80103FA4:
+/* 80103FA4 000FF7C4  7F FD F8 50 */	subf r31, r29, r31
+/* 80103FA8 000FF7C8  7F 8C E3 78 */	mr r12, r28
+/* 80103FAC 000FF7CC  7F E3 FB 78 */	mr r3, r31
+/* 80103FB0 000FF7D0  38 80 FF FF */	li r4, -0x1
+/* 80103FB4 000FF7D4  7D 89 03 A6 */	mtctr r12
+/* 80103FB8 000FF7D8  4E 80 04 21 */	bctrl
+/* 80103FBC 000FF7DC  3B DE FF FF */	subi r30, r30, 0x1
+.L_80103FC0:
+/* 80103FC0 000FF7E0  2C 1E 00 00 */	cmpwi r30, 0x0
+/* 80103FC4 000FF7E4  40 82 FF E0 */	bne .L_80103FA4
+/* 80103FC8 000FF7E8  80 01 00 24 */	lwz r0, 0x24(r1)
+/* 80103FCC 000FF7EC  83 E1 00 1C */	lwz r31, 0x1c(r1)
+/* 80103FD0 000FF7F0  83 C1 00 18 */	lwz r30, 0x18(r1)
+/* 80103FD4 000FF7F4  83 A1 00 14 */	lwz r29, 0x14(r1)
+/* 80103FD8 000FF7F8  83 81 00 10 */	lwz r28, 0x10(r1)
+/* 80103FDC 000FF7FC  7C 08 03 A6 */	mtlr r0
+/* 80103FE0 000FF800  38 21 00 20 */	addi r1, r1, 0x20
+/* 80103FE4 000FF804  4E 80 00 20 */	blr
+.endfn fn_80103F70

@@ -1,0 +1,1143 @@
+DATES Aug  8 2007,Dec 11 2007,Jan 30 2008
+
+
+
+
+ sys12System.cpp Create Singleton Twice (%s).
+ ControllerConnectionMgr Create Singleton Twice (%s) : addr %x
+ System ƒsƒNƒ~ƒ“‚P{‚Q PIKMIN 1+2 ƒsƒNƒ~ƒ“iWiiƒo[ƒWƒ‡ƒ“j PIKMIN (Wii Edition) PIKMIN (Édition Wii) PIKMIN (Edición Wii) ƒsƒNƒ~ƒ“‚QiWiiƒo[ƒWƒ‡ƒ“j PIKMIN 2 (Wii Edition) PIKMIN 2 (Édition Wii) PIKMIN 2 (Edición Wii) game_type != System12::System::InitializeArg::cGAME_UNDEF /system12.ini message/pik12message.bmg pikmin12 path=%s
+ path load failed [%s]
+ /PSSpk/PSSpkRes.arc arc=%p
+       system12Controller.cpp Create Singleton Twice (%s).
+ KeyConfig Create Singleton Twice (%s) : addr %x
+ NONAME NAME PLAYER_THROW PLAYER_KAISAN PLAYER_CHANGE PLAYER_FUE PLAYER_SORT_A PLAYER_SORT_B CAMERA_ROTATE CAMERA_ZOOM CAMERA_ELEVATION PLAYER_PAUSE PLAYER_RADAR PLAYER_C_ASSIST CSTICK DPD MAINSTICK JUJI PLAYER_SLEEP UI_SAVE_COPY UI_SAVE_DELETE UI_DEAD_PIKMIN_NUM UI_MAIL_DAY_BEFORE UI_MAIL_DAY_AFTER UI_MOVE_CREATURE_ZUKAN UI_MOVE_TREASURE_ZUKAN UI_VS_HANDICAP_UP UI_VS_HANDICAP_DOWN UI_VS_PAGE_NEXT UI_VS_PAGE_PREV UI_VS_RULE_WINDOW_OPEN UI_ORIMA_MEMO UI_LUIGI_MEMO UI_SMENU_GO_RIGHT UI_SMENU_GO_LEFT UI_CHALLENGE_RULE_OPEN UI_ORIMA_DIARY UI_MENU_CANCEL UI_MENU_DECIDE UI_SMENU_MAP_ZOOM_IN UI_SMENU_MAP_ZOOM_OUT UI_ZUKAN_GEKINIGA UI_ZUKAN_ZOOM_IN UI_ZUKAN_ZOOM_OUT UI_ZUKAN_ANGLE_SWITCH UI_PLAYER_PAUSE UI_PLAYER_RADAR UI_PIK1_COMMON_PANE_CANCEL UI_CROSS_BUTTON_MOVE_UP UI_CROSS_BUTTON_MOVE_DOWN UI_CROSS_BUTTON_MOVE_LEFT UI_CROSS_BUTTON_MOVE_RIGHT KeyConfigSet /keyconfig.ini     sys12GameConfig.cpp Create Singleton Twice (%s).
+ Config Create Singleton Twice (%s) : addr %x
+ S12Config enableOSReport bootSection controllerType cameraFaceType cameraAutoRotate cameraAutoZoom cameraAutoElevation clampDpdCursor cursorPlaceFaceIfDpdOut captureOn removeSaveFileCommand throwRadius throwLimit createDummyIfNotExist saveData useBootProgram bombPikminNotPutWhenCalled throwHeightType useMem1 replayCtrlMode deleteReplayFile pikmin1FastTitle pikmin1FastFileSelect pikmin1FastWiiMenu replayFileName  sys12GamePointer.cpp Create Singleton Twice (%s).
+ GamePointer Create Singleton Twice (%s) : addr %x
+   THORW RATE=%f
+ cursor_a cursor_b Left Rigt Uppr Undr *** NOT FOUND : START
+ 
+Test TextWriter...
+        sys12NANDMgr.cpp ret == ENC_OK retry waiting...%lld/%lld
+ Create Singleton Twice (%s).
+ NANDMgr Create Singleton Twice (%s) : addr %x
+ none ¡¡ NANDMgr initialize start.
+ ¡¡ NANDInit done.
+ ¡ NANDMgr::queryFreeBlocks start
+ ¡ NANDMgr::queryFreeBlocks end
+ NAND Unknown Error.
+ length must be multiples of 32. (length = %d)
+ (u32(buf) & 0x1F) == 0 ** NANDFile::existFile(%s)
+ * ownerID = %x
+ * groupID = %x
+ tmp tmp ->  FS Block : %d, i Node : %d
+     no permission... owner:0x%04x, group:0x%02x, attr:0x%x, perm:0x%x
+     no permission...
+     not found...
+ NANDGetType Error: %d [%s]
+  * %s
+ NANDOpen Error: %d
+ NANDGetLength Error: %d
+     size: %d bytes, FS block: %d, Yoyu: %d bytes
+     no permission... but already got length.
+ NANDClose Error: %d
+  - %s
+ NANDReadDir Error: %d
+ %s/%s 	NANDFile::write ƒtƒ@ƒCƒ‹ƒI[ƒvƒ“‚ÉŽ¸”s [%s] err:%d
+ 	NANDFile::write ƒtƒ@ƒCƒ‹‘‚«ž‚Ý‚ÉŽ¸”s [%s] err:%d
+ 	NANDFile::write ƒtƒ@ƒCƒ‹ƒNƒ[ƒY‚ÉŽ¸”s [%s] err:%d
+ 	NANDFile::read ƒtƒ@ƒCƒ‹ƒI[ƒvƒ“‚ÉŽ¸”s[%s] err:%d
+ 	NANDFile::read ƒtƒ@ƒCƒ‹“Ç‚Ýž‚Ý‚ÉŽ¸”s[%s] err:%d
+ 	NANDFile::read ƒtƒ@ƒCƒ‹ƒNƒ[ƒY‚ÉŽ¸”s[%s] err:%d
+ 	NANDFile::getLength ƒtƒ@ƒCƒ‹ƒI[ƒvƒ“‚ÉŽ¸”s[%s] err:%d
+ 	NANDFile::getLength ƒtƒ@ƒCƒ‹ƒTƒCƒYŽæ“¾‚ÉŽ¸”s[%s] err:%d
+ 	NANDFile::getLength ƒtƒ@ƒCƒ‹ƒNƒ[ƒY‚ÉŽ¸”s[%s] err:%d
+ * getLength = %d (%%32=%d)
+ file size is 0. 
+ * mFileSize = %d
+ NANDStream alloc buffer failed. size = %d Bytes
+ * read = %d
+ mBase == tmp mSize >= 32 * crc read from (%d) : %x
+ * crc calc (%d) : %x
+ 
+
+CRC [%s] read_crc:%d, calced_crc:%d
+
+ 
+
+CRC ERROR!!
+
+ * write FILESIZE=%d
+ * -(roundup)-> %d
+ CRC address: 0x%08x
+ File end (include CRC): 0x%08x
+ £CRC‚Ì•ª‚¾‚¯ƒoƒbƒtƒ@‚ª‘«‚è‚È‚­‚È‚Á‚½‚Ì‚ÅŠg‘å‚µ‚Ü‚·Bold = %d Bytes, new = %d Bytes.
+ write crc: %d:%x
+ * write %d
+ * writed  %d
+ mOpenMode == cREAD mOpenMode == cWRITE £ƒoƒbƒtƒ@‚ª‘«‚è‚È‚­‚È‚Á‚½‚Ì‚ÅŠg‘å‚µ‚Ü‚·Bold = %d Bytes, new = %d Bytes.
+  sys12SDMgr.cpp Create Singleton Twice (%s).
+ SDMgr Create Singleton Twice (%s) : addr %x
+       sys12gameNand.cpp Create Singleton Twice (%s).
+ Mgr Create Singleton Twice (%s) : addr %x
+ pikmin1.dat pikmin2.dat banner.bin nand/saveBanner/saveBanner.tpl nand/saveBanner/saveBanner1.tpl nand/saveBanner/saveBanner2.tpl DMMY       sys12Language.cpp Create Singleton Twice (%s).
+ Language Create Singleton Twice (%s) : addr %x
+ Jpn EngUS EngEU FreUS FreEU SpaUS SpaEU GerEU ItaEU HolEU ChS ChT Kor JP US EU %s/%s/%s %s_%s%s sys12HomeButtonMgr.cpp Create Singleton Twice (%s).
+ HomeButtonMgr Create Singleton Twice (%s) : addr %x
+ hbm/HomeButton2/HomeButtonSe.arc hbm/HomeButton2/homeBtnIcon.tpl hbm‚ÅVISetBlack(true)‚ðŒÄ‚Ñ‚Ü‚·
+ mExceptionVISetBlackTrue‚ðfalse‚É‚µ‚Ü‚·
+ ƒz[ƒ€ƒ{ƒ^ƒ“‰Ÿ‚³‚ê‚½!!!
+ hbm‚ÅVISetBlack(false)‚ðŒÄ‚Ñ‚Ü‚·
+ hbm/HomeButton2 /homeBtn.arc /homeBtn_ENG.arc /homeBtn_GER.arc /homeBtn_FRA.arc /homeBtn_SPA.arc /homeBtn_ITA.arc /homeBtn_NED.arc hbm/HomeButton2/SpeakerSe.arc hbm/HomeButton2/home.csv hbm/HomeButton2/config.txt    Ntsc NtscProg Pal50 Pal60 PalProg Max Undef sys12RenderMode.cpp mode : %d 
+ mMode >= 0 && mMode < cMax  ™``ÿf00ÿ``™ÿ00fÿ™™`ÿ``0ÿsys12TransparentMgr.cpp Create Singleton Twice (%s).
+ TransparentMgr Create Singleton Twice (%s) : addr %x
+     €Sf|€Sf‰€Sf–€Sf£€Sf°€Sf¿€SfÎ€SfÝsys12WarnWindow.cpp Create Singleton Twice (%s).
+ WarnWindow Create Singleton Twice (%s) : addr %x
+ error_win_00 error_win_01 error_win_02 error_win_03 t_error_win_00 t_error_win_01 t_error_win_02 t_error_win_03 pikmin12/screen/error_window/layout.szs error_window.brlyt error_win_base error_window_open.brlan error_window_close.brlan  sys12ControllerBatteryMgr.cpp Create Singleton Twice (%s).
+ ControllerBatteryMgr Create Singleton Twice (%s) : addr %x
+ controller_num > 0 && controller_num <= 4 channel >= 0 && channel < m_controller_num    / /boot /pikmin2        system12DvdLoader.cpp Create Singleton Twice (%s).
+ DvdLoader Create Singleton Twice (%s) : addr %x
+ load %s
+ %s is not szs
+  size: %d, allocatable: %d
+ size mismatch %s (%d != %d)
+   system12FrameCounter.cpp start >= 0 end <= mMaxFrames out of range [%.1f] [%.1f-%.1f]
+ diff > 0.0f trg >= 0.0f false    %s--- =child tree= system12Layout.cpp %s %s
+ Create Singleton Twice (%s).
+ DvdLoader Create Singleton Twice (%s) : addr %x
+ load %s
+ %s is not szs
+  size: %d, allocatable: %d
+ size mismatch %s (%d != %d)
+ tev_num < TevColorMax # #%5d%2d $ $%f [Layout construct] path:%s, brlyt:%s, multi_lang:%s
+ true false heap szs arc strcmp(ext, "arc") == 0  ext is %s. load from arc.
+ %s(%s)
+ result mHeap not specified!
+ %s not found.
+ ippatu keisan
+ file_name : %s
+ animator node data_ptr data_block_head unknown data type NW4R:Pointer must not be NULL (lytResBuf) Version check faild ('%d.%d' must be '%d.%d'). cam NW4R:Pointer must not be NULL (mspAllocator) NW4R:Pointer must not be NULL (pLastPane) can't alloc memory. sys12DebugDrawer.cpp Create Singleton Twice (%s).
+ DebugDrawer Create Singleton Twice (%s) : addr %x
+   INF1DAT1STR1MID1FLW1FLI1                     ÿÿÿÿ    ÿÿÿ    ÿÿÿ    ÿÿÿ    ÿÿÿ    ÿÿÿÿsystem12WPMessage.cpp Create Singleton Twice (%s).
+ WPMessage Create Singleton Twice (%s) : addr %x
+ pData m_pDataBlockHeader m_pMessageInfoData->m_numEntries > entryID m_pMessageInfoData->m_entrySize / sizeof( u32 ) > index + 1 m_pMessageInfoData m_pMessageHeader ( u32 )pData + ( u32 )m_pMessageHeader->GetTotalDataSize() > ( u32 )pCurrent m_pMessageInfoDataBlock m_pMessageDataBlock m_pStringAttributeDataBlock m_pMessageIDDataBlock m_pFlowChartInfoDataBlock m_pFlowLabelInfoDataBlock FALSE tag pTagLength pTagID ppParam TAG_MARK == code Not found message %d, %d
+  system12WPTagProcessor.cpp str buffer buffer_size > 0 buffer over Illegal tag.
+ buffer over : buffer size : %d 
+ trg_page > 0 result != PREPRO_RESULT_ILLEGAL pContext pParam sizeof( FONT_COLOR_TABLE ) / sizeof( nw4r::ut::Color ) > colorIdx system12WPWideTextWriter.cpp sStrExpBuffer Maybe, you forgot to Initialize().
+ buffer str       sys12CursorMgr.cpp Create Singleton Twice (%s).
+ CursorRenderer Create Singleton Twice (%s) : addr %x
+ CursorResourceMgr pikmin12/cursor/cursorBlur.bti pikmin12/3d/cursor.szs cursor.brres     sys12DvdErrorMsg.cpp Create Singleton Twice (%s).
+ DvdErrorMsg Create Singleton Twice (%s) : addr %x
+
+
+
+   system12ResourceMgr.cpp Create Singleton Twice (%s).
+ SystemResourceMgr Create Singleton Twice (%s) : addr %x
+ font/pikmin12.brfnt pikmin12     €S}ì€S~€S~"€S~?€S~[error_window_b_open.brlan error_window_b_wait_a.brlan error_window_b_close_a.brlan error_window_b_wait_b.brlan error_window_b_close_b.brlan pikmin12/screen/error_window_b/layout.szs error_window_b.brlyt  ¦¦ Event Gound !!!
+ %f len = %f
+ state=%d : limit=%s
+ limit inside --- INVALID onGround
+ ¦¦ Event WALL !!!
+ --- Travel Along too small INVALID! %f
+ -- Got Collision !
+ ROLL DONE-------------
+  : ROLL %f < %f
+    jp A B %s/%s/bti/strap%s_%s%dx%d_%s.bti 16_9_   text pikmin12/screen/movie_message/layout.szs movie_message.brlyt       CENTER_POS_X CENTER_POS_Y WIDTH HEIGHT FONT_SIZE_WIDTH FONT_SIZE_HEIGHT FONT_SPACE_X FONT_POS_H FRAME_NUM_FADE_IN FRAME_NUM_SHOW_BEGIN FRAME_NUM_FADE_OUT FRAME_NUM_SHOW_END MESSAGE_ID_MAIN MESSAGE_ID_SUB     sys12DpdState.cpp Create Singleton Twice (%s).
+ RemoconMgr Create Singleton Twice (%s) : addr %x
+       bin/PSSpkTable.bct bin/PSSpkWave.csw PSSpkSystem.cpp res spkSys sSpkHandles handle      SpkData.cpp resArc mResArc res num < mTableMgr.getNumOfSound()  SpkGadget.cpp n >= sizeof(TNextOnFreeList) runner (reinterpret_cast<u32>(dest) & 0x03) == 0 (size & 0x0f) == 0  SpkMixingBuffer.cpp mBuffer[chan] 0 chan < WPAD_MAX_CONTROLLERS src offset >= 0 (offset+len) <= cSamplesPerAudioPacket sound_holder     SpkSound.cpp system mixing_buffer handle data Speaker data is not valid
+ soundNum < table.getNumOfSound() mSoundNum < wave.getNumOfWaves() mWaveLoopEnd <= mWaveSize cannot new SpkSound
+ cannot start SpkSound
+ Spk : No Handle for Level Sound        SpkSystem.cpp mMixingBuffer mSoundHolder 0 resArc mData chan >= 0 chan < WPAD_MAX_CONTROLLERS handle vol >= 0.f vol <= 1.f msec >= 0 vol >= 0 vol <= cConfigVolumeMax numOfSound >= 0   SpkWave.cpp res num >= 0 num < getNumOfWaves() data mWaveData    wt\HomeButtonSe.wt  wt\HomeButtonSe.pcm
+
+
+
+JUTCacheFont: Unknown data block
+ trouble occurred in JKRMainRamToAram. JUTCacheFont.cpp Unknown data block
+    %s    -0369<     GP status %d%d%d%d%d%d -->  GP hang due to XF stall bug.
+ GP hang due to unterminated primitive.
+ GP hang due to illegal instruction.
+ GP appears to be not hung (waiting for input).
+ GP is in unknown state.
+ MetroTRK for Revolution v0.1    ERROR : No buffer available
+    
+MetroTRK Option : SerialIO -   Enable
+ Disable
+       `   `   `   `   `   `   `   `   `   `   `   `   `   `   `   `   `   `   `   `   `   `   `   `   `   `   `   `   `    END%s
+ Devkit set to : %ld
+    MetroTRK : Sizeof Reply - %ld bytes
+    MetroTRK : Set to BBA
+  MetroTRK : Set to NDEV hardware
+    MetroTRK : Set to UNKNOWN hardware. (%ld)
+  MetroTRK : Invalid hardware ID passed from OS
+  MetroTRK : Defaulting to GDEV Hardware
+                         Að      Aà      GCN_Mem_Alloc.c : InitDefaultHeap. No Heap Available
+ Metrowerks CW runtime library initializing default heap
+
+ Opening1 Opening2 Ending1 Ending2 Staffroll Play1 Play2 Play3 Play4 Play5 Play6 Crime Play7 PSMainSide_CreaturePrm.cpp P2Assert PSMainSide_ObjCalc.cpp P2Asser EGG::LookAtCamera       EGG::BaseCamera EGG::PerspectiveData    EGG::OrthoData  EGG::ProjectionData     %s: %s 
+---------- HALT -------------
+ %s(%d): %s
+ %s:%d
+%s
+ LR Save[%d]:%p
+ LR save[%d] : %p
+ Program Halt     eggExpHeap.cpp DAME DAME
+       NoName cannot allocate from heap %x(%s) : allocatable heap is %x(%s)
+ 	thread heap=%x
+ none 	thread heap=%s
+ disable_but heap (%p):(%.1fMBytes free %d)->alloc(size(%d:%.1fMBytes),%d align)
+ cannot allocate %d from heap %x
+  EGGRootMEM1 EGGRootMEM2 EGGRootDebug EGGSystem               NONE EGG::CoreControllerMgr     skippadding : %x (%d bytes)
+ %d skipped : %d -> %d (%d)
+ %d  %x %x  %llu %llu  %04x  %08x  %f  %s # %s
+ {
+ }
+        banner.bin      /tmp/banner.bin  
+
+
+
+CH4A should not be cleared because of Broadway errata.
+  DBExceptionDestination
+ << RVL_SDK - DSP 	release build: Aug  8 2007 01:59:06 (0x4199_60831) >> DSPInit(): Build Date: %s %s
+   Aug  8 2007 01:59:06    DSP is booting task: 0x%08X
+    __DSP_boot_task()  : IRAM MMEM ADDR: 0x%08X
+    __DSP_boot_task()  : IRAM DSP ADDR : 0x%08X
+    __DSP_boot_task()  : IRAM LENGTH   : 0x%08X
+    __DSP_boot_task()  : DRAM MMEM ADDR: 0x%08X
+    __DSP_boot_task()  : Start Vector  : 0x%08X
+    __DSP_add_task() : Added task    : 0x%08X
+      DVDConvertEntrynumToPath(possibly DVDOpen or DVDChangeDir or DVDOpenDir): specified directory or file (%s) doesn't match standard 8.3 format. This is a temporary restriction and will be removed soon
+ Warning: DVDOpen(): file '%s' was not found under %s.
+  DVDReadAsync(): specified area is out of the file   DVDRead(): specified area is out of the file    Warning: DVDOpenDir(): file '%s' was not found under %s.
+   << RVL_SDK - DVD 	release build: Aug  8 2007 01:59:13 (0x4199_60831) >> DVDChangeDisk(): FST in the new disc is too big.
+
+Errore #001:
+rilevato un dispositivo non autorizzato.    
+
+
+Fout #001:
+ongeoorloofd onderdeel gevonden.  (doTransactionCallback) Error - context mangled!
+   (doCoverCallback) Error - context mangled!
+ (DVDLowFinish) Error: IOS_Close failed
+ IPCCltInit returned error: %d
+  (ddrAllocAligned32) Not enough space to allocate %d bytes
+  Allocation of diCommand blocks failed
+  Allocation of pathBuf failed
+   (DVDLowInit) Error: IOS_Open failed - pathname '/dev/di' does not exist
+    (DVDLowInit) Error: IOS_Open failed - calling thread lacks permission
+  (DVDLowInit) Error: IOS_Open failed - connection limit has been reached
+    (DVDLowInit) IOS_Open failed, errorcode = %d
+       (newContext) ERROR: freeDvdContext.inUse (#%d) is true
+ (newContext) Now spinning in infinite loop
+     (newContext) Something overwrote the context magic - spinning 
+ @@@@@@ WARNING - Calling DVDLowReadDiskId with NULL ptr
+    @@@ (DVDLowReadDiskID) IOS_IoctlAsync returned error: %d
+   (DVDLowOpenPartition) eTicket memory is unaligned
+      (DVDLowOpenPartition) certificates memory is unaligned
+ @@@ (DVDLowOpenPartition) IOS_IoctlvAsync returned error: %d
+   DVDLowOpenPartitionWithTmdAndTicket (%s) eTicket memory is unaligned
+   (%s) tmd parameter cannot be NULL
+  (%s) tmd memory is unaligned
+   (%s) eTicket parameter cannot be NULL
+      DVDLowOpenPartitionWithTmdAndTicketView (%s) eTicketView parameter cannot be NULL
+  (%s) eTicketView memory is unaligned
+   DVDLowGetNoDiscBufferSizes  (%s) Error: NULL pointer argument
+  (%s) numTmdBytes memory is unaligned
+   (%s) certificates memory is unaligned
+  @@@ (%s) IOS_IoctlvAsync returned error: %d
+    DVDLowGetNoDiscOpenPartitionParams  (%s) pointer argument is unaligned
+ DVDLowNoDiscOpenPartition   @@@ (DVDLowClosePartition) IOS_IoctlAsync returned error: %d
+   @@@ (DVDLowUnencryptedRead) IOS_IoctlAsync returned error: %d
+  @@@ (DVDLowStopMotor) IOS_IoctlAsync returned error: %d
+    @@@ (DVDLowWaitForCoverClose) IOS_IoctlAsync returned error: %d
+    @@@ (DVDLowInquiry) IOS_IoctlAsync returned error: %d
+  @@@ (DVDLowRequestError) IOS_IoctlAsync returned error: %d
+ (DVDLowSetSpinupFlag): Synch functions can't be called in callbacks
+    @@@ (DVDLowNotifyReset) IOS_IoctlAsync returned error: %d
+  @@@ (DVDLowReset) IOS_IoctlAsync returned error: %d
+    @@@ (DVDLowAudioBufferConfig) IOS_IoctlAsync returned error: %d
+    (DVDLowGetCoverStatus): Synch functions can't be called in callbacks
+   @@@ (DVDLowGetCoverStatus) IOS_Ioctl returned error: %d
+    @@@ (DVDLowReadDVD) IOS_IoctlAsync returned error: %d
+  @@@ (DVDLowReadDVDConfig) IOS_IoctlAsync returned error: %d
+    @@@ (DVDLowReadDvdCopyright) IOS_IoctlAsync returned error: %d
+ @@@ (DVDLowReadDvdPhysical) IOS_IoctlAsync returned error: %d
+  @@@ (DVDLowReadDvdDiscKey) IOS_IoctlAsync returned error: %d
+   @@@ (DVDLowReportKey) IOS_IoctlAsync returned error: %d
+    @@@ (DVDLowOffset) IOS_IoctlAsync returned error: %d
+   @@@ (DVDLowStopLaser) IOS_IoctlAsync returned error: %d
+    @@@ (DVDLowReadDiskBca) IOS_IoctlAsync returned error: %d
+  @@@ (DVDLowSerMeasControl) IOS_IoctlAsync returned error: %d
+   @@@ (DVDLowRequestDiscStatus) IOS_IoctlAsync returned error: %d
+    @@@ (DVDLowRequestRetryNumber) IOS_IoctlAsync return
+   @@@ (DVDLowSetMaxRotation) IOS_IoctlAsync returned error: %d
+   (DVDLowRead): ERROR - destAddr buffer is not 32 byte aligned
+   @@@ (DVDLowRead) IOS_IoctlAsync returned error: %d
+ @@@ (DVDLowSeek) IOS_IoctlAsync returned error: %d
+ (DVDLowGetCoverReg): Synch functions can't be called in callbacks
+  @@@ (DVDLowGetCoverReg) IOS_Ioctl returned error: %d
+   @@@ (DVDLowPrepareCoverRegsiter) IOS_IoctlAsync returned error: %d
+ @@@ (DVDLowPrepareStatusRegsiter) IOS_IoctlAsync returned error: %d
+    @@@ (DVDLowClearCoverInterrupt) IOS_IoctlAsync returned error: %d
+  @@@ (DVDLowEnableDvdVideo) IOS_IoctlAsync returned error: %d
+   << RVL_SDK - EXI 	release build: Aug  8 2007 01:59:22 (0x4199_60831) >> << RVL_SDK - GX 	release build: Dec 11 2007 01:34:15 (0x4199_60831) >>  
+
+      << RVL_SDK - OS 	release build: Jan 30 2008 01:38:43 (0x4199_60831) >>  
+Revolution OS
+ Kernel built : %s %s
+   Jan 30 2008 01:38:43    Console Type :  Pre-production board 1
+ Pre-production board 2-1
+   Pre-production board 2-2
+   Retail %d
+  NDEV 2.1
+   NDEV 2.0
+   NDEV 1.2
+   NDEV 1.1
+   NDEV 1.0
+   Revolution Emulator
+    Emulation platform (%08x)
+  TDEV-based emulation HW%d
+  Firmware     : %d.%d.%d     (%d/%d/%d)
+ Memory %d MB
+   MEM1 Arena : 0x%x - 0x%x
+   MEM2 Arena : 0x%x - 0x%x
+OS ERROR: boot program is not for RVL target. Please use correct boot program.
+ Failed to run app       OS ERROR: apploader[D].img is not for RVL target. Please use correct apploader[D].img.    
+   Installing OSDBIntegrator
+  >>> OSINIT: exception %d commandeered by TRK
+   >>> OSINIT: exception %d vectored to debugger
+  Exceptions initialized...
+ >>> L2 INVALIDATE : SHOULD NEVER HAPPEN
+        Machine check received
+ HID2 = 0x%x   SRR1 = 0x%x
+      Machine check was not DMA/locked cache related
+ DMAErrorHandler(): An error occurred while processing DMA.
+ The following errors have been detected and cleared :
+  	- Requested a locked cache tag that was already in the cache
+  	- DMA attempted to access normal cache
+    	- DMA missed in data cache
+    	- DMA queue overflowed
+    L1 i-caches initialized
+    L1 d-caches initialized
+    L2 cache initialized
+   Locked cache machine check handler installed
+       ------------------------- Context 0x%08x -------------------------
+     r%-2d  = 0x%08x (%14d)  r%-2d  = 0x%08x (%14d)
+ LR   = 0x%08x                   CR   = 0x%08x
+  SRR0 = 0x%08x                   SRR1 = 0x%08x
+  
+GQRs----------
+    gqr%d = 0x%08x 	 gqr%d = 0x%08x
+    
+
+FPRs----------
+   fr%d 	= %d 	 fr%d 	= %d
+    
+
+PSFs----------
+   ps%d 	= 0x%x 	 ps%d 	= 0x%x
+    
+Address:      Back Chain    LR Save
+   0x%08x:   0x%08x    0x%08x
+ FPU-unavailable handler installed
+       in "%s" on line %d.
+   
+Address:      Back Chain    LR Save
+   0x%08x:   0x%08x    0x%08x
+ Non-recoverable Exception %d    Unhandled Exception %d  
+DSISR = 0x%08x                   DAR  = 0x%08x
+    TB = 0x%016llx
+ 
+Instruction at 0x%x (read from SRR0) attempted to access invalid address 0x%x (read from DAR)
+ 
+Attempted to fetch instruction from invalid address 0x%x (read from SRR0)
+ 
+Instruction at 0x%x (read from SRR0) attempted to access unaligned address 0x%x (read from DAR)
+   
+Program exception : Possible illegal instruction/operation at or around 0x%x (read from SRR0)
+ AI DMA Address =   0x%04x%04x
+  ARAM DMA Address = 0x%04x%04x
+  DI DMA Address =   0x%08x
+  
+Last interrupt (%d): SRR0 = 0x%08x  TB = 0x%016llx 
+OSExec(): Failed to exec %d in %d
+ 
+OSExec(): The specified game doesn't exist in the disc
+    2004/02/01     
+
+
+    TBuffer::checkRange %d (0<=x<%d)
+   eggBuffer.h TBuffer::checkRange %d (0<=x<%d)
+   eggBuffer.h TBuffer::checkRange %d (0<=x<%d)
+   eggBuffer.h eggList.h   NW4R:Pointer Error
+func(=%p) is not valid pointer.  g3d_anmobj.h    ResAnmTexSrt    %s::%s: Object not valid.   g3d_resanmtexsrt_ac.h   ResAnmTexPat    %s::%s: Object not valid.   g3d_resanmtexpat_ac.h   ResAnmChr   %s::%s: Object not valid.   g3d_resanmchr_ac.h  NW4R:Failed assertion !((u32)p & 0x1f)  g3d_resfile_ac.h       NW4R:Failed assertion newVal < HORIZONTALPOSITION_MAX   common.h    TBuffer::checkRange %d (0<=x<%d)
+   eggBuffer.h            0<=%d<%d
+   eggBuffer.h 0<=%d<%d
+   eggBuffer.h             eggList.h       mString is null eggSafeString.h index(%d) out of range[0,%d)    eggSafeString.h mString is null
+        eggSafeString.h mBuffer overflow %d < %d + 1
+   eggSafeString.h index must be >= 0
+     eggSafeString.h *it = [%c]
+ eggSafeString.cpp   abcdefghijklmn  eggSafeString.cpp       mSound != NULL  SpkSound.h      num < mNumOfSound   SpkTable.h  num >= 0    SpkTable.h  eggList.h   sInstance == NULL   SpkGadget.h     sInstance == NULL   SpkGadget.h homebutton::FrameController   homebutton::GroupAnmController  homebutton::gui::PaneComponent  homebutton::gui::PaneManager  homebutton::gui::Manage homebutton::gui::Component  homebutton::gui::Interface homebutton::RemoteSpk   midi\00_home_button.mid midi\01_return_app.mid  midi\02_goto_menu.mid   midi\03_reset_app.mid   midi\04_focus.mid   midi\05_select.mid  midi\06_cancel.mid  midi\07_open_controller.mid midi\08_close_controller.mid    midi\09_volume_plus.mid midi\10_volume_minus.mid    midi\11_volume_plus_limit.mid   midi\12_volume_minus_limit.mid  midi\13_nothing_done.mid    midi\14_vibe_on.mid midi\15_vibe_off.mid    midi\16_start_connect_window.mid    midi\17_connected1.mid  midi\18_connected2.mid  midi\19_connected3.mid  midi\20_connected4.mid  midi\21_end_connect_window.mid  midi\22_manual_open.mid midi\23_manual_focus.mid    midi\24_manual_select.mid   midi\25_manual_scroll.mid   midi\26_manual_cancel.mid   midi\27_manual_return_app.mid   €Vˆ€V €V¸€VÐ€Vè€Vü€V€V$€V@€V`€Vx€V”€V´€VÔ€Vð€V€V€V@€VX€Vp€Vˆ€V €VÀ€VØ€Vô€V €V ,€V H<< RVL_SDK - HBM 	release build: Feb  7 2008 15:55:00 (0x4199_60726) >> €V Ø€]ˆP1_Def.brlyt    P2_Def.brlyt    P3_Def.brlyt    P4_Def.brlyt    €V(€V8€VH€VXN_Trans €VxN_Rot   €V„N_SRot  €VB_btnL_00   B_btnL_01   B_btnL_10   €Vœ€V¨€V´    T_btnL_00   T_btnL_01   T_btnL_10       €VÐ€VÜ€Vè    btnL_00_inOut   btnL_01_inOut   btnL_10_inOut   btnL_11_inOut   btnL_00_psh btnL_01_psh btnL_10_psh btnL_11_psh €V	€V	€V	(€V	8€V	H€V	T€V	`€V	l_cntBtn_in.brlan    _cntBtn_psh.brlan   _cntBtn_out.brlan   €V	˜€V	¬€V	À_ltrIcn_on.brlan    _optn_bar_psh.brlan _close_bar_psh.brlan    _hmMenu_bar_in.brlan    _hmMenu_bar_psh.brlan   _link_msg_in.brlan  _link_msg_out.brlan _cmn_msg_in.brlan   _cmn_msg_out.brlan  _cntrl_up.brlan _cntrl_wndw_opn.brlan   _cntrl_dwn.brlan    _hmMenu_bar_out.brlan   _cmn_msg_rtrn.brlan _12btn_on.brlan
+ltrIcn_on   optn_bar_psh    close_bar_psh   hmMenu_bar_in   hmMenu_bar_psh  link_msg_in link_msg_out    cmn_msg_in  cmn_msg_out cntrl_up    cntrl_wndw_opn  cntrl_dwn   hmMenu_bar_out  cmn_msg_rtrn    12btn_on    €VT€V`€Vp€V€€V€V €V¬€V¼€VÈ€VÔ€Và€Vð€Vü€V€V_hmMenu_strt.brlan  _hmMenu_fnsh.brlan  _optn_bar_in.brlan  _optn_bar_out.brlan _optn_btn_in.brlan  _optn_btn_psh.brlan _vb_btn_wht_psh.brlan   _optn_btn_out.brlan _vb_btn_ylw_psh.brlan   _sound_gry.brlan    _sound_ylw.brlan    _cmn_msg_btn_in.brlan   _cmn_msg_btn_out.brlan  _cmn_msg_btn_psh.brlan  _vb_btn_ylw_ylw.brlan   _btry_wink.brlan        _btry_gry.brlan _btry_wht.brlan _btry_wink_gry.brlan    _close_bar_in.brlan _close_bar_out.brlan        _btry_red.brlan €Vd€Vx€VŒ€V €V
+(hmMenu_strt hmMenu_fnsh hmMenuBck_strt  hmMenuBck_fnsh  optn_bar_in optn_bar_out    optnBtn_00_inOut    optnBtn_01_inOut    optnBtn_10_inOut    optnBtn_11_inOut    optnBtn_20_inOut    optnBtn_00_psh  optnBtn_01_psh  optnBtn_10_psh  optnBtn_11_psh  optnBtn_20_psh  optnBtn_10_cntrl       
+msgBtn_00_inOut
+msgBtn_01_inOut
+msgBtn_00_psh 
+msgBtn_01_psh 
+vol_00 
+vol_01
+vol_02 
+vol_03 
+vol_04  
+vol_05  
+vol_06
+vol_07 
+vol_08 
+vol_09 
+plyr_00 
+plyr_01
+plyr_02
+plyr_03 
+Xlet_icn_00 
+N_plyr_00 
+N_plyr_01  
+N_plyr_02  
+N_plyr_03  
+B_btn_00 
+B_bar_10 
+B_optnBtn_00 
+B_optnBtn_01  
+B_optnBtn_10   
+B_optnBtn_11 
+B_optnBtn_20 
+B_BtnA  
+B_BtnB  
+cntrl_00 
+T_msg_00  
+T_msg_01   
+T_Dialog 
+btryPwr_00_0  
+btryPwr_00_1   
+btryPwr_00_2  
+btryPwr_00_3 
+btryPwr_01_0 
+btryPwr_01_1  
+btryPwr_01_2  
+btryPwr_01_3    
+btryPwr_02_0  
+btryPwr_02_1  
+btryPwr_02_2 
+btryPwr_02_3 
+btryPwr_03_0    
+btryPwr_03_1 
+btryPwr_03_2 
+btryPwr_03_3  
+arc    
+back_01 
+back_00
+back_02
+homebutton::HomeButtonEventHandler 
+homebutton::gui::EventHandler  
+homebutton::gui::Interface     
+nw4hbm::lyt::AnimTransformBasic
+nw4hbm::lyt::AnimTransform 
+nw4hbm::lyt::ArcResourceAccessor  
+nw4hbm::lyt::ResourceAccessor 
+nw4hbm::lyt::Bounding
+nw4hbm::lyt::Pane
+nw4hbm::lyt::detail::PaneBase
+nw4hbm::lyt::DrawInfo  
+nw4hbm::lyt::Group
+nw4hbm::lyt::Layout 
+nw4hbm::lyt::Material 
+nw4hbm::lyt::Picture
+nw4hbm::lyt::TextBox 
+nw4hbm::lyt::Window
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/shared2/sys    /shared2/sys/SYSCONF    /title/00000001/00000002/data/setting.txt       enemyBase enemyBase.cpp P2Assert Unknown birth type:%d EnemyKillArg abolished type
+     pelplant.cpp enemy/data/pelplant enemy/parm/pelplant bodyjnt2 headjnt P2Assert bodyjnt1 FARM_POW(%d) Grow%s on off %s %4.2f Unknown Pellet size. %d 
+ ƒyƒŒƒbƒg‘ƒ}ƒl[ƒWƒƒ      State wither_big wither_Middle wither_Small wait_small wait_middle wait_big grow damage dead    enemyBase ƒ}ƒl[ƒWƒƒƒm[ƒh GeneralEnemyMgr “Gƒ}ƒl[ƒWƒƒ enemyHeap generalEnemyMgr.cpp P2Assert enemy/parm/enemyParms.szs allocateEnemys kochappyState press wait dead turn Walk Attack Flick TurnToHome GoHome demo     kochappyMgr enemy/data/Kochappy/kochappy_body_s3tc.1.bti ÔƒRƒ`ƒƒƒbƒs[ƒ}ƒl[ƒWƒƒ       enemyAction g2B_white_poison    chappyState StateCautionBase sleep dead turn Walk Attack Flick TurnToHome GoHome        chappyMgr enemy/data/Chappy/moyou_565.1.bti enemy/data/Chappy/swallow_565.1.bti Ôƒ`ƒƒƒbƒs[ƒ}ƒl[ƒWƒƒ  LifeGaugeMgr otter/gameTex.szs              lifeGauge.bti       carryInfoMgr carryInfoMgr.cpp Illegal useType %d
+ otter/gameTex.szs              item_0_9.bti carryInfo total:%d A:%d I:%d
+     gameLightMgr –é ’© ’‹ —[ ƒfƒ‚’†  Ý’è ‘¾—zƒ^ƒCƒvÝ’è ‰ù’†“d“”ƒAƒŠ ‰ù’†“d“”ƒiƒV gameLightMgr.cpp Unknown version [%08x] ƒƒCƒ“ƒ‰ƒCƒg ƒTƒuƒ‰ƒCƒg ƒXƒyƒLƒ…ƒ‰-ƒ‰ƒCƒg user/Yamashita/testResource/light/light.ini illegal vp-id (%d)
+                     vtxAnm FieldVtxColorMgr Pelplant Kochappy  BlueKochappy YellowKochappy KumaKochappy Chappy BlueChappy YellowChappy Pom BluePom RedPom YellowPom BlackPom WhitePom RandPom Kogane Wealthy Fart Frog MaroFrog UjiA UjiB Armor Tobi Imomushi Qurione Rock Stone Kabuto Rkabuto Fkabuto Hiba GasHiba ElecHiba Sarai Demon BombSarai Tank Wtank Catfish Tadpole ElecBug Mar Hanachirashi Kurage OniKurage Queen Baby FireChappy Hana KumaChappy LeafChappy SnakeCrow SnakeWhole Bomb Egg PanModoki OoPanModoki PanHouse Fuefuki Tanpopo Watage Clover HikariKinoko Ooinu_s KareOoinu_s Ooinu_l KareOoinu_l Wakame_s Wakame_l Tukushi DaiodoRed DaiodoGreen Magaret Nekojarashi Chiyogami Zenmai KingChappy Miulin Damagumo BigFoot Houdai FireOtakara Otakara WaterOtakara GasOtakara ElecOtakara Jigumo TamagoMushi UmiMushiBase UmiMushi UmiMushiBlind BigTreasure ShijimiChou MiniHoudai FminiHoudai Sokkuri BombOtakara BlackMan Tyre DangoMushi farm  ”_k ObstacleNode PlantNode Farm resource mdlData createModel vtxClrAnm   ”_kƒ}ƒl[ƒWƒƒ ”_kƒ|ƒCƒ“ƒg FarmMgr Resource    genEnemy “G‚ðƒZƒbƒg “G‚ð”­¶ 		# %s 
+ teki teki_birth_type teki_num face direction 0:point 1:circle appear radius enemy size ÔƒRƒ`ƒƒƒbƒs[ ÂƒRƒ`ƒƒƒbƒs[ ‰©ƒRƒ`ƒƒƒbƒs[ Ôƒ`ƒƒƒbƒs[ Âƒ`ƒƒƒbƒs[ ‰©ƒ`ƒƒƒbƒs[ Âƒ|ƒ“ƒKƒV‘ Ôƒ|ƒ“ƒKƒV‘ ‰©ƒ|ƒ“ƒKƒV‘ •ƒ|ƒ“ƒKƒV‘ ”’ƒ|ƒ“ƒKƒV‘ ƒ|ƒ|ƒKƒV‘ ƒRƒKƒl ƒIƒIƒKƒlƒ‚ƒ` ƒoƒoƒRƒKƒl ƒCƒ‚ƒKƒGƒ‹ ƒ}ƒƒKƒGƒ‹ ƒEƒWƒ“ƒRŠ ƒgƒrƒ“ƒR ƒEƒWƒ“ƒR‰ ƒˆƒƒCƒ€ƒV ƒqƒo ƒKƒXƒqƒo ƒTƒ‰ƒCƒ€ƒV ƒuƒ^ƒhƒbƒNƒŠ ƒ~ƒYƒuƒ^ƒhƒbƒNƒŠ ƒiƒ}ƒY ƒIƒ^ƒ} ƒfƒ“ƒLƒ€ƒV ƒtƒEƒZƒ“ƒhƒbƒNƒŠ ƒNƒC[ƒ“ƒ`ƒƒƒbƒs[ ƒxƒr[ƒ`ƒƒƒbƒs[ ƒIƒjƒTƒ‰ƒC ƒ„ƒLƒ`ƒƒƒbƒs[ ƒwƒrƒKƒ‰ƒX ƒNƒ}ƒ`ƒƒƒbƒs[ ƒoƒNƒ_ƒ“ ƒnƒeƒiƒ^ƒ}ƒS ƒpƒ“ƒ‚ƒhƒL ‘åƒpƒ“ƒ‚ƒhƒL ƒpƒ“ƒ‚ƒhƒL‘ƒ ƒtƒGƒtƒL ƒ^ƒ“ƒ|ƒ| ‚í‚½‚° ƒNƒ[ƒo[ ƒqƒJƒŠƒLƒmƒR ‚¨‚¨‚¢‚Ê‚Ó‚®‚èi¬j ŒÍ‚ê‚¨‚¨‚¢‚Ê‚Ó‚®‚èi¬j ‚¨‚¨‚¢‚Ê‚Ó‚®‚èi‘åj ŒÍ‚ê‚¨‚¨‚¢‚Ê‚Ó‚®‚èi‘åj Žá‰èi¬j Žá‰èi‘åj ‚Â‚­‚µ Ôƒ_ƒCƒI[ƒh Âƒ_ƒCƒI[ƒh ƒ}[ƒKƒŒƒbƒg ‚Ë‚±‚¶‚á‚ç‚µ ç‘ãŽ† ‚º‚ñ‚Ü‚¢ ƒLƒ“ƒOƒ`ƒƒƒbƒs[ ƒ~ƒEƒŠƒ“ ƒtƒEƒZƒ“ƒnƒiƒ`ƒ‰ƒV ƒ_ƒ}ƒOƒ‚ ƒNƒ‰ƒQƒhƒbƒNƒŠ ƒoƒNƒ_ƒ“ƒTƒ‰ƒC ‰ÎƒIƒ^ƒJƒ‰ƒ€ƒV …ƒIƒ^ƒJƒ‰ƒ€ƒV ƒKƒXƒIƒ^ƒJƒ‰ƒ€ƒV “d‹CƒIƒ^ƒJƒ‰ƒ€ƒV ”š’eƒIƒ^ƒJƒ‰ƒ€ƒV ƒWƒOƒ‚ ƒWƒOƒ‚‘ƒ ƒCƒ‚ƒ€ƒV ƒzƒEƒ_ƒCƒ_ƒ}ƒOƒ‚ ƒnƒbƒpƒ`ƒƒƒbƒs[ ƒ^ƒ}ƒSƒ€ƒV ƒIƒIƒAƒVƒ_ƒ}ƒOƒ‚ ƒwƒrƒKƒ‰ƒX‘Sg ƒEƒ~ƒ€ƒV –Ú‚È‚µƒEƒ~ƒ€ƒV ƒIƒjƒNƒ‰ƒQ ƒIƒIƒIƒ^ƒJƒ‰ƒ€ƒV ƒOƒŠ[ƒ“ƒJƒuƒg—c’Ž ƒŒƒbƒhƒJƒuƒg—c’Ž ŒÅ’èƒJƒuƒg—c’Ž ƒNƒ}ƒRƒ`ƒƒƒbƒs[ ƒVƒWƒ~’± ƒ`ƒrƒzƒEƒ_ƒC ŒÅ’èƒ`ƒrƒzƒEƒ_ƒC ƒ\ƒbƒNƒŠ ƒnƒiƒhƒbƒNƒŠ •‚¢l •‚¢lƒ^ƒCƒ„ ƒ_ƒ“ƒSƒ€ƒV –¢“o˜^ %s x %d    timeMgr ƒ^ƒCƒ€ƒ}ƒl[ƒWƒƒ        ƒyƒŒƒbƒg‘ 		# %s 
+ pellet type pellet size size       sekikaobj_large.bmd sekikaobj_small.bmd EnemyStone::Mgr::loadResource EnemyStone::Mgr::stoneModel enemy/common/enemyCommon.szs EnemyStone::Mgr::DrawInfo_buffer         enemyStoneObj.cpp g1B_black_doping      walkSmoke walkSmokeEffect.cpp alloc error
+ second alloc       *   +      *   +ChappyBaseMgr ƒ`ƒƒƒbƒs[ƒWƒFƒlƒŒ[ƒ^ ƒ`ƒƒƒbƒs[ƒx[ƒXƒ}ƒl[ƒWƒƒ osiri_1_2 atama_2       ChappyBase ago kamu1 kamu2 kamu3 kamu4 kamu5 asiL asiR head     BlueChappyMgr enemy/data/BlueChappy/moyou_565.3.bti enemy/data/BlueChappy/swallow_565.3.bti Âƒ`ƒƒƒbƒs[ƒ}ƒl[ƒWƒƒ      YellowChappyMgr enemy/data/YellowChappy/moyou_565.2.bti enemy/data/YellowChappy/swallow_565.2.bti ‰©ƒ`ƒƒƒbƒs[ƒ}ƒl[ƒWƒƒ        YellowChappy body YellowChappy.cpp P2Assert     BlueKochappyMgr enemy/data/BlueKochappy/kochappy_body_s3tc.3.bti ÂƒRƒ`ƒƒƒbƒs[ƒ}ƒl[ƒWƒƒ       YellowKochappyMgr enemy/data/YellowKochappy/kochappy_body_s3tc.2.bti ‰©ƒRƒ`ƒƒƒbƒs[ƒ}ƒl[ƒWƒƒ         ,   -      ,   -KochappyBaseMgr ƒRƒ`ƒƒƒbƒs[ƒWƒFƒlƒŒ[ƒ^ ƒRƒ`ƒƒƒbƒs[ƒx[ƒXƒ}ƒl[ƒWƒƒ lambert4  KochappyBase ago kamu asiL asiR 		# %s 
+ Pellet color Pellet size Pellet Min Pellet Max        ”g–ä    enemyMgrBase.cpp kill dead enemy. %s %d
+ state:%s kill dead enemy. %s %d
+ state:%d mNumObjects is not zero. [%d] 
+ %s/enemyParm.txt %s/enemyColl.txt %s/enemyStoneInfo.txt enemy.bmd enemy.bdl EnemyMgrBase:Can not make mdlData
+ enemy/data/%s/model.szs enemy/data/%s/anim.szs %s/enemyAnimMgr.txt  EnemyGenerator    no name FÝ’è singleGS_ZukanParms.cpp Illegal slot.
+ oŒ»êŠ–¼ oŒ»ˆÊ’uƒŠƒXƒg  “G}ŠÓ Ý’è ‚¨•ó}ŠÓ }ŠÓÝ’è P2Assert setting.ini load error.[%s]
+ no fileName        ‚¨•óƒ‰ƒCƒg ƒƒCƒ“ƒ‰ƒCƒg ƒXƒyƒLƒ…ƒ‰-ƒ‰ƒCƒg       effectObj effectAnimator.cpp P2Assert   collpart collinfo.cpp platform %s not found !
+ P2Assert collpart birth failed : single sphere
+ num=%d : random=%d
+ getRandomCollPart rand : %d >= %d
+ collpart birth failed !
+ CollPart Dynamics VƒtƒŠƒNƒVƒ‡ƒ“ Sta-Parm Static micro collision ResolveŽž‚Ì–€ŽC elasticity –€ŽC –€ŽC:tanvel ŒÅ’è–€ŽC ŒÅ’è–€ŽC’l ‰ñ“]‰e‹¿‚È‚µ‚É‚·‚é ‰ñ“]ƒ‚[ƒƒ“ƒg Damp  creature creature.cpp P2Assert  fakePiki fakePiki.cpp P2Assert damedayo!
+ before trmove after trmove zama--------n
+ move2 no recover onyon
+     navi navi.cpp ƒUƒ“[[iE„tEj||ƒlƒ“
+ happajnt3 headjnt no target!! HOLEIN
+ no target!! FOUNTAINON
+ P2Assert timeout %d,%d:%d
+%d,%d-%d,%d
+ infloop %d,%d:%d
+%d,%d-%d,%d
+ throw ratio = %f : h = %f
+ piki TPkEffect PSPiki happajnt3 happajnt1 piki.cpp happajnt3 not found!
+ happajnt1 not found!
+ piki onInit ** PIKI ONINIT** g1A_red_doping P2Assert headjnt     baseGameSection baseGameSection.cpp ‚Q‰ñ‚Í–³—‚—
+ useSpecificFBTexture ‚µ‚Ä‚È‚¢‚—
+ waitSyncLoad BGS::init heapStatus baseGameSection::init BaseGameSection::initHIO BaseGameSection::MoviePlayer BaseGameSection::InitJ3D BaseGameSection::Before 2D BaseGameSection::Game2DMgr 2d OPA normal normal-fogoff map piki wii-players post first postshadow objectlast farm XLU poyo1 Generator(Default) Generator(Init) Generator(Limit) Generator(A•¨) Generator(DAY) %s/defaultgen.txt %s/plantsgen.txt %s/initgen.txt %s/nonloop/%s %s/loop/%s %s/day/%d.txt P2Assert KESHIMASU!
+ no demomatrix
+ louie null x05_louiestart ChappyPikmin : ignore holein
+ ƒQ[ƒ€ƒ‰ƒCƒgƒ}ƒl[ƒWƒƒ DON'T USE THIS !
+ Žg‚Á‚Ä‚È‚¢‚©‚à
+ setupFixMemory user/Kando/mizu.bti fbTexture particle user/Ebisawa/effect/game.jpc user/Ebisawa/effect/eff2d_game2d.jpc navi-piki allocation dameck!
+%d/%d setupFloatMemory itemMgr Pikmin-PikiClass user/Mukki/mapunits/caveinfo/us/%s random user/Abe/vs/%s mapMgr CellMgr PlatCellMgr MapRoomCellMgr <float> Done
+ SingleGameSection yes cavedayend SGS::onInit SGS::FSM SGS::setupFix singleGameSection.cpp P2Assert CurrTimer (%d) : disableTimer(%d)
+ g02_boot_onyonR g1E_boot_onyonY g20_boot_onyonB g03_meet_redpikmin No RED ONYON g1F_meet_yellowpikmin g21_meet_bluepikmin g24_meet_blackpikmin g27_meet_whitepikmin open_caveIn openCaveMore openKanketu cave-yes cave-no cave-zenkai more-yes more-no more-zenkai kank-yes kank-no createFallPikmins     cellPyramid cellPyramid.cpp P2Assert leg entry failed !
+ none illegal layerLevel %d : out of bounds 0`%d
+ Cell Inf-Loop ‚©‚à‚µ‚ê‚È‚¢
+ leg entry failed !!!!!!!!!!
+     naviMgr naviMgr.cpp P2Assert user/Abe/piki/naviParms.txt user/Kando/piki/texts.szs NaviMgr::Archive user/Kando/piki/pikis.szs orima_model/orima1.bmd animMgr.txt motion naviColl.txt cursor/cursor.bmd cursor/marker.bmd cursor/arrow_orima.brk cursor/arrow_luji.brk orima_model/syatyou.bmd orima_model/orima3.bmd    pikiMgr pikiMgr.cpp who use this ??
+ user/Abe/piki/pikiParms.txt user/Kando/piki/pikis.szs pikis.szs not found !
+ piki_p2_blue piki_p2_red piki_p2_yellow piki_p2_white piki_p2_black piki_kochappy piki_ninjin happa_model/leaf.bmd happa_model/bud.bmd happa_model/flower.bmd happa_model/bud_red.bmd happa_model/flower_red.bmd pikmin-ModelMgr piki_model/%s.bmd P2Assert PikiContainer caveSaveFormationPikmins saveAllPikmins     mapMgr mapMgr.cpp P2Assert map arc %s/arc.szs %s/arc.arc map model model.bmd farm_%d.bmd texanm_%d.btk %s/light.ini %s/texts.szs grid.bin map collision waterbox.txt waterbox mapcode.bin routeInfo loop av. %.1f %d %d %d<%d> tris av. %.1f    baseHIOSection BaseHIOSection baseHIOSection.cpp fragmentation occurred : after sound
+ P2Assert system  naviWhistle tri = %p found =%s
+ yes -    (%f,%f) miny=%f
+       pelletMgr no config pellet pelletMgr.cpp P2Assert ginka number1 number5 number10 number20 loozy orima never lod simple ‚ª‚Á‚©‚è
+ pmotion onSlotStickEnd
+ /pikmin2/user/Abe/Pellet/%s/ jpn us pal /pikmin2/user/Kando/pellet/ null %s%s %s meck ** %s : is not foun !
+ %s: not found !
+ archive not found
+ %s : is not foun !
+ %s/%s bpmgr:no modelData!%d
+ manda!
+ ƒyƒŒƒbƒgƒ}ƒl[ƒWƒƒ yes illegal code (%x)
+ illegal code no config found (%x) index %d
+ no config found(%s)
+ # ‚¨•óƒAƒCƒeƒ€ƒR[ƒh
+    routeMgr routeMgr.cpp P2Assert waypoint %d 	# index
+ 	# numLinks
+ 	# link %d
+ 
+ RouteMgr too many to-links (wpB=%d) (wpA=%d)
+ wpA(%d) and wpB(%d) cause singularity !
+ 	# numWayPoints
+              leg1leg2leg3fot1fot2fot3€TŠE€TŠO€TŠY€TŠ–€TŠŸ€T‰šonyonMgr onyonMgr.cpp BIKKURI no boot!
+ onyon supply failure!
+ start1 pmotion3 in1 P2Assert out pot_ctr damedayo !: arrive  ufoSuckState=%d
+ body_1 key yes goal bikkuri!
+ I'am bikkuri-ed
+ g16_95_pikmin g16_100_pikmin x18_exp_pellet oh! no!
+ kasi1jnt1 kass2jnt1 kasi3jnt1 flow exitWhite/Black zero (UFO)
+ not ufo
+ ‚¾‚ß‚Å‚· pmotion1 pmotion2 no joint (%s)
+ 	# onyon index
+ 	# after boot? true==1
+ Onyon illegal onyon index %d
+ onyon-arc user/Kando/onyon/arc.szs goal.bmd goal.bmd not found !!
+ user/Kando/pod_gold/arc.szs user/Kando/pod/arc.szs pot.bmd pot.bmd not found !!
+ kidou_blue.brk kidou_red.brk kidou_yellow.brk user/Kando/onyon texts.szs onyonAnimMgr.txt onyonColl.txt user/Kando/pod_gold user/Kando/pod animMgr.txt coll.txt user/Kando/ufo_gold/arc.szs user/Kando/ufo/arc.szs ufo.bmd ufo.bmd not found!
+ ufo.brk ufo_2.brk user/Kando/ufo_gold user/Kando/ufo animmgr.txt      piki navi teki pellet onyon ufo gate hole honey pikihead plant rock cave fountain bigfountain bridge treasure downfloor ujamushi weed ball undef end        >€     >€     6>€     2>€      >€     >€     6>€     
+>€     2>€      >€     >€     6>€  naviState naviState.cpp P2Assert navi climb
+ flick needs NaviFlickInitArg !
+ open-cont orima       3>¨õÃ   2>¨õÃ   4>¨õÃ   3>¨õÃ   2>¨õÃ   4>¨õÃ   5?      6?      ?      6?   pikiState %s pikiState.cpp *Transit(%d)(%d)
+(%s)=>(%s)
+ ---------- ‚¾‚ß‚¾‚æ`
+ need HoleinStateArg !
+ need FountainonStateArg !
+ P2Assert getNavi():pullW getNavi():Pull x16_hiba s09_holein not teki (%s)! platCallback : flying
+  rolling ...
+ -------- roll done !!
+ flick:init:erase
+ flick:exec:erase
+ flick needs PikiBlowInitArg !
+ rapCnt ‚ÌŽg‚¢•û‚ª‚æ‚­‚È‚Ì‚Å“€Œ‹’†! (RAPTURE)
+ g34_yellow_extract     €T€T-€T@interactPiki g21_meet_bluepikmin g03_meet_redpikmin g1F_meet_yellowpikmin s05_pikminzero X13_exp_leafchappy doing AI got fue !
+ x13_exp_leafchappy interactPiki.cpp P2Assert        cplate gameCPlate.cpp P2Assert  sorry ...
+ col %d : sort failed !
+ invalid slot idx %d
+ updateMgr updateMgr.cpp mail to [%d-%d] %d
+     aiAction Action %s      aiPrimitives ApproachPosActionArg aiPrimitives.cpp P2Assert GotoSlotArg PathMoveArg zannen !
+ start==0 newgoal == 0 %d->%d->...->%d ... no handle %d
+ max is 0 [%s]
+ StickAttackActionArg GatherActionArg       actFormation Formation aiFormation.cpp P2Assert slot id is -1 x02_watch_red_pikmin invalid slotId!
+     creatureStick creatureStick.cpp P2Assert too many stickers !
+   actFree Free ActFreeArg aiFree.cpp P2Assert     €T“&€T“)€T“,€T“/€T“2actAttack SA AJ JA JP LT attack %s Attack ActAttackArg aiAttack.cpp P2Assert        €T“‰€T“Ž€T““actTransport SLOT LIFT MOVE CARRY %s Carry ActTransportArg aiTransport.cpp P2Assert actFormation Enter aiEnter.cpp P2Assert Exit    pathfinder pathfinder.cpp Oh! no!
+ no context is available (clients=%d)!
+ context state is %d
+ no such handle %d
+  no handle ! %d
+      pelletState pelletState.cpp P2Assert not onyon %d
+ key loozy s11_dope_first_r s11_dopebin_first_r s11_dope_first_b s11_dopebin_first_b s10_suck_treasure s17_suck_equipment suck_ufo s22_cv_suck_treasure s22_cv_suck_equipment x08_cv_suck_carcass x18_exp_pellet Radar => %d
+   pel=%s gsys=%s iscave=%s
+ ok x -- stop pollution se
+ -- pollutUp !
+ -- poolutUp !: humming
+ orima     dynCreature dynCreature.cpp p is null n is %d
+ simulate error
+  generator gen base unset gameGenerator.cpp Generaotr::saveCreature creature is 0
+ ‚È‚µ í‚É 	# version
+ 	# reserved
+ 	# •œŠˆ“ú”
+ 	# <%s>
+ 	# pos
+ 	# offset
+ genMgr GeneratorMgr # generatorMgr <%s>
+ 	# startPos
+ 	# startDir
+ 	# %d generators
+    genPiki ƒsƒNƒ~ƒ“‚ð”­¶ genPiki.cpp dame
+        genNavi ƒiƒr‚ð”­¶      genItem ƒAƒCƒeƒ€‚ð”­¶ 	# item id
+ 	# rotation
+ 	# item local version
+ genItem.cpp no baseItemMgr for %s
+ ƒIƒjƒ‡ƒ“‚ð”­¶     gameStages keigo_de_sox.txt noname name folder abe_folder model collision waterbox mapcode farm route start startangle gameStages.cpp P2Assert user/Abe/stages.txt user/Abe/stages_US.txt user/Abe/stages_EU.txt illegal locale! Select Course %s : %d caves
+ [%s] %d/%d %s/%s  seaMgr gameSeaMgr.cpp ‚Ü‚ñ‚¾! startUp
+ fbtex_dummy user/Kando/map/waterbox.szs user/Kando/map/waterbox2p.szs P2Assert 100x100/mizu100x100.bmd 2p/2p.bmd 100x100/mizu100x100.btk 2p/2p.btk       pikiAI pikiAI.cpp P2Assert      pelletConfig no pelletConfig.cpp P2Assert yes use       gameSystem DynParticle user/Abe/time/time.ini moviePause b : %d, name : %s 
+ setPause: b : %d, name : %s, frame : %d 
+ Dynamics ƒsƒNƒ~ƒ“Žñ ƒRƒŠƒWƒ‡ƒ“ƒoƒbƒtƒ@—LŒø       aiConstants gravity dopecount debt camera_angle user/Kando/aiConstants.txt      gameMapParts 	# dist/door-id/tekiflag
+ 	# index
+ 	# dir/offs/wpindex
+ 	# door links
+ 	# dX/dZ ; cell size
+ gameMapParts.cpp ‚à‚¤Žg‚í‚È‚¢
+ %s : not found !
+ %s/arc.szs P2Assert view.bmd texture.bti %s_%d.btk %s/texts.szs grid.bin mapcode.bin waterbox.txt route.txt user/Kando/map/vrbox/%s.szs model.bmd no model.bmd in %s
+ user/Mukki/mapunits/units/%s %s not found !
+ user/Abe/cave/%s no light file (%s)
+ user/Mukki/mapunits/arc/%s/texts.szs no textARc !
+ layout.txt 246-CreateRandomMap Model and Collision 246-PlaceRooms user/Mukki/mapunits/arc/%s no such unit %s
+ siboudesu !
+ cap_conc VsGameSection caveinfo.txt random vsGameSection.cpp zannenn
+ user/Matoba/challenge/kfes-stages.txt user/Matoba/challenge/stages.txt user/abe/vs/stages.txt op-c-more op-kk more-yes more-no more-zenkai kk-yes s0C_cv_escape kk-no s03_orimadown createFallPikmins P2Assert no space for new yellow
+ no entry for pellet
+ birth failed !
+ *** ichou (%.1f %.1f %.1f)
+ BIRTH FAILED !
+ [%d] = %s
+ alive dead oosugi %d
+ %d playerID
+ %d typeID
+  itemGate itemGate.cpp no shape !
+ gate P2Assert move Gate ItemGate user/Kando/objects/gates gate-arc.szs gate_soft.bmd gate-texts.szs gateAnimMgr.txt gateColl.txt cent.pla side.pla user/Kando/gates/gate-arc.szs gate_soft.brk new Model Platform Clone-Plat fix 	#ƒ‰ƒCƒt
+ 	#Color
+ g18_find_gate “dŒ‚ƒQ[ƒg ItemDengekiGate e-gate-arc.szs e-gate.bmd e-gate-texts.szs e-animmgr.txt e-coll.txt e-cent.pla e-side.pla user/Kando/gates/e-gate-arc.szs e-gate.btk pole e-gate       itemMgr itemMgr.cpp (%s) no mSoundCreature
+ cellLayerindex overflow
+ P2Assert BaseItem %s/%s fatal error
+ AnimMgr creation failed ! %s
+ platAttacher %s not found !
+ ƒAƒCƒeƒ€ƒ}ƒl[ƒWƒƒ actBreakWall BreakGate ActBreakGateArg aiBreakGate.cpp P2Assert gameStat gameStat.cpp P2Assert  itemHole g2F_appear_hole flag Hole user/Kando/objects/dungeon_hole arc.szs dungeon_hole.bmd texts.szs cap_platform.bin side_platform.bin        ?À  ?à  ?à  itemHoney mitu1 itemHoney.cpp no mat mitu1
+ user/Kando/objects/honey Honey arc.szs mitu.bmd texts.szs honeyAnimMgr.txt      caveInfo BaseGen gameCaveInfo.cpp •Ï‚ÈƒyƒŒƒbƒgƒl[ƒ€‚Å‚·!
+ floorInfo “y ƒƒ^ƒ‹ ƒRƒ“ƒNƒŠ[ƒc ƒ^ƒCƒ‹ ’Êí ƒ{ƒX ‚â‚·‚ç‚¬ ‚È‚µ ‚ ‚è FloorInfo ŠK‚Í‚¶‚ß ŠK‚¨‚í‚è “GÅ‘å” ƒAƒCƒeƒ€Å‘å” ƒQ[ƒgÅ‘å” ƒLƒƒƒbƒvÅ‘å” ƒ‹[ƒ€” ƒ‹[ƒg‚ÌŠ„‡ ‹AŠÒ•¬…(1=‚ ‚è) units.txt Žg—pƒ†ƒjƒbƒg light.ini Žg—pƒ‰ƒCƒg test VRBOX ŠK’i‚ð‰ó‚·Šâ‚Å‰B‚·(0=ƒIƒt 1=ƒIƒ“) ƒ¿‘®« ƒÀ‘®« ‰B‚µ° Version BlackManTimer ’¾‚Þ•Ç P2Assert %s %s not found !
+   €T¥€T¥€T¥
+creatureLOD creatureLOD.cpp P2Assert near mid far p _ v x [%s%s %s %s] <%f> itemPikihead happajnt3 itemPikihead.cpp exit failed !!
+ P2Assert PikiHead user/Kando/objects/pikihead arc.szs pikihead.bmd texts.szs pikiheadAnimMgr.txt ‚±‚ê‚Í‚ ‚è‚¦‚È‚¢‚æ
+    itemPlant itemPlant.cpp P2Assert %d m %.1f (%d/%d) %.1f %.1f kuki_jnt1 kuki_jnt2 kuki_jnt3 kuki_jnt4 Plant user/Kando/objects/plants user/Abe/item/plantParms.txt arc.szs model.bmd model.bpk texts.szs plantAnimMgr.txt 	#ŽÀƒ^ƒCƒv
+ fruit     itemRock r”pƒIƒuƒWƒFƒNƒg user/Kando/objects/ojamarock user/Abe/item/rockParms.txt arc.szs rock.bmd texts.szs animmgr.txt       actBreakWall BreakRock ActBreakRockArg aiBreakRock.cpp P2Assert actBreakWall Crop ActCropArg aiCrop.cpp P2Assert        registItem -Barrel- -Ujamushi- -Weed- -DownFloor- -Treasure- -PikiHead- -Plant- -Rock- -Honey- -Onyon- -Hole- -Cave- -BigFountain- -Bridge- -Gate- -DengekiGate-        A   A   Að  B   BH  Bp  BŒ  B   B´  BÈ  PlayData gamePlayData.cpp P2Assert playData generatorCache otakara or item ! no tekiname for %d
+ no cave info : course(%d):[%s]
+ course index error:%d (getOtakaraNum_*)
+ –“´ŒAî•ñ– # cave”
+ # ŒÂ”
+ # ó‘Ô
+ ƒZ[ƒu‚µ‚½‚Æ‚«‚Æ“´ŒA‚Ì”‚ª‚ ‚¢‚Ü‚¹‚ñ
+ –“´ŒAî•ñ(Old)–     itemCave *** ITEMCAVE MAT
+ flag %s %d/%d Cave user/Kando/objects/dungeon_hole arc.szs dungeon_hole.bmd texts.szs cap_platform.bin side_platform.bin itemCave.cpp P2Assert 
+ 	# id (for stages.txt)
+   itemBigFountain itemBigFountain.cpp P2Assert g30_appear_fountain animMgr null @ big fountain
+ cellLayerindex overflow
+ alv ded %s %s vis x user/Kando/objects/kanketusen ‹AŠÒŠÔŒ‡ò user/Abe/item/fountainParms.txt arc.szs kanketusen.bmd texts.szs animmgr.txt platform.bin   itemBridge itemBridge.cpp cellLayerindex overflow
+ P2Assert 	#‹´ƒ^ƒCƒv
+ Bridge user/Kando/objects/bridge user/Abe/item/bridgeParms.txt user/Kando/bridge/s_bridge arc.szs s_bridge.bmd user/Kando/bridge/slope_u slope_u.bmd user/Kando/bridge/l_bridge l_bridge.bmd texts.szs platform.bin room%02d hame-dokkuri vs nakamoto-kouji
+ final hame-dokkuri
+       pikiContainer blue red yellow black white chappy leaf bud flower pikiContainer.cpp P2Assert # PikiCounter
+ 	# col%d happa%d
+  generatorCache gameGeneratorCache.cpp no ram generator %d %d
+ none loadC[%s](no%d):%s loadC(no%d)
+ BeginSave::Cache (%d) is alive !
+ BeginSave::Cache (%d) is invalid !
+ P2Assert (gen number large %d>=%d
+ 	# Alive
+ no cache : %d
+ 	# Dead
+ 	# heapSize
+ 	# freeOffset
+ 	# freeSize
+ 
+ cache %d is not in dead list
+ illegal cache flag(%x)
+ CourseCache %d # courseindex
+ # offset
+ # size
+ # numGenerators
+ # generatorSize
+ # numCreatures
+ # creatureSize
+ # numPikiheads
+ # pikiheadSize
+ itemTreasure x14_white_dig itemTreasure.cpp P2Assert doll no cfg
+ Treasure user/Kando/objects/treasure user/Abe/item/treasureParms.txt  itemDownFloor itemDownFloor.cpp no shape !
+ No Friend Found for seesaw: searching for same id (%s)
+ P2Assert DownFloor ItemDownFloor user/Kando/objects/downfloor texts.szs arc.szs down_floor_1.bmd down_floor_2.bmd down_floor_3.bmd animmgr.txt platform.bin platform_2.bin platform_3.bin new Model Platform Platform-Down move DownFloor2 DownFloor3 x06_join 	#’¾‚Ýl”
+ 	#type
+ 	# 1:seesaw
+ 	# id
+  itemBarrel itemBarrel.cpp P2Assert x12_drain_water Barrel user/Kando/objects/barrel user/Abe/item/barrelParms.txt arc.szs model.bmd texts.szs animMgr.txt coll.txt      pelletNumber bpel1 NumberPellet pellet_texts.szs pelletNumber.cpp NumberPellet size %d error
+   pelletCarcass Carcass   pelletFruit PelletFruit pelletOtakara pelletOtakara.cpp P2Assert indirect_tex fbtex Otakara otakara_texts.szs   genPellet PELLET ‚ðƒZƒbƒg PELLET‚ð”­¶ 	# mgr id
+ 	# rotation
+ 	# pellet local version
+ genPellet.cpp no basePelletMgr for %d
+ mgr%d:%d GENERATOR ERR
+       pelletItem key pelletItem.cpp P2Assert Equipment item_texts.szs efxModelObjects user/Kando/effect/modeleffect.szs efxModelObjects.cpp P2Assert onyonspot.bmd onyonspot.btk onyonspot_blue.brk onyonspot_red.brk onyonspot_yellow.brk    itemUjamushi BoidParms Cohension Alignment Separation Bounds Target Random Gohome Piki Navi Collision MaxSpeed Fov Distance Rotation/s RandomAngle itemUjamushi.cpp P2Assert 	# num parms
+ UjaParms •\Ž¦ƒXƒP[ƒ‹ “ä Multiply ƒ‰ƒCƒt ƒ‚[ƒVƒ‡ƒ“‘¬“x ƒ_ƒƒbƒN
+ uja dead o=%x
+ Ujamushi user/Kando/objects/ujamushi arc.szs ujamushi_poly.bmd ujamushi_bill.bmd texts.szs parms.txt ujamushi 	#‚¤‚¶‚á‰¤”
+       actWeed SA AJ Weed %s Weed ActWeedArg aiWeed.cpp P2Assert no actweedarg ActWeed:no target no flockmgr FlockAttackActionArg      flockMgr flockMgr.cpp P2Assert  itemWeed itemWeed.cpp P2Assert ƒ_ƒƒbƒN
+ ‘‚Æ¬Î user/Kando/objects/weed arc.szs weed1.bmd stone1.bmd stone2.bmd stone3.bmd weed 	#‚¤‚¶‚á‰¤”
+ 	#Î‚©‘‚©
+   actBridge Bridge ActBridgeArg aiBridge.cpp P2Assert     actTeki Teki aiTeki.cpp P2Assert        €T·Æ€T·Ô€T·è€T·ÿSingleGS_Game x01_gamestart x01_coursein_forest x01_coursein_yakushima x01_coursein_last singleGS_MainGame.cpp P2Assert BGS::GAME START s00_coursein s0E_return_cave illegal state GameState::init
+ g26_inout_black g29_inout_white g2C_inout_red no down floor 20
+ x17_join_guide x15_exp_x x02_watch_red_pikmin x04_exp_y g01_pick_me g33_camera_demo repay-done sm-canc sm-ugot sm-zenk smenu_escape
+ open-sm s05_pikminzero s03_orimadown s09_holein s10_suck_treasure x07_first_recovery g08_first_return g32_get_map s13_pikmin_supply x03_find_red_onyon g35_president_gamestart start-repay check-repay gamestate::cleanup      SingleGS_Game s0B_cv_coursein s05_pikminzero sm-canc sm-giveup s12_cv_giveup singleGS_CaveGame.cpp no pod demo 12 open-sm Illegal return value %d. cavestate:cleanup s03_orimadown ------ play !!
+ s03_orimadown s0C_cv_escape s09_holein g07_cv_gamestart      SingleGS_Game s02_dayend_result mr_load SingleGS_CaveResult caver-init singleGS_CaveResult.cpp P2Assert cannot open caveresult
+ SingleGS_Game singleGS_WorldMap.cpp PSGetSceneMgr null
+ MOC = Mouse on Cars!
+ user/Ebisawa/effect/eff2d_world_map.jpc WORLD_MAP_JPC particle2dMgr null
+ mWorldMap null
+ * %d %d %d damek
+       SingleGS_Game singleGS_FileSelect.cpp P2Assert unknown saveFlag (%d)
+   PlayDataMemCard * Version * * ‚¨•óŒÂ” * * •ÔÏ“xƒtƒ‰ƒO * * ƒNƒŠƒAƒtƒ‰ƒO * * ƒZ[ƒuƒtƒ‰ƒO/ƒIƒjƒ‡ƒ“ƒtƒ‰ƒO * 
+ # has container flag
+ # has boot container flag
+ # meet pikmin flag
+ * “ú‚É‚¿ * * ƒIƒŠƒ}[‘•”õ‘¼/OlimarData * * “´ŒAó‹µ/CaveSaveData * * ƒ[ƒ‹/MailSaveData * * ƒRƒ“ƒeƒi/ContainerPikmin * * ƒyƒŒƒbƒg/PelletMemory * * ƒyƒŒƒbƒg/‚P“ú‚É‚Æ‚Á‚½‚à‚Ì(Main) * * ƒyƒŒƒbƒg/’n‰º‚Å‚Æ‚Á‚½‚à‚Ì(Cave) * * ƒh[ƒsƒ“ƒOî•ñ/Doping * 	# dope[%d]
+ 	# dope-ŽÀ[%d]
+ * ƒR[ƒXî•ñ * 	# ƒR[ƒX”
+ gamePlayDataMemCard.cpp P2Assert 	# %s
+ * “´ŒA’B¬î•ñ * * LimitGen * * ‚¨‹à/“´ŒA‚ÅŽæ“¾‚µ‚½ˆêŽž“I‚È‚¨‹à * * o¶” * * Ž€–S” * * ƒIƒŠƒ}[Ž€–Sƒtƒ‰ƒO * * ƒfƒ‚ƒtƒ‰ƒO/“ÁŽê”­Œ©ƒfƒ‚ƒtƒ‰ƒO * * WorldMap ‰‰o—p * * DayEndResult—p * * ƒWƒFƒlƒŒ[ƒ^ƒLƒƒƒbƒVƒ…/GeneratorCache * SaveData ERROR : CourseNum=%d (card num=%d)
+ nonloops loops KindCounter 	# [%d]
+ read count %d : mNumKinds %d : mismatch !
+ # mOtakaraCounter
+ # mItemCounter
+ # mCarcassCounter
+ 	# itemFlag
+ # formationPikmin
+ 	# time
+ 	# curr course
+ 	# curr cave
+ 	# blackman alive
+ 	# blackman timer
+ 	# active player id
+        SingleGS_Movie Opening Movie  -- Director -- Geshifumi Hino Mamamichi Abe -- Main Programmer -- Tepen-kei (C) Nintendo Ending Movie (C) Ninteno Ending(Complete) Movie Pikmin2 * Director * Otakara Design Hideo Ota Mezase Complete Movie singleGS_Movie.cpp P2Assert  naviDemoCheck g38_find_whitepom g39_find_blackpom x03_find_red_onyon x10_find_yellow_onyon x11_find_blue_onyon g04_find_treasure s16_find_item_%02d g37_get_louie g05_find_cave_%s g0A_cv_find_hole g0B_cv_find_fountain g19_find_rock g2D_red_extract g2E_black_extract        SingleGS_Zukan tutorial forest yakushima last }ŠÓƒfƒoƒbƒO user/Yamashita/enemyTex/arc.szs ZZDummy/texture.bti singleGS_Zukan.cpp P2Assert %s/texture.bti }ŠÓƒJƒƒ‰ radius:%6.3f angle :%6.3f height:%6.3f fovy  :%6.3f zukan ExtraHeapFor2D null
+ StartTeki StartPellet ModeChangeToTeki Teki ChangeTeki ModeChangeToPellet Pellet ChangePellet None Unknown mode : %d 
+ Illegal next mode. %d 
+ READY:%d Enemy:%d Item:%d enemy:%d item:%d heapA %d heapB %d us user/Yamashita/zukan/%s/%s/arc.szs course.txt 
+ FreeSizeA :%d 
+ ƒyƒŒƒbƒg‘‚È‚Ì‚ÅƒyƒŒƒbƒg‚ðƒ[ƒh‚µ‚Ü‚· free:%d 
+ ‚¾‚µ‚½ free:%d 
+ “G‚ðƒAƒƒbƒN %d•C@free:%d 
+ ** BIRTH FAILED !! ID:%d 
+ too many pellet
+ damek
+    resultTexMgr user/Matoba/resulttex/%s/arc.szs jpn us pal gameResultTexMgr.cpp failed to open resulttex/arc.szs
+%s
+ teki_carcass/texture.bti ahiru/texture.bti %s/texture.bti P2Assert illegal index %d
+  0101_00  0110_00  0200_00  0100_00 DNode DNode add err count %d
+ DNode concat Loop Err!
+ cannot retrieve %d-th child (real child count = %d)!
+ €TÇ'€TÇ?€TÇR€TÇc€TÇvgamePelletList gamePelletList.cpp P2Assert numberpellet_config.txt carcass_config.txt fruit_config.txt otakara_config.txt item_config.txt user/Abe/Pellet/%s/pelletlist_%s.szs jpn us don't use this !
+ user/Kando/pelletlist.szs no pelletlist.szs
+ no config file [%s]
+ dictNo:%d 
+                 ÿÿÿÿvsGS_Title caveinfo.txt caveinfo_metal.txt caveinfo_conc.txt caveinfo_tsuchi.txt ‚Ó‚Â‚¤ ƒƒ^ƒ‹ ƒRƒ“ƒNƒŠ[ƒg “y ‹¦—Í ‘Îí from Morimun:STATE_GO:stageNo=%d:playType=%d
+ vsGS_Title.cpp P2Assert PikiContainer    vsGS_Game s0B_cv_coursein vs-readygo vs readygo vs-rg-arr timeup cmore-yes cmore-no cmore-zenk vsGS_Game.cpp P2Assert s16_find_key sm-canc ‚ ‚è‚¦‚È‚¢‚Á‚·
+ ‚È‚¢
+ sm-quit s12_cv_giveup no pod demo 12 open-sm vsgs_game:clean x19_vs_bedama s05_pikminzero g2F_appear_hole g30_appear_fountain s03_orimadown s09_holein s0C_cv_escape e00_E3_cavestart readygo readygo2 cannot happen !
+        vsGS_Result vsGS_Result.cpp P2Assert ——— Course %d Opened !!
+        vsGS_Load c_%02d vs%02d vsStageList caveinfo.txt 	# version
+ 
+ 	# time
+ 	# dope black
+ 	# dope red
+ 	# floor num
+ 	# otakara num
+ 	# 2d index
+ 	# %dŠK‚Ì•b”
+ ƒ`ƒƒƒŒƒ“ƒWƒXƒe[ƒW 	# num stages
+ stage vsStageData.cpp illegal stage index %d
+ random 	# start yellow num
+ ‘Îí—pƒXƒe[ƒW     CellMgrParms CellMgr ƒoƒbƒtƒ@‚ðŽg‚¤ ƒ}ƒWƒbƒNƒiƒ“ƒo[ G-Half UpdateMgr   cellIterator cellIterator.cpp x %f>%f y %f>%f xy %f %f
+%f %f
+   aiBattle Battle ActBattleArg aiBattle.cpp P2Assert      deathCount BirthCoutner 
+ gameDeathCount.cpp P2Assert DeathCoutner         =LÌÍ   >³33   6>ÌÌÍ   =ÌÌÍactBore aiBore.cpp P2Assert     iconTexture gameIconTexture.cpp failed to open [%s]
+ P2Assert illegal index [%d] [0..%d)
+       tekiStat gameTekiStat.cpp P2Assert      highscore gameHighscore.cpp P2Assert    playCommonData gamePlayCommonData.cpp P2Assert  challenge2d gameChallenge2D.cpp P2Assert ZANNEN
+        vsCardMgr test pikmin_5.bti pikmin_10.bti all_flower.bti pikmin_xlu.bti dope_black.bti dope_red.bti reset_bedama.bti teki_hanachirashi teki_sarai.bti teki_rock.bti teki_tank.bti teki_hanachirashi.bti teki_bombotakara.bti user/Kando/vstex/arc.szs vsCardMgr.cpp vstex/arc.szs not found !
+ %s not found !
+ press_y.bti lamp_on.bti lamp_off.bti hl.bti P2Assert %d  actRescue Rescue aiRescue.cpp P2Assert rhandjnt bgsDraw direct Žg‚Á‚Ä‚é=drawParticle(%d)
+       SingleGS_Load singleGS_Load.cpp P2Assert        singleGS_DayEnd singleGS_DayEnd.cpp P2Assert dayend s01_dayend no alive:s01_dayend s06_dayend_pikminzero s06_dayend s04_dayend_orimadown s04_dayend dayend-cache no alive navi s21_dayend_takeoff CREATE_DAYEND_ENEMY
+ ::dayend pikmin [%d]
+ ::dayend birth failed
+ dayend;cln  texCaster texCaster.cpp P2Assert user/Kando/texCaster/arc.szs tex.bti   flower_red be_dama_blue_l be_dama_red_l be_dama_yellow_l        pelletBirthBuffer pelletBirthBuffer.cpp too many birthbuffer
+       ?€              ?€  246-ShadowCylinder ShadowCylinder.cpp P2Assert Shadow Texture   246-PlayCamera 	mDist       = %.1f
+ 	currTargetDi= %.1f
+ 	mTargetDist = %.1f
+ 	 distToNavi = %.1f
+ 	naviToCursor= %.1f
+ 	pos-at		= %.1f
+ PlayCamera playCamera.cpp P2Assert     246-ShadowMgr ShadowMgr user/Nishimura/Shadow/shadowParms.txt   246-RandMapMgr RandMapMgr Radar Map Texture               246-RandMapUnit RandMapUnit.cpp edit map none : %s
+              C–  C  C  C–  CH  CH                                      246-RandMapScore item       246-RandItemUnit RandItemUnit.cpp item slot none
+ item slot not enough
+ item not search item slot
+      246-RandGateUnit item   246-CameraMgr CameraMgr user/Nishimura/Camera/caveCameraParms.txt user/Nishimura/Camera/groundCameraParms.txt CameraMgr.cpp P2Assert camera is none
+ not zukan mode
+ camera parameter none
+     >ÌÌÍ?ÌÍ?€  >LÌÍ>³33?   246-RumbleMgr RumbleMgr user/Nishimura/Rumble/rumbleParms.txt user/Nishimura/Rumble/rumbleData.txt RumbleMgr.cpp not zukan mode
+ rumble parameter none
+ rumble data none
+                          246-PomMgr ƒ|ƒ“ƒKƒV‘ƒ}ƒl[ƒWƒƒ PomMgr.cpp P2Assert hanabira1_v                   246-Pom hanabira1_v jnt_center      246-PomState wait dead open close shot swing    246-FrogState dead wait turn jump jumpwait fall attack fail turntohome gohome   246-FrogMgr ƒCƒ‚ƒKƒGƒ‹ƒ}ƒl[ƒWƒƒ        246-UjibMgr ƒEƒWƒ“ƒR‰ƒ}ƒl[ƒWƒƒ        246-Ujib kosijnt kamujnt ujinnko_o      246-UjibState dead press stay appear dive move moveside movecentre movetop gohome attack1 attack2 eat   246-KoganeState appear disappear move wait press           	   
+      	   
+   246-KoganeMgr ƒRƒKƒlƒ}ƒl[ƒWƒƒ KoganeMgr.cpp P2Assert karada                 246-Kogane body 246-QurioneState stay appear disappear move drop dead   246-QurioneMgr ƒNƒŠƒIƒlƒWƒFƒlƒŒ[ƒ^ 		# fly 
+ 		# slide 
+ ƒNƒŠƒIƒlƒ}ƒl[ƒWƒƒ  246-Qurione water body_jnt2     246-MaroFrogMgr ƒ}ƒƒKƒGƒ‹ƒ}ƒl[ƒWƒƒ    246-RockState wait appear dropwait fall move dead       246-RockMgr —ŽÎƒWƒFƒlƒŒ[ƒ^ 		# velocity 
+ 		# offset 
+ 		# scale 
+ —ŽÎƒ}ƒl[ƒWƒƒ  246-UjiaState dead press stay appear dive move moveside movecentre movetop gohome attack1       246-UjiaMgr ƒEƒWƒ“ƒRŠƒ}ƒl[ƒWƒƒ        246-Ujia kosijnt ujinnko_m kamujnt      246-TobiState dead press stay appear dive move moveside movecentre movetop gohome fly attack1 attack2 eat       246-TobiMgr ƒgƒrƒ“ƒRƒ}ƒl[ƒWƒƒ  246-Tobi kosijnt kamujnt tobinnko       246-HibaState dead wait attack  246-HibaMgr ƒqƒoƒ}ƒl[ƒWƒƒ      246-GasHibaState dead wait attack       246-GasHibaMgr ƒKƒXƒqƒoƒ}ƒl[ƒWƒƒ       246-ElecHibaState dead wait sign attack 246-ElecHibaMgr “dŒ‚ƒqƒoƒWƒFƒlƒŒ[ƒ^ 		# distance 
+ “dŒ‚ƒqƒoƒ}ƒl[ƒWƒƒ 246-SaraiState dead fall damage takeoff flick wait move attack fail catchfly fallmeck   246-SaraiMgr ƒTƒ‰ƒCƒ€ƒVƒ}ƒl[ƒWƒƒ       246-Sarai bodyjnt rkamujnt lkamujnt     246-TankState dead wait move moveturn chaseturn attack flick    246-TankMgr ƒuƒ^ƒhƒbƒNƒŠƒ}ƒl[ƒWƒƒ TankMgr.cpp P2Assert mat_dokkuri_main        246-Tank hoppe rsuneR rsuneL fsuneR fsuneL      246-CatfishMgr ƒiƒ}ƒYƒ}ƒl[ƒWƒƒ 246-Catfish kosi kamu1 kamu2    246-TadpoleState dead wait move amaze escape leap       246-TadpoleMgr ƒIƒ^ƒ}ƒ}ƒl[ƒWƒƒ 246-ElecBugState dead wait turn move charge discharge childcharge childdischarge reverse return 246-ElecBugMgr ƒfƒ“ƒLƒ€ƒVƒ}ƒl[ƒWƒƒ     246-ElecBug body        246-WtankMgr enemy/data/Wtank/mizu_butadokkuri_main_s3tc.bti ƒ~ƒYƒuƒ^ƒhƒbƒNƒŠƒ}ƒl[ƒWƒƒ WtankMgr.cpp P2Assert   246-ArmorMgr ƒˆƒƒCƒ€ƒVƒ}ƒl[ƒWƒƒ       246-Armor kamujnt yoroimushi    246-Mar hana3 mune head 246-MarMgr enemy/data/Mar/fuusen_model.btk enemy/data/Mar/fuusen_model.brk ƒtƒEƒZƒ“ƒhƒbƒNƒŠƒ}ƒl[ƒWƒƒ MarMgr.cpp P2Assert mat1  246-MarState dead wait move chase chaseinside attack fall land ground takeoff flyflick groundflick      246-WealthyMgr enemy/data/Wealthy/oogane_s3tc.bti ƒIƒIƒKƒlƒ‚ƒ`ƒ}ƒl[ƒWƒƒ WealthyMgr.cpp P2Assert        246-Wealthy karada body 246-FartMgr enemy/data/Fart/babakogane_s3tc.bti ƒoƒoƒRƒKƒlƒ}ƒl[ƒWƒƒ FartMgr.cpp P2Assert       246-Fart karada 246-ArmorState dead stay appear dive move moveside movecentre movetop gohome attack1 attack2 eat flick fail     246-QueenState dead sleep wait damage flick rolling born left   246-QueenMgr enemy/data/Queen/queenchappy_model.btk ƒNƒB[ƒ“ƒ`ƒƒƒbƒs[ƒ}ƒl[ƒWƒƒ QueenMgr.cpp P2Assert  246-Queen body_end body5 head   246-BabyState dead press born move attack       246-BabyMgr ƒxƒr[ƒ`ƒƒƒbƒs[ƒ}ƒl[ƒWƒƒ  246-Baby kamu   246-DemonMgr ƒIƒjƒTƒ‰ƒCƒ}ƒl[ƒWƒƒ       246-QueenShadow neck1 neck3 neck5 head body3 body4      246-FireChappyMgr enemy/data/FireChappy/yakichappy.btk enemy/data/FireChappy/yakichappy.brk ƒ„ƒLƒ`ƒƒƒbƒs[ƒ}ƒl[ƒWƒƒ FireChappyMgr.cpp P2Assert 246-FireChappy body head        246-SnakeCrowState dead stay appear1 appear2 disappear wait attack eat struggle 246-SnakeCrowMgr ƒwƒrƒKƒ‰ƒXƒ}ƒl[ƒWƒƒ   B   Bð  C>  B´  B´              B   Â   B   C   C\  C  C      B   C   BH  BH  Að  Að  Að  BÜ  ÂH  Áð  Áð  Áð  BH  ÂÜ  B   B   B   B   B   Â   Â   Â   Â   Â   B   C   C\  C  C      B   C   BH  BH  Að  Að  Að  BÜ  ÂH  Áð  Áð  Áð  BH  ÂÜ  B   B   B   B   B   Â   Â   Â   Â   Â   246-SnakeCrow kutijnt1 kamujnt1 kamujnt2 kamujnt3 bodyjnt3      246-KumaChappyState dead rebirth lost attack flick turn turnpath walk walkpath  246-KumaChappyMgr ƒNƒ}ƒ`ƒƒƒbƒs[ƒ}ƒl[ƒWƒƒ      246-KumaChappy ago kamu1 kamu2 kamu3 kamu4 kamu5 asiL asiR      246-FuefukiState dead stay land jump wait turn walk whisle struggle     246-FuefukiMgr ƒtƒGƒtƒLƒ€ƒVƒ}ƒl[ƒWƒƒ   246-KoganemushiMgr enemy/data/Kogane/kogane_s3tc.bti ƒRƒKƒlƒ}ƒl[ƒWƒƒ KoganemushiMgr.cpp P2Assert       246-Koganemushi karada  246-FtankMgr enemy/data/Tank/fire_butadokkuri_main_s3tc.bti ƒuƒ^ƒhƒbƒNƒŠƒ}ƒl[ƒWƒƒ FtankMgr.cpp P2Assert        246-HanachirashiState dead wait move chase chaseinside attack fall land ground takeoff flyflick groundflick laugh       246-HanachirashiMgr enemy/data/Hanachirashi/hanachirashi_model.btk enemy/data/Hanachirashi/hanachirashi_model.brk ƒtƒEƒZƒ“ƒnƒiƒ`ƒ‰ƒVƒ}ƒl[ƒWƒƒ HanachirashiMgr.cpp P2Assert mat1        246-Hanachirashi hana3 mune head        246-DamagumoState dead stay land wait flick walk        246-DamagumoMgr enemy/data/Damagumo/damagumo_model.btk enemy/data/Damagumo/damagumo_model.brk ƒ_ƒ}ƒOƒ‚ƒ}ƒl[ƒWƒƒ DamagumoMgr.cpp P2Assert       €Të
+€Të€Të€Të(€Të2€Të<€TëF€TëP€TëZ€Tëd€Tën€Tëxlft1lht1rft1rht1246-Damagumo kosi rhand1jnt rhand2jnt rhand3jnt lhand1jnt lhand2jnt lhand3jnt rfoot1jnt rfoot2jnt rfoot3jnt lfoot1jnt lfoot2jnt lfoot3jnt tama1 tama2   >ÌÌÍ>™™š>LÌÍ=ÌÌÍ246-DamagumoShadow kosi rhand1jnt rhand2jnt rhand3jnt lhand1jnt lhand2jnt lhand3jnt rfoot1jnt rfoot2jnt rfoot3jnt lfoot1jnt lfoot2jnt lfoot3jnt 246-KurageState dead wait move chase attack fall land ground takeoff flyflick groundflick       246-KurageMgr ƒNƒ‰ƒQƒhƒbƒNƒŠƒ}ƒl[ƒWƒƒ      Að  B‚  B   B¾  BØ  Bð      Á   Ap  Áð      ÁÈ          A   Ap  A   Að  B   Bp      ÂH  BH  ÂH  A   Á       B   B   BP  BŒ  B       Â4  Âp  Á   Á   @à  Aˆ  AØ  B  B<  Bd  B†  Bš  Á   Áp  Â  ÁÈ  Â   Â  Â‚      246-Kurage koshi1 Ltuno2 Rtuno2 nyoro center    246-BombSaraiState dead damage wait bombwait move bombmove supply release fall takeoff1 takeoff2 flick bombflick        246-BombSaraiMgr ƒoƒNƒ_ƒ“ƒTƒ‰ƒCƒ}ƒl[ƒWƒƒ       246-BombSarai body_joint1 kamu_jnt1 kuti_joint1 balloon1 balloon2 balloon3 balloon4 balloon5    246-OtakaraBaseState dead flick wait move turn take itemwait itemmove itemturn itemflick itemdrop bombturn bombflick bombdrop      ;   <   =   >   ]   ;   <   =   >   ]246-OtakaraBaseMgr ƒIƒ^ƒJƒ‰ƒ€ƒVƒ}ƒl[ƒWƒƒ OtakaraBaseMgr.cpp P2Assert mat_body  246-OtakaraBase otakara center  246-FireOtakaraMgr enemy/data/FireOtakara/otakara_red_s3tc.bti ‰ÎƒIƒ^ƒJƒ‰ƒ€ƒVƒ}ƒl[ƒWƒƒ FireOtakaraMgr.cpp P2Assert     246-FireOtakara center  246-WaterOtakaraMgr enemy/data/WaterOtakara/otakara_blue_s3tc.bti …ƒIƒ^ƒJƒ‰ƒ€ƒVƒ}ƒl[ƒWƒƒ WaterOtakaraMgr.cpp P2Assert 246-WaterOtakara center 246-GasOtakaraMgr enemy/data/GasOtakara/otakara_purple_s3tc.bti ƒKƒXƒIƒ^ƒJƒ‰ƒ€ƒVƒ}ƒl[ƒWƒƒ GasOtakaraMgr.cpp P2Assert   246-GasOtakara center   246-ElecOtakaraMgr enemy/data/ElecOtakara/otakara_yellow_s3tc.bti “d‹CƒIƒ^ƒJƒ‰ƒ€ƒVƒ}ƒl[ƒWƒƒ ElecOtakaraMgr.cpp P2Assert        246-ElecOtakara center  246-ImomushiState dead falldive fallmove stay appear dive move gohome climb attack wait zukanstay zukanappear zukanmove 246-ImomushiMgr ƒCƒ‚ƒ€ƒVƒ}ƒl[ƒWƒƒ      246-Imomushi koshi1jnt headjnt imomushi 246-HoudaiState dead stay land wait flick walk shot     246-HoudaiMgr enemy/data/Houdai/houdai_model.btk enemy/data/Houdai/houdai_model.brk ƒzƒEƒ_ƒCƒ}ƒl[ƒWƒƒ  246-HoudaiShadow kosi rhand1jnt rhand2jnt rhand3jnt lhand1jnt lhand2jnt lhand3jnt rfoot1jnt rfoot2jnt rfoot3jnt lfoot1jnt lfoot2jnt lfoot3jnt   €Tôl€Tôv€Tô€€TôŠ€Tô”€Tôž€Tô¨€Tô²€Tô¼€TôÆ€TôÐ€TôÚ€Tôä€Tôî€Tôø246-Houdai kosi rhand1jnt rhand2jnt rhand3jnt lhand1jnt lhand2jnt lhand3jnt rfoot1jnt rfoot2jnt rfoot3jnt lfoot1jnt lfoot2jnt lfoot3jnt ef_01_loc ef_02_loc ef_03_loc       246-HoudaiShotGun tamajnt gun   246-LeafChappyMgr —t‚Á‚Ïƒ`ƒƒƒbƒs[ƒ}ƒl[ƒWƒƒ    246-LeafChappy ago kamu1 kamu2 kamu3 asiL asiR  246-BigFootState dead stay land wait flick walk 246-BigFootMgr enemy/data/BigFoot/ooashi_model.brk ƒIƒIƒAƒVƒ}ƒl[ƒWƒƒ BigFootMgr.cpp P2Assert   246-BigFootShadow kosi rhand1jnt rhand2jnt rhand3jnt lhand1jnt lhand2jnt lhand3jnt rfoot1jnt rfoot2jnt rfoot3jnt lfoot1jnt lfoot2jnt lfoot3jnt  €T÷	€T÷€T÷€T÷'€T÷1€T÷;€T÷E€T÷O€T÷Y€T÷c€T÷m€T÷wlft1lht1rft1rht1€T÷€T÷1€T÷O€T÷m246-BigFoot kosi rhand1jnt rhand2jnt rhand3jnt lhand1jnt lhand2jnt lhand3jnt rfoot1jnt rfoot2jnt rfoot3jnt lfoot1jnt lfoot2jnt lfoot3jnt tama1 tama2    246-SnakeWholeState dead stay appear1 appear2 disappear wait walk home attack eat struggle      246-SnakeWholeMgr ƒwƒrƒKƒ‰ƒX‘Sgƒ}ƒl[ƒWƒƒ      Bp  C  C\  Bð  Bð              B   Â   Bð  C4  C‚  C   C       Bð  C4  B   B   Að  Að  Að  BÜ  ÂH  Áð  Áð  Áð  BH  ÂÜ  B   B   B   B   B   Â   Â   Â   Â   Â   Bð  C4  C‚  C   C       Bð  C4  B   B   Að  Að  Að  BÜ  ÂH  Áð  Áð  Áð  BH  ÂÜ  B   B   B   B   B   Â   Â   Â   Â   Â   246-SnakeWhole kutijnt1 kamujnt1 kamujnt2 kamujnt3 foot_joint1      >LÌÍ>ÌÌÍ?™š?LÌÍ?€  €Tùº€TùÃ€TùÌ€TùÕ€TùÞ€Tùç246-SnakeJointMgr bodyjnt3 bodyjnt4 bodyjnt5 bodyjnt6 bodyjnt7 bodyjnt8 246-OniKurageState dead wait move chase attack fall drop land ground takeoff flyflick groundflick       246-OniKurageMgr ƒIƒjƒNƒ‰ƒQƒ}ƒl[ƒWƒƒ       Að  B‚  B   B¾  BØ  Bð      Áð  Að  ÂH      Â           A   Ap  A   Að  B   Bp      Â   B   ÂÈ  Að  ÂH      B   B   BP  BŒ  B       ÂH  Âp  Á   Á   @à  Aˆ  AØ  B  B<  Bd  B†  Bš  ÁÈ  Áp  Â   Áð  Â4  Â  ÂŒ      246-OniKurage koshi1 Proom Ltuno2 Rtuno2 nyoro center   246-BigTreasureState dead stay land wait itemwait flick preattack attack putitem dropitem walk itemwalk €Tüu€Tüz€Tü€Tüƒ€Tü‰246-BigTreasureMgr enemy/data/BigTreasure/oootakara_model.btk enemy/data/BigTreasure/oootakara_model.brk elec fire gas water loozy ƒIƒIƒIƒ^ƒJƒ‰ƒ}ƒl[ƒWƒƒ BigTreasureMgr.cpp P2Assert       246-BigTreasureShadow kosi rhand1jnt rhand2jnt rhand3jnt lhand1jnt lhand2jnt lhand3jnt rfoot1jnt rfoot2jnt rfoot3jnt lfoot1jnt lfoot2jnt lfoot3jnt otakara_elec otakara_fire otakara_gas otakara_water larm1 larm2 larm3 rarm1 rarm2 rarm3 lantenna1 lantenna2 rantenna1 rantenna2      €Tþ€€TþŠ€Tþ”€Tþž€Tþ¨€Tþ²€Tþ¼€TþÆ€TþÐ€TþÚ€Tþä€Tþîlft1lht1rft1rht1elecfiregasimizu€Tþø€Tþý€Tÿ€Tÿ€Tÿ€Tÿ€Tÿ&€Tÿ2246-BigTreasure mat_body mat_eye1 mat_eye2 kosi rhand1jnt rhand2jnt rhand3jnt lhand1jnt lhand2jnt lhand3jnt rfoot1jnt rfoot2jnt rfoot3jnt lfoot1jnt lfoot2jnt lfoot3jnt elec fire gas water otakara_elec otakara_fire otakara_gas otakara_water loozy otakara_loozy g36_find_louie      246-KabutoState dead wait turn move flick attack fixstay fixappear fixhide fixwait fixturn fixattack fixflick      K   _   `   K   _   `246-KabutoMgr ƒJƒuƒgƒ}ƒl[ƒWƒƒ KabutoMgr.cpp P2Assert mat_babykabuto_body mat_babykabuto_eye mat_babykabuto_head        246-Kabuto center rhand2 rleg lhand2 lleg mouth head    246-KumaKochappyState dead press wait attack flick walk walkpath        246-KumaKochappyMgr ƒ`ƒrƒNƒ}ƒ}ƒl[ƒWƒƒ  246-KumaKochappy ago kamu asiL asiR     246-MiniHoudaiState dead rebirth lost attack flick turn turnhome turnpath walk walkhome walkpath        246-MiniHoudaiMgr ƒ`ƒrƒzƒEƒ_ƒCƒ}ƒl[ƒWƒƒ        246-MiniHoudai kosi handL handR kuti head sebire1 sebire2       =ÌÌÍ=ÌÌÍ=ÌÌÍ246-MiniHoudaiShotGun kuti  246-SokkuriState dead press stay appear disappear wait moveground movewater flick       246-SokkuriMgr ƒ\ƒbƒNƒŠƒ}ƒl[ƒWƒƒ       246-Sokkuri leaf_joint1 246-UmimushiShadow weak_joint1 weak_joint2      246-HanaMgr ƒnƒiƒhƒbƒNƒŠƒ}ƒl[ƒWƒƒ      246-Hana kosi kamu1 kamu2 kamu3 kuti2   246-BigTreasureAttack otakara_elec_eff otakara_fire_eff otakara_gas_eff otakara_water_eff       AŒ  AŒ  Ap  A@  A   @ð  @Ð  AŒ  AŒ  A„  AX  A0  A  @à  @À  @ð  €U$€U-€U6€U?€UH€UQ€UZ€Uc246-SnakeCrowShadow bodyjnt2 bodyjnt3 bodyjnt4 bodyjnt5 bodyjnt6 bodyjnt7 bodyjnt8 kutijnt1     @ð  @ð  A   Að  AÈ  AŒ  A0  A   A´  @ð  @ð  A   AÜ  A´  Ap  A  A   A   €Uñ€Uý€U€U€U€U%€U.€U7€U@246-SnakeWholeShadow foot_joint1 leg_joint2 leg_joint1 bodyjnt4 bodyjnt5 bodyjnt6 bodyjnt7 bodyjnt8 kutijnt1        246-BombOtakaraMgr enemy/data/BombOtakara/otakara_bomb_s3tc.bti ƒoƒNƒ_ƒ“ƒIƒ^ƒJƒ‰ƒ€ƒVƒ}ƒl[ƒWƒƒ BombOtakaraMgr.cpp P2Assert      246-DangoMushiState dead stay appear wait move attack turn recover flick blend  246-DangoMushiMgr enemy/data/DangoMushi/dangomushi.brk ƒ_ƒ“ƒSƒ€ƒVƒ}ƒl[ƒWƒƒ DangoMushiMgr.cpp P2Assert body     246-DangoMushi world_root hand_L hand_R arm_R02 stomach 246-GreenKabutoMgr enemy/data/Kabuto/babykabuto_green_s3tc.bti ƒOƒŠ[ƒ“ƒJƒuƒgƒ}ƒl[ƒWƒƒ GreenKabutoMgr.cpp P2Assert     246-RedKabutoMgr enemy/data/Rkabuto/babykabuto_red_s3tc.bti ƒŒƒbƒhƒJƒuƒgƒ}ƒl[ƒWƒƒ RedKabutoMgr.cpp P2Assert    246-FixKabutoMgr enemy/data/Kabuto/babykabuto_green_s3tc.bti ŒÅ’èƒJƒuƒgƒ}ƒl[ƒWƒƒ FixKabutoMgr.cpp P2Assert     246-RandEnemyUnit item  246-NormMiniHoudaiMgr ƒm[ƒ}ƒ‹ƒ`ƒrƒzƒEƒ_ƒCƒ}ƒl[ƒWƒƒ    246-FixMiniHoudaiMgr ŒÅ’èƒ`ƒrƒzƒEƒ_ƒCƒ}ƒl[ƒWƒƒ 246-TyreShadow tyrefront tyreback       ogScreen ogScreen.cpp picture pane overflow!!
+ num is overflow!
+ toumei_piki.bti bp_l64.bti bp_b64.bti bp_f64.bti rp_l64.bti rp_b64.bti rp_f64.bti yp_l64.bti yp_b64.bti yp_f64.bti blp_l64.bti blp_b64.bti blp_f64.bti wp_l64.bti wp_b64.bti wp_f64.bti cha_l.bti cha_b.bti cha_f.bti MojiToNum ERR!(keta) [%s]
+ MojiToNum ERR! [%s]
+ x%02x%02x tag[%s] is not exist!!
+        ogAnime.cpp no name resource (%s) 
+ anim group is overflow!!
+   0_32.bti 1_32.bti 2_32.bti 3_32.bti 4_32.bti 5_32.bti 6_32.bti 7_32.bti 8_32.bti 9_32.bti h_32.bti floor_0.bti floor_1.bti floor_2.bti floor_3.bti floor_4.bti floor_5.bti floor_6.bti floor_7.bti floor_8.bti floor_9.bti 0_28.bti 1_28.bti 2_28.bti 3_28.bti 4_28.bti 5_28.bti 6_28.bti 7_28.bti 8_28.bti 9_28.bti ogCounter.cpp SujiFont is not found !!!
+   ogLifeGauge.cpp ERR! : NULL Pane !!!
+   anim_text.blo  anim_text.bck ogAnimTextScreen.cpp ColorType ERR!!
+              ground screen DayEndCount HurryUp2D     ogObjGround.cpp ERR! in ObjCave CreateŽ¸”sI
+ sun_meter.blo doping.blo orima.blo gr_pikmin.blo sensor.blo        orima_l  luji_ltakara_logObjSMenuMap.cpp SMenuMap : randMapMgr is not found!!!
+ map_tutorial.bti map_forest.bti map_yakushima.bti map_last.bti map_icon.blo Radar type ERR!! (%d)
+  cave name number is overflow!!
+ s_menu_map_l.blo s_menu_map_l.btk s_menu_map_l_02.btk s_menu_map_l_03.btk  8390_03  8391_03  8392_03  8393_03  8394_03  6051_00  6052_00  6050_00  ogSceneSMenuMap.cpp DispMember ERR! (%s)
+ new_screen/cmn/res_map_image_tutorial.szs new_screen/cmn/res_map_image_forest.szs new_screen/cmn/res_map_image_yakushima.szs new_screen/cmn/res_map_image_last.szs %s arc is NULL!!
+ node is NULL!!
+ SMenuMap screen ‚¾‚ß‚Å‚· ogObjSMenuItem.cpp s_menu_item_l.blo s_menu_powerup_icon.blo s_menu_item_spray.blo s_menu_item_l.btk s_menu_item_l_02.btk s_menu_item_l_03.btk s_menu_item_l_04.btk s_menu_item_l_05.btk s_menu_item_spray.btk  6130_00 icon tag not found !!
+  6052_00  6050_00  6051_00  6122_00  6119_00  6126_00  6116_00  6117_00  6129_00  6120_00  6118_00  6121_00  6127_00  6128_00  6123_00   ogSceneSMenuItem.cpp SMenuItem screen   ogSceneSMenuPause.cpp SMenuPause screen ogObjSMenuPause.cpp s_menu_pause_l.blo s_menu_pause_l.btk s_menu_pause_l_02.btk s_menu_pause_l_03.btk s_menu_pause_l_04.btk  6050_00  6051_00  6052_00 updateFinish ERR!
+       ogObjSMenuBase.cpp s_menu_yajirushi_LR.blo Cancel ERR!
+ updateFinish ERR!
+ ‚¾‚ß‚Å‚·
+ setYajiName ERR! 
+ FadeIn ERR!
+ FadeOut ERR!
+      nuki_texefect_00efect_01        ogObjCourseName.cpp ERR! in ObjCourseName CreateŽ¸”sI
+ engEU/ fraEU/ gerEU/ itaEU/ jpn/ spaEU/ engUS/ fraUS/ spaUS/  %s new_screen/%s%s        ogSceneCourseName.cpp DispMember ERR!
+ arc is NULL!!
+ node is NULL!!
+ course name screen res_course_name00.szs res_course_name01.szs res_course_name02.szs res_course_name03.szs course_name00.blo course_name01.blo course_name02.blo course_name03.blo course_name00.bck course_name00.btk course_name00.bpk course_name01.bck course_name01.btk course_name01.bpk course_name02.bck course_name02.btk course_name02.bpk course_name03.bck course_name03.btk course_name03.bpk        ogObjKantei.cpp ERR! in ObjKantei CreateŽ¸”sI
+ item_name.blo otakara_kantei_button.blo ok_message_window.blo ok_message_window2.blo ERR! UNKNOWN KANTEI_TYPE!!  8551_00  8550_00  0101_01  0110_01  0200_01  0100_01  8557_00 ok_bg_normal.blo kantei screen   ogObjSpecialItem.cpp ERR! in ObjTest CreateŽ¸”sI
+ ok_bg_tokushu.blo    special item screen     ogObjFloor.cpp  8395_00 8399_00 8400_00 8396_00 8398_00 8401_00 8410_00 8397_00 8402_00 8403_00 8411_00 8412_00 8413_00 8414_00 4900_00 4901_00 4902_00 4903_00 4904_00 4905_00 4906_00 4907_00 4908_00 4909_00 4910_00 4911_00 4912_00 4913_00 4914_00 4915_00 4916_00 4917_00 4918_00 4919_00 4920_00 4921_00 4922_00 4923_00 4924_00 4925_00 4926_00 4927_00 4928_00 4929_00 4770_00 4771_00 4772_00 4773_00 4774_00 4775_00 4776_00 4777_00 4778_00 4779_00 9996_00 %s ERR! in ObjFloor CreateŽ¸”sI
+ new_font_0.blo new_font_0_eng_pal.blo font_name.blo vs_title_rule_window.blo vs_title_rule_window.btk vs_title_rule_window_02.btk 8382_00  2021_00  2022_00  2023_00  2024_00  2025_00  2026_00       ogSceneFloor.cpp res_floor_name_jpn.szs res_floor_name_eng_pal.szs arc is NULL!!
+ node is NULL!!
+ floor screen DispMember is not 'FLOOR'!  2021_00  2022_00  2023_00  2024_00  2025_00  2026_00 ogObjCave.cpp ERR! in ObjCave CreateŽ¸”sI
+ doping.blo orima.blo cave_pikmin.blo grand_cave_poko.blo sensor.blo cave screen     ogObjAnaDemo.cpp ERR! in ObjAnaDemo CreateŽ¸”sI
+ ana_demo.blo warning_me_piki.blo info_window.blo  9999_00  8600_00  8605_00  8608_00  8607_00  8606_00  8385_00  8384_00  8383_00  8366_00  8365_00  8364_00  8603_00  8602_00  8601_00  8369_00  8368_00  8367_00  8361_00 ana_demo.btk ana_demo_02.btk ana_demo_03.btk ‚¾‚ß‚Å‚·
+  8395_00  8399_00  8400_00  8396_00  8398_00  8401_00  8410_00  8397_00  8402_00  8403_00  8411_00  8412_00  8413_00  8414_00      ogSceneAnaDemo.cpp “´ŒAƒƒjƒ…[‚Å‚Í‚ ‚è‚Ü‚¹‚ñI
+ ana demo screen        ogObjChallenge2P.cpp ERR! in ObjChallenge2P CreateŽ¸”sI
+ challenge_1P.blo challenge_2P.blo 2P_challenge_poko.blo       challenge2P screen challengeEndCount1p challengeEndCount2p      ogObjContena.cpp UFOMENU --> CONTENA ERR!
+ ERR! in ObjContena CreateŽ¸”sI
+ contena_b.blo contena_r.blo contena_y.blo contena_bl.blo contena_w.blo ERR! unknwon contena type!
+ cupsule.blo spot.blo DataContena is not found!
+ Contena Type error!
+ ‚¾‚ß‚Å‚·
+ START ERR! (BackupScene) setBackupScene ERR!      contena screen  ogObjSMenuPauseDoukutu.cpp s_menu_pause_doukutu_l.blo  8610_00  8611_00  8612_00 s_menu_pause_doukutu_l.btk s_menu_pause_doukutu_l_02.btk s_menu_pause_doukutu_l_03.btk s_menu_pause_doukutu_l_04.btk  6050_00  6051_00  6052_00 updateFinish ERR!
+     ogSceneSMenuPauseDoukutu.cpp SMenuPauseDoukutu screen   ogObjUfo.cpp ufo.blo ufo_pikmin_icon.blo ufo.bck ufo.bpk ufo_pikmin_icon.btp ‚¾‚ß‚Å‚·
+  ufo menu screen ogObjSave.cpp ERR! in ObjSave CreateŽ¸”sI
+     ogSceneSave.cpp save menu       ogObjFinalMsg.cpp info_window.blo  8480_00  8481_00  8482_00    ogSceneFinalMsg.cpp ObjFinalMessage screen      ogObjVs.cpp ERR! in ObjVs CreateŽ¸”sI
+ challenge_1P.blo challenge_2P.blo b_dama.blo obake_icon.blo     Vs screen       ogObjChallenge1P.cpp ERR! in ObjChallenge1P CreateŽ¸”sI
+ doping.blo orima.blo cave_pikmin.blo 2P_challenge_poko.blo    challenge1P screen challengeEndCount    ogObjSMenuPauseVs.cpp info_window.blo  6080_00  6082_00  6081_00        ogSceneSMenuPauseVs.cpp SMenuPauseVS screen     ogFuriko.cpp NULL pane.
+ P2Assert       ogCounterSlot.cpp slot_up overflow ! (k=%d)
+    ogObjWorldMapInfoWindow0.cpp SMenuPauseVS screen P2Assert info_window.blo       ogSceneWorldMapInfoWindow0.cpp WorldMapInfoWindow0 screen       ogObjWorldMapInfoWindow1.cpp SMenuPauseVS screen info_window.blo  4712_00  4713_00  4714_00     ogSceneWorldMapInfoWindow1.cpp WorldMapInfoWindow1 screen       tga_3d_anim_otah.blo tga_3d_anim_otah.btp tga_3d_anim_otah_32.blo tga_3d_anim_otah_32.btp tga_c_anim_otah.blo tga_c_anim_otah.btp tga_c_anim_otah_32.blo tga_c_anim_otah_32.btp ogOtakaraSensor ogOtakaraSensor.cpp NULL pane.
+ ogSceneSMenuCont.cpp SMenuCont screen   ogObjSMenuCont.cpp s_menu_controller.blo s_menu_controller.btk s_menu_controller_02.btk  6052_00  6050_00  6051_00      PSSeq.cpp P2Assert endoffile seq list
+not find
+(%s)
+ stream list
+not find
+(id=%d)
+ SeqBase::loadSeqAsync() fault loading sequence not find(%s) seq not played              ç€;k¬    €U'#   ÿ   ?€           ?€  2         ?€  (         ?€  2      ÿ  ?€  2   PSGame.cpp P2Assert endoffile cavesoil cavesoil.bms cavesoil_ 00 05 cavemetal cavemetal.bms cavemetal_ caveconc caveconc.bms caveconc_ new .bms  cavetile cavetile.bms caveglass caveglass.bms cavetsumiki cavetsumiki.bms caverelax caverelax.bms SeqTest/ AudioRes/Conductor.arc AudioRes/Key.arc PSGame.aaf Seq.arc flag‚Í0 or1‚Å‚· m_boss.bms l_boss.bms 2d‚ÉƒOƒ[ƒoƒ‹ƒV[ƒ“‚ðì¬‚µ‚æ‚¤‚Æ‚µ‚½ user/Totaka/StreamList.txt user/Totaka/BgmList.txt se.bms scene no‚ª•s³ ‘O‰ñ‚ÌmCurrentScene‚ÌŒãˆ—‚ª•s³ hiscore.bms n_tutorial_1stday.bms cavekeyget.cnd cavekeyget.bms kuro_post.bms user/Totaka/ChallengeBgmList.txt battle_t.bms caveconc_00_0.cnd caverelax.cnd kuro_pre.bms user/Totaka/BgmList_Tutorial.txt user/Totaka/BgmList_Forest.txt user/Totaka/BgmList_Yakushima.txt user/Totaka/BgmList_Last.txt user/Totaka/BgmList_BgmTest.txt caveID==%d
+ n_tutorial.bms forest.bms yakushima.bms last.bms worldmap.bms worldmap_intro.bms c_menu.bms book.bms comp_result.bms f_result.bms %s_%02d_0.cnd 
+not find Seq
+ %s_%02d_%1d.cnd      PSSystemIF.cpp P2Assert PSAutoBgm.cpp P2Assert   ƒ†ƒjƒ]ƒ“ƒ}ƒXƒ^[ƒgƒ‰ƒbƒN‚Íƒ†ƒjƒ]ƒ“ƒgƒ‰ƒbƒN‚æ‚èŽá‚¢”Ô†‚Ìƒgƒ‰ƒbƒN‚Å‚ ‚é•K—v‚ª‚ ‚è‚Ü‚· not find(%s)      PSBnkMgr.cpp P2Assert AudioRes/Banks    PSTaskBase.cpp P2Assert     =ÌÌÍ>LÌÍ>™™š>ÌÌÍ?   ?™š?333?LÌÍ?fff?€  ?fff?LÌÍ?333?™š?   >ÌÌÍ>™™š>LÌÍ=ÌÌÍ    ½ÌÌÍ¾LÌÍ¾™™š¾ÌÌÍ¿   ¿™š¿333¿LÌÍ¿fff¿€  ¿fff¿LÌÍ¿333¿™š¿   ¾ÌÌÍ¾™™š¾LÌÍ½ÌÌÍPSBgmTask.cpp P2Assert  PSAutoBgm_MeloArranger.cpp P2Assert     ƒsƒLSEŠÔˆø‚«Ý’è ƒsƒL•¨‰^‚Ñ‰¹ ƒsƒLŽdŽ–’@‚«‰¹ ƒsƒL“Û‚Ýž‚Ü‚ê‚à‚ª‚«º ƒ`ƒƒƒŒƒ“ƒWƒ‚[ƒh‚Ìƒgƒbƒv‰æ–Ê—p ƒsƒL’……‰¹—p ƒsƒLƒpƒjƒbƒNƒ‰ƒ“—p “G”Ä—p PSSe.cpp P2Assert     PSSeBase.cpp P2Assert   PSScene.cpp P2Assert    PSBgmTrack.cpp P2Assert PSDirector.cpp P2Assert 
+Not Called From Main Thread
+ ƒfƒBƒŒƒNƒ^[ƒ}ƒl[ƒWƒƒ    dayEndCount DayEndCount count.blo dayEndCount.cpp P2Assert challengeEndCount challengeEndCount1p challengeEndCount2p    hurryUp2D HurryUp2D sund.blo hurryUp2D.cpp P2Assert sunh_w.bti g09_first_sunset     backefect_00efect_01kuronuki  kuro_u  kuro_d  kuro_l  kuro_r capuselgameOver2D gameover_gameover.blo gameover_gameover.bck gameover_gameover.btk gameover_gameover_02.btk gameover_orima.blo gameover_orima.btk gameover_orima_02.btk gameover_louie.blo gameover_louie.btk gameover_louie_02.btk gameover_president.blo gameover_president.btk gameover_president_02.btk gameover_pikmin.blo gameover_pikmin.btk gameover_pikmin_02.btk gameOver2D.cpp P2Assert    bombState wait bomb     bombMgr ”š’eƒ}ƒl[ƒWƒƒ  bomb core1      eggState wait   eggMgr ƒ^ƒ}ƒSƒ}ƒl[ƒWƒƒ PanModokiState dead walk back pulled appear hide damage wait stick sucked carryend      panModokiMgr ƒpƒ“ƒ‚ƒhƒLƒ}ƒl[ƒWƒƒ ‘åƒpƒ“ƒ‚ƒhƒLƒ}ƒl[ƒWƒƒ        panModoki panModoki.cpp P2Assert body kamu asiL asiR orima      plantsMgr ƒ^ƒ“ƒ|ƒ|ƒ}ƒl[ƒWƒƒ ƒNƒ[ƒo[ƒ}ƒl[ƒWƒƒ ƒqƒJƒŠƒLƒmƒRƒ}ƒl[ƒWƒƒ ‚¨‚¨‚¢‚Ê‚Ó‚®‚èi¬jƒ}ƒl[ƒWƒƒ ŒÍ‚ê‚¨‚¨‚¢‚Ê‚Ó‚®‚èi¬jƒ}ƒl[ƒWƒƒ ‚¨‚¨‚¢‚Ê‚Ó‚®‚èi‘åjƒ}ƒl[ƒWƒƒ ŒÍ‚ê‚¨‚¨‚¢‚Ê‚Ó‚®‚èi‘åjƒ}ƒl[ƒWƒƒ Žá‰èi¬jƒ}ƒl[ƒWƒƒ Žá‰èi‘åjƒ}ƒl[ƒWƒƒ ‚Â‚­‚µƒ}ƒl[ƒWƒƒ –È–Ñƒ}ƒl[ƒWƒƒ Ôƒ_ƒCƒI[ƒhƒ}ƒl[ƒWƒƒ Âƒ_ƒCƒI[ƒhƒ}ƒl[ƒWƒƒ ƒ}[ƒKƒŒƒbƒgƒ}ƒl[ƒWƒƒ ‚Ë‚±‚¶‚á‚ç‚µƒ}ƒl[ƒWƒƒ ç‘ãŽ†ƒ}ƒl[ƒWƒƒ ‚º‚ñ‚Ü‚¢ƒ}ƒl[ƒWƒƒ  plants plants.cpp P2Assert      kingChappyState walk attack dead flick warcry damage turn eat hide hidewait appear caution swallow      kingChappyMgr ƒLƒ“ƒOƒ`ƒƒƒbƒs[ƒ}ƒl[ƒWƒƒ[ kingChappyMgr.cpp P2Assert   €U3¿€U3Å€U3Ë€U3Ñ€U3×€U3Ý€U3ã€U3é€U3ïkingChappy kuti kingChappy.cpp P2Assert kosijnt bero6 bero5 asiL asiR hana kamu1 kamu2 kamu3 kamu4 kamu5 kamu6 kamu7 kamu8 kamu9 eye3R eye3L        miulinState wait walk attackstart attackind attackend turn miulinState.cpp state -1
+ flick dead miulinMgr ƒ~ƒEƒŠƒ“ƒ}ƒl[ƒWƒƒ    miulin jnt_koshi miulin.cpp P2Assert jnt_footR jnt_footL        jigumoState wait appear hide dead attack miss return carry flick eat search sattack smiss       jigumoMgr ƒWƒOƒ‚ƒ}ƒl[ƒWƒƒ      jigumo jigumo.cpp P2Assert body_joint1 kamu_joint1      ?€                  ?€                  ?€      enemyNestMgr ‘ƒƒ}ƒl[ƒWƒƒ enemy.bmd enemy/data/JigumoHouse/model.szs enemyNestMgr.cpp P2Assert %s/enemyColl.txt JigumoHouse/enemyColl.txt       tamagoMushiState walk turn appear hide dead Wait        tamagoMushiMgr ƒ^ƒ}ƒSƒ€ƒVƒ}ƒl[ƒWƒƒ tamagoMushiMgr.cpp P2Assert tamagoMushi tamagoMushi.cpp P2Assert koshijnt    Tmenu00 Tmenu01 Tmenu02 Tmenu03 Tmenu04 Tmenu05 Tmenu07 Tmenu06 Tmenu08 Tmenu09Pn00_0_1Pn00_1_1Pn00_2_1Pn00_0_2Pn00_1_2Pn00_2_2Pim00_00Pim00_01Pim00_02Pme00_00Pme00_01Pme00_02Pn01_0_1Pn01_1_1Pn01_2_1Pn01_0_2Pn01_1_2Pn01_2_2Pim01_00Pim01_01Pim01_02Pme01_00Pme01_01Pme01_02Pn02_0_1Pn02_1_1Pn02_2_1Pn02_0_2Pn02_1_2Pn02_2_2Pim02_00Pim02_01Pim02_02Pme02_00Pme02_01Pme02_02Pn03_0_1Pn03_1_1Pn03_2_1Pn03_0_2Pn03_1_2Pn03_2_2Pim03_00Pim03_01Pim03_02Pme03_00Pme03_01Pme03_02Pn04_0_1Pn04_1_1Pn04_2_1Pn04_0_2Pn04_1_2Pn04_2_2Pim04_00Pim04_01Pim04_02Pme04_00Pme04_01Pme04_02Pn05_0_1Pn05_1_1Pn05_2_1Pn05_0_2Pn05_1_2Pn05_2_2Pim05_00Pim05_01Pim05_02Pme05_00Pme05_01Pme05_02Pn07_0_1Pn07_1_1Pn07_2_1Pn07_0_2Pn07_1_2Pn07_2_2Pim07_00Pim07_01Pim07_02Pme07_00Pme07_01Pme07_02Pn06_0_1Pn06_1_1Pn06_2_1Pn06_0_2Pn06_1_2Pn06_2_2Pim06_00Pim06_01Pim06_02Pme06_00Pme06_01Pme06_02Pn08_0_1Pn08_1_1Pn08_2_1Pn08_0_2Pn08_1_2Pn08_2_2Pim08_00Pim08_01Pim08_02Pme08_00Pme08_01Pme07_05Pn09_0_1Pn09_1_1Pn09_2_1Pn09_0_2Pn09_1_2Pn09_2_2Pim09_00Pim09_01Pim09_02Pme09_00Pme09_01Pme09_02 Tmenu12 Tmenu13 Tmenu00 Tmenu01 Tmenu02 Tmenu03 Tmenu04 Tmenu05 Tmenu07 Tmenu06 Tmenu08 Tmenu09 Tmenu10 Tmenu11Pn12_0_1Pn12_1_1Pn12_2_1Pn12_0_2Pn12_1_2Pn12_2_2Pim12_00Pim12_01Pim12_02Pme12_00Pme12_01Pme12_02Pn13_0_1Pn13_1_1Pn13_2_1Pn13_0_2Pn13_1_2Pn13_2_2Pim13_00Pim13_01Pim13_02Pme13_00Pme13_01Pme13_02Pn00_0_1Pn00_1_1Pn00_2_1Pn00_0_2Pn00_1_2Pn00_2_2Pim00_00Pim00_01Pim00_02Pme00_00Pme00_01Pme00_02Pn01_0_1Pn01_1_1Pn01_2_1Pn01_0_2Pn01_1_2Pn01_2_2Pim01_00Pim01_01Pim01_02Pme01_00Pme01_01Pme01_02Pn02_0_1Pn02_1_1Pn02_2_1Pn02_0_2Pn02_1_2Pn02_2_2Pim02_00Pim02_01Pim02_02Pme02_00Pme02_01Pme02_02Pn03_0_1Pn03_1_1Pn03_2_1Pn03_0_2Pn03_1_2Pn03_2_2Pim03_00Pim03_01Pim03_02Pme03_00Pme03_01Pme03_02Pn04_0_1Pn04_1_1Pn04_2_1Pn04_0_2Pn04_1_2Pn04_2_2Pim04_00Pim04_01Pim04_02Pme04_00Pme04_01Pme04_02Pn05_0_1Pn05_1_1Pn05_2_1Pn05_0_2Pn05_1_2Pn05_2_2Pim05_00Pim05_01Pim05_02Pme05_00Pme05_01Pme05_02Pn07_0_1Pn07_1_1Pn07_2_1Pn07_0_2Pn07_1_2Pn07_2_2Pim07_00Pim07_01Pim07_02Pme07_00Pme07_01Pme07_02Pn06_0_1Pn06_1_1Pn06_2_1Pn06_0_2Pn06_1_2Pn06_2_2Pim06_00Pim06_01Pim06_02Pme06_00Pme06_01Pme06_02Pn08_0_1Pn08_1_1Pn08_2_1Pn08_0_2Pn08_1_2Pn08_2_2Pim08_00Pim08_01Pim08_02Pme08_00Pme08_01Pme07_05Pn09_0_1Pn09_1_1Pn09_2_1Pn09_0_2Pn09_1_2Pn09_2_2Pim09_00Pim09_01Pim09_02Pme09_00Pme09_01Pme09_02Pn10_0_1Pn10_1_1Pn10_2_1Pn10_0_2Pn10_1_2Pn10_2_2Pim10_00Pim10_01Pim09_03Pme10_00Pme10_01Pme10_02Pn11_0_1Pn11_1_1Pn11_2_1Pn11_0_2Pn11_1_2Pn11_2_2Pim09_08Pim11_01Pim11_02Pme11_00Pme11_01Pme11_02zukan2D zukan2D.cpp P2Assert newicon.blo l_btn.bti w08_48_gra.bti timg/flower_icon.bti enemyZukan set DebugHeapParent. mail to morimun.
+ new_seibutuzukan_main.blo new_seibutuzukan_main.bck new_seibutuzukan_main.bpk new_seibutuzukan_bg.blo new_seibutuzukan_effect.blo new_seibutuzukan_effect.btk new_seibutuzukan_list.blo new_seibutuzukan_suji.blo zukan_mess_window.blo zukan_mess_window.bck zukan_mess_window.bpk new_seibutuzukan_yajirushi.blo  1301_00  1310_00  1300_00  1801_00  1810_00  1800_00  1701_00  1710_00  1700_00 price (%d) = %d
+ endWindow  6018_00 itemZukan  0101_00  0110_00  0200_00  0100_00  0401_00  0410_00  0500_00  0400_00  0701_00  0710_00  0800_00  0700_00  1431_00  1440_00  1430_00 timg/olimar_icon.bti new_otakarazukan_list.blo new_otakarazukan_main.blo new_otakarazukan_main.bck new_otakarazukan_main.bpk new_otakarazukan_bg.blo new_otakarazukan_effect.blo new_otakarazukan_effect.btk new_otakarazukan_yajirusi.blo new_otakarazukan_main_suji.blo  9001_00  9000_00 weight (%d) = %d
+ €UF*€UF?€UFT€UFi€UF~€UF“€UF¨€UF½€UFÒ€UFç€UFü€UG€UG&€UG;€UGP€UGe Nmenu00 Nmenu01 Nmenu02 Nmenu03 Nmenu04 Tmenu00 Tmenu01 Tmenu02 Tmenu03 Tmenu04 Phe1st1 Phe2nd1 Phe3rd1 Pot1st1 Pot2nd1 Pot3rd1 Phe1st4 Phe2nd4 Phe3rd4 Pot1st4 Pot2nd4 Pot3rd4 Phe1st5 Phe2nd5 Phe3rd5 Pot1st5 Pot2nd5 Pot3rd5 Phe1st1 Phe2nd1 Phe3rd1 Pot1st1 Pot2nd1 Pot3rd1 Phe1st2 Phe2nd2 Phe3rd2 Pot1st2 Pot2nd2 Pot3rd2hiScore2D hiscore timg/hi_score_00.bti timg/hi_score_01.bti timg/hi_score_02.bti timg/hi_score_03.bti timg/hi_score_04.bti timg/hi_score_05.bti timg/hi_score_06.bti timg/hi_score_07.bti timg/hi_score_08.bti timg/hi_score_09.bti timg/hi_score_10.bti timg/hi_score_11.bti timg/hi_score_12.bti timg/hi_score_13.bti timg/hi_score_14.bti timg/hi_score_15.bti hiScore2D.cpp P2Assert hi_score_main.blo hi_score_main.bck hi_score_main.bpk hi_score_list.blo assertindex = %d 
+  8472_00 hi_score_00.bti res_hiscore.szs  8502_00  8503_00  8504_00  8505_00  8506_00  8507_00  8508_00  8509_00  8510_00  8511_00  8512_00  8513_00  8514_00  8515_00  8516_00  8517_00    umiMushiState wait walk find search turn umiMushiState.cpp flick attack eat dead lost   umiMushiMgr ƒEƒ~ƒ€ƒVƒ}ƒl[ƒWƒƒ enemy/data/UmiMushi/umimusi_model1.btk umiMushiMgr.cpp P2Assert  €UIç€UIó€UIÿ€UJ€UJ€UJ#€UJ/umiMushi head_joint1 umiMushi.cpp P2Assert cc_mat1_v eyes_joint1 weak_joint2 ef_eye_r ef_eye_l bero_joint1 kamu_joint1 kamu_joint2 kamu_joint3 kamu_joint4 kamu_joint5 kamu_joint6 kamu_joint7 kuti_joint1  shijimiChouState wait fly fall dead leave rest  shijimiChouMgr ƒVƒWƒ~’±ƒ}ƒl[ƒWƒƒ shijimiChouMgr.cpp P2Assert mat_shijimi_hane_v        shijimiChou mat_shijimi_hane_v shijimiChou.cpp P2Assert   Nhl_00  Nhl_01  Nhl_02  Nhl_03  Nhl_04  Nhl_05  Nhl_06  Nhl_07  Nhl_08  Nhl_09  Nhl_10  Nhl_11  Nhl_12  Nhl_13  Nhl_14NULL_001    h_00    h_01    h_02    h_03€UNñ€UO€UO€UO.    Prp1    Pyp1    Pbp1    Pwp1   Pblp1   Pfl00Pselec00  Pana00   Pfl01Pselec01  Pana01   Pfl02Pselec02  Pana02   Pfl03Pselec03  Pana03   Pfl04Pselec04  Pana04   Pfl05Pselec05  Pana09   Pfl06Pselec06  Pana08   Pfl07Pselec07  Pana07   Pfl08Pselec08  Pana06   Pfl09Pselec09  Pana05   Pfl10Pselec10  Pana14   Pfl11Pselec11  Pana13   Pfl12Pselec12  Pana12   Pfl13Pselec13  Pana11   Pfl14Pselec14  Pana10   Pfl15Pselec15  Pana19   Pfl16Pselec16  Pana18   Pfl17Pselec17  Pana17   Pfl18Pselec18  Pana16   Pfl19Pselec19  Pana15   Pfl20Pselec20  Pana24   Pfl21Pselec21  Pana23   Pfl22Pselec22  Pana22   Pfl23Pselec23  Pana21   Pfl24Pselec24  Pana20   Pfl25Pselec25  Pana29   Pfl26Pselec26  Pana28   Pfl27Pselec27  Pana27   Pfl28Pselec28  Pana26   Pfl29Pselec29  Pana25challengeSelect2D challengeSelect2D.cpp P2Assert challengeSelect timg/flower_seed.bti timg/leaf_icon.bti timg/flower_icon.bti timg/flower_p_icon.bti set DebugHeapParent. mail to morimun.
+ user/Matoba/challenge/stages.txt  4901_00  4910_00  4900_00 challenge_modo_1p_2p.blo challenge_rule_window.blo challenge_rule_window.btk challenge_rule_window_02.btk challenge_rule_window_03.btk challenge_rule_window_04.btk challenge_rule_window_05.btk challengemodo_select.blo challengemodo_select.bck challengemodo_select.bpk challengemodo_select.btk challengemodo_select_02.btk challengemodo_select_03.btk challengemodo_select_04.btk challengemodo_select_05.btk challengemodo_select_06.btk challengemodo_select_07.btk challengemodo_select_08.btk timg/sphere.bti hiscore1p = %d
+ hiscore2p = %d
+ piki(%d) = %d
+ doping(%d) = %d
+ floor = %d
+ endWindow                                                                Nhl_00  Nhl_01  Nhl_02  Nhl_03  Nhl_04  Nhl_05  Nhl_06  Nhl_07  Nhl_08  Nhl_09  Nhl_10  Nhl_11  Nhl_12  Nhl_13  Nhl_14Pmsen003Pmsen004Pmsen007Pmsen009Tribon00Tribon01Tribon02?€  ?fff?LÌÍchallengeResult2D challenge_modo_result_demo.bck  4871_00  4872_00 challengeResult2D.cpp P2Assert no stick pane
+ challengeResult set DebugHeapParent. mail to morimun.
+ user/Matoba/challenge/stages.txt timg/leaf_icon.bti timg/flower_icon.bti timg/flower_p_icon.bti challenge_modo_result.blo challenge_modo_result.bck challenge_modo_result.bpk challenge_modo_result.btp challenge_modo_result.brk challenge_modo_result.btk challenge_modo_result_02.btk challenge_modo_result_03.btk  4901_00  4910_00  4900_00 challenge_modo_result_demo.blo challenge_modo_result_demo.bva hiscore0 = %d
+ hiscore1 = %d
+ hiscore2 = %d
+ total = %d
+ timebonus = %d
+ money = %d
+ piki = %d
+  4861_00  4870_00 res_challengeResult.szs    €UW|€UW€UWŸ€UW±€UWÄ€UWÓ€UWå€UW÷€UX	€UX€UX&€UX8€UXJ€UX\€UXn€UX€€UX€UX €UX°€UXÀP0icon00P0icon01P0icon02P0icon03P0icon04P0icon05P1icon00P1icon01P1icon02P1icon03P1icon04P1icon05 Tbmenu3 Tbmenu4 Tbmenu5  Nrp_00  Nrp_01  Nrp_02  Nrp_03  Nrp_04  Nrp_05  Nrp_06  Nrp_07  Nrp_08  Nrp_09  Nbp_00  Nbp_01  Nbp_02  Nbp_03  Nbp_04  Nbp_05  Nbp_06  Nbp_07  Nbp_08  Nbp_09 Tmenu00 Tmenu01 Tmenu02 Tmenu03 Tmenu04vsSelect2D vsSelect2D.cpp P2Assert vsSelect timg/otegaru.bti timg/ujyaujya.bti timg/hirobiro.bti timg/karakuchi.bti timg/semai.bti timg/hiyahiya.bti timg/nobinobi.bti timg/kakukaku.bti timg/meiro.bti timg/tile.bti timg/orima001.bti timg/orima002.bti timg/orima003.bti timg/orima004.bti timg/orima005.bti timg/lui001.bti timg/lui002.bti timg/lui003.bti timg/lui004.bti timg/lui005.bti set DebugHeapParent. mail to morimun.
+  4771_00  4770_00 red_pod.blo red_pod.bck red_pod.btp blue_pod.blo blue_pod.bck blue_pod.btp vsSelectTexture res_vsSelectTexture.szs arcName = %s
+ timg/loozy_icon.bti vs_slot_texture.blo otegaru.bti AK_kagerouRR.bti vs_select_main.blo vs_select_main.btk vs_select_main_02.btk btnmsg[%d] is unknown vs_select_list.blo vs_select_bg.blo vs_select_bg.btk vs_select_fire.blo vs_select_fire.btk vs_select_fire_02.btk vs_main_rule_window.blo vs_main_rule_window.btk vs_main_rule_window_02.btk vs_main_rule_window_03.btk vs_main_rule_window_04.btk vs_main_rule_window_05.btk vs_main_rule_window_06.btk vs_main_rule_window_07.btk vs_main_rule_window_08.btk vs_main_rule_window_09.btk vs_main_rule_window_10.btk vs_main_rule_window_11.btk vs_main_rule_window_12.btk  2013_00  0000_01 navi_l.bti coursename[%d] not find
+ pictureframe[%d] not find
+ endWindow  2042_00  2041_00  2049_00  2044_00  2045_00  2052_00  2046_00  2050_00  2051_00  2047_00  2048_00  2043_00       mrUtil mrUtil.cpp indpane P2Assert      scrollList scrollList.cpp P2Assert      blackManState walk dead freeze bend escape fall recover flick tired     blackManMgr •‚¢lƒ}ƒl[ƒWƒƒ blackManMgr.cpp P2Assert enemy/data/BlackMan/kagebozu_model.btk kage_mat   €U^K€U^R€U^Y€U^`€U^-€U^6€U^?€U^E€U^±€U^·€U^½€U^Ã€U^É€U^Ï€U^Õ€U^Û€U^á€U^ë€U^õ€U^ýblackMan blackMan.cpp P2Assert chest handLend handRend footL footR tyreFL TyreFR TyreBL tyreBR waist kage_mat x20_blackman failed traceRoutePoint
+ no handle pathFinder
+ handL handR legBL legBR armBL armBR legTL legTR shoulderL shoulderR clouchL clouchR head       tyreState move land freeze dead tyreMgr ƒ^ƒCƒ„ƒ}ƒl[ƒWƒƒ tyreMgr.cpp P2Assert   tyre tyre.cpp P2Assert tyrefront tyreback tyreFL TyreFR efxBase.cpp P2Assert    >LÌÍ>LÌÍ>LÌÍ?€  ?€  ?€  =§ïž=LÌÍ    @33?Ù™š    ?Y™š?   >³33>™™š>LÌÍ    >€  >€  >LÌÍ>€  >™š    ?   >ÌÌÍ>€  >³33>LÌÍ=ÌÌÍ?€  ?€  ?€  ?€  ?€  ?€  >™š=\)<£×
+efxEnemy.cpp ArgScale P2Assert ArgChou ArgImoEat ArgRotY ArgGasuHiba ArgDenkiHiba   >™™š>€  >™š=uÂ=LÌÍ=#×
+>fff>LÌÍ>™š=ÌÌÍ=£×
+=uÂ>™™š>€  >™š=uÂ=LÌÍ=#×
+            =ÌÌÍ=£×
+=uÂefxObject.cpp ArgScale P2Assert ArgRotY ArgKouhai ArgPelType ArgType    efxPikmin.cpp ArgType P2Assert ArgDopingSmoke ArgCursor particle2dMgr TParticle2dMgr TParticle2dMgr::createHeap particle2dMgr.cpp P2Assert effect heap not allocated !
+ TParticle2dMgr::createMgr ParticleResource (%s) not found
+ IP2_dummy    efx2dBase efx2dBase.cpp P2Assert        efx2dEffect ArgScale efx2dEffect.cpp P2Assert ArgScaleColorColor ArgColor ArgFilecopy   particleMgr ParticleMgr particleMgr.cpp P2Assert effect heap not allocated !
+ ParticleResource (%s) not found
+ IP2_dummy        ebiP2Title TTitleMgr LightMgr J3DDrawBuffer TCoordMgr Main TCoordMgr Sub TTitleMgr::loadResource() TTitleMgr::loadResource--mount_arc user/Ebisawa/title/title.szs ebiP2Title.cpp P2Assert param/param_title.txt logo/coordinate_eng logo/coordinate_Nintendo logo/coordinate_jpn param/param_light_spring.txt param/param_fog_spring.txt param/param_light_summer.txt param/param_fog_summer.txt param/param_light_autumn.txt param/param_fog_autumn.txt param/param_light_winter.txt param/param_fog_winter.txt  user/Ebisawa/title/bg_spring.szs user/Ebisawa/title/bg_summer.szs user/Ebisawa/title/bg_autumn.szs user/Ebisawa/title/bg_winter.szs  ebiP2TitleUnit opening.bmd ebiP2TitleUnit.cpp P2Assert opening_wait.bck opening_kaze.bck enemy.bmd enemy.bck cam.bmd cam.bck cam.brk black_plane        ebiScreenMemoryCard TScreenMemoryCard::loadResource memory_card.szs ebiScreenMemoryCard.cpp P2Assert TScreenMemoryCard::setArchive memory_card.blo memory_card.bck memory_card_pattern1.bck memory_card_pattern2.bck memory_card_yes.bck memory_card_no.bck arienai.  5450_00  5451_00  5452_00  5453_00  5456_00  5455_00  5454_00  0000_00  5457_00  5457_01  5458_00  5459_00  5460_00  5461_00  5464_00  5463_00  5462_00  5465_00  5468_00  5467_00  5466_00  5471_00  5470_00  5469_00  5474_00  5473_00  5472_00  5475_00  5476_00  5477_00  5478_00  5551_00  5552_00  5553_00  5554_00  5594_00  5593_00  5592_00  5555_00  5555_01  5556_00  5557_00  5558_00  5559_00  5562_00  5561_00  5560_00  5563_00  5566_00  5565_00  5564_00  5569_00  5568_00  5567_00  5572_00  5571_00  5570_00  5573_00  5574_00  5575_00  5576_00  5577_00  5580_00  5579_00  5578_00  5581_00  5584_00  5583_00  5582_00  5585_00      efxTPkEffectMgr.cpp unknown color P2Assert illegal kourin color %d
+     efxEnemyGeneral.cpp ArgEnemyType P2Assert ArgScale      ebi3DGraph ebi3DGraph.cpp P2Assert      ebi2DGraph ebi2DGraph.cpp P2Assert      ebiScreenOption Screen::TOption::setArchive Screen::TOption::set_blo_P2DScreen::Mgr option.blo Screen::TOption::new_ogCallBack option.bck TOption::loadResource option_us.szs ebiScreenOption.cpp P2Assert  8335_00  8336_00    ebiScreenProgre TScreenProgre::loadResource progre.szs ebiScreenProgre.cpp P2Assert TScreenProgre::setArchive progre.blo  8305_00  8306_00  8307_00  8308_00  8309_00   ebiOptionMgr Standby ebiOptionMgr.cpp fail to memory card Request even if finish task
+ Option::TMgr::loadResource P2Assert  6017_00     ebi2DCallBack ebi2DCallBack.cpp P2Assert        ebiCardMgr Standby EmptyScreen ebiCardMgr.cpp P2Assert  ebiScreenPushStart TScreenPushStart::setArchive--set_blo_a push_start_a.blo TScreenPushStart::setArchive--set_blo_b push_start_b.blo TScreenPushStart::setArchive--set_blo_c push_start_c.blo TScreenPushStart::setArchive--set_blo_d push_start_d.blo TScreenPushStart::setArchive--makeAnmPointer push_start_a.bck push_start_a.bpk push_start_b.bck push_start_b.bpk push_start_c.bck push_start_c.bpk push_start_d.bck push_start_d.bpk     ebiScreenFileSelect TScreenDataWindow::setArchive--set__blo file_select_dw_new.blo TScreen_FS_scene_open::setArchive--callback_message ebiScreenFileSelect.cpp P2Assert file_select_dw_data.blo TScreenFileSelect::loadResource file_select.szs TScreenFileSelect::setArchive TScreenFileSelect::setArchive--set__blo file_select.blo  5479_00 file_select.bck file_select.bpk file_select_03.btk file_select_02.btk file_select.btk file_select_04.btk file_select.brk user/Ebisawa/effect/eff2d_file_select.jpc  5485_00  5486_00  5487_00  5489_00  5492_00  5493_00  5494_00  5505_00  5488_00  5490_00  5495_00  5496_00  5497_00  5491_00  5498_00  5499_00 break_new_icon.bti new_icon.bti dicon_icon.bti  5481_00  5484_00  5508_00     ebiScreenTitleMenu TTitleMenu::setArchive title_menu_6.blo ebiScreenTitleMenu.cpp P2Assert title_menu_5.bck title_menu_6.bck    ebiSaveMgr Standby ebiSaveMgr.cpp P2Assert ‘z’èŠO‚Å‚·B‚ ‚è‚¦‚Ë[       ebiScreenSaveMenu info_window.blo TScreenSaveMenu::loadResource info_window.szs ebiScreenSaveMenu.cpp P2Assert ‚ ‚è‚¦‚È‚¢I‚ ‚è‚¦‚È‚¢I‚½‚Í‚ ‚ÁI
+  8370_00  8371_00  8372_00  8373_00  8374_00  8375_00        ebiScreenFileSelect_Mgr Standby ebiScreenFileSelect_Mgr.cpp P2Assert    ebiFileSelectMgr Standby ebiFileSelectMgr.cpp P2Assert ¦ƒƒ‚ƒŠ[ƒJ[ƒhƒGƒ‰[:‘z’èŠO‚ÌƒP[ƒX‚Å‚·
+ ¦ƒ[ƒh‚ÅƒVƒŠƒAƒ‹ƒGƒ‰[‚Í‚ ‚è‚¦‚È‚¢
+ ¦@mgr->mCardErrorMgr->getEnd=%d ‚Á‚Ä‚ ‚è‚¦‚È‚¢I
+     ebiCardMgr_Load ebiCardMgr_Load.cpp P2Assert card broken? can not format. ari e nai arie nai    ebiP2TitleCoordMgr TCoordMgr ebiP2TitleCoordMgr.cpp P2Assert    ebiP2TitlePikmin TBoidParamMgr pikmin/title_red_piki.bmd ebiP2TitlePikmin.cpp P2Assert pikmin/title_yellow_piki.bmd pikmin/title_blue_piki.bmd pikmin/title_black_piki.bmd pikmin/title_white_piki.bmd pikmin/wait.bck pikmin/wave.bck PikminMgr Parms param/param_pikmin.txt param/param_boid.txt shadow1      ebiP2TitleKogane KoganeMgr Parms param/param_kogane.txt kogane/kogane_move.bck kogane/kogane_wait.bck kogane/kogane_title.bmd ebiP2TitleKogane.cpp P2Assert     ebiP2TitleChappy ChappyMgr Parms param/param_chappy.txt chappy/move1.bck chappy/waitact1.bck chappy/attack.bck chappy/waitact2.bck chappy/swallow_model.bmd ebiP2TitleChappy.cpp P2Assert       ebiScreenTMBack TScreenTMBack::setArchive tm_back.blo ebiScreenTMBack.cpp P2Assert TScreenNintendoLogo::setArchive tm_2003nintendo.blo  ebiMainTitleMgr TMainTitleMgr::loadResource TTitleMenu::loadResource title.szs ebiMainTitleMgr.cpp P2Assert     efxEnemyBoss.cpp ArgDir P2Assert ArgRotY ArgPrmColor ArgPosPos ArgScale ArgRotYScale ArgKchYodare       ebiCardEReader ebiCardEReader.cpp P2Assert  user/Ebisawa/card_e_reader/pp1.dwn user/Ebisawa/card_e_reader/pp2.dwn user/Ebisawa/card_e_reader/pp3.dwn    ebiScreenOmake Screen_newScreen_of_TOmake omake.blo Screen_setCallBackMessage_of_TOmake omake.bck ebiScreenOmake.cpp P2Assert  4844_00  ebiOmakeMgr.cpp Standby Movieó‘Ô TOmakeMgr::loadResource omake.szs P2Assert    ebiScreenOmakeCardE Screen_newScreen_of_TOmakeCardE omake_tunagu.blo Screen_setCallBackMessage_of_TOmakeCardE omake_tunagu.bck omake_tunagu.bpk ebiScreenOmakeGame Screen_newScreen_of_TOmakeGame omake_game.blo Screen_setCallBackMessage_of_TOmakeGame omake_game.bck  4800_00  4801_00  4802_00  4823_00  4824_00  4826_00  4825_00      C–  D  Da  C–  D  Da  D‰€ €U~Ð€U~â€U~ô€U€U€U,€U?€UR€Ue€U{PICT_045 Pg_p_01 Pg_p_02 Pg_c_01 Pg_c_02Pcave_00 P0_p_01 P0_p_02 P0_c_01 P0_c_02Pcave_01 P1_p_01 P1_p_02 P1_c_01 P1_c_02Pcave_02 P2_p_01 P2_p_02 P2_c_01 P2_c_02Pcave_03 P3_p_01 P3_p_02 P3_c_01 P3_c_02  Nwait0  Nwait1  Nwait2  Nwait3 Npoint0 Npoint1 Npoint2 Npoint3 T_new_l T_new_r Pg_p_01 Pg_p_02 Pg_c_01 Pg_c_02 P0_p_01 P0_p_02 P0_c_01 P0_c_02 P1_p_01 P1_p_02 P1_c_01 P1_c_02 P2_p_01 P2_p_02 P2_c_01 P2_c_02 P3_p_01 P3_p_02 P3_c_01 P3_c_02 Nca_fl0 Nca_fl1 Nca_fl2 Nca_fl3  P0_sra P1_sura P2_sura  P3_sra                         no_data                         no_data Pg_p_01 Pg_p_02 Pg_c_01 Pg_c_02 P0_p_01 P0_p_02 P0_c_01 P0_c_02 P1_p_01 P1_p_02 P1_c_01 P1_c_02 P2_p_01 P2_p_02 P2_c_01 P2_c_02 P3_p_01 P3_p_02 P3_c_01 P3_c_02  Nwait0  Nwait1  Nwait2  Nwait3khWorldMap.cpp P2Assert worldmap_icon.blo worldmap_icon.bck worldmap_icon.btp worldmap_gicon.blo worldmap_gicon.bck worldmap_gicon.btp world_map_info.blo world_map_info.btk world_map_info_02.btk world_map_info_03.btk worldmap.szs failed world_map_kitagawa.blo world_map_kitagawa.bck world_map_kitagawa.bpk world_map_kitagawa.btk world_map_kitagawa_02.btk user/Ebisawa/effect/eff2d_world_map.jpc  8390_01  8391_01  8392_01  8393_01  8395_01  8399_01  8400_01  no_data  8396_01  8398_01  8401_01  8410_01  8397_01  8402_01  8403_01  8411_01  8412_01  8413_01  8414_01  8419_01  iPicon00iPicon01Piname00Piname01 Nicon00 Nicon01khCaveResult.cpp disp member err result_doukutu.blo result_doukutu_drop_item.blo result_doukutu.bck result_doukutu.bpk result_doukutu.btk result_doukutu.brk doukutu_complete.blo doukutu_complete.bck doukutu_complete.bpk  0101_00 result_doukutu.szs failed  newGame2DMgr.cpp P2Assert SMENU MODE ERR! SMENU FinishStateError %d 
+ fail to open Kantei!
+ call to OG san disp member err Illegal call.
+       €U‚î€U‚û€Uƒ€Uƒ€Uƒ*€Uƒ?khReadyGo.cpp disp member err ready_go.blo ready_go.bck ready_go.bpk ready_go_reverse.blo ready_go_reverse.bck ready_go_reverse.bpk     khFinalFloor.cpp disp member err final_floor.bck final_floor.bpk final_floor.blo        iPicon00iPicon01Piname00Piname01nuki_texefect_00efect_01        khDayEndResult.cpp result_title.blo result_title.bck result_title.bpk result_item.blo result_item.bck result_item.btk result_item.brk result_item_constellation.blo result_item_constellation.bpk disp member err result_fuetaheta.blo result_fuetaheta.bck result_fuetaheta.btk result_fuetaheta.brk result_fueta_constellation.blo result_fueta_constellation.bpk result_mail.blo result_mail.bck result_mail.btk result_mail.brk result_maile_big_icon.blo result_maile_big_icon.bck result_mail_constellation.blo result_mail_constellation.bpk %s%003d.bti  result_title_new.blo result_title_new.bck result_title_new.btk user/Koono/mail_table.szs mail_table.bin failed error user/Koono/mail_icon.szs no exist result_mail.szs khUtil.cpp P2Assert     €UˆB€Uˆ[€Uˆt€Uˆ€Uˆ¦€Uˆ¿€UˆØ€Uˆñ€U‰
+€U‰#€U‰<€U‰U€U‰n€U‰‡€U‰ €U‰¹                                   
+      	   
+      Ptokyop1 P1st0_1 P2nd0_1 P3rd0_1Ptomadp1 P1st1_1 P2nd1_1 P3rd1_1Ptomad11  P1stt3  P2ndt3  P3rdt3Ptomadp9  P1stt1  P2ndt1  P3rdt1 P1st0_1 P2nd0_1 P3rd0_1 P1st1_1 P2nd1_1 P3rd1_1  P1stt3  P2ndt3  P3rdt3  P1stt1  P2ndt1  P3rdt1khFinalResult.cpp result_final_image00.blo result_final_image01.blo result_final_image02.blo result_final_image03.blo result_final_image04.blo result_final_image05.blo result_final_image06.blo result_final_image07.blo result_final_image08.blo result_final_image09.blo result_final_image10.blo result_final_image11.blo result_final_image12.blo result_final_image13.blo result_final_image14.blo result_final_image15.blo new_screen/cmn/result_final_image.szs failed disp member err result_final.blo result_final.bck result_final.bpk result_final.btk result_final.brk  8452_00  8453_00  8454_00  8455_00  8456_00  8457_00  8458_00  8459_00  8460_00  8461_00  8462_00  8463_00  8464_00  8465_00  8466_00  8467_00 result_final.szs    €U‹”€U‹¬€U‹Ä€U‹Ü€U‹ó€UŒ
+€UŒ!€UŒ9€UŒQkhPayDept.cpp 0_48.bti 1_48.bti 2_48.bti 3_48.bti 4_48.bti 5_48.bti 6_48.bti 7_48.bti 8_48.bti 9_48.bti hensai_demo_parsent.blo hensai_demo_parsent.bck hensai_demo_parsent.bpk hensai_demo_kanryo.blo hensai_demo_kanryo.bck hensai_demo_kanryo.bpk hensai_demo_otakara.blo hensai_demo_otakara.bck hensai_demo_otakara.bpk disp member err    2keta    1keta hensai_demo_parsent.szs hensai_demo_kanryo.szs hensai_demo_otakara.szs failed        €UF€UN€UV€U^€Ug€Up€Uy€U…€U‘    €U€Uª€U·€UÄ€UÒ€Uà€Uî€Uÿ€UŽ€UŽ!€UŽ*€UŽ3khWinLose.cpp win.blo win.bck win.bpk lose.blo lose.bck lose.bpk time_up.blo time_up.bck time_up.bpk win_wait.blo win_wait.bck win_wait.bpk lose_wait.blo lose_wait.bck lose_wait.bpk time_up_wait.blo time_up_wait.bck time_up_wait.bpk draw.blo draw.bck draw.bpk disp member err     khWinLoseReason.cpp otakara_get.blo otakara_get.bck otakara_get.bpk disp member err P2Assert    sysBootup pikmin2       node      [%s]
+ CNode node.cpp CNode add err count %d
+ CNode concat Loop Err!
+ %d child (realchild = %d)!
+      sysMath sysMath.cpp acosf %f
+ P2Assert  id32 {%s}       parms 	# %s
+ 
+        stream  stream.cpp Reached EOF
+ # %s
+ {
+ }
+ readByte:Token Error
+ %d readShort:Token Error
+ readInt:Token Error
+ readFloat:Token Error
+ %f P2Assert can not use readFixedString in text mode
+   can not use writeFixedString in text mode
+ %d  %f  RamStream::read out of bounds (pos=%d,bound=%d)
+ RamStream::write out of bounds (pos=%d,bound=%d)
+        geometry 
+ # %d/%d
+   tagparms 	 
+ end end
+ geomOBBTree OBB geomOBBTree.cpp ‚Â‚©‚¿‚á‚Á‚½‚çƒ_ƒƒbƒN‚—
+ siboudesu !
+ planes 
+ position and extents 	# origin
+ 	# axis %d
+ 	# min max %d
+ div planes bound sphere triangles 	# not leaf
+ left right             @         wii Root Sys  MEM1 Game Curr %s  %d/%d%s 
+  system.cpp Memory Alloc Error!
+%x (size %d) align(%d)
+RestTotal=%d
+RestFree =%d
+ abort
+ %s in "%s" on line %d
+ %s in "%s" on
+ line %d
+ --- Game debug information ---
+ ƒRƒ“ƒ\[ƒ‹‚ª‚ ‚è‚Ü‚¹‚ñ
+ system main idle exceptn aram aramStrm decomp taskMgr pikmin2_US_Product.smap unknown language:%d construct DvdThread SysTimers ResetManager ARAMMgr ResourceMgr2D Product P2Assert constructWithDvdAccess1st gameConfig.ini constructWithDvdAccess2nd P2JME::Mgr SoundSystem /pikmin2/AudioRes PSound.aaf no display %s:    section section.cpp no Display manager.
+        gameflow Root Menu Object Editor Single Game Challenge Game Test Challenge Teki Test Anim Editor Map Parts Editor Tex Viewer Ogawa Ogawa Screen Test Hikino Yamashita Nishimura Nishimura2 Morimura 2D Debug Fujino Ebisawa Cave Editor JStudio CameraEditor Movie Test JStudio Kando Test Pellet Test Boot Main Title Demo Message Previewer Ebi Main Title E3 Thanks Section VS Game Ebimun Effect 2D Debug2 EXP_C EXP_S gameflow.cpp Unknown SectionFlag. %d 
+ P2Assert      menuSection ChildSection::init  dvdThread dvdThread.cpp P2Assert arc    Graphics graphics.cpp why ?
+ initPrimDraw draw axis draw marker sysShape sysShape.cpp go to hell !
+ OKOK
+ ExMotionErr::setFrameByKeyType(%d)
+ mismatch LOOP_START - LOOP_END
+ BlendAnimator : at least 1 motion is required!
+ P2Assert reached eof
+ %s/%s %s    system 
+ ššššššššššššššššššššššš
+ 	ƒŠƒZƒbƒgˆ—
+ ‚Ü‚³‚ÉƒŠƒZƒbƒg‚µ‚Ä‚¨‚è‚Ü‚·
+ ƒGƒtƒFƒNƒgì‹Æ’†‚Å‚·
+ yƒŠƒZƒbƒgŠJŽnz
+ ƒRƒ“ƒgƒ[ƒ‰
+ ƒXƒŒƒbƒh”j‰ó
+ ƒTƒEƒ“ƒh
+ JSystemˆ—
+ 	ƒzƒbƒgƒŠƒZƒbƒg
+ Wiiƒƒjƒ…[‚É–ß‚é
+ ƒf[ƒ^ŠÇ—‰æ–Ê‚É–ß‚é
+ Ý’è‰æ–Ê‚É–ß‚é
+ ƒVƒƒƒbƒgƒ_ƒEƒ“
+ reset.cpp bad return mode
+ 	ƒŠƒZƒbƒg ¡ Reset by OSRestart ¡
+ 	ƒƒ‚ƒŠ[ƒJ[ƒh‘‚«ž‚ÝI—¹‘Ò‚¿
+ 	ƒI[ƒfƒBƒII—¹‘Ò‚¿
+ 	GPˆ—I—¹‘Ò‚¿
+ 	ƒŠƒZƒbƒgƒ{ƒ^ƒ“‚ª‰Ÿ‚³‚ê‚Ä‚¢‚é
+ ‹–‰Â‚ªo‚Ä‚¢‚È‚¢
+ ƒŠƒZƒbƒgŠÖ”‚ªƒR[ƒ‹‚³‚ê‚Ü‚µ‚½
+ IPLƒƒjƒ…[‰æ–Ê‚ð‹N“®‚µ‚Ü‚·
+ –{‘Ì‚ÌƒŠƒZƒbƒgƒ{ƒ^ƒ“‚ª‰Ÿ‚³‚ê‚Ü‚µ‚½
+ ƒRƒ“ƒgƒ[ƒ‰%d ‚ÌƒŠƒZƒbƒgƒRƒ}ƒ“ƒh‚ðŽó‚¯•t‚¯‚Ü‚µ‚½ 
+ ƒRƒ“ƒgƒ[ƒ‰ƒŠƒZƒbƒg‚Í‚PA‚QƒRƒ“‚Ì‚ÝŽó‚¯•t‚¯‚Ü‚·
+ yî•ñzƒŠƒZƒbƒgˆ—‚ð’†Ž~‚µ‚Ü‚µ‚½
+ dol/pikmin2UP.dol P2Assert /                          dvdStatus dvdStatus.cpp no display.
+ display changed !
+ sysTimers noname sysTimers.cpp P2Assert —L‚è‚¦‚È‚¢[@—L‚è‚¦‚È‚¢\ ƒUƒ}ƒVƒƒbƒNII
+    modelMgr modelMgr.cpp solid heap creation failed !
+ P2Assert solidHeap null!
+ failed to new model ! id %d idx %d
+       heapStatus root heapStatus.cpp ERROR! unknown name [%s]
+ EXIT
+ 
+ Heap Status ======================================
+ ==================================================
+ Memory Information ================================
+  memory size       %5.2f MB(%5dKB)
+  code size         %5.2f MB(%5dKB)
+  system heap       %5.2f MB(%5dKB) totalFree %4.1fMB(%dKB) free %4.1fMB(%dKB)
+  user RAM size     %5.2f MB(%5dKB)
+  user RAM used     %5.2f MB(%5dKB)
+  user RAM Free     %5.2f MB(%5dKB)
+  Current Heap Free %5.2f MB(%5dKB)
+  24MB version Free %5.2f MB(%5dKB)
+ ==================================================
+
+ =====(%s)=========================================
+
+ ‚È‚µw      [%8.2f KB : %s]
+ [%08x : %s]
+     light ƒ‰ƒCƒg    moviePlayer moviePlayer.cpp P2Assert ******* šƒLƒ…[‚É‚Í‚¢‚è‚«‚ç‚ñ‚æ`II
+ user/Mukki/movie/%s/demo.stb user/Mukki/movie/%s/demo.szs moviePl:play The Bikkuri
+ [QUE_FAILED] %s
+  ƒLƒ…[‚É‚È‚É‚à‚È‚¢‚¼[[(T^T)
+ ObjectSystem movieResource arc message efx.jpc stb demo.stb ‚Ü‚À‚©‚—
+ demo.szs ‚ª‚È‚¢‚Æ‚¾‚ß‚¾‚æ‚—
+ resource open failed!
+ JStudio::TParse ƒf[ƒ^‚ð‰ðŽß‚Å‚«‚Ü‚µ‚¥‚ñ
+ moviePl:loaddone moviePl:donecall curr=%d init=%d free invalid
+ MyCamera camera viewmat moviePl:unsuspend moviePl:g33/susp moviePl:skip Movie  %s <suspend>   frame %4d use  %.1fK heap %.1fK     JSTObjectActor bg haikei Actor : %s
+ JSTObjectActor.cpp ModelData null pModel_ null DON'T CALL THIS !
+ P2Assert ObjectGameActor JSTObjectGameActor.cpp DON'T USE [SRT_COMMAND_GOTO]
+ too many commands !
+ P2Assert (%s) joint %s not found
+ (%s) joint %d not found
+ command <-> userData mismatch ! (%d)
+ too many userdata (%d)
+      JSTObjectSystem JSTObjectSystem.cpp JSGFindObject---- %d not found
+     JSTFindCreature JSTFindCreature.cpp OG-DRON
+ theOrima theLouie orimaAlive P2Assert orimaDead onyon pikmin target ufo pod orima player   movieConfig nomap MovieList user/Mukki/movie/demos.txt movieConfig.cpp P2Assert gameConfig  engEU fraEU gerEU itaEU jpn spaEU engUS fraUS spaUS ƒtƒHƒOƒ}ƒl[ƒWƒƒ        aramMgr  aramMgr.cpp P2Assert root freeAll is PAL only. resourceMgr resourceMgr.cpp P2Assert HeapID %3d %dKB(%d) used 	%s —L‚è‚¦‚È‚¢ó‘Ô‚Å‚²‚´‚¢‚Ü‚· 
+  resourceMgr2D.cpp P2Assert      matAnim sysMaterialAnim.cpp P2Assert    P2DScreen.cpp P2Assert  movieMessage pod.blo movieMessage.cpp P2Assert anim/pod.btp anim/pod.bck anim/pod.bpk mg_window.blo P2JME::Movie::TControl::onInit PMT_onInit_arc new_screen/cmn/message_window.szs podIcon new_screen/cmn/gold_pod_for_message_window.szs new_screen/cmn/pod_for_message_window.szs %s is not found.
+ PMT_onInit_initRenderingProcessor message        ObjectSpecialActor JSTObjectSpecialActor.cpp comand %d not implemented !
+ too many commands !
+  messageSequence.cpp P2Assert    message/font_foreign.szs message/font_jpn.szs message/mesRes_engEU.szs message/mesRes_fraEU.szs message/mesRes_gerEU.szs message/mesRes_itaEU.szs message/mesRes_jpn.szs message/mesRes_spaEU.szs message/mesRes_engUS.szs message/mesRes_fraUS.szs message/mesRes_spaUS.szs a_btn.bti b_btn.bti c_btn.bti x_btn.bti y_btn.bti z_btn.bti l_btn.bti r_btn.bti 3d_btn.bti st_btn.bti t_btn.bti messageMgr.cpp P2Assert MessageMgr font res pikmin2main.bfn tex res Message FreeSize:%d 
+ pikmin2.bmg pikmin2.bmc user/Yamashita/arc/gameTex.szs cacheFont 	‚ ‚¢‚¤‚¦‚¨‚©‚«‚­‚¯‚±‚³‚µ‚·‚¹‚»‚½‚¿‚·‚Ä‚Æ‚È‚É‚Ê‚Ë‚Ì‚Í‚Ð‚·‚Ö‚Ù‚Ü‚Ý‚Þ‚ß‚à‚â‚ä‚æ‚í‚ñ	ƒAƒCƒEƒGƒIƒJƒLƒNƒPƒRƒTƒVƒXƒZƒ\ƒ^ƒ`ƒcƒeƒgƒiƒjƒkƒlƒmƒnƒqƒtƒwƒzƒ}ƒ~ƒ€ƒƒ‚ƒ„ƒ†ƒˆƒƒ“	 resFont bmg ƒƒbƒZ[ƒW‚Ìƒp[ƒX ƒƒbƒZ[ƒWƒJƒ‰[‚Ìƒp[ƒX     messageObj messageObj.cpp P2Assert JMessageŽÀ‘•ƒNƒ‰ƒX ŒÂ•Ê‰Šú‰»        messageRendering.cpp P2Assert %d/%d     modelEffect modelEffect.cpp P2Assert    ƒeƒXƒg %d       sysShapeModel sysShapeAnimation.cpp animData null!
+ %s/%s %s nanda~~~~?
+        sysShapeModel sysShapeModel.cpp manda
+   windowMessage.cpp P2Assert DrawInfoMgr::init   memoryCard.cpp command queue is broken.flag:%d num:%d P2Assert command Queue is full. impossible case
+  p2mem pikmin2.dat pikmin2MemoryCardMgr.cpp P2Assert sizeof(PlayerInfo): %d BLOCKSIZE %d padding:%d 
+ memoryCard/memoryCardHeader.szs banner.dat icon.dat NO! You can NOT format NAND.
+ dameck
+ MemoryCardModify Error card [%d] memory[%d]
+ PIKMIN 2 %02d/%02d/%04d %02d:%02d:%02d      commonSaveData.cpp Unknown sound mode:%d 
+ P2Assert     €U¬9€U¬K€U¬`€U¬s€U¬‡    bootSection.cpp P2Assert title_red_5a3.bti title_yellow_5a3.bti title_blue_5a3.bti title_white_5a3.bti title_violet_5a3.bti timg/%s ƒu[ƒgƒZƒNƒVƒ‡ƒ“ user/yamashita/arc/boot_us.szs /data/timg/nintendo_376x104.bti /data/timg/dolby_mark.bti og::Screen::Manager2D::create ebiScreen TParticle2dMgr user/Ebisawa/effect/eff2d_game2d.jpc ebi::TScreenProgre ebi::TScreenProgre::loadResource Wii_Strap_Reminder jp eng fre spa ita ger titleSection titleSection.cpp game2DMgr::reset error
+ titleSection::loadResident user/Kando/piki/pikis.szs %s : mount failed !!
+ user/Kando/onyon/arc.szs TitleSection::init JMANewSinTable ƒ^ƒCƒgƒ‹ƒZƒNƒVƒ‡ƒ“ frameBuffer NO NAME %s %s 
+ 0517  U  P  DOWN  LEFT RIGHT NONE %s:%s code size           %dKB
+ GameSystemHeap Free %dKB
+ SystemHeap free     %dKB
+ TitleSection::loadResource TParticle2dMgr user/Ebisawa/effect/eff2d_game2d.jpc titleMgr optionMgr hiscoreTexture res_hiscoreTexture.szs arcName = %s
+ omakeMgr TitleDummySection::loadResource user/Yamashita/testResource/tex /titlelogo.bti  loadResource.cpp AramRoot DvdRoot P2Assert mount arc failure Unknown flag:%d 
+  demoSection.cpp TitleSection::init JMANewSinTable THPƒZƒNƒVƒ‡ƒ“ frameBuffer
+ user/yamashita/arc/demoMovieLogo_us.szs P2Assert /data/timg/pikmin2_logo.bti        THP      thp/us/opening1.thp thp/us/opening1.ini  thp/us/opening2.thp thp/us/opening2.ini thp/us/ending1.thp thp/us/ending1.ini thp/us/ending2.thp thp/us/staffroll.thp thp/us/play1.thp thp/us/play1.ini thp/us/play1_ thp/us/play2.thp thp/us/play2.ini thp/us/play2_ thp/us/play3.thp thp/us/play3.ini thp/us/play3_ thp/us/play4.thp thp/us/play4.ini thp/us/play4_ thp/us/play5.thp thp/us/play5.ini thp/us/play5_ thp/us/play6.thp thp/us/play6.ini thp/us/play6_ thp/us/crime.thp thp/us/crime.ini THPPlayer pikmin2THPPlayer.cpp P2Assert eng fre spa %s%s_telop.ini %s %d %s
+ THPPlayerInit failure. THPPlayer::loadResource THPPlayer_Resource THPPlayr_caption fail to open the caption file
+[%s]
+ THPPlayerOpen Fail to open the thp file
+[%s]
+ THPPlayer_prepare THPPlayer_work Can't allocate the memory Fail to prepare
+ Unknown State : %d 
+       ----_-- captionMgr.cpp P2Assert screenScene.cpp no name P2Assert ???    screenMgr.cpp  P2Assert dispMember[%s] Size over. 
+ %d max:%d SetScene StartScene EndScene Invalid can't startScene.
+ owner[%s] member[%s]
+ screen command buffer is empty.
+ Mismatch arg. current scene:%d arg:%d
+ ƒV[ƒ“‚Ì¶¬‚ÉŽ¸”s can't create New SceneInfoList.
+ to   [%s] [%s]
+from [%s] [%s]
+  screenObj.cpp P2Assert  ObjectParticleActor tutorial forest yakushima last kill @ground illustratedBookMessage.cpp P2Assert     drawbuffer sysDrawBuffer.cpp P2Assert DrawBuffer        pikmin2AramMgr.cpp res_ground.szs res_cave.szs res_s_menu_map.szs res_s_menu_pause.szs res_s_menu_item.szs res_challenge_1p.szs res_challenge_2p.szs res_vs.szs res_s_menu_pause_doukutu.szs res_s_menu_pause_VS.szs res_ana_demo.szs res_contena.szs res_ufo.szs new_screen/cmn/res_map_image_tutorial.szs new_screen/cmn/res_map_image_forest.szs new_screen/cmn/res_map_image_yakushima.szs new_screen/cmn/res_map_image_last.szs user/Mukki/movie/s00_coursein/demo.szs user/Mukki/movie/s0B_cv_coursein/demo.szs user/Mukki/movie/s09_holein/demo.szs user/Mukki/movie/g2F_appear_hole/demo.szs user/Mukki/movie/g30_appear_fountain/demo.szs user/Mukki/movie/s10_suck_treasure/demo.szs user/Mukki/movie/s17_suck_equipment/demo.szs user/Mukki/movie/s22_cv_suck_equipment/demo.szs user/Mukki/movie/s22_cv_suck_treasure/demo.szs user/Mukki/movie/s01_dayend/demo.szs user/Mukki/movie/s02_dayend_result/demo.szs user/Mukki/movie/s03_orimadown/demo.szs user/Mukki/movie/s04_dayend_orimadown/demo.szs user/Mukki/movie/s05_pikminzero/demo.szs user/Mukki/movie/s06_dayend_pikminzero/demo.szs user/Mukki/movie/s0C_cv_escape/demo.szs user/Mukki/movie/s0E_return_cave/demo.szs user/Mukki/movie/s12_cv_giveup/demo.szs user/Mukki/movie/s21_dayend_takeoff/demo.szs user/Kando/onyon/arc.szs user/Kando/onyon/texts.szs user/Kando/pod/arc.szs user/Kando/pod/texts.szs user/Kando/pod_gold/arc.szs user/Kando/pod_gold/texts.szs user/Kando/ufo/arc.szs user/Kando/ufo/texts.szs user/Kando/ufo_gold/arc.szs user/Kando/ufo_gold/texts.szs user/Kando/objects/gates/gate-arc.szs user/Kando/objects/gates/gate-texts.szs user/Kando/objects/gates/e-gate-arc.szs user/Kando/objects/gates/e-gate-texts.szs user/Kando/objects/dungeon_hole/arc.szs user/Kando/objects/dungeon_hole/texts.szs user/Kando/objects/pikihead/arc.szs user/Kando/objects/pikihead/texts.szs user/Kando/bridge/s_bridge/arc.szs user/Kando/bridge/s_bridge/texts.szs user/Kando/bridge/slope_u/arc.szs user/Kando/bridge/slope_u/texts.szs user/Kando/bridge/l_bridge/arc.szs user/Kando/bridge/l_bridge/texts.szs enemy/data/Queen/queenchappy_model.btk enemy/data/Queen/model.szs enemy/data/Queen/anim.szs enemy/data/BigTreasure/model.szs enemy/data/BigTreasure/anim.szs enemy/data/Baby/model.szs enemy/data/Baby/anim.szs P2Assert enemy/enemyResList.txt EOF freeAll is PAL only.   mCont is null !
+        menu root menu.cpp MenuList is wrong.
+ %2d %s   damageD   lifeD     pikminD   PSMainSide_Director.cpp P2Assert pikatkD   tentionD  PSMainSide_Factory.cpp P2Assert kuro_post.bms m_boss.bms l_boss.bms battle_t.bms    PSMainSide_ObjSound.cpp P2Assert JAIAnimeSound::playActorAnimSound  dataCounter‚
+ PSMainSide_Demo.cpp P2Assert s21_dayend_takeoff   s02_dayend_result s01_dayend s03_orimadown s05_pikminzero s11_dope_first_b s11_dope_first_r s11_dopebin_first_b s11_dopebin_first_r key s17_suck_equipment s22_cv_suck_equipment s10_suck_treasure s22_cv_suck_treasure s04_dayend_orimadown s06_dayend_pikminzero g1A_red_doping g1B_black_doping g02_boot_onyonR g1E_boot_onyonY g20_boot_onyonB g03_meet_redpikmin g1F_meet_yellowpikmin g21_meet_bluepikmin g24_meet_blackpikmin g27_meet_whitepikmin g33_camera_demo s09_holein s16_find_item_00 s16_find_item_01 s16_find_item_02 s16_find_item_03 s16_find_item_04 s16_find_item_05 s16_find_item_06 s16_find_item_07 s16_find_item_08 s16_find_item_09 s16_find_item_10 s16_find_item_11 s16_find_item_12 s0C_cv_escape g01_pick_me g04_find_treasure g05_find_cave_f_01 g05_find_cave_f_02 g05_find_cave_f_03 g05_find_cave_f_04 g05_find_cave_l_01 g05_find_cave_l_02 g05_find_cave_l_03 g05_find_cave_t_01 g05_find_cave_t_02 g05_find_cave_t_03 g05_find_cave_y_01 g05_find_cave_y_02 g05_find_cave_y_03 g05_find_cave_y_04 g0A_cv_find_hole g0B_cv_find_fountain g18_find_gate g19_find_rock g2D_red_extract g2E_black_extract g34_yellow_extract g37_get_louie g38_find_whitepom g39_find_blackpom x01_gamestart x02_watch_red_pikmin x06_join x12_drain_water x10_find_yellow_onyon x11_find_blue_onyon x16_hiba x13_exp_leafchappy x20_blackman s13_pikmin_supply s0B_cv_coursein s0E_return_cave e00_E3_cavestart g07_cv_gamestart g08_first_return g09_first_sunset g16_100_pikmin g16_95_pikmin g26_inout_black g29_inout_white g2B_white_poison g2C_inout_red g36_find_louie x01_coursein_forest x01_coursein_yakushima x01_coursein_last x04_exp_y x05_louiestart x07_first_recovery x08_cv_suck_carcass x09_exp_detector x14_white_dig g32_get_map g35_president_gamestart x15_exp_x x17_join_guide x18_exp_pellet x03_find_red_onyon x19_vs_bedama g2F_appear_hole g30_appear_fountain s12_cv_giveup   PSMainSide_Scene.cpp P2Assert handle or *handle is null. return.
+       PSMainSide_BossMgr.cpp P2Assert PSMainSide_Se.cpp P2Assert      PSMainSide_DirectorMgr.cpp P2Assert caveglass.bms caverelax.bms user/Totaka/trackMap_Seq_T.txt caveconc.bms user/Totaka/trackMap_Cond_T.txt new_ cavesoil.bms cavemetal.bms user/Wakai/trackMap_Cond_W.txt user/Wakai/trackMap_Seq_W.txt track map is
+not initialized
+ eventD OtakaraD GroundD   eventD    OriBeedaD RugBeedaD OriIchouD RouIchouD PikBattlD  
+PSMainSide_Sound.cpp P2Assert 
+SE called at invalid timming
+(%08x)
+ PSMainSide_TrackMap.cpp not loaded
+ endoffile not find
+track map
+(%s) basic trk over
+(%s)
+(Cur=%d) event trk over
+(%s)
+(Cur=%d) otakara trk over
+(%s)
+(Cur=%d) kehai trk over
+(%s)
+(Cur=%d) battle trk over
+(%s)
+(Cur=%d) ground trk over
+(%s)
+(Cur=%d) abnormal pik num
+(%s)
+(Cur=%d) abnormal pik mask
+(%s)
+(Cur=%d) file num over
+track map
+(%s) P2Assert not find info
+ basic trk over
+(Cur=%d)
+ event trk over
+(Cur=%d)
+ otakara trk over
+(Cur=%d)
+ kehai trk over
+(Cur=%d)
+ battle trk over
+(Cur=%d)
+ ground trk over
+(Cur=%d)
+ abnormal pik num
+(Cur=%d)
+ abnormal pik mask
+(Cur=%d)
+ file num over

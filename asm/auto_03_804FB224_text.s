@@ -1,0 +1,36 @@
+.include "macros.inc"
+.file "auto_03_804FB224_text"
+
+# 0x804FB224 - 0x804FB28C
+.text
+.balign 4
+
+.fn fn_804FB224, global
+/* 804FB224 004F6A44  C0 03 00 04 */	lfs f0, 0x4(r3)
+/* 804FB228 004F6A48  C0 43 00 00 */	lfs f2, 0x0(r3)
+/* 804FB22C 004F6A4C  EC 60 00 32 */	fmuls f3, f0, f0
+/* 804FB230 004F6A50  C0 23 00 08 */	lfs f1, 0x8(r3)
+/* 804FB234 004F6A54  C0 02 09 98 */	lfs f0, lbl_80675E78@sda21(r0)
+/* 804FB238 004F6A58  EC 42 18 BA */	fmadds f2, f2, f2, f3
+/* 804FB23C 004F6A5C  EC 21 10 7A */	fmadds f1, f1, f1, f2
+/* 804FB240 004F6A60  FC 01 00 40 */	fcmpo cr0, f1, f0
+/* 804FB244 004F6A64  40 81 00 0C */	ble .L_804FB250
+/* 804FB248 004F6A68  FC 00 08 34 */	frsqrte f0, f1
+/* 804FB24C 004F6A6C  EC 20 00 72 */	fmuls f1, f0, f1
+.L_804FB250:
+/* 804FB250 004F6A70  C0 02 09 98 */	lfs f0, lbl_80675E78@sda21(r0)
+/* 804FB254 004F6A74  FC 01 00 40 */	fcmpo cr0, f1, f0
+/* 804FB258 004F6A78  4C 81 00 20 */	blelr
+/* 804FB25C 004F6A7C  C0 02 09 9C */	lfs f0, lbl_80675E7C@sda21(r0)
+/* 804FB260 004F6A80  C0 63 00 00 */	lfs f3, 0x0(r3)
+/* 804FB264 004F6A84  EC 80 08 24 */	fdivs f4, f0, f1
+/* 804FB268 004F6A88  C0 43 00 04 */	lfs f2, 0x4(r3)
+/* 804FB26C 004F6A8C  C0 03 00 08 */	lfs f0, 0x8(r3)
+/* 804FB270 004F6A90  EC 63 01 32 */	fmuls f3, f3, f4
+/* 804FB274 004F6A94  EC 42 01 32 */	fmuls f2, f2, f4
+/* 804FB278 004F6A98  EC 00 01 32 */	fmuls f0, f0, f4
+/* 804FB27C 004F6A9C  D0 63 00 00 */	stfs f3, 0x0(r3)
+/* 804FB280 004F6AA0  D0 43 00 04 */	stfs f2, 0x4(r3)
+/* 804FB284 004F6AA4  D0 03 00 08 */	stfs f0, 0x8(r3)
+/* 804FB288 004F6AA8  4E 80 00 20 */	blr
+.endfn fn_804FB224

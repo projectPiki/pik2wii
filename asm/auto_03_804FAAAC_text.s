@@ -1,0 +1,34 @@
+.include "macros.inc"
+.file "auto_03_804FAAAC_text"
+
+# 0x804FAAAC - 0x804FAAFC
+.text
+.balign 4
+
+.fn fn_804FAAAC, global
+/* 804FAAAC 004F62CC  80 83 00 00 */	lwz r4, 0x0(r3)
+/* 804FAAB0 004F62D0  2C 04 00 00 */	cmpwi r4, 0x0
+/* 804FAAB4 004F62D4  41 82 00 0C */	beq .L_804FAAC0
+/* 804FAAB8 004F62D8  80 03 00 04 */	lwz r0, 0x4(r3)
+/* 804FAABC 004F62DC  90 04 00 04 */	stw r0, 0x4(r4)
+.L_804FAAC0:
+/* 804FAAC0 004F62E0  80 83 00 04 */	lwz r4, 0x4(r3)
+/* 804FAAC4 004F62E4  2C 04 00 00 */	cmpwi r4, 0x0
+/* 804FAAC8 004F62E8  41 82 00 0C */	beq .L_804FAAD4
+/* 804FAACC 004F62EC  80 03 00 00 */	lwz r0, 0x0(r3)
+/* 804FAAD0 004F62F0  90 04 00 00 */	stw r0, 0x0(r4)
+.L_804FAAD4:
+/* 804FAAD4 004F62F4  38 00 00 00 */	li r0, 0x0
+/* 804FAAD8 004F62F8  90 03 00 04 */	stw r0, 0x4(r3)
+/* 804FAADC 004F62FC  90 03 00 00 */	stw r0, 0x0(r3)
+/* 804FAAE0 004F6300  4E 80 00 20 */	blr
+.endfn fn_804FAAAC
+
+.fn fn_804FAAE4, global
+/* 804FAAE4 004F6304  80 A3 00 00 */	lwz r5, 0x0(r3)
+/* 804FAAE8 004F6308  90 83 00 00 */	stw r4, 0x0(r3)
+/* 804FAAEC 004F630C  90 64 00 04 */	stw r3, 0x4(r4)
+/* 804FAAF0 004F6310  90 A4 00 00 */	stw r5, 0x0(r4)
+/* 804FAAF4 004F6314  90 85 00 04 */	stw r4, 0x4(r5)
+/* 804FAAF8 004F6318  4E 80 00 20 */	blr
+.endfn fn_804FAAE4

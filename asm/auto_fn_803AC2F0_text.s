@@ -1,0 +1,49 @@
+.include "macros.inc"
+.file "auto_fn_803AC2F0_text"
+
+# 0x803AC2F0 - 0x803AC37C
+.text
+.balign 4
+
+.fn fn_803AC2F0, global
+/* 803AC2F0 003A7B10  3D 00 80 67 */	lis r8, lbl_80669FF8@ha
+/* 803AC2F4 003A7B14  39 60 FF FF */	li r11, -0x1
+/* 803AC2F8 003A7B18  38 E8 9F F8 */	addi r7, r8, lbl_80669FF8@l
+/* 803AC2FC 003A7B1C  3C 60 80 67 */	lis r3, lbl_8066AAA8@ha
+/* 803AC300 003A7B20  C0 43 AA A8 */	lfs f2, lbl_8066AAA8@l(r3)
+/* 803AC304 003A7B24  3D 40 80 64 */	lis r10, lbl_806392D8@ha
+/* 803AC308 003A7B28  39 2A 92 D8 */	addi r9, r10, lbl_806392D8@l
+/* 803AC30C 003A7B2C  38 60 00 0A */	li r3, 0xa
+/* 803AC310 003A7B30  C0 22 E2 84 */	lfs f1, lbl_80673764@sda21(r0)
+/* 803AC314 003A7B34  38 00 00 1E */	li r0, 0x1e
+/* 803AC318 003A7B38  C0 02 E2 88 */	lfs f0, lbl_80673768@sda21(r0)
+/* 803AC31C 003A7B3C  38 C0 00 FF */	li r6, 0xff
+/* 803AC320 003A7B40  91 67 00 08 */	stw r11, 0x8(r7)
+/* 803AC324 003A7B44  38 A0 00 00 */	li r5, 0x0
+/* 803AC328 003A7B48  38 80 00 40 */	li r4, 0x40
+/* 803AC32C 003A7B4C  91 67 00 0C */	stw r11, 0xc(r7)
+/* 803AC330 003A7B50  91 6D A6 40 */	stw r11, lbl_8066CE40@sda21(r0)
+/* 803AC334 003A7B54  D0 4D A6 44 */	stfs f2, lbl_8066CE44@sda21(r0)
+/* 803AC338 003A7B58  D0 4A 92 D8 */	stfs f2, lbl_806392D8@l(r10)
+/* 803AC33C 003A7B5C  D0 49 00 04 */	stfs f2, 0x4(r9)
+/* 803AC340 003A7B60  D0 49 00 08 */	stfs f2, 0x8(r9)
+/* 803AC344 003A7B64  D0 28 9F F8 */	stfs f1, lbl_80669FF8@l(r8)
+/* 803AC348 003A7B68  D0 07 00 04 */	stfs f0, 0x4(r7)
+/* 803AC34C 003A7B6C  98 C7 00 08 */	stb r6, 0x8(r7)
+/* 803AC350 003A7B70  98 A7 00 09 */	stb r5, 0x9(r7)
+/* 803AC354 003A7B74  98 A7 00 0A */	stb r5, 0xa(r7)
+/* 803AC358 003A7B78  98 C7 00 0B */	stb r6, 0xb(r7)
+/* 803AC35C 003A7B7C  98 87 00 0C */	stb r4, 0xc(r7)
+/* 803AC360 003A7B80  98 A7 00 0D */	stb r5, 0xd(r7)
+/* 803AC364 003A7B84  98 A7 00 0E */	stb r5, 0xe(r7)
+/* 803AC368 003A7B88  98 A7 00 0F */	stb r5, 0xf(r7)
+/* 803AC36C 003A7B8C  90 67 00 10 */	stw r3, 0x10(r7)
+/* 803AC370 003A7B90  90 07 00 14 */	stw r0, 0x14(r7)
+/* 803AC374 003A7B94  90 67 00 18 */	stw r3, 0x18(r7)
+/* 803AC378 003A7B98  4E 80 00 20 */	blr
+.endfn fn_803AC2F0
+
+# 0x80534F4C - 0x80534F50
+.section .ctors, "a"
+.balign 4
+	.4byte fn_803AC2F0

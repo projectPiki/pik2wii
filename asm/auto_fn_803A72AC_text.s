@@ -1,0 +1,42 @@
+.include "macros.inc"
+.file "auto_fn_803A72AC_text"
+
+# 0x803A72AC - 0x803A731C
+.text
+.balign 4
+
+.fn fn_803A72AC, global
+/* 803A72AC 003A2ACC  3C 80 80 67 */	lis r4, lbl_80669F58@ha
+/* 803A72B0 003A2AD0  C1 62 E0 F8 */	lfs f11, lbl_806735D8@sda21(r0)
+/* 803A72B4 003A2AD4  C1 42 E1 38 */	lfs f10, lbl_80673618@sda21(r0)
+/* 803A72B8 003A2AD8  38 64 9F 58 */	addi r3, r4, lbl_80669F58@l
+/* 803A72BC 003A2ADC  C1 22 E1 3C */	lfs f9, lbl_8067361C@sda21(r0)
+/* 803A72C0 003A2AE0  C1 02 E1 40 */	lfs f8, lbl_80673620@sda21(r0)
+/* 803A72C4 003A2AE4  C0 E2 E1 44 */	lfs f7, lbl_80673624@sda21(r0)
+/* 803A72C8 003A2AE8  C0 C2 E1 48 */	lfs f6, lbl_80673628@sda21(r0)
+/* 803A72CC 003A2AEC  C0 A2 E1 4C */	lfs f5, lbl_8067362C@sda21(r0)
+/* 803A72D0 003A2AF0  C0 82 E1 50 */	lfs f4, lbl_80673630@sda21(r0)
+/* 803A72D4 003A2AF4  C0 62 E1 54 */	lfs f3, lbl_80673634@sda21(r0)
+/* 803A72D8 003A2AF8  C0 42 E1 58 */	lfs f2, lbl_80673638@sda21(r0)
+/* 803A72DC 003A2AFC  C0 22 E1 5C */	lfs f1, lbl_8067363C@sda21(r0)
+/* 803A72E0 003A2B00  C0 02 E1 60 */	lfs f0, lbl_80673640@sda21(r0)
+/* 803A72E4 003A2B04  D1 64 9F 58 */	stfs f11, lbl_80669F58@l(r4)
+/* 803A72E8 003A2B08  D1 43 00 04 */	stfs f10, 0x4(r3)
+/* 803A72EC 003A2B0C  D1 23 00 08 */	stfs f9, 0x8(r3)
+/* 803A72F0 003A2B10  D1 23 00 0C */	stfs f9, 0xc(r3)
+/* 803A72F4 003A2B14  D1 03 00 10 */	stfs f8, 0x10(r3)
+/* 803A72F8 003A2B18  D0 E3 00 14 */	stfs f7, 0x14(r3)
+/* 803A72FC 003A2B1C  D0 C3 00 18 */	stfs f6, 0x18(r3)
+/* 803A7300 003A2B20  D0 A3 00 1C */	stfs f5, 0x1c(r3)
+/* 803A7304 003A2B24  D0 83 00 20 */	stfs f4, 0x20(r3)
+/* 803A7308 003A2B28  D0 63 00 24 */	stfs f3, 0x24(r3)
+/* 803A730C 003A2B2C  D0 43 00 28 */	stfs f2, 0x28(r3)
+/* 803A7310 003A2B30  D0 23 00 2C */	stfs f1, 0x2c(r3)
+/* 803A7314 003A2B34  D0 03 00 30 */	stfs f0, 0x30(r3)
+/* 803A7318 003A2B38  4E 80 00 20 */	blr
+.endfn fn_803A72AC
+
+# 0x80534F38 - 0x80534F3C
+.section .ctors, "a"
+.balign 4
+	.4byte fn_803A72AC

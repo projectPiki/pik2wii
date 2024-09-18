@@ -1,0 +1,20 @@
+.include "macros.inc"
+.file "auto_03_804F8A20_text"
+
+# 0x804F8A20 - 0x804F8A40
+.text
+.balign 4
+
+.fn fn_804F8A20, global
+/* 804F8A20 004F4240  38 60 00 01 */	li r3, 0x1
+/* 804F8A24 004F4244  38 80 00 03 */	li r4, 0x3
+/* 804F8A28 004F4248  38 A0 00 01 */	li r5, 0x1
+/* 804F8A2C 004F424C  4B C2 FC 30 */	b fn_8012865C
+.endfn fn_804F8A20
+
+.fn fn_804F8A30, global
+/* 804F8A30 004F4250  38 60 00 00 */	li r3, 0x0
+/* 804F8A34 004F4254  38 80 00 07 */	li r4, 0x7
+/* 804F8A38 004F4258  38 A0 00 01 */	li r5, 0x1
+/* 804F8A3C 004F425C  4B C2 FC 20 */	b fn_8012865C
+.endfn fn_804F8A30

@@ -1,0 +1,99 @@
+.include "macros.inc"
+.file "auto_fn_804F9BD0_text"
+
+# 0x80006848 - 0x80006850
+.section extab, "a"
+.balign 4
+
+.obj "@etb_80006848", local
+.hidden "@etb_80006848"
+	.4byte 0x108A0000
+	.4byte 0x00000000
+.endobj "@etb_80006848"
+
+# 0x80006C8C - 0x80006C98
+.section extabindex, "a"
+.balign 4
+
+.obj "@eti_80006C8C", local
+.hidden "@eti_80006C8C"
+	.4byte fn_804F9BD0
+	.4byte 0x00000110
+	.4byte "@etb_80006848"
+.endobj "@eti_80006C8C"
+
+# 0x804F9BD0 - 0x804F9CE0
+.text
+.balign 4
+
+.fn fn_804F9BD0, global
+/* 804F9BD0 004F53F0  94 21 FF C0 */	stwu r1, -0x40(r1)
+/* 804F9BD4 004F53F4  7C 08 02 A6 */	mflr r0
+/* 804F9BD8 004F53F8  90 01 00 44 */	stw r0, 0x44(r1)
+/* 804F9BDC 004F53FC  DB E1 00 30 */	stfd f31, 0x30(r1)
+/* 804F9BE0 004F5400  F3 E1 00 38 */	psq_st f31, 0x38(r1), 0, qr0
+/* 804F9BE4 004F5404  DB C1 00 20 */	stfd f30, 0x20(r1)
+/* 804F9BE8 004F5408  F3 C1 00 28 */	psq_st f30, 0x28(r1), 0, qr0
+/* 804F9BEC 004F540C  C0 22 09 3C */	lfs f1, lbl_80675E1C@sda21(r0)
+/* 804F9BF0 004F5410  93 E1 00 1C */	stw r31, 0x1c(r1)
+/* 804F9BF4 004F5414  C0 02 09 38 */	lfs f0, lbl_80675E18@sda21(r0)
+/* 804F9BF8 004F5418  93 C1 00 18 */	stw r30, 0x18(r1)
+/* 804F9BFC 004F541C  7C 7E 1B 78 */	mr r30, r3
+/* 804F9C00 004F5420  C3 E2 09 40 */	lfs f31, lbl_80675E20@sda21(r0)
+/* 804F9C04 004F5424  D0 23 00 48 */	stfs f1, 0x48(r3)
+/* 804F9C08 004F5428  C3 C2 09 44 */	lfs f30, lbl_80675E24@sda21(r0)
+/* 804F9C0C 004F542C  D0 03 00 4C */	stfs f0, 0x4c(r3)
+/* 804F9C10 004F5430  80 6D AC 08 */	lwz r3, lbl_8066D408@sda21(r0)
+/* 804F9C14 004F5434  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 804F9C18 004F5438  81 8C 00 08 */	lwz r12, 0x8(r12)
+/* 804F9C1C 004F543C  7D 89 03 A6 */	mtctr r12
+/* 804F9C20 004F5440  4E 80 04 21 */	bctrl
+/* 804F9C24 004F5444  2C 03 00 00 */	cmpwi r3, 0x0
+/* 804F9C28 004F5448  41 82 00 78 */	beq .L_804F9CA0
+/* 804F9C2C 004F544C  80 6D AC 08 */	lwz r3, lbl_8066D408@sda21(r0)
+/* 804F9C30 004F5450  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 804F9C34 004F5454  81 8C 00 08 */	lwz r12, 0x8(r12)
+/* 804F9C38 004F5458  7D 89 03 A6 */	mtctr r12
+/* 804F9C3C 004F545C  4E 80 04 21 */	bctrl
+/* 804F9C40 004F5460  80 83 00 00 */	lwz r4, 0x0(r3)
+/* 804F9C44 004F5464  3F E0 43 30 */	lis r31, 0x4330
+/* 804F9C48 004F5468  80 6D AC 08 */	lwz r3, lbl_8066D408@sda21(r0)
+/* 804F9C4C 004F546C  A0 04 00 04 */	lhz r0, 0x4(r4)
+/* 804F9C50 004F5470  81 83 00 00 */	lwz r12, 0x0(r3)
+/* 804F9C54 004F5474  90 01 00 0C */	stw r0, 0xc(r1)
+/* 804F9C58 004F5478  C8 42 09 50 */	lfd f2, lbl_80675E30@sda21(r0)
+/* 804F9C5C 004F547C  93 E1 00 08 */	stw r31, 0x8(r1)
+/* 804F9C60 004F5480  C0 02 09 48 */	lfs f0, lbl_80675E28@sda21(r0)
+/* 804F9C64 004F5484  C8 21 00 08 */	lfd f1, 0x8(r1)
+/* 804F9C68 004F5488  81 8C 00 08 */	lwz r12, 0x8(r12)
+/* 804F9C6C 004F548C  EC 21 10 28 */	fsubs f1, f1, f2
+/* 804F9C70 004F5490  EF E0 00 72 */	fmuls f31, f0, f1
+/* 804F9C74 004F5494  7D 89 03 A6 */	mtctr r12
+/* 804F9C78 004F5498  4E 80 04 21 */	bctrl
+/* 804F9C7C 004F549C  80 63 00 00 */	lwz r3, 0x0(r3)
+/* 804F9C80 004F54A0  93 E1 00 10 */	stw r31, 0x10(r1)
+/* 804F9C84 004F54A4  A0 03 00 06 */	lhz r0, 0x6(r3)
+/* 804F9C88 004F54A8  C8 42 09 50 */	lfd f2, lbl_80675E30@sda21(r0)
+/* 804F9C8C 004F54AC  90 01 00 14 */	stw r0, 0x14(r1)
+/* 804F9C90 004F54B0  C0 02 09 48 */	lfs f0, lbl_80675E28@sda21(r0)
+/* 804F9C94 004F54B4  C8 21 00 10 */	lfd f1, 0x10(r1)
+/* 804F9C98 004F54B8  EC 21 10 28 */	fsubs f1, f1, f2
+/* 804F9C9C 004F54BC  EF C0 00 72 */	fmuls f30, f0, f1
+.L_804F9CA0:
+/* 804F9CA0 004F54C0  FC 20 F0 50 */	fneg f1, f30
+/* 804F9CA4 004F54C4  D3 DE 00 50 */	stfs f30, 0x50(r30)
+/* 804F9CA8 004F54C8  FC 00 F8 50 */	fneg f0, f31
+/* 804F9CAC 004F54CC  D3 FE 00 5C */	stfs f31, 0x5c(r30)
+/* 804F9CB0 004F54D0  D0 3E 00 54 */	stfs f1, 0x54(r30)
+/* 804F9CB4 004F54D4  D0 1E 00 58 */	stfs f0, 0x58(r30)
+/* 804F9CB8 004F54D8  E3 E1 00 38 */	psq_l f31, 0x38(r1), 0, qr0
+/* 804F9CBC 004F54DC  CB E1 00 30 */	lfd f31, 0x30(r1)
+/* 804F9CC0 004F54E0  E3 C1 00 28 */	psq_l f30, 0x28(r1), 0, qr0
+/* 804F9CC4 004F54E4  CB C1 00 20 */	lfd f30, 0x20(r1)
+/* 804F9CC8 004F54E8  83 E1 00 1C */	lwz r31, 0x1c(r1)
+/* 804F9CCC 004F54EC  83 C1 00 18 */	lwz r30, 0x18(r1)
+/* 804F9CD0 004F54F0  80 01 00 44 */	lwz r0, 0x44(r1)
+/* 804F9CD4 004F54F4  7C 08 03 A6 */	mtlr r0
+/* 804F9CD8 004F54F8  38 21 00 40 */	addi r1, r1, 0x40
+/* 804F9CDC 004F54FC  4E 80 00 20 */	blr
+.endfn fn_804F9BD0

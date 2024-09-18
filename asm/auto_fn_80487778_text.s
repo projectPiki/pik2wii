@@ -1,0 +1,37 @@
+.include "macros.inc"
+.file "auto_fn_80487778_text"
+
+# 0x80487778 - 0x804877D4
+.text
+.balign 4
+
+.fn fn_80487778, global
+/* 80487778 00482F98  3C 60 80 67 */	lis r3, lbl_8066AAA8@ha
+/* 8048777C 00482F9C  3C C0 80 64 */	lis r6, lbl_80639468@ha
+/* 80487780 00482FA0  C0 A3 AA A8 */	lfs f5, lbl_8066AAA8@l(r3)
+/* 80487784 00482FA4  3C 80 80 67 */	lis r4, lbl_8066A230@ha
+/* 80487788 00482FA8  38 A6 94 68 */	addi r5, r6, lbl_80639468@l
+/* 8048778C 00482FAC  C0 42 FE 68 */	lfs f2, lbl_80675348@sda21(r0)
+/* 80487790 00482FB0  38 00 FF FF */	li r0, -0x1
+/* 80487794 00482FB4  C0 82 FE 60 */	lfs f4, lbl_80675340@sda21(r0)
+/* 80487798 00482FB8  38 64 A2 30 */	addi r3, r4, lbl_8066A230@l
+/* 8048779C 00482FBC  C0 62 FE 64 */	lfs f3, lbl_80675344@sda21(r0)
+/* 804877A0 00482FC0  C0 22 FE 6C */	lfs f1, lbl_8067534C@sda21(r0)
+/* 804877A4 00482FC4  C0 02 FE 70 */	lfs f0, lbl_80675350@sda21(r0)
+/* 804877A8 00482FC8  90 0D A9 58 */	stw r0, lbl_8066D158@sda21(r0)
+/* 804877AC 00482FCC  D0 AD A9 5C */	stfs f5, lbl_8066D15C@sda21(r0)
+/* 804877B0 00482FD0  D0 A6 94 68 */	stfs f5, lbl_80639468@l(r6)
+/* 804877B4 00482FD4  D0 A5 00 04 */	stfs f5, 0x4(r5)
+/* 804877B8 00482FD8  D0 A5 00 08 */	stfs f5, 0x8(r5)
+/* 804877BC 00482FDC  D0 83 00 04 */	stfs f4, 0x4(r3)
+/* 804877C0 00482FE0  D0 63 00 08 */	stfs f3, 0x8(r3)
+/* 804877C4 00482FE4  D0 44 A2 30 */	stfs f2, lbl_8066A230@l(r4)
+/* 804877C8 00482FE8  D0 23 00 0C */	stfs f1, 0xc(r3)
+/* 804877CC 00482FEC  D0 03 00 10 */	stfs f0, 0x10(r3)
+/* 804877D0 00482FF0  4E 80 00 20 */	blr
+.endfn fn_80487778
+
+# 0x80534FEC - 0x80534FF0
+.section .ctors, "a"
+.balign 4
+	.4byte fn_80487778
