@@ -14,7 +14,7 @@ struct TAllocator {
 
 	void deallocate(T* p, u32) { DeallocateRaw(p); }
 
-	void DeallocateRaw(void* p) { delete (p); }
+	void DeallocateRaw(T* p) { delete (p); }
 
 	void construct(T* pObject, T const& value)
 	{
