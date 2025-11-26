@@ -453,7 +453,7 @@ JSystem/JAudio/JAS/JASBankMgr.cpp:
 	.text       start:0x8004AF44 end:0x8004B718
 	.rodata     start:0x80538A18 end:0x80538A40
 	.sbss       start:0x8066B9B0 end:0x8066B9C0
-	.sdata2     start:0x8066D910 end:0x8066D930
+	.sdata2     start:0x8066D910 end:0x8066D92C
 
 JSystem/JAudio/JAS/JASBasicBank.cpp:
 	.text       start:0x8004B718 end:0x8004B83C
@@ -500,7 +500,7 @@ JSystem/JAudio/JAS/JASSimpleWaveBank.cpp:
 JSystem/JAudio/JAS/JASWaveArcLoader.cpp:
 	.text       start:0x8004D8AC end:0x8004DE84
 	.data       start:0x805645D0 end:0x80564628
-	.sbss       start:0x8066B9D0 end:0x8066B9D8
+	.sbss       start:0x8066B9D0 end:0x8066B9D4
 
 JSystem/JAudio/JAS/JASWaveBank.cpp:
 	.text       start:0x8004DE84 end:0x8004DE98
@@ -929,6 +929,7 @@ JSystem/JKernel/JKRAram.cpp:
 	.rodata     start:0x80539B50 end:0x80539B90
 	.data       start:0x80568888 end:0x80568898
 	.bss        start:0x805D51D8 end:0x805D5200
+	.bss        start:0x8065F970 end:0x8065F9AC align:4 common
 	.sdata      start:0x8066A998 end:0x8066A9A0
 	.sbss       start:0x8066BC20 end:0x8066BC60
 
@@ -939,12 +940,13 @@ JSystem/JKernel/JKRAramArchive.cpp:
 
 JSystem/JKernel/JKRAramBlock.cpp:
 	.text       start:0x8007DE88 end:0x8007E118
-	.data       start:0x805688E8 end:0x805688F8
+	.data       start:0x805688E8 end:0x805688F4
 
 JSystem/JKernel/JKRAramHeap.cpp:
 	.text       start:0x8007E118 end:0x8007E4F0
 	.ctors      start:0x80534CF4 end:0x80534CF8
-	.data       start:0x805688F8 end:0x80568908
+	.data       start:0x805688F8 end:0x80568904
+	.bss        start:0x8065F9AC end:0x8065F9B8 align:4 common
 
 JSystem/JKernel/JKRAramPiece.cpp:
 	.text       start:0x8007E4F0 end:0x8007E918
@@ -974,17 +976,18 @@ JSystem/JKernel/JKRCompArchive.cpp:
 JSystem/JKernel/JKRDecomp.cpp:
 	.text       start:0x800812F8 end:0x8008199C
 	.data       start:0x805689B8 end:0x805689C8
+	.bss        start:0x8065FA10 end:0x8065FA50 align:4 common
 	.sbss       start:0x8066BC78 end:0x8066BC7C
 
 JSystem/JKernel/JKRDisposer.cpp:
 	.text       start:0x8008199C end:0x80081A84
-	.data       start:0x805689C8 end:0x805689D8
+	.data       start:0x805689C8 end:0x805689D4
 
 JSystem/JKernel/JKRDvdFile.cpp:
 	.text       start:0x80081A84 end:0x8008200C
 	.ctors      start:0x80534CFC end:0x80534D00
 	.rodata     start:0x80539C88 end:0x80539CB0
-	.data       start:0x805689D8 end:0x80568A00
+	.data       start:0x805689D8 end:0x805689FC
 	.bss        start:0x805D5220 end:0x805D5230
 
 JSystem/JKernel/JKRDvdAramRipper.cpp:
@@ -1030,10 +1033,10 @@ JSystem/JKernel/JKRFileLoader.cpp:
 	.text       start:0x80087440 end:0x8008785C
 	.ctors      start:0x80534D08 end:0x80534D0C
 	.rodata     start:0x8053A0E0 end:0x8053A0E8
-	.data       start:0x80568B20 end:0x80568B60
+	.data       start:0x80568B20 end:0x80568B5C
 	.bss        start:0x805D5280 end:0x805D5290
-	.sdata      start:0x8066A9B0 end:0x8066A9B8
-	.sbss       start:0x8066BD20 end:0x8066BD28
+	.sdata      start:0x8066A9B0 end:0x8066A9B2
+	.sbss       start:0x8066BD20 end:0x8066BD24
 
 JSystem/JKernel/JKRHeap.cpp:
 	.text       start:0x8008785C end:0x80088C30
@@ -1059,6 +1062,7 @@ JSystem/JKernel/JKRThread.cpp:
 	.ctors      start:0x80534D10 end:0x80534D14
 	.data       start:0x80568C70 end:0x80568C90
 	.bss        start:0x805D5290 end:0x805D52A8
+	.bss        start:0x8065FA80 end:0x8065FA98 align:4 common
 	.sbss       start:0x8066BD60 end:0x8066BD70
 
 aralt/aralt.c:
@@ -5919,10 +5923,11 @@ sysGCU/menuSection.cpp:
 sysGCU/dvdThread.cpp:
 	.text       start:0x804AAA5C end:0x804AB0E0
 	.rodata     start:0x80559648 end:0x80559670
-	.data       start:0x805CCCC0 end:0x805CCCE0
+	.data       start:0x805CCCC0 end:0x805CCCD0
 
 sysGCU/appThread.cpp:
 	.text       start:0x804AB0E0 end:0x804AB11C
+	.data       start:0x805CCCD0 end:0x805CCCE0
 
 sysGCU/graphics.cpp:
 	.text       start:0x804AB11C end:0x804AE03C
