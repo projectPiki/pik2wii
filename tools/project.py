@@ -347,7 +347,7 @@ def check_path_case(path: Path):
             sys.exit(f"Cannot resolve: {path}")
 
     if path != curr:
-        print(f"??  Case mismatch: expected={path} actual={curr}")
+        print(f"⚠️  Case mismatch: expected={path} actual={curr}")
 
 
 def make_flags_str(flags: Optional[List[str]]) -> str:
