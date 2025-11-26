@@ -929,7 +929,6 @@ JSystem/JKernel/JKRAram.cpp:
 	.rodata     start:0x80539B50 end:0x80539B90
 	.data       start:0x80568888 end:0x80568898
 	.bss        start:0x805D51D8 end:0x805D5200
-	.bss        start:0x8065F970 end:0x8065F9AC align:4 common
 	.sdata      start:0x8066A998 end:0x8066A9A0
 	.sbss       start:0x8066BC20 end:0x8066BC60
 
@@ -946,7 +945,6 @@ JSystem/JKernel/JKRAramHeap.cpp:
 	.text       start:0x8007E118 end:0x8007E4F0
 	.ctors      start:0x80534CF4 end:0x80534CF8
 	.data       start:0x805688F8 end:0x80568904
-	.bss        start:0x8065F9AC end:0x8065F9B8 align:4 common
 
 JSystem/JKernel/JKRAramPiece.cpp:
 	.text       start:0x8007E4F0 end:0x8007E918
@@ -976,7 +974,6 @@ JSystem/JKernel/JKRCompArchive.cpp:
 JSystem/JKernel/JKRDecomp.cpp:
 	.text       start:0x800812F8 end:0x8008199C
 	.data       start:0x805689B8 end:0x805689C8
-	.bss        start:0x8065FA10 end:0x8065FA50 align:4 common
 	.sbss       start:0x8066BC78 end:0x8066BC7C
 
 JSystem/JKernel/JKRDisposer.cpp:
@@ -1062,7 +1059,6 @@ JSystem/JKernel/JKRThread.cpp:
 	.ctors      start:0x80534D10 end:0x80534D14
 	.data       start:0x80568C70 end:0x80568C90
 	.bss        start:0x805D5290 end:0x805D52A8
-	.bss        start:0x8065FA80 end:0x8065FA98 align:4 common
 	.sbss       start:0x8066BD60 end:0x8066BD70
 
 aralt/aralt.c:
