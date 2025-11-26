@@ -1,34 +1,34 @@
+#include "System.h"
+#include "ARAM.h"
+#include "Controller.h"
+#include "Dolphin/__start.h"
+#include "Dolphin/card.h"
 #include "Dolphin/os.h"
-#include "JSystem/JKernel/JKRHeap.h"
-#include "JSystem/JKernel/JKRFileCache.h"
+#include "Dolphin/rand.h"
+#include "DvdStatus.h"
+#include "Game/Data.h"
+#include "Game/GameConfig.h"
+#include "Game/MoviePlayer.h"
+#include "Game/PelletList.h"
+#include "Game/gamePlayData.h"
+#include "Game/gameStages.h"
+#include "GameFlow.h"
+#include "JSystem/JFramework/JFWDisplay.h"
 #include "JSystem/JFramework/JFWSystem.h"
+#include "JSystem/JKernel/JKRFileCache.h"
+#include "JSystem/JKernel/JKRHeap.h"
 #include "JSystem/JUtility/JUTConsole.h"
 #include "JSystem/JUtility/JUTVideo.h"
+#include "LoadResource.h"
+#include "MemoryCardMgr.h"
+#include "P2JME/P2JME.h"
 #include "P2Macros.h"
 #include "PSM/Factory.h"
-#include "System.h"
+#include "PSSystem/PSGame.h"
+#include "PSSystem/PSSystemIF.h"
+#include "Pikmin2ARAM.h"
 #include "ResetManager.h"
 #include "Resource.h"
-#include "DvdStatus.h"
-#include "GameFlow.h"
-#include "Controller.h"
-#include "ARAM.h"
-#include "Pikmin2ARAM.h"
-#include "MemoryCardMgr.h"
-#include "Game/GameConfig.h"
-#include "P2JME/P2JME.h"
-#include "Game/PelletList.h"
-#include "Game/gameStages.h"
-#include "Game/gamePlayData.h"
-#include "Game/MoviePlayer.h"
-#include "PSSystem/PSGame.h"
-#include "Dolphin/rand.h"
-#include "Dolphin/card.h"
-#include "Game/Data.h"
-#include "JSystem/JFramework/JFWDisplay.h"
-#include "PSSystem/PSSystemIF.h"
-#include "LoadResource.h"
-#include "Dolphin/__start.h"
 
 static GXRenderModeObj localNtsc608x448IntDfProg = { VI_TVMODE_NTSC_PROG,
 	                                                 608, // fbWidth
@@ -313,7 +313,10 @@ void preUserCallback(u16, OSContext*, u32, u32)
  * @note Address: 0x80422204
  * @note Size: 0x2C
  */
-void myTask(void* data) { sys->mCardMgr->cardProc(data); }
+void myTask(void* data)
+{
+	sys->mCardMgr->cardProc(data);
+}
 
 /**
  * @note Address: 0x80422230
@@ -540,7 +543,10 @@ void System::constructWithDvdAccessSecond()
  * @note Address: 0x80422920
  * @note Size: 0x54
  */
-void System::createRomFont(JKRHeap* heap) { mRomFont = new JUTRomFont(heap); }
+void System::createRomFont(JKRHeap* heap)
+{
+	mRomFont = new JUTRomFont(heap);
+}
 
 /**
  * @note Address: 0x80422974
@@ -775,7 +781,10 @@ int System::run()
  * @note Address: 0x80422EB8
  * @note Size: 0x58
  */
-f32 System::getTime() { return OSTicksToMilliseconds(OSGetTick()); }
+f32 System::getTime()
+{
+	return OSTicksToMilliseconds(OSGetTick());
+}
 
 /**
  * @note Address: N/A
@@ -790,19 +799,28 @@ void System::checkOptionBlockSaveFlag()
  * @note Address: 0x80422F10
  * @note Size: 0x10
  */
-void System::clearOptionBlockSaveFlag() { mPlayData->mDoSaveOptions = false; }
+void System::clearOptionBlockSaveFlag()
+{
+	mPlayData->mDoSaveOptions = false;
+}
 
 /**
  * @note Address: 0x80422F20
  * @note Size: 0x10
  */
-void System::setOptionBlockSaveFlag() { mPlayData->mDoSaveOptions = true; }
+void System::setOptionBlockSaveFlag()
+{
+	mPlayData->mDoSaveOptions = true;
+}
 
 /**
  * @note Address: 0x80422F30
  * @note Size: 0x8
  */
-Game::CommonSaveData::Mgr* System::getPlayCommonData() { return mPlayData; }
+Game::CommonSaveData::Mgr* System::getPlayCommonData()
+{
+	return mPlayData;
+}
 
 /**
  * @note Address: 0x80422F38
@@ -941,9 +959,9 @@ void System::endRender()
 {
 	PSSystem::SysIF* sysif;
 	if (sysif = PSSystem::spSysIF) {
-		sys->mTimers->_start("sound", true);
+		sys->mTimers->start("sound", true);
 		sysif->mainLoop();
-		sys->mTimers->_stop("sound");
+		sys->mTimers->stop("sound");
 	}
 	mDvdStatus->draw();
 	mResetMgr->draw();
@@ -965,7 +983,10 @@ System::ERenderMode System::setRenderMode(ERenderMode mode)
  * @note Address: 0x80423224
  * @note Size: 0x18
  */
-_GXRenderModeObj* System::getRenderModeObj() { return sRenderModeTable[mRenderMode]; }
+_GXRenderModeObj* System::getRenderModeObj()
+{
+	return sRenderModeTable[mRenderMode];
+}
 
 /**
  * @note Address: 0x8042323C
@@ -1008,31 +1029,42 @@ void System::changeRenderMode(ERenderMode newmode)
  * @note Address: 0x8042335C
  * @note Size: 0x8
  */
-u32 System::heapStatusStart(char*, JKRHeap*) { return 0; }
+u32 System::heapStatusStart(char*, JKRHeap*)
+{
+	return 0;
+}
 
 /**
  * @note Address: 0x80423364
  * @note Size: 0x4
  */
-void System::heapStatusEnd(char*) { }
+void System::heapStatusEnd(char*)
+{
+}
 
 /**
  * @note Address: 0x80423368
  * @note Size: 0x4
  */
-void System::heapStatusDump(bool) { }
+void System::heapStatusDump(bool)
+{
+}
 
 /**
  * @note Address: 0x8042336C
  * @note Size: 0x4
  */
-void System::heapStatusIndividual() { }
+void System::heapStatusIndividual()
+{
+}
 
 /**
  * @note Address: 0x80423370
  * @note Size: 0x4
  */
-void System::heapStatusNormal() { }
+void System::heapStatusNormal()
+{
+}
 
 /**
  * @note Address: N/A
@@ -1069,31 +1101,46 @@ void System::resetOff()
  * @note Address: 0x8042339C
  * @note Size: 0x14
  */
-void System::resetPermissionOn() { mResetMgr->setFlag(RESETFLAG_ResetAllowed); }
+void System::resetPermissionOn()
+{
+	mResetMgr->setFlag(RESETFLAG_ResetAllowed);
+}
 
 /**
  * @note Address: 0x804233B0
  * @note Size: 0x18
  */
-bool System::isResetActive() { return mResetMgr->mState; }
+bool System::isResetActive()
+{
+	return mResetMgr->mState;
+}
 
 /**
  * @note Address: 0x804233C8
  * @note Size: 0x14
  */
-void System::activeGP() { mResetMgr->setFlag(RESETFLAG_GPProcessing); }
+void System::activeGP()
+{
+	mResetMgr->setFlag(RESETFLAG_GPProcessing);
+}
 
 /**
  * @note Address: 0x804233DC
  * @note Size: 0x14
  */
-void System::inactiveGP() { mResetMgr->resetFlag(RESETFLAG_GPProcessing); }
+void System::inactiveGP()
+{
+	mResetMgr->resetFlag(RESETFLAG_GPProcessing);
+}
 
 /**
  * @note Address: 0x804233F0
  * @note Size: 0x24
  */
-bool System::isDvdErrorOccured() { return mDvdStatus->isErrorOccured(); }
+bool System::isDvdErrorOccured()
+{
+	return mDvdStatus->isErrorOccured();
+}
 
 /**
  * @note Address: 0x80423414
@@ -1133,19 +1180,25 @@ void System::endChangeCurrentHeap()
  * @note Address: 0x80423520
  * @note Size: 0x4
  */
-void System::addGenNode(CNode*) { }
+void System::addGenNode(CNode*)
+{
+}
 
 /**
  * @note Address: 0x80423524
  * @note Size: 0x4
  */
-void System::initGenNode() { }
+void System::initGenNode()
+{
+}
 
 /**
  * @note Address: 0x80423528
  * @note Size: 0x4
  */
-void System::refreshGenNode() { }
+void System::refreshGenNode()
+{
+}
 
 /**
  * @note Address: 0x8042352C

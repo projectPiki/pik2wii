@@ -1,6 +1,6 @@
+#include "Game/EnemyMgrBase.h"
 #include "CollInfo.h"
 #include "Game/EnemyBase.h"
-#include "Game/EnemyMgrBase.h"
 #include "Game/generalEnemyMgr.h"
 #include "JSystem/J3D/J3DSys.h"
 #include "JSystem/JUtility/JUTException.h"
@@ -97,13 +97,13 @@ void EnemyMgrBase::doAnimation()
 	for (int i = 0; i < mObjLimit; i++) {
 		EnemyBase* enemy = getEnemy(i);
 		if (enemy->isEvent(0, EB_Alive) && (!(generalEnemyMgr->mDrawFlag & 1) || enemy->isMovieActor())) {
-			sys->mTimers->_start("e-upd", true);
+			sys->mTimers->start("e-upd", true);
 			enemy->update();
-			sys->mTimers->_stop("e-upd");
+			sys->mTimers->stop("e-upd");
 
-			sys->mTimers->_start("e-doa", true);
+			sys->mTimers->start("e-doa", true);
 			enemy->doAnimation();
-			sys->mTimers->_stop("e-doa");
+			sys->mTimers->stop("e-doa");
 		}
 	}
 }
@@ -331,13 +331,19 @@ void EnemyMgrBase::init(EnemyParmsBase* parms)
  * @note Address: 0x8012F928
  * @note Size: 0x24
  */
-void EnemyMgrBase::setDebugParm(u32 debugParm) { mParms->setDebugParm(debugParm); }
+void EnemyMgrBase::setDebugParm(u32 debugParm)
+{
+	mParms->setDebugParm(debugParm);
+}
 
 /**
  * @note Address: 0x8012F94C
  * @note Size: 0x24
  */
-void EnemyMgrBase::resetDebugParm(u32 debugParm) { mParms->resetDebugParm(debugParm); }
+void EnemyMgrBase::resetDebugParm(u32 debugParm)
+{
+	mParms->resetDebugParm(debugParm);
+}
 
 /**
  * @note Address: 0x8012F970
@@ -587,13 +593,19 @@ J3DModelData* EnemyMgrBase::doLoadBmd(void* bmd)
  * @note Address: 0x801303C0
  * @note Size: 0x28
  */
-J3DModelData* EnemyMgrBase::doLoadBdl(void* bdl) { return J3DModelLoaderDataBase::loadBinaryDisplayList(bdl, J3DMLF_DoBdlMaterialCalc); }
+J3DModelData* EnemyMgrBase::doLoadBdl(void* bdl)
+{
+	return J3DModelLoaderDataBase::loadBinaryDisplayList(bdl, J3DMLF_DoBdlMaterialCalc);
+}
 
 /**
  * @note Address: 0x801303E8
  * @note Size: 0x90
  */
-void EnemyMgrBase::initGenerator() { mGenerator = new EnemyGeneratorBase("EnemyGenerator"); }
+void EnemyMgrBase::initGenerator()
+{
+	mGenerator = new EnemyGeneratorBase("EnemyGenerator");
+}
 
 /**
  * @note Address: 0x80130478
@@ -604,13 +616,13 @@ void EnemyMgrBase::doAnimationAlwaysMovieActor()
 	for (int i = 0; i < mObjLimit; i++) {
 		EnemyBase* enemy = getEnemy(i);
 		if (enemy->isEvent(0, EB_Alive)) {
-			sys->mTimers->_start("e-upd", true);
+			sys->mTimers->start("e-upd", true);
 			enemy->update();
-			sys->mTimers->_stop("e-upd");
+			sys->mTimers->stop("e-upd");
 
-			sys->mTimers->_start("e-doa", true);
+			sys->mTimers->start("e-doa", true);
 			enemy->doAnimation();
-			sys->mTimers->_stop("e-doa");
+			sys->mTimers->stop("e-doa");
 		}
 	}
 }

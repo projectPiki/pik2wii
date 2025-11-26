@@ -2,11 +2,11 @@
 #define _VECTOR3_H
 
 #include "JSystem/JGeometry.h"
-#include "stream.h"
-#include "math.h"
-#include "sysMath.h"
 #include "Vector2.h"
+#include "math.h"
 #include "sqrt.h"
+#include "stream.h"
+#include "sysMath.h"
 
 struct Matrixf;
 
@@ -21,19 +21,54 @@ struct Vector3 {
 	T x, y, z;
 
 	// Constructors
-	inline Vector3();
-	inline Vector3(T value);
-	inline Vector3(T x, T y, T z);
-	inline Vector3(JGeometry::TVec3<T> vec);
-	inline Vector3(Vec& vec);
+	inline Vector3() { }
+	inline Vector3(T value)
+	    : x(value)
+	    , y(value)
+	    , z(value)
+	{
+	}
+
+	inline Vector3(T x_, T y_, T z_)
+	    : x(x_)
+	    , y(y_)
+	    , z(z_)
+	{
+	}
+
+	inline Vector3(JGeometry::TVec3<T> vec) { __memcpy(this, &vec, sizeof(Vector3)); }
+	inline Vector3(Vec& vec)
+	{
+		x = vec.x;
+		y = vec.y;
+		z = vec.z;
+	}
 
 	// Assignment Operators
-	inline Vector3& operator=(const Vector3& other);
-	inline void operator    =(Vector3& other);
-	inline void operator    =(const Vec& other);
+	inline Vector3<T>& operator=(const Vector3& other)
+	{
+		x = other.x;
+		y = other.y;
+		z = other.z;
+		return *this;
+	}
+
+	inline void operator=(Vector3& other)
+	{
+		x = other.x;
+		y = other.y;
+		z = other.z;
+	}
+
+	inline void operator=(const Vec& other)
+	{
+		x = other.x;
+		y = other.y;
+		z = other.z;
+	}
 
 	// Conversion Operators
-	inline operator Vector2<T>() const;
+	inline operator Vector2<T>() const { return Vector2<T>(x, y); }
 
 	// Arithmetic Operators
 	inline Vector3<T> operator*(const Vector3<T>& other) const;
@@ -45,11 +80,31 @@ struct Vector3 {
 	inline Vector3 operator-() const;
 
 	// Set Functions
-	inline void set(const Vector3& vec);
-	inline void set(T _x, T _y, T _z);
-	inline void set(T xyz);
-	inline void set(JGeometry::TVec3<T>& vec);
-	inline void set(Vec& vec);
+	inline void set(const Vector3& vec)
+	{
+		x = vec.x;
+		y = vec.y;
+		z = vec.z;
+	}
+	inline void set(T _x, T _y, T _z)
+	{
+		x = _x;
+		y = _y;
+		z = _z;
+	}
+	inline void set(T xyz) { x = y = z = xyz; }
+	inline void set(JGeometry::TVec3<T>& vec)
+	{
+		vec.x = x;
+		vec.y = y;
+		vec.z = z;
+	}
+	inline void set(Vec& vec)
+	{
+		vec.x = x;
+		vec.y = y;
+		vec.z = z;
+	}
 
 	// Utility Functions
 	inline void negate();
@@ -65,7 +120,7 @@ struct Vector3 {
 	inline void sub(const Vector3& other);
 	inline void sub(Vector3& a, Vector3& b);
 	inline void setMiddle(Vector3& a, Vector3& b);
-	static inline Vector3<T> sub2(const Vector3& a, const Vector3& b);
+	static inline Vector3<T> sub2(const Vector3& a, const Vector3& b) { return Vector3(a.x - b.x, a.y - b.y, a.z - b.z); }
 
 	// Direction Functions
 	static inline T getDirectionFromTo(const Vector3& from, Vector3& to);
@@ -87,11 +142,22 @@ struct Vector3 {
 	inline void scale(T scale);
 
 	// Magnitude Functions
-	inline T sqrMagnitude() const;
-	inline T sqrMagnitude2D() const;
-	inline T qLength() const;
-	inline T qLength2D() const;
-	inline T qNormalise();
+	inline T sqrMagnitude() const { return this->x * this->x + this->y * this->y + this->z * this->z; }
+	inline T sqrMagnitude2D() const { return this->x * this->x + this->z * this->z; }
+	inline T qLength() const { return pikmin2_sqrtf(this->sqrMagnitude()); }
+	inline T qLength2D() const { return pikmin2_sqrtf(this->sqrMagnitude2D()); }
+	inline T qNormalise()
+	{
+		T length = this->qLength();
+		if (length > 0.0f) {
+			T len = 1.0f / length;
+			this->x *= len;
+			this->y *= len;
+			this->z *= len;
+			return length;
+		}
+		return 0.0f;
+	}
 
 	// Distance Functions
 	inline T qDistance(Vector3& them);
@@ -121,61 +187,68 @@ struct Vector3 {
 typedef Vector3<f32> Vector3f;
 typedef Vector3<int> Vector3i;
 
-inline Vector3f operator+(const Vector3f& a, const Vector3f& b) { return Vector3f(a.x + b.x, a.y + b.y, a.z + b.z); }
+inline Vector3f operator+(const Vector3f& a, const Vector3f& b)
+{
+	return Vector3f(a.x + b.x, a.y + b.y, a.z + b.z);
+}
 
 // Using sub2 here fixes inline depth issues for navi_demoCheck and itemUjamushi
 // (panModokiState has an instance of needing to call sub2 directly because its quirky like that)
-inline Vector3f operator-(const Vector3f& a, const Vector3f& b) { return Vector3f::sub2(a, b); }
-
-inline Vector3f operator*(const Vector3f& a, const f32 b) { return Vector3f(a.x * b, a.y * b, a.z * b); }
-inline Vector3f operator/(const Vector3f& a, const f32 b) { return Vector3f(a.x / b, a.y / b, a.z / b); }
-inline Vector3f operator*=(const Vector3f& a, const f32 b) { return Vector3f(a.x * b, a.y * b, a.z * b); }
-
-inline Vector3i operator+(const Vector3i& a, const Vector3i& b) { return Vector3i(a.x + b.x, a.y + b.y, a.z + b.z); }
-inline Vector3i operator-(const Vector3i& a, const Vector3i& b) { return Vector3i(a.x - b.x, a.y - b.y, a.z - b.z); }
-inline Vector3i operator*(const Vector3i& a, const int b) { return Vector3i(a.x * b, a.y * b, a.z * b); }
-inline Vector3i operator/(const Vector3i& a, const int b) { return Vector3i(a.x / b, a.y / b, a.z / b); }
-inline Vector3i operator*=(const Vector3i& a, const int b) { return Vector3i(a.x * b, a.y * b, a.z * b); }
-
-inline bool operator==(const Vector3f& a, const Vector3f& b) { return (a.x == b.x && a.y == b.y && a.z == b.z); }
-inline bool operator!=(const Vector3f& a, const Vector3f& b) { return (a.x != b.x || a.y != b.y || a.z != b.z); }
-
-inline bool operator==(const Vector3i& a, const Vector3i& b) { return (a.x == b.x && a.y == b.y && a.z == b.z); }
-inline bool operator!=(const Vector3i& a, const Vector3i& b) { return (a.x != b.x || a.y != b.y || a.z != b.z); }
-
-template <typename T>
-inline Vector3<T>::Vector3()
+inline Vector3f operator-(const Vector3f& a, const Vector3f& b)
 {
+	return Vector3f::sub2(a, b);
 }
 
-template <typename T>
-inline Vector3<T>::Vector3(T value)
-    : x(value)
-    , y(value)
-    , z(value)
+inline Vector3f operator*(const Vector3f& a, const f32 b)
 {
+	return Vector3f(a.x * b, a.y * b, a.z * b);
+}
+inline Vector3f operator/(const Vector3f& a, const f32 b)
+{
+	return Vector3f(a.x / b, a.y / b, a.z / b);
+}
+inline Vector3f operator*=(const Vector3f& a, const f32 b)
+{
+	return Vector3f(a.x * b, a.y * b, a.z * b);
 }
 
-template <typename T>
-inline Vector3<T>::Vector3(T x, T y, T z)
-    : x(x)
-    , y(y)
-    , z(z)
+inline Vector3i operator+(const Vector3i& a, const Vector3i& b)
 {
+	return Vector3i(a.x + b.x, a.y + b.y, a.z + b.z);
+}
+inline Vector3i operator-(const Vector3i& a, const Vector3i& b)
+{
+	return Vector3i(a.x - b.x, a.y - b.y, a.z - b.z);
+}
+inline Vector3i operator*(const Vector3i& a, const int b)
+{
+	return Vector3i(a.x * b, a.y * b, a.z * b);
+}
+inline Vector3i operator/(const Vector3i& a, const int b)
+{
+	return Vector3i(a.x / b, a.y / b, a.z / b);
+}
+inline Vector3i operator*=(const Vector3i& a, const int b)
+{
+	return Vector3i(a.x * b, a.y * b, a.z * b);
 }
 
-template <typename T>
-inline Vector3<T>::Vector3(JGeometry::TVec3<T> vec)
+inline bool operator==(const Vector3f& a, const Vector3f& b)
 {
-	__memcpy(this, &vec, sizeof(Vector3));
+	return (a.x == b.x && a.y == b.y && a.z == b.z);
+}
+inline bool operator!=(const Vector3f& a, const Vector3f& b)
+{
+	return (a.x != b.x || a.y != b.y || a.z != b.z);
 }
 
-template <typename T>
-inline Vector3<T>::Vector3(Vec& vec)
+inline bool operator==(const Vector3i& a, const Vector3i& b)
 {
-	x = vec.x;
-	y = vec.y;
-	z = vec.z;
+	return (a.x == b.x && a.y == b.y && a.z == b.z);
+}
+inline bool operator!=(const Vector3i& a, const Vector3i& b)
+{
+	return (a.x != b.x || a.y != b.y || a.z != b.z);
 }
 
 template <typename T>
@@ -194,78 +267,9 @@ inline T Vector3<T>::getFlatDirectionFromTo(Vector3& from, Vector3& to)
 }
 
 template <typename T>
-inline Vector3<T>& Vector3<T>::operator=(const Vector3& other)
-{
-	x = other.x;
-	y = other.y;
-	z = other.z;
-	return *this;
-}
-
-template <typename T>
-inline void Vector3<T>::operator=(Vector3& other)
-{
-	x = other.x;
-	y = other.y;
-	z = other.z;
-}
-
-template <typename T>
-inline void Vector3<T>::operator=(const Vec& other)
-{
-	x = other.x;
-	y = other.y;
-	z = other.z;
-}
-
-template <typename T>
-inline Vector3<T>::operator Vector2<T>() const
-{
-	return Vector2<T>(x, y);
-}
-
-template <typename T>
 inline Vector3<T> Vector3<T>::operator*(const Vector3<T>& other) const
 {
 	return Vector3<T>(x * other.x, y * other.y, z * other.z);
-}
-
-template <typename T>
-inline void Vector3<T>::set(const Vector3& vec)
-{
-	x = vec.x;
-	y = vec.y;
-	z = vec.z;
-}
-
-template <typename T>
-inline void Vector3<T>::set(T _x, T _y, T _z)
-{
-	x = _x;
-	y = _y;
-	z = _z;
-}
-
-template <typename T>
-inline void Vector3<T>::set(T xyz)
-{
-	x = y = z = xyz;
-}
-
-template <typename T>
-inline void Vector3<T>::set(JGeometry::TVec3<T>& vec)
-{
-	vec.x = x;
-	vec.y = y;
-	vec.z = z;
-}
-
-template <typename T>
-inline void Vector3<T>::set(Vec& vec)
-{
-	vec.x = x;
-	vec.y = y;
-	vec.z = z;
 }
 
 template <typename T>
@@ -439,12 +443,6 @@ inline void Vector3<T>::setMiddle(Vector3& a, Vector3& b)
 }
 
 template <typename T>
-inline Vector3<T> Vector3<T>::sub2(const Vector3& a, const Vector3& b)
-{
-	return Vector3(a.x - b.x, a.y - b.y, a.z - b.z);
-}
-
-template <typename T>
 inline T Vector3<T>::absX()
 {
 	return (T)absF(x);
@@ -504,44 +502,6 @@ inline void Vector3<T>::toFlatDirection()
 }
 
 template <typename T>
-inline T Vector3<T>::sqrMagnitude() const
-{
-	return this->x * this->x + this->y * this->y + this->z * this->z;
-}
-
-template <typename T>
-inline T Vector3<T>::sqrMagnitude2D() const
-{
-	return this->x * this->x + this->z * this->z;
-}
-
-template <typename T>
-inline T Vector3<T>::qLength() const
-{
-	return pikmin2_sqrtf(this->sqrMagnitude());
-}
-
-template <typename T>
-inline T Vector3<T>::qLength2D() const
-{
-	return pikmin2_sqrtf(this->sqrMagnitude2D());
-}
-
-template <typename T>
-inline T Vector3<T>::qNormalise()
-{
-	T length = this->qLength();
-	if (length > 0.0f) {
-		T len = 1.0f / length;
-		this->x *= len;
-		this->y *= len;
-		this->z *= len;
-		return length;
-	}
-	return 0.0f;
-}
-
-template <typename T>
 inline T Vector3<T>::qDistance(Vector3& them)
 {
 	T diffX = this->x - them.x;
@@ -564,13 +524,8 @@ inline T Vector3<T>::sqrDistanceToSphere(Vector3& them)
 template <>
 inline f32 Vector3f::length() const
 {
-	if (sqrMagnitude() > 0.0f) {
-		Vector3f vec = Vector3f(x, y, z);
-		f32 sqrLen   = SQUARE(vec.x) + SQUARE(y) + SQUARE(z);
-		return sqrtf(sqrLen);
-	} else {
-		return 0.0f;
-	}
+	f32 sqrLen = sqrMagnitude();
+	return stdSqrtf(sqrLen);
 }
 
 template <>
@@ -782,9 +737,15 @@ inline f32 sqrDistanceXZ(Vector3f& vec1, Vector3f& vec2)
 	return x * x + z * z;
 }
 
-inline bool inRadius(f32 r, Vector3f& vec1, Vector3f& vec2) { return sqrDistanceXZ(vec1, vec2) < r * r; }
+inline bool inRadius(f32 r, Vector3f& vec1, Vector3f& vec2)
+{
+	return sqrDistanceXZ(vec1, vec2) < r * r;
+}
 
-inline bool outsideRadius(f32 r, Vector3f& vec1, Vector3f& vec2) { return sqrDistanceXZ(vec1, vec2) > r * r; }
+inline bool outsideRadius(f32 r, Vector3f& vec1, Vector3f& vec2)
+{
+	return sqrDistanceXZ(vec1, vec2) > r * r;
+}
 
 inline f32 _distanceXZ(Vector3f& vec1, Vector3f& vec2)
 {
@@ -803,7 +764,10 @@ inline f32 _distanceXZflag(Vector3f& vec1, Vector3f& vec2)
 	return _sqrtf(vec.y + vec.x * vec.x);
 }
 
-inline void sumXY(Vector3f vec, f32* sum) { *sum = (vec.x *= vec.x) + (vec.y *= vec.y); }
+inline void sumXY(Vector3f vec, f32* sum)
+{
+	*sum = (vec.x *= vec.x) + (vec.y *= vec.y);
+}
 
 inline void sumZ(Vector3f vec, f32* sum)
 {

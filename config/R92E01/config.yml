@@ -6,3 +6,5 @@ symbols: config/R92E01/symbols.txt
 splits: config/R92E01/splits.txt
 
 mw_comment_version: 14 # GC Linker 2.6
+
+write_asm: true

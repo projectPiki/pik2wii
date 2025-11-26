@@ -1,17 +1,17 @@
 #include "Game/PikiMgr.h"
-#include "Game/Entities/ItemPikihead.h"
-#include "SysShape/ModelMgr.h"
-#include "JSystem/JKernel/JKRDvdRipper.h"
-#include "JSystem/J3D/J3DModelLoader.h"
-#include "JSystem/J3D/J3DTransform.h"
-#include "PSSystem/PSSystemIF.h"
-#include "Game/MoviePlayer.h"
-#include "Game/MapMgr.h"
 #include "Dolphin/rand.h"
-#include "Game/gamePlayData.h"
 #include "Game/DeathMgr.h"
 #include "Game/Entities/ItemOnyon.h"
+#include "Game/Entities/ItemPikihead.h"
+#include "Game/MapMgr.h"
+#include "Game/MoviePlayer.h"
+#include "Game/gamePlayData.h"
+#include "JSystem/J3D/J3DModelLoader.h"
+#include "JSystem/J3D/J3DTransform.h"
+#include "JSystem/JKernel/JKRDvdRipper.h"
+#include "PSSystem/PSSystemIF.h"
 #include "PikiAI.h"
+#include "SysShape/ModelMgr.h"
 #include "nans.h"
 
 namespace Game {
@@ -260,13 +260,19 @@ void PikiMgr::createModelCallback(SysShape::Model* model)
  * @note Address: 0x8015EF54
  * @note Size: 0x24
  */
-SysShape::Model* PikiMgr::createModel(int id, int num) { return mModelMgr->createModel(id, num); }
+SysShape::Model* PikiMgr::createModel(int id, int num)
+{
+	return mModelMgr->createModel(id, num);
+}
 
 /**
  * @note Address: 0x8015EF78
  * @note Size: 0x8
  */
-SysShape::Model* PikiMgr::createLeafModel(int id, int num) { return nullptr; }
+SysShape::Model* PikiMgr::createLeafModel(int id, int num)
+{
+	return nullptr;
+}
 
 /**
  * @note Address: 0x8015EF80
@@ -382,7 +388,7 @@ inline void PikiMgr::updateArrayAt(int i)
  */
 void PikiMgr::doAnimation()
 {
-	sys->mTimers->_start("doaPIKI", true);
+	sys->mTimers->start("doaPIKI", true);
 	mUpdateMgr2->update();
 	if (mFlags[1] & 1) {
 		for (int i = 0; i < mMax; i++) {
@@ -406,7 +412,7 @@ void PikiMgr::doAnimation()
 		PSSystem::spSysIF->playSystemSe(PSSE_SY_PK_UNDER_DOPING, 0);
 	}
 
-	sys->mTimers->_stop("doaPIKI");
+	sys->mTimers->stop("doaPIKI");
 }
 
 /**
@@ -480,7 +486,9 @@ void PikiMgr::doEntry()
  * @note Address: 0x8015F848
  * @note Size: 0x4
  */
-void PikiMgr::setupSoundViewerAndBas() { }
+void PikiMgr::setupSoundViewerAndBas()
+{
+}
 
 /**
  * @note Address: 0x8015F84C

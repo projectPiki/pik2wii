@@ -1,7 +1,7 @@
 #include "Dolphin/mtx.h"
 #include "Sys/GridDivider.h"
-#include "Sys/TriangleTable.h"
 #include "Sys/TriDivider.h"
+#include "Sys/TriangleTable.h"
 #include "types.h"
 
 namespace Sys {
@@ -33,11 +33,11 @@ void VertexTable::cloneFrom(Matrixf& transformationMtx, VertexTable* vtxTable)
 	for (int i = 0; i < mLimit; i++) {
 		Vector3f transformed;
 		PSMTXMultVec(transformationMtx.mMatrix.mtxView, (Vec*)&vtxTable->mObjects[i], (Vec*)&transformed);
-		mObjects[i] = Vector3f(transformed);
+		mObjects[i].set(transformed);
 	}
 
-	mBoundBox.mMin = SHORT_FLOAT_MAX;
-	mBoundBox.mMax = -SHORT_FLOAT_MAX;
+	mBoundBox.mMin.set(SHORT_FLOAT_MAX, SHORT_FLOAT_MAX, SHORT_FLOAT_MAX);
+	mBoundBox.mMax.set(-SHORT_FLOAT_MAX, -SHORT_FLOAT_MAX, -SHORT_FLOAT_MAX);
 	includeVertices();
 }
 

@@ -364,28 +364,28 @@ config.libs = [
         "progress_category" : "jsystem",
         "objects": [
             Object(NonMatching, "JSystem/JAudio/JAS/JASWSParser.cpp"),
-            Object(NonMatching, "JSystem/JAudio/JAS/JASBankMgr.cpp"),
-            Object(NonMatching, "JSystem/JAudio/JAS/JASBasicBank.cpp"),
-            Object(NonMatching, "JSystem/JAudio/JAS/JASBasicInst.cpp"),
+            Object(Matching, "JSystem/JAudio/JAS/JASBankMgr.cpp"),
+            Object(Matching, "JSystem/JAudio/JAS/JASBasicBank.cpp"),
+            Object(Matching, "JSystem/JAudio/JAS/JASBasicInst.cpp"),
             Object(NonMatching, "JSystem/JAudio/JAS/JASBasicWaveBank.cpp"),
             Object(NonMatching, "JSystem/JAudio/JAS/JASBNKParser.cpp"),
             Object(NonMatching, "JSystem/JAudio/JAS/JASDrumSet.cpp"),
-            Object(NonMatching, "JSystem/JAudio/JAS/JASInstEffect.cpp"),
+            Object(Matching, "JSystem/JAudio/JAS/JASInstEffect.cpp"),
             Object(NonMatching, "JSystem/JAudio/JAS/JASInstRand.cpp"),
             Object(NonMatching, "JSystem/JAudio/JAS/JASInstSense.cpp"),
-            Object(NonMatching, "JSystem/JAudio/JAS/JASSimpleWaveBank.cpp"),
-            Object(NonMatching, "JSystem/JAudio/JAS/JASWaveArcLoader.cpp"),
-            Object(NonMatching, "JSystem/JAudio/JAS/JASWaveBank.cpp"),
+            Object(Matching, "JSystem/JAudio/JAS/JASSimpleWaveBank.cpp"),
+            Object(Matching, "JSystem/JAudio/JAS/JASWaveArcLoader.cpp"),
+            Object(Matching, "JSystem/JAudio/JAS/JASWaveBank.cpp"),
             Object(NonMatching, "JSystem/JAudio/JAS/JASWaveBankMgr.cpp"),
-            Object(NonMatching, "JSystem/JAudio/JAS/JASBank.cpp"),
+            Object(Matching, "JSystem/JAudio/JAS/JASBank.cpp"),
             Object(NonMatching, "JSystem/JAudio/JAS/JASTrackPort.cpp"),
-            Object(NonMatching, "JSystem/JAudio/JAS/JASOuterParam.cpp"),
+            Object(Matching, "JSystem/JAudio/JAS/JASOuterParam.cpp"),
             Object(NonMatching, "JSystem/JAudio/JAS/JASPlayer_impl.cpp"),
-            Object(NonMatching, "JSystem/JAudio/JAS/JASRegisterParam.cpp"),
+            Object(Matching, "JSystem/JAudio/JAS/JASRegisterParam.cpp"),
             Object(NonMatching, "JSystem/JAudio/JAS/JASSeqCtrl.cpp"),
             Object(NonMatching, "JSystem/JAudio/JAS/JASSeqParser.cpp"),
             Object(NonMatching, "JSystem/JAudio/JAS/JASTrack.cpp"),
-            Object(NonMatching, "JSystem/JAudio/JAS/JASTrackInterrupt.cpp"),
+            Object(Matching, "JSystem/JAudio/JAS/JASTrackInterrupt.cpp"),
             Object(NonMatching, "JSystem/JAudio/JAS/JASOscillator.cpp"),
             Object(NonMatching, "JSystem/JAudio/JAS/JASChannel.cpp"),
             Object(NonMatching, "JSystem/JAudio/JAS/JASDriverIF.cpp"),
@@ -393,15 +393,15 @@ config.libs = [
             Object(NonMatching, "JSystem/JAudio/JAS/JASDSPInterface.cpp"),
             Object(NonMatching, "JSystem/JAudio/JAS/JASAudioThread.cpp"),
             Object(NonMatching, "JSystem/JAudio/JAS/JASCalc.cpp"),
-            Object(NonMatching, "JSystem/JAudio/JAS/JASCallback.cpp"),
+            Object(Matching, "JSystem/JAudio/JAS/JASCallback.cpp"),
             Object(NonMatching, "JSystem/JAudio/JAS/JASCmdStack.cpp"),
-            Object(NonMatching, "JSystem/JAudio/JAS/JASDvdThread.cpp"),
+            Object(Matching, "JSystem/JAudio/JAS/JASDvdThread.cpp"),
             Object(NonMatching, "JSystem/JAudio/JAS/JASHeapCtrl.cpp"),
-            Object(NonMatching, "JSystem/JAudio/JAS/JASProbe.cpp"),
-            Object(NonMatching, "JSystem/JAudio/JAS/JASResArcLoader.cpp"),
-            Object(NonMatching, "JSystem/JAudio/JAS/JASReport.cpp"),
+            Object(Matching, "JSystem/JAudio/JAS/JASProbe.cpp"),
+            Object(Matching, "JSystem/JAudio/JAS/JASResArcLoader.cpp"),
+            Object(Matching, "JSystem/JAudio/JAS/JASReport.cpp"),
             Object(NonMatching, "JSystem/JAudio/JAS/JASAiCtrl.cpp"),
-            Object(NonMatching, "JSystem/JAudio/JAS/JASChannelUpdater.cpp"),
+            Object(Matching, "JSystem/JAudio/JAS/JASChannelUpdater.cpp"),
             Object(NonMatching, "JSystem/JAudio/JAS/JASTaskThread.cpp"),
             Object(NonMatching, "JSystem/JAudio/JAS/JASAramStream.cpp"),
         ],
@@ -455,7 +455,7 @@ config.libs = [
         "cflags": cflags_pikmin,
         "mw_version": "GC/3.0a3p1",
         "progress_category" : "jsystem",
-        "objects": [Object(NonMatching, "JSystem/JAudio/JAD/JADHioNode.cpp")],
+        "objects": [Object(Matching, "JSystem/JAudio/JAD/JADHioNode.cpp")],
     },
     {
         "lib": "JAudio_JAL",
@@ -470,7 +470,7 @@ config.libs = [
         "mw_version": "GC/3.0a3p1",
         "progress_category" : "jsystem",
         "objects": [
-            Object(NonMatching, "JSystem/JAudio/JAU/JAUData.cpp"),
+            Object(Matching, "JSystem/JAudio/JAU/JAUData.cpp"),
             Object(NonMatching, "JSystem/JAudio/JAU/JAUDataMgr.cpp"),
         ],
     },
@@ -490,7 +490,7 @@ config.libs = [
         "mw_version": "GC/3.0a3p1",
         "progress_category" : "jsystem",
         "objects": [
-            Object(NonMatching, "JSystem/JMessage/data.cpp"),
+            Object(Matching, "JSystem/JMessage/data.cpp"),
             Object(NonMatching, "JSystem/JMessage/resource.cpp"),
             Object(NonMatching, "JSystem/JMessage/processor.cpp"),
             Object(NonMatching, "JSystem/JMessage/control.cpp"),
@@ -503,17 +503,17 @@ config.libs = [
         "mw_version": "GC/3.0a3p1",
         "progress_category" : "jsystem",
         "objects": [
-            Object(NonMatching, "JSystem/JStudio/stb-data-parse.cpp"),
+            Object(Matching, "JSystem/JStudio/stb-data-parse.cpp"),
             Object(NonMatching, "JSystem/JStudio/functionvalue.cpp"),
-            Object(NonMatching, "JSystem/JStudio/fvb-data.cpp"),
+            Object(Matching, "JSystem/JStudio/fvb-data.cpp"),
             Object(NonMatching, "JSystem/JStudio/fvb.cpp"),
-            Object(NonMatching, "JSystem/JStudio/fvb-data-parse.cpp"),
+            Object(Matching, "JSystem/JStudio/fvb-data-parse.cpp"),
             Object(NonMatching, "JSystem/JStudio/jstudio-control.cpp"),
-            Object(NonMatching, "JSystem/JStudio/jstudio-data.cpp"),
+            Object(Matching, "JSystem/JStudio/jstudio-data.cpp"),
             Object(NonMatching, "JSystem/JStudio/jstudio-object.cpp"),
-            Object(NonMatching, "JSystem/JStudio/object-id.cpp"),
+            Object(Matching, "JSystem/JStudio/object-id.cpp"),
             Object(NonMatching, "JSystem/JStudio/stb.cpp"),
-            Object(NonMatching, "JSystem/JStudio/stb-data.cpp"),
+            Object(Matching, "JSystem/JStudio/stb-data.cpp"),
             Object(NonMatching, "JSystem/JStudio/jstudio-math.cpp"),
             Object(NonMatching, "JSystem/JStudio/ctb-data.cpp"),
             Object(NonMatching, "JSystem/JStudio/ctb.cpp"),
@@ -550,10 +550,10 @@ config.libs = [
         "mw_version": "GC/3.0a3p1",
         "progress_category" : "jsystem",
         "objects": [
-            Object(NonMatching, "JSystem/J3DU/J3DUDL.cpp"),
+            Object(Matching, "JSystem/J3DU/J3DUDL.cpp"),
             Object(NonMatching, "JSystem/J3DU/J3DUMotion.cpp"),
-            Object(NonMatching, "JSystem/J3DU/J3DUShadow.cpp"),
-            Object(NonMatching, "JSystem/J3DU/J3DUMtxCache.cpp"),
+            Object(Matching, "JSystem/J3DU/J3DUShadow.cpp"),
+            Object(Matching, "JSystem/J3DU/J3DUMtxCache.cpp"),
         ],
     },
     {
@@ -564,7 +564,7 @@ config.libs = [
         "objects": [
             Object(NonMatching, "JSystem/JKernel/JKRAram.cpp"),
             Object(NonMatching, "JSystem/JKernel/JKRAramArchive.cpp"),
-            Object(NonMatching, "JSystem/JKernel/JKRAramBlock.cpp"),
+            Object(Matching, "JSystem/JKernel/JKRAramBlock.cpp"),
             Object(NonMatching, "JSystem/JKernel/JKRAramHeap.cpp"),
             Object(NonMatching, "JSystem/JKernel/JKRAramPiece.cpp"),
             Object(NonMatching, "JSystem/JKernel/JKRAramStream.cpp"),
@@ -572,15 +572,15 @@ config.libs = [
             Object(NonMatching, "JSystem/JKernel/JKRArchivePub.cpp"),
             Object(NonMatching, "JSystem/JKernel/JKRCompArchive.cpp"),
             Object(NonMatching, "JSystem/JKernel/JKRDecomp.cpp"),
-            Object(NonMatching, "JSystem/JKernel/JKRDisposer.cpp"),
+            Object(Matching, "JSystem/JKernel/JKRDisposer.cpp"),
             Object(NonMatching, "JSystem/JKernel/JKRDvdFile.cpp"),
             Object(NonMatching, "JSystem/JKernel/JKRDvdAramRipper.cpp"),
             Object(NonMatching, "JSystem/JKernel/JKRDvdArchive.cpp"),
             Object(NonMatching, "JSystem/JKernel/JKRDvdRipper.cpp"),
             Object(NonMatching, "JSystem/JKernel/JKRExpHeap.cpp"),
             Object(NonMatching, "JSystem/JKernel/JKRFileCache.cpp"),
-            Object(NonMatching, "JSystem/JKernel/JKRFileFinder.cpp"),
-            Object(NonMatching, "JSystem/JKernel/JKRFile.cpp"),
+            Object(Matching, "JSystem/JKernel/JKRFileFinder.cpp"),
+            Object(Matching, "JSystem/JKernel/JKRFile.cpp"),
             Object(NonMatching, "JSystem/JKernel/JKRFileLoader.cpp"),
             Object(NonMatching, "JSystem/JKernel/JKRHeap.cpp"),
             Object(NonMatching, "JSystem/JKernel/JKRMemArchive.cpp"),
@@ -606,8 +606,8 @@ config.libs = [
             Object(NonMatching, "JSystem/JSupport/JSUOutputStream.cpp"),
             Object(NonMatching, "JSystem/JSupport/JSUInputStream.cpp"),
             Object(NonMatching, "JSystem/JSupport/JSUList.cpp"),
-            Object(NonMatching, "JSystem/JSupport/JSUMemoryStream.cpp"),
-            Object(NonMatching, "JSystem/JSupport/JSUFileStream.cpp"),
+            Object(Matching, "JSystem/JSupport/JSUMemoryStream.cpp"),
+            Object(Matching, "JSystem/JSupport/JSUFileStream.cpp"),
         ],
     },
     {
@@ -616,7 +616,7 @@ config.libs = [
         "mw_version": "GC/3.0a3p1",
         "progress_category" : "jsystem",
         "objects": [
-            Object(NonMatching, "JSystem/JGadget/binary.cpp"),
+            Object(Matching, "JSystem/JGadget/binary.cpp"),
             Object(NonMatching, "JSystem/JGadget/linklist.cpp"),
             Object(NonMatching, "JSystem/JGadget/std-list.cpp"),
             Object(NonMatching, "JSystem/JGadget/std-vector.cpp"),
@@ -635,18 +635,18 @@ config.libs = [
             Object(NonMatching, "JSystem/JUtility/JUTDirectPrint.cpp"),
             Object(NonMatching, "JSystem/JUtility/JUTException.cpp"),
             Object(NonMatching, "JSystem/JUtility/JUTFader.cpp"),
-            Object(NonMatching, "JSystem/JUtility/JUTFont.cpp"),
+            Object(Matching, "JSystem/JUtility/JUTFont.cpp"),
             Object(NonMatching, "JSystem/JUtility/JUTGamePad.cpp"),
             Object(NonMatching, "JSystem/JUtility/JUTGraphFifo.cpp"),
-            Object(NonMatching, "JSystem/JUtility/JUTNameTab.cpp"),
-            Object(NonMatching, "JSystem/JUtility/JUTPalette.cpp"),
+            Object(Matching, "JSystem/JUtility/JUTNameTab.cpp"),
+            Object(Matching, "JSystem/JUtility/JUTPalette.cpp"),
             Object(NonMatching, "JSystem/JUtility/JUTProcBar.cpp"),
             Object(NonMatching, "JSystem/JUtility/JUTResFont.cpp"),
-            Object(NonMatching, "JSystem/JUtility/JUTResource.cpp"),
+            Object(Matching, "JSystem/JUtility/JUTResource.cpp"),
             # Object(NonMatching, "JSystem/JUtility/JUTRomFont.cpp"),
-            Object(NonMatching, "JSystem/JUtility/JUTTexture.cpp"),
+            Object(Matching, "JSystem/JUtility/JUTTexture.cpp"),
             Object(NonMatching, "JSystem/JUtility/JUTVideo.cpp"),
-            Object(NonMatching, "JSystem/JUtility/JUTFontData_Ascfont_fix12.cpp"),
+            Object(Matching, "JSystem/JUtility/JUTFontData_Ascfont_fix12.cpp"),
             Object(NonMatching, "JSystem/JUtility/JUTXfb.cpp"),
             Object(NonMatching, "JSystem/JUtility/JUTCacheFont.cpp"),
         ],
@@ -657,8 +657,8 @@ config.libs = [
         "mw_version": "GC/3.0a3p1",
         "progress_category" : "jsystem",
         "objects": [
-            Object(NonMatching, "JSystem/JMath/JMath.cpp"),
-            Object(NonMatching, "JSystem/JMath/random.cpp"),
+            Object(Matching, "JSystem/JMath/JMath.cpp"),
+            Object(Matching, "JSystem/JMath/random.cpp"),
             Object(NonMatching, "JSystem/JMath/JMATrigonometric.cpp"),
         ],
     },
@@ -669,7 +669,7 @@ config.libs = [
         "progress_category" : "jsystem",
         "objects": [
             Object(NonMatching, "JSystem/J2D/J2DOrthoGraph.cpp"),
-            Object(NonMatching, "JSystem/J2D/J2DPerspGraph.cpp"),
+            Object(Matching, "JSystem/J2D/J2DPerspGraph.cpp"),
             Object(NonMatching, "JSystem/J2D/J2DGrafContext.cpp"),
             Object(NonMatching, "JSystem/J2D/J2DPane.cpp"),
             Object(NonMatching, "JSystem/J2D/J2DPicture.cpp"),
@@ -679,8 +679,8 @@ config.libs = [
             Object(NonMatching, "JSystem/J2D/J2DWindow.cpp"),
             Object(NonMatching, "JSystem/J2D/J2DWindowEx.cpp"),
             Object(NonMatching, "JSystem/J2D/J2DAnmLoader.cpp"),
-            Object(NonMatching, "JSystem/J2D/J2DBloSaver.cpp"),
-            Object(NonMatching, "JSystem/J2D/J2DManage.cpp"),
+            Object(Matching, "JSystem/J2D/J2DBloSaver.cpp"),
+            Object(Matching, "JSystem/J2D/J2DManage.cpp"),
             Object(NonMatching, "JSystem/J2D/J2DMatBlock.cpp"),
             Object(NonMatching, "JSystem/J2D/J2DMaterial.cpp"),
             Object(NonMatching, "JSystem/J2D/J2DMaterialFactory.cpp"),
@@ -697,7 +697,7 @@ config.libs = [
         "progress_category" : "jsystem",
         "objects": [
             Object(NonMatching, "JSystem/J3D/J3DSys.cpp"),
-            Object(NonMatching, "JSystem/J3D/J3DVertex.cpp"),
+            Object(Matching, "JSystem/J3D/J3DVertex.cpp"),
             Object(NonMatching, "JSystem/J3D/J3DTransform.cpp"),
             Object(NonMatching, "JSystem/J3D/J3DPacket.cpp"),
             Object(NonMatching, "JSystem/J3D/J3DShape.cpp"),
@@ -710,12 +710,12 @@ config.libs = [
             Object(NonMatching, "JSystem/J3D/J3DCluster.cpp"),
             Object(NonMatching, "JSystem/J3D/J3DJoint.cpp"),
             Object(NonMatching, "JSystem/J3D/J3DMaterialFactory.cpp"),
-            Object(NonMatching, "JSystem/J3D/J3DBinaryFormat.cpp"),
+            Object(Matching, "JSystem/J3D/J3DBinaryFormat.cpp"),
             Object(NonMatching, "JSystem/J3D/J3DModelLoader.cpp"),
             Object(NonMatching, "JSystem/J3D/J3DJointFactory.cpp"),
             Object(NonMatching, "JSystem/J3D/J3DShapeFactory.cpp"),
             Object(NonMatching, "JSystem/J3D/J3DAnmLoader.cpp"),
-            Object(NonMatching, "JSystem/J3D/J3DModelSaver.cpp"),
+            Object(Matching, "JSystem/J3D/J3DModelSaver.cpp"),
             Object(NonMatching, "JSystem/J3D/J3DGD.cpp"),
             Object(NonMatching, "JSystem/J3D/J3DMatBlock.cpp"),
             Object(NonMatching, "JSystem/J3D/J3DModelData.cpp"),
@@ -724,10 +724,10 @@ config.libs = [
             Object(NonMatching, "JSystem/J3D/J3DShapeMtx.cpp"),
             Object(NonMatching, "JSystem/J3D/J3DModelLoaderCalcSize.cpp"),
             Object(NonMatching, "JSystem/J3D/J3DJointTree.cpp"),
-            Object(NonMatching, "JSystem/J3D/J3DSkinDeform.cpp"),
+            Object(Matching, "JSystem/J3D/J3DSkinDeform.cpp"),
             Object(NonMatching, "JSystem/J3D/J3DShapeDraw.cpp"),
             Object(NonMatching, "JSystem/J3D/J3DMtxBuffer.cpp"),
-            Object(NonMatching, "JSystem/J3D/J3DShapeTable.cpp"),
+            Object(Matching, "JSystem/J3D/J3DShapeTable.cpp"),
             Object(NonMatching, "JSystem/J3D/J3DStruct.cpp"),
         ],
     },
@@ -752,16 +752,16 @@ config.libs = [
             Object(NonMatching, "JSystem/JParticle/JPADynamicsBlock.cpp"),
             Object(NonMatching, "JSystem/JParticle/JPAEmitter.cpp"),
             Object(NonMatching, "JSystem/JParticle/JPAEmitterManager.cpp"),
-            Object(NonMatching, "JSystem/JParticle/JPAExTexShape.cpp"),
+            Object(Matching, "JSystem/JParticle/JPAExTexShape.cpp"),
             Object(NonMatching, "JSystem/JParticle/JPAExtraShape.cpp"),
             Object(NonMatching, "JSystem/JParticle/JPAFieldBlock.cpp"),
-            Object(NonMatching, "JSystem/JParticle/JPAKeyBlock.cpp"),
+            Object(Matching, "JSystem/JParticle/JPAKeyBlock.cpp"),
             Object(NonMatching, "JSystem/JParticle/JPAMath.cpp"),
             Object(NonMatching, "JSystem/JParticle/JPAParticle.cpp"),
             Object(NonMatching, "JSystem/JParticle/JPAResource.cpp"),
             Object(NonMatching, "JSystem/JParticle/JPAResourceLoader.cpp"),
-            Object(NonMatching, "JSystem/JParticle/JPAResourceManager.cpp"),
-            Object(NonMatching, "JSystem/JParticle/JPATexture.cpp"),
+            Object(Matching, "JSystem/JParticle/JPAResourceManager.cpp"),
+            Object(Matching, "JSystem/JParticle/JPATexture.cpp"),
         ],
     },
     {
@@ -770,16 +770,16 @@ config.libs = [
         "mw_version": "GC/3.0a3p1",
         "progress_category" : "jsystem",
         "objects": [
-            Object(NonMatching, "JSystem/JStage/JSGSystem.cpp"),
-            Object(NonMatching, "JSystem/JStage/JSGCamera.cpp"),
-            Object(NonMatching, "JSystem/JStage/JSGObject.cpp"),
-            Object(NonMatching, "JSystem/JStage/JSGActor.cpp"),
+            Object(Matching, "JSystem/JStage/JSGSystem.cpp"),
+            Object(Matching, "JSystem/JStage/JSGCamera.cpp"),
+            Object(Matching, "JSystem/JStage/JSGObject.cpp"),
+            Object(Matching, "JSystem/JStage/JSGActor.cpp"),
         ],
     },
     {
         "lib": "TRK_Hollywood_Revolution",
         "cflags": [*cflags_runtime, "-inline deferred", "-sdata 0", "-sdata2 0"],
-        "mw_version": "GC/3.0a3p1",
+        "mw_version": "GC/1.3.2",
         "progress_category" : "sdk",
         "objects": [
             Object(NonMatching, "RevoSDK/TRK_Hollywood_Revolution/mainloop.c"),
@@ -793,11 +793,11 @@ config.libs = [
                 extra_cflags=["-sdata 8"],
             ),
             Object(NonMatching, "RevoSDK/TRK_Hollywood_Revolution/errno.c"),
-            Object(NonMatching, "RevoSDK/TRK_Hollywood_Revolution/usr_put.c"),
+            Object(Matching, "RevoSDK/TRK_Hollywood_Revolution/usr_put.c"),
             Object(NonMatching, "RevoSDK/TRK_Hollywood_Revolution/dispatch.c"),
             Object(NonMatching, "RevoSDK/TRK_Hollywood_Revolution/msghndlr.c"),
             Object(NonMatching, "RevoSDK/TRK_Hollywood_Revolution/support.c"),
-            Object(NonMatching, "RevoSDK/TRK_Hollywood_Revolution/mutex_TRK.c"),
+            Object(Matching, "RevoSDK/TRK_Hollywood_Revolution/mutex_TRK.c"),
             Object(NonMatching, "RevoSDK/TRK_Hollywood_Revolution/notify.c"),
             Object(NonMatching, "RevoSDK/TRK_Hollywood_Revolution/flush_cache.c"),
             Object(NonMatching, "RevoSDK/TRK_Hollywood_Revolution/mem_TRK.c"),
@@ -860,7 +860,7 @@ config.libs = [
     },
     {
         "lib": "MSL_C",
-        "cflags": [*cflags_runtime, "-inline deferred"],
+        "cflags": [*cflags_runtime, "-inline deferred -fp_contract off"],
         "mw_version": "GC/3.0a3p1",
         "progress_category" : "sdk",
         "objects": [
@@ -1086,7 +1086,7 @@ config.libs = [
     {
         "lib": "dsp",
         "cflags": [*cflags_runtime, "-str noreadonly"],
-        "mw_version": "GC/1.2.5n",
+        "mw_version": "GC/3.0a3p1",
         "progress_category" : "sdk",
         "objects": [
             Object(NonMatching, "RevoSDK/dsp/DSPCode.c"),
@@ -1098,7 +1098,7 @@ config.libs = [
     {
         "lib": "dvd",
         "cflags": [*cflags_runtime, "-str noreadonly"],
-        "mw_version": "GC/1.2.5n",
+        "mw_version": "GC/3.0a3p1",
         "progress_category" : "sdk",
         "objects": [
             # Object(NonMatching, "RevoSDK/dvd/dvdlow.c"),
@@ -1116,7 +1116,7 @@ config.libs = [
     {
         "lib": "exi",
         "cflags": [*cflags_runtime, "-str noreadonly"],
-        "mw_version": "GC/1.2.5n",
+        "mw_version": "GC/3.0a3p1",
         "progress_category" : "sdk",
         "objects": [
             Object(NonMatching, "RevoSDK/exi/EXIBios.c"),
@@ -1127,7 +1127,7 @@ config.libs = [
     {
         "lib": "gd",
         "cflags": cflags_runtime,
-        "mw_version": "GC/1.2.5n",
+        "mw_version": "GC/3.0a3p1",
         "progress_category" : "sdk",
         "objects": [
             Object(NonMatching, "RevoSDK/gd/GDBase.c"),
@@ -1137,7 +1137,7 @@ config.libs = [
     {
         "lib": "gx",
         "cflags": [*cflags_runtime, "-str noreadonly", "-fp_contract off"],
-        "mw_version": "GC/1.2.5n",
+        "mw_version": "GC/3.0a3p1",
         "progress_category" : "sdk",
         "objects": [
             Object(NonMatching, "RevoSDK/gx/GXInit.c"),
@@ -1159,7 +1159,7 @@ config.libs = [
     {
         "lib": "mtx",
         "cflags": cflags_runtime,
-        "mw_version": "GC/1.2.5n",
+        "mw_version": "GC/3.0a3p1",
         "progress_category" : "sdk",
         "objects": [
             Object(NonMatching, "RevoSDK/mtx/mtx.c"),
@@ -1172,7 +1172,7 @@ config.libs = [
     {
         "lib": "NdevExi2A",
         "cflags": [*cflags_runtime, "-inline deferred"],
-        "mw_version": "GC/1.2.5n",
+        "mw_version": "GC/3.0a3p1",
         "progress_category" : "sdk",
         "objects": [
             Object(NonMatching, "RevoSDK/NdevExi2A/DebuggerDriver.c"),
@@ -1182,7 +1182,7 @@ config.libs = [
     {
         "lib": "os",
         "cflags": [*cflags_runtime, "-str noreadonly"],
-        "mw_version": "GC/1.2.5n",
+        "mw_version": "GC/3.0a3p1",
         "progress_category" : "sdk",
         "objects": [
             Object(NonMatching, "RevoSDK/os/OS.c"),
@@ -1224,7 +1224,7 @@ config.libs = [
     {
         "lib": "pad",
         "cflags": [*cflags_runtime, "-fp_contract off", "-str noreadonly"],
-        "mw_version": "GC/1.2.5n",
+        "mw_version": "GC/3.0a3p1",
         "progress_category" : "sdk",
         "objects": [
             Object(NonMatching, "RevoSDK/pad/Padclamp.c"),
@@ -1234,7 +1234,7 @@ config.libs = [
     {
         "lib": "si",
         "cflags": [*cflags_runtime, "-str noreadonly"],
-        "mw_version": "GC/1.2.5n",
+        "mw_version": "GC/3.0a3p1",
         "progress_category" : "sdk",
         "objects": [
             Object(NonMatching, "RevoSDK/si/SIBios.c"),
@@ -1244,7 +1244,7 @@ config.libs = [
     {
         "lib": "vi",
         "cflags": [*cflags_runtime, "-str noreadonly"],
-        "mw_version": "GC/1.2.5n",
+        "mw_version": "GC/2.6", # should be 3.0a3p1 but vi.c yells about something
         "progress_category" : "sdk",
         "objects": [
             Object(NonMatching, "RevoSDK/vi/vi.c"),
@@ -1255,7 +1255,7 @@ config.libs = [
     {
         "lib": "thp",
         "cflags": [*cflags_runtime, "-str noreadonly"],
-        "mw_version": "GC/1.2.5n",
+        "mw_version": "GC/3.0a3p1",
         "progress_category" : "sdk",
         "objects": [
             Object(NonMatching, "RevoSDK/thp/THPDec.c"),
@@ -1265,7 +1265,7 @@ config.libs = [
     {
         "lib": "tpl",
         "cflags": [*cflags_runtime, "-str noreadonly"], # unknown
-        "mw_version": "GC/1.2.5n",                      # unknown
+        "mw_version": "GC/3.0a3p1",                      # unknown
         "progress_category" : "sdk",
         "objects": [
             Object(NonMatching, "RevoSDK/tpl/TPL.c"),
@@ -1274,7 +1274,7 @@ config.libs = [
     {
         "lib": "usb",
         "cflags": [*cflags_runtime, "-str noreadonly"], # unknown
-        "mw_version": "GC/1.2.5n",                      # unknown
+        "mw_version": "GC/3.0a3p1",                      # unknown
         "progress_category" : "sdk",
         "objects": [
             Object(NonMatching, "RevoSDK/usb/usb.c"),
@@ -1283,7 +1283,7 @@ config.libs = [
     {
         "lib": "wenc",
         "cflags": [*cflags_runtime, "-str noreadonly"], # unknown
-        "mw_version": "GC/1.2.5n",                      # unknown
+        "mw_version": "GC/3.0a3p1",                      # unknown
         "progress_category" : "sdk",
         "objects": [
             Object(NonMatching, "RevoSDK/wenc/wenc.c"),
@@ -1292,7 +1292,7 @@ config.libs = [
     {
         "lib": "wpad",
         "cflags": [*cflags_runtime, "-str noreadonly"], # unknown
-        "mw_version": "GC/1.2.5n",                      # unknown
+        "mw_version": "GC/3.0a3p1",                      # unknown
         "progress_category" : "sdk",
         "objects": [
             Object(NonMatching, "RevoSDK/wpad/WPAD.c"),
@@ -1304,7 +1304,7 @@ config.libs = [
     {
         "lib": "wud",
         "cflags": [*cflags_runtime, "-str noreadonly"], # unknown
-        "mw_version": "GC/1.2.5n",                      # unknown
+        "mw_version": "GC/3.0a3p1",                      # unknown
         "progress_category" : "sdk",
         "objects": [
             Object(NonMatching, "RevoSDK/wud/WUD.c"),
@@ -1315,7 +1315,7 @@ config.libs = [
     {
         "lib": "arc",
         "cflags": [*cflags_runtime, "-str noreadonly"], # unknown
-        "mw_version": "GC/1.2.5n",                      # unknown
+        "mw_version": "GC/3.0a3p1",                      # unknown
         "progress_category" : "sdk",
         "objects": [
             Object(NonMatching, "RevoSDK/arc/arc.c"),
@@ -1324,7 +1324,7 @@ config.libs = [
     {
         "lib": "bte",
         "cflags": [*cflags_runtime, "-str noreadonly"], # unknown
-        "mw_version": "GC/1.2.5n",                      # unknown
+        "mw_version": "GC/3.0a3p1",                      # unknown
         "progress_category" : "sdk",
         "objects": [
             Object(NonMatching, "RevoSDK/bte/gki_buffer.c"),
@@ -1375,7 +1375,7 @@ config.libs = [
     {
         "lib": "enc",
         "cflags": [*cflags_runtime, "-str noreadonly"], # unknown
-        "mw_version": "GC/1.2.5n",                      # unknown
+        "mw_version": "GC/3.0a3p1",                      # unknown
         "progress_category" : "sdk",
         "objects": [
             Object(NonMatching, "RevoSDK/enc/encutility.c"),
@@ -1385,7 +1385,7 @@ config.libs = [
     {
         "lib": "euart",
         "cflags": [*cflags_runtime, "-str noreadonly"], # unknown
-        "mw_version": "GC/1.2.5n",                      # unknown
+        "mw_version": "GC/3.0a3p1",                      # unknown
         "progress_category" : "sdk",
         "objects": [
             Object(NonMatching, "RevoSDK/euart/euart.c"),
@@ -1394,7 +1394,7 @@ config.libs = [
     {
         "lib": "fs",
         "cflags": [*cflags_runtime, "-str noreadonly"], # unknown
-        "mw_version": "GC/1.2.5n",                      # unknown
+        "mw_version": "GC/3.0a3p1",                      # unknown
         "progress_category" : "sdk",
         "objects": [
             Object(NonMatching, "RevoSDK/fs/fs.c"),
@@ -1403,7 +1403,7 @@ config.libs = [
     {
         "lib": "ipc",
         "cflags": [*cflags_runtime, "-str noreadonly"], # unknown
-        "mw_version": "GC/1.2.5n",                      # unknown
+        "mw_version": "GC/3.0a3p1",                      # unknown
         "progress_category" : "sdk",
         "objects": [
             Object(NonMatching, "RevoSDK/ipc/ipcMain.c"),
@@ -1415,7 +1415,7 @@ config.libs = [
     {
         "lib": "kpad",
         "cflags": [*cflags_runtime, "-str noreadonly"], # unknown
-        "mw_version": "GC/1.2.5n",                      # unknown
+        "mw_version": "GC/3.0a3p1",                      # unknown
         "progress_category" : "sdk",
         "objects": [
             Object(NonMatching, "RevoSDK/kpad/KPAD.c"),
@@ -1424,7 +1424,7 @@ config.libs = [
     {
         "lib": "mem",
         "cflags": [*cflags_runtime, "-str noreadonly"], # unknown
-        "mw_version": "GC/1.2.5n",                      # unknown
+        "mw_version": "GC/3.0a3p1",                      # unknown
         "progress_category" : "sdk",
         "objects": [
             Object(NonMatching, "RevoSDK/mem/mem_heapCommon.c"),
@@ -1436,7 +1436,7 @@ config.libs = [
     {
         "lib": "nand",
         "cflags": [*cflags_runtime, "-str noreadonly"], # unknown
-        "mw_version": "GC/1.2.5n",                      # unknown
+        "mw_version": "GC/3.0a3p1",                      # unknown
         "progress_category" : "sdk",
         "objects": [
             Object(NonMatching, "RevoSDK/nand/nand.c"),
@@ -1449,7 +1449,7 @@ config.libs = [
     {
         "lib": "sc",
         "cflags": [*cflags_runtime, "-str noreadonly"], # unknown
-        "mw_version": "GC/1.2.5n",                      # unknown
+        "mw_version": "GC/3.0a3p1",                      # unknown
         "progress_category" : "sdk",
         "objects": [
             Object(NonMatching, "RevoSDK/sc/scsystem.c"),
@@ -1460,7 +1460,7 @@ config.libs = [
     {
         "lib": "esp",
         "cflags": [*cflags_runtime, "-str noreadonly"], # unknown
-        "mw_version": "GC/1.2.5n",                      # unknown
+        "mw_version": "GC/3.0a3p1",                      # unknown
         "progress_category" : "sdk",
         "objects": [
             Object(NonMatching, "RevoSDK/esp/esp.c"),
@@ -2298,7 +2298,7 @@ config.libs = [
             Object(NonMatching, "sysCommonU/parameters.cpp"),
             Object(NonMatching, "sysCommonU/stream.cpp"),
             Object(NonMatching, "sysCommonU/geometry.cpp"),
-            Object(NonMatching, "sysCommonU/mapCollision.cpp"),
+            Object(Matching, "sysCommonU/mapCollision.cpp"),
             Object(NonMatching, "sysCommonU/camera.cpp"),
             Object(NonMatching, "sysCommonU/tagparams.cpp"),
             Object(NonMatching, "sysCommonU/sysTemplates.cpp"),
@@ -2307,7 +2307,7 @@ config.libs = [
             Object(NonMatching, "sysCommonU/geomOBBTree.cpp"),
             Object(NonMatching, "sysCommonU/geomTraceMove.cpp"),
             Object(NonMatching, "sysCommonU/geomCylinder.cpp"),
-            Object(NonMatching, "sysCommonU/geomClone.cpp"),
+            Object(Matching, "sysCommonU/geomClone.cpp"),
         ],
     },
     {
@@ -2321,14 +2321,14 @@ config.libs = [
             Object(NonMatching, "sysGCU/gameflow.cpp"),
             Object(NonMatching, "sysGCU/menuSection.cpp"),
             Object(NonMatching, "sysGCU/dvdThread.cpp"),
-            Object(NonMatching, "sysGCU/appThread.cpp"),
+            Object(Matching, "sysGCU/appThread.cpp"),
             Object(NonMatching, "sysGCU/graphics.cpp"),
             Object(NonMatching, "sysGCU/matMath.cpp"),
             Object(NonMatching, "sysGCU/sysShape.cpp"),
             Object(NonMatching, "sysGCU/reset.cpp"),
             Object(NonMatching, "sysGCU/dvdStatus.cpp"),
             Object(NonMatching, "sysGCU/sysTimers.cpp"),
-            Object(NonMatching, "sysGCU/modelMgr.cpp"),
+            Object(Matching, "sysGCU/modelMgr.cpp"),
             Object(NonMatching, "sysGCU/heapStatus.cpp"),
             Object(NonMatching, "sysGCU/light.cpp"),
             Object(NonMatching, "sysGCU/wipe.cpp"),
@@ -2413,7 +2413,7 @@ config.libs = [
     {
         "lib": "egg",
         "cflags": cflags_runtime,   # unknown
-        "mw_version": "GC/1.2.5n",  # unknown
+        "mw_version": "GC/3.0a3p1",  # unknown
         "progress_category" : "egg",
         "objects": [
             Object(NonMatching, "egg/gfx/eggCamera.cpp"),
@@ -2447,7 +2447,7 @@ config.libs = [
     {
         "lib": "nw4r",
         "cflags": cflags_runtime,   # unknown
-        "mw_version": "GC/1.2.5n",  # unknown
+        "mw_version": "GC/3.0a3p1",  # unknown
         "progress_category" : "nw4r",
         "objects": [
             Object(NonMatching, "nw4r/ut/ut_list.cpp"),

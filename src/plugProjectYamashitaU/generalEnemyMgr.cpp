@@ -1,5 +1,5 @@
-#include "Dolphin/rand.h"
 #include "Game/generalEnemyMgr.h"
+#include "Dolphin/rand.h"
 #include "Game/Entities/Armor.h"
 #include "Game/Entities/Baby.h"
 #include "Game/Entities/BigFoot.h"
@@ -68,10 +68,10 @@
 #include "Game/Entities/Wealthy.h"
 #include "Game/Entities/YellowChappy.h"
 #include "Game/Entities/YellowKochappy.h"
-#include "Game/plantsMgr.h"
-#include "Game/gamePlayData.h"
-#include "Game/MapMgr.h"
 #include "Game/Interaction.h"
+#include "Game/MapMgr.h"
+#include "Game/gamePlayData.h"
+#include "Game/plantsMgr.h"
 #include "LoadResource.h"
 
 static const char matchText[] = "enemyBase";
@@ -561,14 +561,14 @@ void GeneralEnemyMgr::doAnimation()
 {
 	mCullCount  = 0;
 	mTotalCount = 0;
-	sys->mTimers->_start("doaTEKI", true);
+	sys->mTimers->start("doaTEKI", true);
 	if (mFlags.isSet(GEM_DoSimulate)) {
 		EnemyMgrNode* childNode = static_cast<EnemyMgrNode*>(mEnemyMgrNode.mChild);
 		for (childNode; childNode != nullptr; childNode = static_cast<EnemyMgrNode*>(childNode->mNext)) {
 			childNode->doAnimation();
 		}
 	}
-	sys->mTimers->_stop("doaTEKI");
+	sys->mTimers->stop("doaTEKI");
 }
 
 /**
@@ -703,19 +703,28 @@ EnemyBase* GeneralEnemyMgr::birth(int enemyID, EnemyBirthArg& birthArg)
  * @note Address: 0x8010D57C
  * @note Size: 0x28
  */
-char* GeneralEnemyMgr::getEnemyName(int enemyID, int flags) { return EnemyInfoFunc::getEnemyName(enemyID, flags); }
+char* GeneralEnemyMgr::getEnemyName(int enemyID, int flags)
+{
+	return EnemyInfoFunc::getEnemyName(enemyID, flags);
+}
 
 /**
  * @note Address: N/A
  * @note Size: 0x28
  */
-char GeneralEnemyMgr::getEnemyMember(int enemyID, int flags) { return EnemyInfoFunc::getEnemyMember(enemyID, flags); }
+char GeneralEnemyMgr::getEnemyMember(int enemyID, int flags)
+{
+	return EnemyInfoFunc::getEnemyMember(enemyID, flags);
+}
 
 /**
  * @note Address: 0x8010D5A4
  * @note Size: 0x28
  */
-int GeneralEnemyMgr::getEnemyID(char* name, int flags) { return EnemyInfoFunc::getEnemyID(name, flags); }
+int GeneralEnemyMgr::getEnemyID(char* name, int flags)
+{
+	return EnemyInfoFunc::getEnemyID(name, flags);
+}
 
 /**
  * @note Address: 0x8010D5CC
@@ -794,7 +803,10 @@ void GeneralEnemyMgr::allocateEnemys(u8 viewNum, int heapSize)
  * @note Address: 0x8010D814
  * @note Size: 0x40
  */
-void GeneralEnemyMgr::resetEnemyNum() { mEnemyNumInfo.resetEnemyNum(); }
+void GeneralEnemyMgr::resetEnemyNum()
+{
+	mEnemyNumInfo.resetEnemyNum();
+}
 
 /**
  * @note Address: 0x8010D854
@@ -850,7 +862,10 @@ void GeneralEnemyMgr::addEnemyNum(int enemyID, u8 max, GenObjectEnemy* genObj)
  * @note Address: 0x8010DA80
  * @note Size: 0x170
  */
-u8 GeneralEnemyMgr::getEnemyNum(int enemyID, bool doFullCount) { return mEnemyNumInfo.getEnemyNum(enemyID, doFullCount); }
+u8 GeneralEnemyMgr::getEnemyNum(int enemyID, bool doFullCount)
+{
+	return mEnemyNumInfo.getEnemyNum(enemyID, doFullCount);
+}
 
 /**
  * @note Address: 0x8010DBF0

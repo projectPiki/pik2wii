@@ -1,17 +1,17 @@
 #include "Game/BaseGameSection.h"
-#include "Game/GameSystem.h"
 #include "Game/GameLight.h"
+#include "Game/GameSystem.h"
 
 #include "Sys/DrawBuffers.h"
 
-#include "JSystem/JUtility/JUTTexture.h"
 #include "JSystem/J3D/J3DSys.h"
+#include "JSystem/JUtility/JUTTexture.h"
 
+#include "IDelegate.h"
+#include "Light.h"
 #include "ParticleMgr.h"
 #include "SysTimers.h"
-#include "IDelegate.h"
 #include "System.h"
-#include "Light.h"
 #include "nans.h"
 
 const char* message = "drct-post";
@@ -37,14 +37,14 @@ void BaseGameSection::newdraw_draw3D_all(Graphics& gfx)
 	}
 
 	// Draw particles for both viewports
-	sys->mTimers->_start("part-draw", true);
+	sys->mTimers->start("part-draw", true);
 	drawParticle(gfx, PLAYER1_VIEWPORT);
 	drawParticle(gfx, PLAYER2_VIEWPORT);
-	sys->mTimers->_stop("part-draw");
+	sys->mTimers->stop("part-draw");
 
 	// Draw counters for both viewports
 	// (Life gauge & Carry info)
-	sys->mTimers->_start("drct-post", true);
+	sys->mTimers->start("drct-post", true);
 	mLightMgr->set(gfx);
 	Viewport* vp = gfx.getViewport(PLAYER1_VIEWPORT);
 	if (vp && vp->viewable()) {
@@ -59,7 +59,7 @@ void BaseGameSection::newdraw_draw3D_all(Graphics& gfx)
 		directDrawPost(gfx, vp);
 	}
 
-	sys->mTimers->_stop("drct-post");
+	sys->mTimers->stop("drct-post");
 }
 
 /**
@@ -68,7 +68,7 @@ void BaseGameSection::newdraw_draw3D_all(Graphics& gfx)
  */
 void BaseGameSection::newdraw_drawAll(Viewport* vp)
 {
-	sys->mTimers->_start("draw_calc", true);
+	sys->mTimers->start("draw_calc", true);
 	Graphics& gfx = *sys->mGfx;
 
 	doSetView(vp->mVpId);
@@ -76,11 +76,11 @@ void BaseGameSection::newdraw_drawAll(Viewport* vp)
 	doViewCalc();
 	vp->setViewport();
 	vp->setProjection();
-	sys->mTimers->_stop("draw_calc");
+	sys->mTimers->stop("draw_calc");
 
 	j3dSys.drawInit();
 
-	sys->mTimers->_start("jdraw", true);
+	sys->mTimers->start("jdraw", true);
 	mLightMgr->set(gfx);
 	mOpaqueDrawBuffer->get(DB_FirstLayer)->draw();
 	mOpaqueDrawBuffer->get(DB_MapLayer)->draw();
@@ -95,20 +95,20 @@ void BaseGameSection::newdraw_drawAll(Viewport* vp)
 	mOpaqueDrawBuffer->get(DB_NormalFogOffLayer)->draw();
 	mTransparentDrawBuffer->get(DB_NormalFogOffLayer)->draw();
 	mLightMgr->mFogMgr->set(gfx);
-	sys->mTimers->_stop("jdraw");
+	sys->mTimers->stop("jdraw");
 
 	gfx.setToken("direct");
 
-	sys->mTimers->_start("direct", true);
+	sys->mTimers->start("direct", true);
 	j3dSys.drawInit();
 	directDraw(gfx, vp);
-	sys->mTimers->_stop("direct");
+	sys->mTimers->stop("direct");
 
 	Game::shadowMgr->draw(gfx, vp->mVpId);
 	vp->setViewport();
 	vp->setProjection();
 
-	sys->mTimers->_start("j3d-etc", true);
+	sys->mTimers->start("j3d-etc", true);
 	mOpaqueDrawBuffer->get(DB_PostShadowLayer)->draw();
 	mTransparentDrawBuffer->get(DB_PostShadowLayer)->draw();
 
@@ -132,7 +132,7 @@ void BaseGameSection::newdraw_drawAll(Viewport* vp)
 
 	mTransparentDrawBuffer->get(DB_MapLayer)->draw();
 	vp->setJ3DViewMtx(false);
-	sys->mTimers->_stop("j3d-etc");
+	sys->mTimers->stop("j3d-etc");
 }
 
 } // namespace Game

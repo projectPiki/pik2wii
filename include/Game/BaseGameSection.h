@@ -1,16 +1,16 @@
 #ifndef _GAME_BASEGAMESECTION_H
 #define _GAME_BASEGAMESECTION_H
 
-#include "Game/BaseHIO.h"
-#include "Game/PikiContainer.h"
+#include "BuildSettings.h"
 #include "Camera.h"
 #include "DvdThreadCommand.h"
-#include "IDelegate.h"
-#include "Vector3.h"
-#include "Splitter.h"
-#include "Rect.h"
+#include "Game/BaseHIO.h"
 #include "Game/GameMessage.h"
-#include "BuildSettings.h"
+#include "Game/PikiContainer.h"
+#include "IDelegate.h"
+#include "Rect.h"
+#include "Splitter.h"
+#include "Vector3.h"
 
 struct BlackFader;
 struct Controller;
@@ -110,66 +110,67 @@ struct BaseGameSection : public BaseHIOSection {
 	{
 		mIsLoadingDVD = true;
 		return mIsLoadingDVD;
-	}                                                                         // _28 (weak)
+	} // _28 (weak)
 	virtual bool doUpdate();                                                  // _3C
 	virtual void doDraw(Graphics& gfx);                                       // _40
-	virtual bool sendMessage(GameMessage& msg) { return false; }              // _50 (weak)
-	virtual void pre2dDraw(Graphics& gfx) { }                                 // _54 (weak)
-	virtual int getCurrFloor() { return -1; }                                 // _58 (weak)
-	virtual bool isDevelopSection() { return true; }                          // _5C (weak)
-	virtual void addChallengeScore(int) { }                                   // _60 (weak)
-	virtual void startMainBgm() { }                                           // _64 (weak)
-	virtual void section_fadeout() { }                                        // _68 (weak)
-	virtual void goNextFloor(ItemHole::Item* hole) { }                        // _6C (weak)
-	virtual void goCave(ItemCave::Item* cave) { }                             // _70 (weak)
-	virtual void goMainMap(ItemBigFountain::Item* geyser) { }                 // _74 (weak)
-	virtual u32 getCaveID() { return 'none'; }                                // _78 (weak)
-	virtual CourseInfo* getCurrentCourseInfo() { return nullptr; }            // _7C (weak)
-	virtual bool challengeDisablePelplant() { return true; }                  // _80 (weak)
-	virtual char* getCaveFilename() { return "caveinfo.txt"; }                // _84 (weak)
-	virtual char* getEditorFilename() { return "random"; }                    // _88 (weak)
-	virtual int getVsEditNumber() { return -2; }                              // _8C (weak)
-	virtual bool openContainerWindow() { return false; }                      // _90 (weak)
-	virtual void closeContainerWindow() { }                                   // _94 (weak)
-	virtual void playMovie_firstexperience(int, Creature*) { }                // _98 (weak)
-	virtual void playMovie_bootup(Onyon* onyon) { }                           // _9C (weak)
-	virtual void playMovie_helloPikmin(Piki* piki) { }                        // _A0 (weak)
-	virtual void enableTimer(f32 value, u32 type) { }                         // _A4 (weak)
-	virtual void disableTimer(u32 type) { }                                   // _A8 (weak)
-	virtual u32 getTimerType() { return DEMOTIMER_None; }                     // _AC (weak)
-	virtual void onMovieStart(MovieConfig* movie, u32 unused, u32 naviID) { } // _B0 (weak)
-	virtual void onMovieDone(MovieConfig*, u32, u32) { }                      // _B4 (weak)
-	virtual void onMovieCommand(int);                                         // _B8
-	virtual void startFadeout(f32);                                           // _BC
-	virtual void startFadein(f32);                                            // _C0
-	virtual void startFadeoutin(f32);                                         // _C4
-	virtual void startFadeblack();                                            // _C8
-	virtual void startFadewhite();                                            // _CC
-	virtual void gmOrimaDown(int) { }                                         // _D0 (weak)
-	virtual void gmPikminZero() { }                                           // _D4 (weak)
-	virtual void openCaveInMenu(ItemCave::Item*, int) { }                     // _D8 (weak)
-	virtual void openCaveMoreMenu(ItemHole::Item*, Controller*) { }           // _DC (weak)
-	virtual void openKanketuMenu(ItemBigFountain::Item*, Controller*) { }     // _E0 (weak)
-	virtual void on_setCamController(int) { }                                 // _E4 (weak)
-	virtual void onTogglePlayer() { }                                         // _E8 (weak)
-	virtual void onPlayerJoin() { }                                           // _EC (weak)
-	virtual void onInit() { }                                                 // _F0 (weak)
-	virtual void onUpdate() { }                                               // _F4 (weak)
-	virtual void initJ3D();                                                   // _F8
-	virtual void initViewports(Graphics& gfx);                                // _FC
-	virtual void initResources();                                             // _100
-	virtual void initGenerators();                                            // _104
-	virtual void initLights();                                                // _108
-	virtual void draw3D(Graphics& gfx);                                       // _10C
-	virtual void draw2D(Graphics& gfx);                                       // _110
-	virtual void drawParticle(Graphics& gfx, int viewportIndex);              // _114
-	virtual void draw_Ogawa2D(Graphics& gfx);                                 // _118
-	virtual void do_drawOtakaraWindow(Graphics& gfx);                         // _11C
-	virtual void onSetupFloatMemory() { }                                     // _120 (weak)
-	virtual void postSetupFloatMemory();                                      // _124
-	virtual void onSetSoundScene() { }                                        // _128 (weak)
-	virtual void onStartHeap() { }                                            // _12C (weak)
-	virtual void onClearHeap() { }                                            // _130 (weak)
+	virtual void doEntry();                                                   // _44
+	virtual bool sendMessage(GameMessage& msg) { return false; }              // _54 (weak)
+	virtual void pre2dDraw(Graphics& gfx) { }                                 // _58 (weak)
+	virtual int getCurrFloor() { return -1; }                                 // _5C (weak)
+	virtual bool isDevelopSection() { return true; }                          // _60 (weak)
+	virtual void addChallengeScore(int) { }                                   // _64 (weak)
+	virtual void startMainBgm() { }                                           // _68 (weak)
+	virtual void section_fadeout() { }                                        // _6C (weak)
+	virtual void goNextFloor(ItemHole::Item* hole) { }                        // _70 (weak)
+	virtual void goCave(ItemCave::Item* cave) { }                             // _74 (weak)
+	virtual void goMainMap(ItemBigFountain::Item* geyser) { }                 // _78 (weak)
+	virtual u32 getCaveID() { return 'none'; }                                // _7C (weak)
+	virtual CourseInfo* getCurrentCourseInfo() { return nullptr; }            // _80 (weak)
+	virtual bool challengeDisablePelplant() { return true; }                  // _84 (weak)
+	virtual char* getCaveFilename() { return "caveinfo.txt"; }                // _88 (weak)
+	virtual char* getEditorFilename() { return "random"; }                    // _8C (weak)
+	virtual int getVsEditNumber() { return -2; }                              // _90 (weak)
+	virtual bool openContainerWindow() { return false; }                      // _94 (weak)
+	virtual void closeContainerWindow() { }                                   // _98 (weak)
+	virtual void playMovie_firstexperience(int, Creature*) { }                // _9C (weak)
+	virtual void playMovie_bootup(Onyon* onyon) { }                           // _A0 (weak)
+	virtual void playMovie_helloPikmin(Piki* piki) { }                        // _A4 (weak)
+	virtual void enableTimer(f32 value, u32 type) { }                         // _A8 (weak)
+	virtual void disableTimer(u32 type) { }                                   // _AC (weak)
+	virtual u32 getTimerType() { return DEMOTIMER_None; }                     // _B0 (weak)
+	virtual void onMovieStart(MovieConfig* movie, u32 unused, u32 naviID) { } // _B4 (weak)
+	virtual void onMovieDone(MovieConfig*, u32, u32) { }                      // _B8 (weak)
+	virtual void onMovieCommand(int);                                         // _BC
+	virtual void startFadeout(f32);                                           // _C0
+	virtual void startFadein(f32);                                            // _C4
+	virtual void startFadeoutin(f32);                                         // _C8
+	virtual void startFadeblack();                                            // _CC
+	virtual void startFadewhite();                                            // _D0
+	virtual void gmOrimaDown(int) { }                                         // _D4 (weak)
+	virtual void gmPikminZero() { }                                           // _D8 (weak)
+	virtual void openCaveInMenu(ItemCave::Item*, int) { }                     // _DC (weak)
+	virtual void openCaveMoreMenu(ItemHole::Item*, Controller*) { }           // _E0 (weak)
+	virtual void openKanketuMenu(ItemBigFountain::Item*, Controller*) { }     // _E4 (weak)
+	virtual void on_setCamController(int) { }                                 // _E8 (weak)
+	virtual void onTogglePlayer() { }                                         // _EC (weak)
+	virtual void onPlayerJoin() { }                                           // _F0 (weak)
+	virtual void onInit() { }                                                 // _F4 (weak)
+	virtual void onUpdate() { }                                               // _F8 (weak)
+	virtual void initJ3D();                                                   // _FC
+	virtual void initViewports(Graphics& gfx);                                // _100
+	virtual void initResources();                                             // _104
+	virtual void initGenerators();                                            // _108
+	virtual void initLights();                                                // _10C
+	virtual void draw3D(Graphics& gfx);                                       // _110
+	virtual void draw2D(Graphics& gfx);                                       // _114
+	virtual void drawParticle(Graphics& gfx, int viewportIndex);              // _118
+	virtual void draw_Ogawa2D(Graphics& gfx);                                 // _11C
+	virtual void do_drawOtakaraWindow(Graphics& gfx);                         // _120
+	virtual void onSetupFloatMemory() { }                                     // _124 (weak)
+	virtual void postSetupFloatMemory();                                      // _128
+	virtual void onSetSoundScene() { }                                        // _12C (weak)
+	virtual void onStartHeap() { }                                            // _130 (weak)
+	virtual void onClearHeap() { }                                            // _134 (weak)
 	/////////////////// VTABLE END
 
 	void useSpecificFBTexture(JUTTexture*);
@@ -197,7 +198,6 @@ struct BaseGameSection : public BaseHIOSection {
 	void doSimpleDraw(Viewport*);
 	void doAnimation();
 	void changeGeneratorCursor(Vector3f&);
-	void doEntry();
 	void doSetView(int viewportNumber);
 	void doViewCalc();
 	void updateBlendCamera();

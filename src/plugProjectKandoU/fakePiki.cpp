@@ -1,17 +1,17 @@
 #include "Game/FakePiki.h"
+#include "CollInfo.h"
+#include "Dolphin/rand.h"
+#include "Game/AIConstants.h"
 #include "Game/BaseItem.h"
-#include "Game/gameStat.h"
+#include "Game/MapMgr.h"
 #include "Game/Navi.h"
 #include "Game/PikiMgr.h"
-#include "Game/AIConstants.h"
-#include "Game/mapParts.h"
-#include "Game/MapMgr.h"
 #include "Game/PlatInstance.h"
-#include "CollInfo.h"
+#include "Game/gameStat.h"
+#include "Game/mapParts.h"
 #include "JSystem/JMath.h"
-#include "Dolphin/rand.h"
-#include "trig.h"
 #include "nans.h"
+#include "trig.h"
 
 f32 efx::TCursor::kAngleSpeed = PI / 60.0f;
 
@@ -82,7 +82,10 @@ void FakePiki::initFakePiki()
  * @note Address: 0x8013CE4C
  * @note Size: 0x28
  */
-void FakePiki::killFakePiki() { shadowMgr->delShadow(this); }
+void FakePiki::killFakePiki()
+{
+	shadowMgr->delShadow(this);
+}
 
 /**
  * @note Address: 0x8013CE74
@@ -165,19 +168,28 @@ void FakePiki::finishMotion()
  * @note Address: 0x8013D0DC
  * @note Size: 0x8
  */
-void FakePiki::movieSetFaceDir(f32 faceDir) { mFaceDir = faceDir; }
+void FakePiki::movieSetFaceDir(f32 faceDir)
+{
+	mFaceDir = faceDir;
+}
 
 /**
  * @note Address: 0x8013D0E4
  * @note Size: 0x8
  */
-void FakePiki::setDoAnimCallback(IDelegate* callback) { mDoAnimCallback = callback; }
+void FakePiki::setDoAnimCallback(IDelegate* callback)
+{
+	mDoAnimCallback = callback;
+}
 
 /**
  * @note Address: 0x8013D0EC
  * @note Size: 0xC
  */
-void FakePiki::clearDoAnimCallback() { mDoAnimCallback = nullptr; }
+void FakePiki::clearDoAnimCallback()
+{
+	mDoAnimCallback = nullptr;
+}
 
 /**
  * @note Address: 0x8013D0F8
@@ -687,7 +699,9 @@ void FakePiki::updateLookCreature()
  * @note Address: 0x8013D820
  * @note Size: 0x4
  */
-void FakePiki::do_updateLookCreature() { }
+void FakePiki::do_updateLookCreature()
+{
+}
 
 /**
  * @note Address: 0x8013D824
@@ -1358,13 +1372,13 @@ void FakePiki::doEntry()
  */
 void FakePiki::doAnimation()
 {
-	sys->mTimers->_start("doa1", true);
+	sys->mTimers->start("doa1", true);
 	AILODParm lodParm;
 	lodParm.mFar   = 0.01f;
 	lodParm.mClose = 0.009f;
 	updateCell();
 	updateLOD(lodParm);
-	sys->mTimers->_stop("doa1");
+	sys->mTimers->stop("doa1");
 
 	f32 frameLen = sys->mDeltaTime;
 	if (isMovieMotion()) {
@@ -1424,10 +1438,10 @@ void FakePiki::doAnimation()
 	PSMTXCopy(mBaseTrMatrix.mMatrix.mtxView, mModel->getJ3DModel()->mPosMtx);
 	sCurrNeckTheta = mNeckTheta;
 	sCurrNeckPhi   = mNeckPhi;
-	sys->mTimers->_start("calc-coll", true);
+	sys->mTimers->start("calc-coll", true);
 	mModel->getJ3DModel()->calc();
 	mCollTree->update();
-	sys->mTimers->_stop("calc-coll");
+	sys->mTimers->stop("calc-coll");
 	if (mDoAnimCallback != nullptr) {
 		mDoAnimCallback->invoke();
 	}
@@ -1560,19 +1574,28 @@ void FakePiki::doSimulation(f32 rate)
  * @note Address: 0x8013F358
  * @note Size: 0xC
  */
-void FakePiki::initCaptureStomach() { mTargetCollObj = nullptr; }
+void FakePiki::initCaptureStomach()
+{
+	mTargetCollObj = nullptr;
+}
 
 /**
  * @note Address: 0x8013F364
  * @note Size: 0x8
  */
-void FakePiki::startCaptureStomach(CollPart* collPart) { mTargetCollObj = collPart; }
+void FakePiki::startCaptureStomach(CollPart* collPart)
+{
+	mTargetCollObj = collPart;
+}
 
 /**
  * @note Address: 0x8013F36C
  * @note Size: 0xC
  */
-void FakePiki::endCaptureStomach() { mTargetCollObj = nullptr; }
+void FakePiki::endCaptureStomach()
+{
+	mTargetCollObj = nullptr;
+}
 
 /**
  * @note Address: 0x8013F378
@@ -1605,6 +1628,9 @@ void FakePiki::updateStomach()
  * @note Address: 0x8013F4D0
  * @note Size: 0x8
  */
-bool FakePiki::debugShapeDL(char*) { return true; }
+bool FakePiki::debugShapeDL(char*)
+{
+	return true;
+}
 
 } // namespace Game

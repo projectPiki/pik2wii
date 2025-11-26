@@ -1,11 +1,11 @@
+#include "Dolphin/rand.h"
 #include "Game/EnemyFunc.h"
+#include "Game/MoviePlayer.h"
 #include "Game/Navi.h"
 #include "Game/PikiMgr.h"
 #include "Game/Stickers.h"
-#include "Game/MoviePlayer.h"
-#include "stl/float.h"
-#include "Dolphin/rand.h"
 #include "nans.h"
+#include "stl/float.h"
 
 namespace Game {
 namespace EnemyFunc {
@@ -367,7 +367,7 @@ Navi* getNearestNavi(Creature* creature, f32 searchAngle, f32 searchRadius, f32*
  */
 Piki* getNearestPikmin(Creature* creature, f32 searchAngle, f32 searchRadius, f32* pikiDist, Condition<Piki>* condition)
 {
-	sys->mTimers->_start("teki-srch", true);
+	sys->mTimers->start("teki-srch", true);
 	Piki* piki = nullptr;
 	f32 minDist;
 	searchAngle = TORADIANS(searchAngle);
@@ -410,7 +410,7 @@ Piki* getNearestPikmin(Creature* creature, f32 searchAngle, f32 searchRadius, f3
 		*pikiDist = minDist;
 	}
 
-	sys->mTimers->_stop("teki-srch");
+	sys->mTimers->stop("teki-srch");
 
 	return piki;
 	/*
@@ -1774,7 +1774,7 @@ lbl_80114DA8:
  */
 int getSurroundPikminNum(Creature* creature, f32 searchRadius, Condition<Piki>* condition)
 {
-	sys->mTimers->_start("teki-srch", true);
+	sys->mTimers->start("teki-srch", true);
 	searchRadius *= searchRadius;
 	int pikiCount = 0;
 	Iterator<Piki> iter(pikiMgr, nullptr, condition);
@@ -1792,7 +1792,7 @@ int getSurroundPikminNum(Creature* creature, f32 searchRadius, Condition<Piki>* 
 		}
 	}
 
-	sys->mTimers->_stop("teki-srch");
+	sys->mTimers->stop("teki-srch");
 	return pikiCount;
 
 	/*

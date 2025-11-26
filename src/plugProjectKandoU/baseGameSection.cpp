@@ -1,38 +1,38 @@
+#include "Game/BaseGameSection.h"
+#include "Game/AIConstants.h"
+#include "Game/CameraMgr.h"
+#include "Game/Cave/RandMapUnit.h"
+#include "Game/DeathMgr.h"
 #include "Game/Entities/ItemBigFountain.h"
-#include "Game/Entities/PelletOtakara.h"
-#include "Game/Entities/PelletCarcass.h"
-#include "Game/Entities/PelletNumber.h"
 #include "Game/Entities/ItemPikihead.h"
+#include "Game/Entities/PelletCarcass.h"
 #include "Game/Entities/PelletFruit.h"
 #include "Game/Entities/PelletItem.h"
-#include "Game/PelletBirthBuffer.h"
-#include "Game/Cave/RandMapUnit.h"
-#include "Game/BaseGameSection.h"
-#include "Game/generalEnemyMgr.h"
-#include "Game/MoviePlayer.h"
-#include "Game/AIConstants.h"
-#include "Game/PikiState.h"
-#include "Game/GameLight.h"
-#include "Game/CameraMgr.h"
-#include "Game/DeathMgr.h"
-#include "Game/PikiMgr.h"
-#include "Game/rumble.h"
-#include "Game/Navi.h"
+#include "Game/Entities/PelletNumber.h"
+#include "Game/Entities/PelletOtakara.h"
 #include "Game/Farm.h"
+#include "Game/GameLight.h"
+#include "Game/MoviePlayer.h"
+#include "Game/Navi.h"
+#include "Game/PelletBirthBuffer.h"
+#include "Game/PikiMgr.h"
+#include "Game/PikiState.h"
+#include "Game/generalEnemyMgr.h"
+#include "Game/rumble.h"
 
-#include "JSystem/JFramework/JFWDisplay.h"
+#include "Dolphin/rand.h"
 #include "JSystem/J2D/J2DPrint.h"
+#include "JSystem/JFramework/JFWDisplay.h"
+#include "LifeGaugeMgr.h"
+#include "PSGame/Global.h"
+#include "PikiAI.h"
 #include "Screen/Game2DMgr.h"
 #include "Sys/DrawBuffers.h"
 #include "TParticle2dMgr.h"
-#include "PSGame/Global.h"
 #include "efx/OnyonSpot.h"
-#include "Dolphin/rand.h"
-#include "LifeGaugeMgr.h"
+#include "nans.h"
 #include "og/ogLib2D.h"
 #include "utilityU.h"
-#include "PikiAI.h"
-#include "nans.h"
 
 namespace og {
 namespace Screen {
@@ -284,14 +284,14 @@ bool BaseGameSection::doUpdate()
 		updateBlendCamera();
 	}
 	mapMgr->update();
-	sys->mTimers->_start("doAnim", true);
+	sys->mTimers->start("doAnim", true);
 	doAnimation();
-	sys->mTimers->_stop("doAnim");
-	sys->mTimers->_start("ENT", true);
-	sys->mTimers->_start("ENT-A", true);
+	sys->mTimers->stop("doAnim");
+	sys->mTimers->start("ENT", true);
+	sys->mTimers->start("ENT-A", true);
 	doEntry();
-	sys->mTimers->_stop("ENT-A");
-	sys->mTimers->_start("ENT-B", true);
+	sys->mTimers->stop("ENT-A");
+	sys->mTimers->start("ENT-B", true);
 
 	if (rumbleMgr) {
 		rumbleMgr->update();
@@ -320,31 +320,31 @@ bool BaseGameSection::doUpdate()
 		platMgr->resetOnCount();
 	}
 
-	sys->mTimers->_stop("ENT-B");
-	sys->mTimers->_stop("ENT");
-	sys->mTimers->_start("doSim", true);
+	sys->mTimers->stop("ENT-B");
+	sys->mTimers->stop("ENT");
+	sys->mTimers->start("doSim", true);
 
 	if (!gameSystem->paused()) {
 		f32 frameRate = sys->getFrameRate(1.0f);
-		sys->mTimers->_start("coll", true);
+		sys->mTimers->start("coll", true);
 		if (!(gameSystem->isFlag(GAMESYS_DisableCollision))) {
 			sys->getTime();
 			cellMgr->resolveCollision();
 			CellPyramid::sSpeedUpResolveColl = true;
 		}
-		sys->mTimers->_stop("coll");
+		sys->mTimers->stop("coll");
 		doSimulation(frameRate);
 	}
 
-	sys->mTimers->_stop("doSim");
-	sys->mTimers->_start("particle", true);
+	sys->mTimers->stop("doSim");
+	sys->mTimers->start("particle", true);
 	if (!gameSystem->mIsFrozen && !gameSystem->paused() && particleMgr) {
 		particleMgr->update();
 	}
 	if (particle2dMgr) {
 		particle2dMgr->update();
 	}
-	sys->mTimers->_stop("particle");
+	sys->mTimers->stop("particle");
 	onUpdate();
 	if (moviePlayer && !gameSystem->mIsMoviePause) {
 		if (gameSystem->isMultiplayerMode()) {
@@ -378,9 +378,9 @@ void BaseGameSection::doDraw(Graphics& gfx)
 		cameraMgr->update();
 	}
 
-	sys->mTimers->_start("_draw3D_", true);
+	sys->mTimers->start("_draw3D_", true);
 	draw3D(gfx);
-	sys->mTimers->_stop("_draw3D_");
+	sys->mTimers->stop("_draw3D_");
 	if (moviePlayer && !gameSystem->mIsMoviePause) {
 		moviePlayer->drawLoading(gfx);
 	}
@@ -814,7 +814,10 @@ void BaseGameSection::initGenerators()
 	PelletBirthBuffer::birthAll();
 	Iterator<Navi> iNavi = naviMgr;
 	int naviCount        = 0;
-	CI_LOOP(iNavi) { naviCount++; }
+	CI_LOOP(iNavi)
+	{
+		naviCount++;
+	}
 	switch (naviCount) {
 	case 0: {
 		bool olimarAlive  = false;
@@ -1341,7 +1344,10 @@ void BaseGameSection::initLights()
  * @note Address: 0x8014EF44
  * @note Size: 0x20
  */
-void BaseGameSection::draw3D(Graphics& gfx) { newdraw_draw3D_all(gfx); }
+void BaseGameSection::draw3D(Graphics& gfx)
+{
+	newdraw_draw3D_all(gfx);
+}
 
 /**
  * @note Address: 0x8014EF64
@@ -1386,9 +1392,9 @@ void BaseGameSection::draw_Ogawa2D(Graphics& gfx)
 {
 	gfx.mPerspGraph.setPort();
 	particle2dMgr->draw(true, 0);
-	sys->mTimers->_start("2ddraw", true);
+	sys->mTimers->start("2ddraw", true);
 	Screen::gGame2DMgr->draw(gfx);
-	sys->mTimers->_stop("2ddraw");
+	sys->mTimers->stop("2ddraw");
 	gfx.mPerspGraph.setPort();
 	particle2dMgr->draw(false, 0);
 }
@@ -1397,7 +1403,9 @@ void BaseGameSection::draw_Ogawa2D(Graphics& gfx)
  * @note Address: 0x8014F1D8
  * @note Size: 0x4
  */
-void BaseGameSection::test_draw_treasure_detector() { }
+void BaseGameSection::test_draw_treasure_detector()
+{
+}
 
 /**
  * @note Address: 0x8014F1DC
@@ -1536,13 +1544,19 @@ void BaseGameSection::j3dViewCalc(Viewport*)
  * @note Address: 0x8014F51C
  * @note Size: 0x30
  */
-void BaseGameSection::doSimulation(f32 rate) { gameSystem->doSimulation(rate); }
+void BaseGameSection::doSimulation(f32 rate)
+{
+	gameSystem->doSimulation(rate);
+}
 
 /**
  * @note Address: 0x8014F54C
  * @note Size: 0x30
  */
-void BaseGameSection::doSimpleDraw(Viewport* vp) { gameSystem->doSimpleDraw(vp); }
+void BaseGameSection::doSimpleDraw(Viewport* vp)
+{
+	gameSystem->doSimpleDraw(vp);
+}
 
 /**
  * @note Address: 0x8014F57C
@@ -1564,9 +1578,9 @@ void BaseGameSection::doAnimation()
 		testPathfinder->update();
 	}
 
-	sys->mTimers->_start("gameSys-da", true);
+	sys->mTimers->start("gameSys-da", true);
 	gameSystem->doAnimation();
-	sys->mTimers->_stop("gameSys-da");
+	sys->mTimers->stop("gameSys-da");
 
 	if (particleMgr && !gameSystem->mIsFrozen) {
 		particleMgr->doAnimation();
@@ -1589,7 +1603,10 @@ void BaseGameSection::doAnimation()
  * @note Address: 0x8014F754
  * @note Size: 0x4C
  */
-void BaseGameSection::changeGeneratorCursor(Vector3f& vec) { naviMgr->getAt(NAVIID_Olimar)->setPosition(vec, false); }
+void BaseGameSection::changeGeneratorCursor(Vector3f& vec)
+{
+	naviMgr->getAt(NAVIID_Olimar)->setPosition(vec, false);
+}
 
 /**
  * @note Address: 0x8014F7A0
@@ -1598,15 +1615,15 @@ void BaseGameSection::changeGeneratorCursor(Vector3f& vec) { naviMgr->getAt(NAVI
 void BaseGameSection::doEntry()
 {
 	setDrawBuffer(DB_NormalLayer);
-	sys->mTimers->_start("ENT-GSYS", true);
+	sys->mTimers->start("ENT-GSYS", true);
 	gameSystem->doEntry();
-	sys->mTimers->_stop("ENT-GSYS");
-	sys->mTimers->_start("ENT-REST", true);
+	sys->mTimers->stop("ENT-GSYS");
+	sys->mTimers->start("ENT-REST", true);
 	if (particleMgr) {
 		setDrawBuffer(DB_NormalFogOffLayer);
 		particleMgr->doEntry();
 	}
-	sys->mTimers->_stop("ENT-REST");
+	sys->mTimers->stop("ENT-REST");
 }
 
 /**
@@ -1811,7 +1828,9 @@ void BaseGameSection::doDirectDrawPost(Graphics& gfx, Viewport*)
  * @note Address: 0x8014FD9C
  * @note Size: 0x4
  */
-void BaseGameSection::doDirectDraw(Graphics&, Viewport*) { }
+void BaseGameSection::doDirectDraw(Graphics&, Viewport*)
+{
+}
 
 /**
  * @note Address: N/A
@@ -2047,13 +2066,19 @@ namespace Game {
  * @note Address: 0x80150700
  * @note Size: 0x8
  */
-bool BaseGameSection::enableAllocHalt() { return false; }
+bool BaseGameSection::enableAllocHalt()
+{
+	return false;
+}
 
 /**
  * @note Address: 0x80150708
  * @note Size: 0x8
  */
-bool BaseGameSection::disableAllocHalt() { return false; }
+bool BaseGameSection::disableAllocHalt()
+{
+	return false;
+}
 
 /**
  * @note Address: N/A
@@ -3222,7 +3247,10 @@ void BaseGameSection::setDrawBuffer(int index)
  * @note Address: 0x80151500
  * @note Size: 0x30
  */
-void BaseGameSection::postSetupFloatMemory() { mapMgr->setupJUTTextures(); }
+void BaseGameSection::postSetupFloatMemory()
+{
+	mapMgr->setupJUTTextures();
+}
 
 /**
  * @note Address: 0x80151534
@@ -3243,7 +3271,9 @@ void BaseGameSection::createFallPikminSound()
  * @note Address: 0x80151734
  * @note Size: 0x4
  */
-void BaseGameSection::captureRadarmap(Graphics&) { }
+void BaseGameSection::captureRadarmap(Graphics&)
+{
+}
 
 /**
  * @note Address: N/A

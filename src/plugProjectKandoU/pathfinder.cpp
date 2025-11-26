@@ -1,7 +1,7 @@
 #include "Game/pathfinder.h"
-#include "System.h"
-#include "Game/routeMgr.h"
 #include "Game/cellPyramid.h"
+#include "Game/routeMgr.h"
+#include "System.h"
 
 namespace Game {
 
@@ -50,7 +50,7 @@ void Pathfinder::create(int contextCount, Game::RouteMgr* routeMgr)
  */
 void Pathfinder::update()
 {
-	sys->mTimers->_start("path", true);
+	sys->mTimers->start("path", true);
 
 	int counts = 0;
 	for (int i = 0; i < mAStarContextCount; i++) {
@@ -67,7 +67,7 @@ void Pathfinder::update()
 		}
 	}
 
-	sys->mTimers->_stop("path");
+	sys->mTimers->stop("path");
 }
 
 /**
@@ -274,13 +274,19 @@ void AStarContext::init(RouteMgr* mgr, int wpNum)
  * @note Address: 0x801A3BE0
  * @note Size: 0xC
  */
-AStarPathfinder::AStarPathfinder() { mContext = nullptr; }
+AStarPathfinder::AStarPathfinder()
+{
+	mContext = nullptr;
+}
 
 /**
  * @note Address: 0x801A3BEC
  * @note Size: 0x8
  */
-void AStarPathfinder::setContext(AStarContext* context) { mContext = context; }
+void AStarPathfinder::setContext(AStarContext* context)
+{
+	mContext = context;
+}
 
 /**
  * @note Address: N/A
@@ -542,7 +548,10 @@ int AStarPathfinder::search(Game::AStarContext* context, int maxIterations, Game
 
 		WayPointIterator iter(wp, mContext->mRequestFlag & PATHFLAG_TwoWayPathing);
 
-		CI_LOOP(iter) { s16 idx = *iter; }
+		CI_LOOP(iter)
+		{
+			s16 idx = *iter;
+		}
 
 		CI_LOOP(iter)
 		{

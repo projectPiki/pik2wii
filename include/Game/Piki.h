@@ -1,11 +1,11 @@
 #ifndef _GAME_PIKI_H
 #define _GAME_PIKI_H
 
+#include "Game/FakePiki.h"
+#include "Game/StateMachine.h"
 #include "JSystem/JAudio/JAI/JAInter/Object.h"
 #include "JSystem/JUtility/TColor.h"
 #include "PSM/Piki.h"
-#include "Game/FakePiki.h"
-#include "Game/StateMachine.h"
 
 #define MAX_PIKI_COUNT (100) // Maximum number of pikmin allowed out of the onyon/in a cave
 
@@ -173,6 +173,7 @@ struct Piki : public FakePiki {
 	virtual char* getCreatureName() { return "pikmin"; }   // _1A8 (weak)
 	virtual s32 getCreatureID() { return mMgrIndex; }      // _1AC (weak)
 	// vtable 2 (MotionListener + FakePiki + self)
+	virtual void FakePiki_unk_1BC(u32, u32);  // _1BC, unknown parameters
 	virtual int getDownfloorMass();           // _1BC
 	virtual bool isPikmin();                  // _1C0
 	virtual void doColorChange();             // _1C4
@@ -204,6 +205,7 @@ struct Piki : public FakePiki {
 	f32 getPelletCarryPower();
 	f32 getSpeed(f32);
 	f32 getSpeed(f32, f32);
+	f32 getSpeed(f32, f32, Vector3f&);
 	int getStateID();
 	f32 getThrowHeight();
 	Piki* getVsBattlePiki();
@@ -262,33 +264,34 @@ struct Piki : public FakePiki {
 	static u8 sGraspSituationOptimise;
 
 	// _000			 = VTBL
-	// _000-_24C = FakePiki
-	PSM::Piki* mSoundObj;             // _250
-	f32 mTargetLookTimer;             // _254
-	efx::TPkEffect* mEffectsObj;      // _258
-	Vector3f mLeafStemOffset;         // _25C
-	SysShape::Joint* mLeafStemJoint;  // _268
-	Vector3f mLeafStemPosition;       // _26C
-	SysShape::Joint* mHappaJoint1;    // _278
-	efx::Context* mEffectsContext;    // _27C
-	u8 _280[4];                       // _280
-	s16 mIsDoped;                     // _284
-	f32 mDopeTime;                    // _288
-	PikiFSM* mFsm;                    // _28C
-	PikiState* mCurrentState;         // _290
-	PikiAI::Brain* mBrain;            // _294
-	UpdateContext mPikiUpdateContext; // _298
-	s16 mTekiKillID;                  // _2A4
-	u8 mGasInvincible;                // _2A6
-	Color4 mDefaultColor;             // _2A7
-	Color4 mOldDefaultColor;          // _2AB
-	Color4 mPikiColor;                // _2AF
-	f32 mColorFloat;                  // _2B4
-	u8 mPikiKind;                     // _2B8, aka Piki kind (Blue, Yellow, Red, etc.)
-	u8 mHappaKind;                    // _2B9, aka Happa kind (leaf, bud, flower)
-	SysShape::Model* mLeafModel;      // _2BC
-	int mMgrIndex;                    // _2C0
-	Navi* mNavi;                      // _2C4
+	// _000-_254     = FakePiki
+	u8 _254[0x60];                    // _254, some unknown struct with a ctor (system12 related)
+	PSM::Piki* mSoundObj;             // _2B4
+	f32 mTargetLookTimer;             // _2B8
+	efx::TPkEffect* mEffectsObj;      // _2BC
+	Vector3f mLeafStemOffset;         // _2C0
+	SysShape::Joint* mLeafStemJoint;  // _2CC
+	Vector3f mLeafStemPosition;       // _2D0
+	SysShape::Joint* mHappaJoint1;    // _2DC
+	efx::Context* mEffectsContext;    // _2E0
+	u8 _280[4];                       // _2E4
+	s16 mIsDoped;                     // _2E8
+	f32 mDopeTime;                    // _2EC
+	PikiFSM* mFsm;                    // _2F0
+	PikiState* mCurrentState;         // _2F4
+	PikiAI::Brain* mBrain;            // _2F8
+	UpdateContext mPikiUpdateContext; // _2FC
+	s16 mTekiKillID;                  // _308
+	u8 mGasInvincible;                // _30A
+	Color4 mDefaultColor;             // _30B
+	Color4 mOldDefaultColor;          // _30F
+	Color4 mPikiColor;                // _313
+	f32 mColorFloat;                  // _318
+	u8 mPikiKind;                     // _31C, aka Piki kind (Blue, Yellow, Red, etc.)
+	u8 mHappaKind;                    // _31D, aka Happa kind (leaf, bud, flower)
+	SysShape::Model* mLeafModel;      // _320
+	int mMgrIndex;                    // _324
+	Navi* mNavi;                      // _328
 };
 } // namespace Game
 

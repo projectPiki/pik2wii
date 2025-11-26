@@ -1,13 +1,13 @@
 #ifndef _GAME_PIKISTATE_H
 #define _GAME_PIKISTATE_H
 
-#include "Game/StateMachine.h"
-#include "Game/PlatInstance.h"
 #include "Game/CollEvent.h"
 #include "Game/Piki.h"
+#include "Game/PlatInstance.h"
+#include "Game/StateMachine.h"
+#include "Sys/Triangle.h"
 #include "SysShape/KeyEvent.h"
 #include "SysShape/MotionListener.h"
-#include "Sys/Triangle.h"
 #include "Vector3.h"
 
 // panic types:
@@ -75,6 +75,7 @@ struct PikiState : public FSMState<Piki> {
 	virtual void getInfo(char*);                                  // _34
 	virtual void outWaterCallback(Piki*) { }                      // _38 (weak)
 	virtual void wallCallback(Piki*, Vector3f&) { }               // _3C (weak)
+	virtual void PikiState_unk_40(Piki*, u32, u32) { }            // _40, unknown parameters
 	virtual bool invincible(Piki*) { return false; }              // _40 (weak)
 	virtual bool callable() { return false; }                     // _44 (weak)
 	virtual bool aiActive() { return false; }                     // _48 (weak)

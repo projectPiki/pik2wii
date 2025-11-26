@@ -1,7 +1,7 @@
-#include "types.h"
 #include "Dolphin/os.h"
 #include "Dolphin/PPCArch.h"
 #include "Dolphin/hw_regs.h"
+#include "types.h"
 
 DECL_SECT(".init") extern char _db_stack_end[];
 
@@ -76,7 +76,7 @@ extern char* __OSResetSWInterruptHandler[];
 #define OS_EXCEPTIONTABLE_ADDR 0x3000
 #define OS_DBJUMPPOINT_ADDR    0x60
 
-vu16 __OSDeviceCode : (OS_BASE_CACHED | OS_DVD_DEVICECODE);
+vu16 __OSDeviceCode AT_ADDRESS(OS_BASE_CACHED | OS_DVD_DEVICECODE);
 void OSDefaultExceptionHandler(__OSException exception, OSContext* context);
 static DVDDriveInfo DriveInfo ATTRIBUTE_ALIGN(32);
 static DVDCommandBlock DriveBlock;
@@ -609,7 +609,10 @@ __OSExceptionHandler __OSSetExceptionHandler(__OSException exception, __OSExcept
  * @note Address: 0x800EB918
  * @note Size: 0x14
  */
-__OSExceptionHandler __OSGetExceptionHandler(__OSException exception) { return OSExceptionTable[exception]; }
+__OSExceptionHandler __OSGetExceptionHandler(__OSException exception)
+{
+	return OSExceptionTable[exception];
+}
 
 /**
  * @note Address: 0x800EB92C
@@ -750,10 +753,16 @@ void __OSPSInit(void)
  */
 #define DI_CONFIG_IDX         0x9
 #define DI_CONFIG_CONFIG_MASK 0xFF
-u32 __OSGetDIConfig(void) { return (__DIRegs[DI_CONFIG_IDX] & DI_CONFIG_CONFIG_MASK); }
+u32 __OSGetDIConfig(void)
+{
+	return (__DIRegs[DI_CONFIG_IDX] & DI_CONFIG_CONFIG_MASK);
+}
 
 /**
  * @note Address: 0x800EBA88
  * @note Size: 0x2C
  */
-void OSRegisterVersion(const char* id) { OSReport("%s\n", id); }
+void OSRegisterVersion(const char* id)
+{
+	OSReport("%s\n", id);
+}

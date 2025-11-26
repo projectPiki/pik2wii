@@ -1,8 +1,9 @@
 #include "JSystem/J3D/J3DJoint.h"
 #include "Dolphin/mtx.h"
+#include "JSystem/J3D/J3DModel.h"
 #include "JSystem/J3D/J3DMtxCalc.h"
 #include "JSystem/J3D/J3DTransform.h"
-#include "JSystem/J3D/J3DModel.h"
+#include "JSystem/JMath.h"
 #include "types.h"
 
 J3DMtxBuffer* J3DMtxCalc::mMtxBuffer;
@@ -359,7 +360,9 @@ J3DMtxCalcAnmBase* J3DNewMtxCalcAnm(u32 type, J3DAnmTransform* p2)
  * @note Size: 0x5C
  * __dt__17J3DMtxCalcAnmBaseFv
  */
-J3DMtxCalcAnmBase::~J3DMtxCalcAnmBase() { }
+J3DMtxCalcAnmBase::~J3DMtxCalcAnmBase()
+{
+}
 
 /**
  * @note Address: 0x8006B888

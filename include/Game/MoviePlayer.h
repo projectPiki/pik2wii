@@ -1,18 +1,18 @@
 #ifndef _GAME_MOVIEPLAYER_H
 #define _GAME_MOVIEPLAYER_H
 
+#include "CNode.h"
 #include "Camera.h"
 #include "Controller.h"
+#include "DvdThreadCommand.h"
+#include "Game/Creature.h"
+#include "IDelegate.h"
 #include "JSystem/JKernel/JKRDisposer.h"
 #include "JSystem/JStudio_JAudio.h"
-#include "types.h"
-#include "CNode.h"
-#include "DvdThreadCommand.h"
-#include "IDelegate.h"
-#include "Vector3.h"
 #include "TagParm.h"
-#include "Game/Creature.h"
+#include "Vector3.h"
 #include "id32.h"
+#include "types.h"
 
 struct JPAResourceManager;
 struct Viewport;
@@ -143,10 +143,10 @@ struct MoviePlayArg {
 
 	inline MoviePlayArg(char* movieName, char* courseName, IDelegate3<MovieConfig*, u32, u32>* p3, u32 naviID)
 	{
-		mMovieName     = movieName;
-		mCourseName    = courseName;
-		mDelegateEnd   = p3;
-		mOrigin        = Vector3f(0.0f);
+		mMovieName   = movieName;
+		mCourseName  = courseName;
+		mDelegateEnd = p3;
+		mOrigin.set(0.0f, 0.0f, 0.0f);
 		mAngle         = 0.0f;
 		mNaviID        = naviID;
 		mDelegateStart = nullptr;

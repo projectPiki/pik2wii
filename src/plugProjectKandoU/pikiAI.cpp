@@ -1,20 +1,20 @@
-#include "Game/Piki.h"
-#include "Game/Navi.h"
 #include "PikiAI.h"
+#include "Game/Entities/ItemBarrel.h"
+#include "Game/Entities/ItemBigFountain.h"
+#include "Game/Entities/ItemBridge.h"
+#include "Game/Entities/ItemDengekiGate.h"
+#include "Game/Entities/ItemGate.h"
+#include "Game/Entities/ItemHoney.h"
+#include "Game/Entities/ItemPlant.h"
+#include "Game/Entities/ItemRock.h"
+#include "Game/Entities/ItemTreasure.h"
+#include "Game/Entities/ItemWeed.h"
+#include "Game/MoviePlayer.h"
+#include "Game/Navi.h"
+#include "Game/Piki.h"
 #include "Game/PikiMgr.h"
 #include "Game/PikiState.h"
 #include "Game/gamePlayData.h"
-#include "Game/MoviePlayer.h"
-#include "Game/Entities/ItemGate.h"
-#include "Game/Entities/ItemBridge.h"
-#include "Game/Entities/ItemRock.h"
-#include "Game/Entities/ItemWeed.h"
-#include "Game/Entities/ItemHoney.h"
-#include "Game/Entities/ItemBigFountain.h"
-#include "Game/Entities/ItemBarrel.h"
-#include "Game/Entities/ItemTreasure.h"
-#include "Game/Entities/ItemPlant.h"
-#include "Game/Entities/ItemDengekiGate.h"
 #include "Game/generalEnemyMgr.h"
 #include "nans.h"
 
@@ -822,13 +822,13 @@ bool Piki::invokeAI(Game::PlatEvent* event)
  */
 bool Piki::invokeAIFree(Game::Piki::InvokeAIFreeArg& arg)
 {
-	sys->mTimers->_start("invokeAI-f", true);
+	sys->mTimers->start("invokeAI-f", true);
 	if (arg.mDoForceInvoke || mPikiUpdateContext.updatable()) {
 		bool result = checkInvokeAI(arg.mDoSimpleCheck);
-		sys->mTimers->_stop("invokeAI-f");
+		sys->mTimers->stop("invokeAI-f");
 		return result;
 	}
-	sys->mTimers->_stop("invokeAI-f");
+	sys->mTimers->stop("invokeAI-f");
 	return false;
 }
 

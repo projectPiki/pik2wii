@@ -1,15 +1,15 @@
 #include "Section.h"
 #include "Dolphin/__start.h"
+#include "Game/MemoryCard/Mgr.h"
+#include "Graphics.h"
+#include "JSystem/JFramework/JFWDisplay.h"
 #include "JSystem/JKernel/JKRHeap.h"
 #include "JSystem/JUtility/JUTException.h"
 #include "JSystem/JUtility/JUTFader.h"
-#include "JSystem/JFramework/JFWDisplay.h"
-#include "Game/MemoryCard/Mgr.h"
-#include "PSSystem/PSGame.h"
 #include "PSM/Scene.h"
-#include "THP/THPRead.h"
+#include "PSSystem/PSGame.h"
 #include "System.h"
-#include "Graphics.h"
+#include "THP/THPRead.h"
 #include "nans.h"
 #if BUILDTARGET == USADEMO1
 #include "Game/GameConfig.h"
@@ -23,7 +23,9 @@ static OSTime sPlayTime = OS_TIMER_CLOCK * 300;
  * @note Address: 0x80423770
  * @note Size: 0x4
  */
-void Section::init() { }
+void Section::init()
+{
+}
 
 /**
  * @note Address: 0x80423774
@@ -59,7 +61,7 @@ Section::Section(JFWDisplay* display, JKRHeap* heap, bool b)
 		} else {
 			mDisplay = JFWDisplay::createManager(nullptr, mDisplayHeap, JUTXfb::DoubleBuffer, false);
 			mFader   = new JUTFader(0, 0, JUTVideo::sManager->mRenderModeObj->fbWidth, JUTVideo::sManager->mRenderModeObj->efbHeight,
-                                  JUtility::TColor(0, 0, 0, 0)); // TODO: HELP
+			                        JUtility::TColor(0, 0, 0, 0)); // TODO: HELP
 			mDisplay->mFader = mFader;
 			mIsDisplayNew    = true;
 
@@ -173,14 +175,14 @@ void Section::main()
 		beginFrame();
 		beginRender();
 
-		sys->mTimers->_start("draw", true);
+		sys->mTimers->start("draw", true);
 		draw(*mGraphics);
-		sys->mTimers->_stop("draw");
+		sys->mTimers->stop("draw");
 		endRender();
 
-		sys->mTimers->_start("update", true);
+		sys->mTimers->start("update", true);
 		update();
-		sys->mTimers->_stop("update");
+		sys->mTimers->stop("update");
 		endFrame();
 #if BUILDTARGET == USADEMO1
 		// TODO: This case has to be something around the lines of the below, running into inlining issues with Section::run()
@@ -283,19 +285,28 @@ void Section::exit()
  * @note Address: 0x80423FCC
  * @note Size: 0x24
  */
-bool Section::beginFrame() { return sys->beginFrame(); }
+bool Section::beginFrame()
+{
+	return sys->beginFrame();
+}
 
 /**
  * @note Address: 0x80423FF0
  * @note Size: 0x24
  */
-void Section::endFrame() { sys->endFrame(); }
+void Section::endFrame()
+{
+	sys->endFrame();
+}
 
 /**
  * @note Address: 0x80424014
  * @note Size: 0x24
  */
-void Section::beginRender() { sys->beginRender(); }
+void Section::beginRender()
+{
+	sys->beginRender();
+}
 
 /**
  * @note Address: 0x80424038

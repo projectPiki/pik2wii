@@ -1,25 +1,24 @@
 #include "Game/Piki.h"
+#include "Dolphin/rand.h"
+#include "Game/BaseHIO.h"
+#include "Game/DeathMgr.h"
+#include "Game/Entities/ItemOnyon.h"
+#include "Game/GameSystem.h"
+#include "Game/MapMgr.h"
+#include "Game/MoviePlayer.h"
+#include "Game/Navi.h"
+#include "Game/NaviParms.h"
 #include "Game/PikiMgr.h"
 #include "Game/PikiParms.h"
 #include "Game/PikiState.h"
 #include "Game/StateMachine.h"
-#include "Game/gameStat.h"
-#include "Game/MoviePlayer.h"
-#include "Game/GameSystem.h"
-#include "Game/Entities/ItemOnyon.h"
-#include "Game/DeathMgr.h"
 #include "Game/gamePlayData.h"
-#include "Game/BaseHIO.h"
-#include "Game/Navi.h"
-#include "Game/NaviParms.h"
-#include "Game/MapMgr.h"
-#include "Game/MoviePlayer.h"
-#include "efx/TPk.h"
-#include "Dolphin/rand.h"
+#include "Game/gameStat.h"
 #include "PikiAI.h"
-#include "System.h"
-#include "SoundID.h"
 #include "Radar.h"
+#include "SoundID.h"
+#include "System.h"
+#include "efx/TPk.h"
 #include "nans.h"
 
 namespace Game {
@@ -101,19 +100,28 @@ int Piki::getFormationSlotID()
  * @note Address: 0x80147E14
  * @note Size: 0x24
  */
-PikiAI::Action* Piki::getCurrAction() { return mBrain->getCurrAction(); }
+PikiAI::Action* Piki::getCurrAction()
+{
+	return mBrain->getCurrAction();
+}
 
 /**
  * @note Address: 0x80147E38
  * @note Size: 0x10
  */
-void Piki::clearCurrAction() { mBrain->mActionId = PikiAI::ACT_NULL; }
+void Piki::clearCurrAction()
+{
+	mBrain->mActionId = PikiAI::ACT_NULL;
+}
 
 /**
  * @note Address: 0x80147E48
  * @note Size: 0xC
  */
-int Piki::getCurrActionID() { return mBrain->mActionId; }
+int Piki::getCurrActionID()
+{
+	return mBrain->mActionId;
+}
 
 /**
  * @note Address: 0x80147E54
@@ -253,7 +261,10 @@ void Piki::onKill(CreatureKillArg* killArg)
  * @note Address: 0x80148498
  * @note Size: 0x1C
  */
-void Piki::onSetPosition() { mBoundingSphere.mPosition = mPosition; }
+void Piki::onSetPosition()
+{
+	mBoundingSphere.mPosition = mPosition;
+}
 
 /**
  * @note Address: 0x801484B4
@@ -271,22 +282,22 @@ void Piki::getLODSphere(Sys::Sphere& sphere)
  */
 void Piki::update()
 {
-	sys->mTimers->_start("pu-1", true);
+	sys->mTimers->start("pu-1", true);
 	mSoundObj->exec();
 	updateGasInvincible();
 	updateLook();
 	updateLookCreature();
-	sys->mTimers->_start("pu-4", true);
+	sys->mTimers->start("pu-4", true);
 
 	if (!isMovieActor() || isMovieExtra()) {
 		mFsm->exec(this);
 	}
 
 	if (isAlive()) {
-		sys->mTimers->_stop("pu-4");
+		sys->mTimers->stop("pu-4");
 		mEffectsObj->update();
 		mEffectsContext->mPosition = mLeafStemOffset;
-		sys->mTimers->_stop("pu-1");
+		sys->mTimers->stop("pu-1");
 
 		if (isAlive() && mWaterBox) {
 			int stateID  = getStateID();
@@ -318,7 +329,9 @@ bool Piki::isAlive()
  * @note Address: 0x80148748
  * @note Size: 0x4
  */
-void Piki::on_movie_begin(bool) { }
+void Piki::on_movie_begin(bool)
+{
+}
 
 /**
  * @note Address: 0x8014874C
@@ -327,7 +340,7 @@ void Piki::on_movie_begin(bool) { }
 void Piki::on_movie_end(bool shouldResetAnims)
 {
 	if (shouldResetAnims) {
-		getCreatureID();
+		// getCreatureID();
 		startMotion(IPikiAnims::WAIT, IPikiAnims::WAIT, nullptr, nullptr);
 	}
 }
@@ -336,13 +349,18 @@ void Piki::on_movie_end(bool shouldResetAnims)
  * @note Address: 0x801487B8
  * @note Size: 0x4
  */
-void Piki::movieUserCommand(u32, Game::MoviePlayer*) { }
+void Piki::movieUserCommand(u32, Game::MoviePlayer*)
+{
+}
 
 /**
  * @note Address: 0x801487BC
  * @note Size: 0x38
  */
-void Piki::movieStartAnimation(u32 animIdx) { startMotion(animIdx, animIdx, nullptr, nullptr); }
+void Piki::movieStartAnimation(u32 animIdx)
+{
+	startMotion(animIdx, animIdx, nullptr, nullptr);
+}
 
 /**
  * @note Address: 0x801487F4
@@ -360,9 +378,9 @@ void Piki::movieStartDemoAnimation(SysShape::AnimInfo* animInfo)
  */
 void Piki::movieSetTranslation(Vector3f& position, f32 faceDir)
 {
-	mVelocity         = Vector3f(0.0f);
-	mTargetVelocity   = Vector3f(0.0f);
-	mAcceleration     = Vector3f(0.0f);
+	mVelocity.set(0.0f, 0.0f, 0.0f);
+	mTargetVelocity.set(0.0f, 0.0f, 0.0f);
+	mAcceleration.set(0.0f, 0.0f, 0.0f);
 	mPreviousPosition = mPosition;
 	setPosition(position, false);
 	mFaceDir = faceDir;
@@ -372,7 +390,10 @@ void Piki::movieSetTranslation(Vector3f& position, f32 faceDir)
  * @note Address: 0x801488C4
  * @note Size: 0x8
  */
-bool Piki::movieGotoPosition(Vector3f&) { return false; }
+bool Piki::movieGotoPosition(Vector3f&)
+{
+	return false;
+}
 
 /**
  * @note Address: 0x801488CC
@@ -434,19 +455,28 @@ void Piki::startSound(Creature* creature, u32 id, PSGame::SeMgr::SetSeId setSeId
  * @note Address: 0x80148A90
  * @note Size: 0x14
  */
-JAInter::Object* Piki::getJAIObject() { return mSoundObj; }
+JAInter::Object* Piki::getJAIObject()
+{
+	return mSoundObj;
+}
 
 /**
  * @note Address: 0x80148AA4
  * @note Size: 0x8
  */
-PSM::Creature* Piki::getPSCreature() { return mSoundObj; }
+PSM::Creature* Piki::getPSCreature()
+{
+	return mSoundObj;
+}
 
 /**
  * @note Address: 0x80148AAC
  * @note Size: 0x30
  */
-bool Piki::canVsBattle() { return mCurrentState->battleOK(); }
+bool Piki::canVsBattle()
+{
+	return mCurrentState->battleOK();
+}
 
 /**
  * @note Address: 0x80148AE4
@@ -634,8 +664,8 @@ bool Piki::might_bury()
 		if (creature->mObjectTypeID == OBJTYPE_Cave || creature->mObjectTypeID == OBJTYPE_BigFountain
 		    || creature->mObjectTypeID == OBJTYPE_Hole) {
 			Vector3f creaturePos = creature->getPosition();
-			Vector3f sep         = Vector3f(creaturePos.y - mPosition.y, creaturePos.z - mPosition.z, creaturePos.x - mPosition.x);
-			if (_length2(sep) <= 100.0f) {
+			// Vector3f sep         = Vector3f(creaturePos.y - mPosition.y, creaturePos.z - mPosition.z, creaturePos.x - mPosition.x);
+			if (creaturePos.distance(mPosition) <= 100.0f) {
 				return false;
 			}
 		}
@@ -648,7 +678,10 @@ bool Piki::might_bury()
  * @note Address: 0x80148ED8
  * @note Size: 0x14
  */
-bool Piki::surviveDayEnd() { return (u8)(getCurrActionID() == PikiAI::ACT_Formation); }
+bool Piki::surviveDayEnd()
+{
+	return (u8)(getCurrActionID() == PikiAI::ACT_Formation);
+}
 
 /**
  * @note Address: 0x80148EEC
@@ -678,23 +711,24 @@ int Piki::getStateID()
  * @note Address: 0x80148F50
  * @note Size: 0xC8
  */
-f32 Piki::getSpeed(f32 multiplier)
+f32 Piki::getSpeed(f32 propWalkToRun)
 {
 	if (doped()) {
 		return pikiMgr->mParms->mPikiParms.mDopeRunSpeed();
 	}
 
-	f32 baseSpeed = scaleValue(1.0f, pikiMgr->mParms->mPikiParms.mRunSpeed());
+	f32 factor   = 1.0f;
+	f32 runSpeed = factor * pikiMgr->mParms->mPikiParms.mRunSpeed();
 
 	if (mHappaKind == Flower) {
-		baseSpeed = pikiMgr->mParms->mPikiParms.mFlowerRunSpeed();
+		runSpeed = pikiMgr->mParms->mPikiParms.mFlowerRunSpeed();
 	} else if (mHappaKind == Bud) {
-		baseSpeed = pikiMgr->mParms->mPikiParms.mBudRunSpeed();
+		runSpeed = pikiMgr->mParms->mPikiParms.mBudRunSpeed();
 	}
 
-	int pikiType = getKind();
-	f32 drag     = scaleValue(1.0f, pikiMgr->mParms->mPikiParms.mWalkSpeed());
-	f32 speed    = multiplier * (baseSpeed - drag) + drag;
+	int pikiType  = getKind();
+	f32 walkSpeed = factor * pikiMgr->mParms->mPikiParms.mWalkSpeed();
+	f32 speed     = propWalkToRun * (runSpeed - walkSpeed) + walkSpeed;
 
 	if (pikiType == White) {
 		speed *= pikiMgr->mParms->mPikiParms.mWhiteRunSpeedMultiplier();
@@ -795,13 +829,19 @@ int Piki::getDownfloorMass()
  * @note Address: 0x801494B8
  * @note Size: 0x14
  */
-bool Piki::gasInvicible() { return mGasInvincible; }
+bool Piki::gasInvicible()
+{
+	return mGasInvincible;
+}
 
 /**
  * @note Address: 0x801494CC
  * @note Size: 0x8
  */
-void Piki::setGasInvincible(u8 invincibleTime) { mGasInvincible = invincibleTime; }
+void Piki::setGasInvincible(u8 invincibleTime)
+{
+	mGasInvincible = invincibleTime;
+}
 
 /**
  * @note Address: 0x801494D4
@@ -850,22 +890,26 @@ f32 Piki::getAttackDamage()
  */
 f32 Piki::getThrowHeight()
 {
-	if (!mNavi) {
-		return 0.0f;
+	Navi* navi = mNavi;
+	if (!navi) {
+		navi = naviMgr->getAt(NAVIID_Olimar);
+		if (!navi) {
+			return 75.0f;
+		}
 	}
 
-	P2ASSERTLINE(1403, mNavi);
+	// P2ASSERTLINE(1403, mNavi);
 
 	switch (getKind()) {
 	case Yellow:
-		return static_cast<NaviParms*>(mNavi->mParms)->mNaviParms.mThrowHeightYellow.mValue;
+		return static_cast<NaviParms*>(navi->mParms)->mNaviParms.mThrowHeightYellow.mValue;
 	case Purple:
-		return static_cast<NaviParms*>(mNavi->mParms)->mNaviParms.mThrowBlackHeight.mValue;
+		return static_cast<NaviParms*>(navi->mParms)->mNaviParms.mThrowBlackHeight.mValue;
 	case White:
-		return static_cast<NaviParms*>(mNavi->mParms)->mNaviParms.mThrowWhiteHeight.mValue;
+		return static_cast<NaviParms*>(navi->mParms)->mNaviParms.mThrowWhiteHeight.mValue;
 	}
 
-	return static_cast<NaviParms*>(mNavi->mParms)->mNaviParms.mThrowHeightMin.mValue;
+	return static_cast<NaviParms*>(navi->mParms)->mNaviParms.mThrowHeightMin.mValue;
 }
 
 /**
@@ -900,7 +944,9 @@ f32 Piki::getPelletCarryPower()
  * @note Address: 0x80149768
  * @note Size: 0x4
  */
-void Piki::onStickStartSelf(Game::Creature*) { }
+void Piki::onStickStartSelf(Game::Creature*)
+{
+}
 
 /**
  * @note Address: 0x8014976C
@@ -937,6 +983,13 @@ bool Piki::stimulate(Interaction& interaction)
 	}
 
 	return false;
+}
+
+void Piki::FakePiki_unk_1BC(u32 p1, u32 p2)
+{
+	if (mCurrentState) {
+		mCurrentState->PikiState_unk_40(this, p1, p2);
+	}
 }
 
 /**
@@ -1066,7 +1119,10 @@ void Piki::clearDope()
  * @note Address: 0x80149E30
  * @note Size: 0x14
  */
-void Piki::extendDopeTime() { mDopeTime = pikiMgr->mParms->mPikiParms.mDopeMaxDuration.mValue; }
+void Piki::extendDopeTime()
+{
+	mDopeTime = pikiMgr->mParms->mPikiParms.mDopeMaxDuration.mValue;
+}
 
 /**
  * @note Address: 0x80149E44
@@ -1103,7 +1159,10 @@ bool Piki::startDope(int isDoped)
  * @note Address: 0x80149FE0
  * @note Size: 0x18
  */
-bool Piki::doped() { return mIsDoped != -1; }
+bool Piki::doped()
+{
+	return mIsDoped != -1;
+}
 
 /**
  * @note Address: N/A
@@ -1169,9 +1228,9 @@ void Piki::getShadowParam(ShadowParam& param)
 	}
 
 	param.mPosition.y += 0.5f;
-	param.mBoundingSphere.mRadius   = 10.0f;
-	param.mSize                     = 2.0f;
-	param.mBoundingSphere.mPosition = Vector3f(0.0f, 1.0f, 0.0f);
+	param.mBoundingSphere.mRadius = 10.0f;
+	param.mSize                   = 2.0f;
+	param.mBoundingSphere.mPosition.set(0.0f, 1.0f, 0.0f);
 }
 
 /**
@@ -1194,7 +1253,10 @@ bool Piki::isMyPikmin(Creature* creature)
  * @note Address: 0x8014A288
  * @note Size: 0x18
  */
-bool Piki::isTekiFollowAI() { return (u8)(mBrain->mActionId == PikiAI::ACT_Teki); }
+bool Piki::isTekiFollowAI()
+{
+	return (u8)(mBrain->mActionId == PikiAI::ACT_Teki);
+}
 
 /**
  * @note Address: 0x8014A2A0
@@ -1211,7 +1273,7 @@ void Piki::doColorChange()
 		return;
 	}
 
-	mLeafStemOffset = Vector3f(5.0f, 0.0f, 0.0f);
+	mLeafStemOffset.set(5.0f, 0.0f, 0.0f);
 	mLeafStemOffset = worldMat->mtxMult(mLeafStemOffset);
 
 	happa1->getWorldMatrix()->getTranslation(mLeafStemPosition);
@@ -1261,7 +1323,7 @@ void Piki::doAnimation()
 
 	if (mIsDoped != -1 && mDopeTime > 0.0f) {
 
-		mDopeTime -= sys->mDeltaTime;
+		mDopeTime -= sys->getDeltaTime();
 		if (mDopeTime <= 0) {
 			mSoundObj->startFreePikiSetSound(PSSE_PK_VC_DOPE_END, PSGame::SeMgr::SETSE_Unk0, 90, 0);
 			if (mIsDoped != -1) {
@@ -1283,7 +1345,9 @@ void Piki::doAnimation()
  * @note Address: 0x8014A594
  * @note Size: 0x4
  */
-void Piki::doDirectDraw(Graphics&) { }
+void Piki::doDirectDraw(Graphics&)
+{
+}
 
 /**
  * @note Address: 0x8014A598
@@ -1325,7 +1389,7 @@ void Piki::changeShape(int color)
 		GameStat::alivePikis.inc(this);
 	}
 
-	int count = GameStat::alivePikis;
+	// int count = GameStat::alivePikis;
 
 	mEffectsObj->mPikiColor     = color;
 	mEffectsObj->mHamonPosPtr   = &mPosition;
@@ -1342,7 +1406,10 @@ void Piki::changeShape(int color)
  * @note Address: 0x8014A770
  * @note Size: 0x8
  */
-void Piki::changeHappa(int newHappa) { mHappaKind = newHappa; }
+void Piki::changeHappa(int newHappa)
+{
+	mHappaKind = newHappa;
+}
 
 /**
  * @note Address: 0x8014A778
@@ -1360,11 +1427,14 @@ void Piki::do_updateLookCreature()
 
 	if (OptimiseController::mInstance->mPikminNeck.mValue) {
 		if (mLookAtTargetCreature) {
-			mTargetLookTimer -= sys->mDeltaTime;
+			mTargetLookTimer -= sys->getDeltaTime();
 			if (mTargetLookTimer > 0.0f) {
 				Vector3f targetPos = mLookAtTargetCreature->getPosition();
-				Vector3f sep       = Vector3f(targetPos.y - mPosition.y, targetPos.z - mPosition.z, targetPos.x - mPosition.x);
-				if (_length2(sep) > 200.0f) {
+				// targetPos          = targetPos - mPosition;
+				// targetPos.y -= mPosition.y;
+				// targetPos.z -= mPosition.z;
+				// Vector3f sep       = Vector3f(targetPos.y - mPosition.y, targetPos.z - mPosition.z, targetPos.x - mPosition.x);
+				if (targetPos.distance(mPosition) > 200.0f) {
 					finishLook();
 				}
 				return;
@@ -1455,7 +1525,9 @@ void MonoObjectMgr<Game::Piki>::kill(Game::Piki* piki)
  * @note Address: 0x8014AB34
  * @note Size: 0x4
  */
-void Game::StateMachine<Game::Piki>::init(Game::Piki*) { }
+void Game::StateMachine<Game::Piki>::init(Game::Piki*)
+{
+}
 
 /**
  * @note Address: 0x8014AB38

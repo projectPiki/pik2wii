@@ -1,18 +1,18 @@
 #ifndef _PSSYSTEM_SYSIF_H
 #define _PSSYSTEM_SYSIF_H
 
-#include "types.h"
 #include "Dolphin/os.h"
 #include "JSystem/JAudio/JAI/JAIBasic.h"
 #include "JSystem/JAudio/JAI/JAIStream.h"
 #include "JSystem/JKernel/JKRDisposer.h"
 #include "JSystem/JKernel/JKRFileLoader.h"
+#include "JSystem/JMath.h"
 #include "P2Macros.h"
 #include "PSGame/BASARC.h"
-#include "JSystem/JMath.h"
 #include "PSM/Se.h"
 #include "PSSystem/PSSeq.h"
 #include "PSSystem/SeqData.h"
+#include "types.h"
 
 namespace PSSystem {
 struct SeqBase;
@@ -219,7 +219,7 @@ extern SysIF* spSysIF;
 
 inline PSSystem::SysIF* PSGetSystemIFA()
 {
-	P2ASSERTLINE(395, PSSystem::spSysIF);
+	P2ASSERTLINE(410, PSSystem::spSysIF);
 	return PSSystem::spSysIF;
 }
 
@@ -241,6 +241,9 @@ inline u32 isValidSeType(u32 soundID)
 	return 0;
 }
 
-inline PSSystem::SysIF* PSGetSystemIF() { return PSSystem::spSysIF; }
+inline PSSystem::SysIF* PSGetSystemIF()
+{
+	return PSSystem::spSysIF;
+}
 
 #endif

@@ -50,7 +50,8 @@ struct Section : public ISection {
 	virtual bool doLoading() { return false; }            // _38 (weak)
 	virtual bool doUpdate()            = 0;               // _3C
 	virtual void doDraw(Graphics& gfx) = 0;               // _40
-	virtual bool isFinishable() { return true; }          // _44 (weak)
+	virtual void doEntry();                               // _44
+	virtual bool isFinishable() { return true; }          // _48 (weak)
 
 	bool beginFrame();
 	void beginRender();

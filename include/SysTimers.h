@@ -50,6 +50,20 @@ struct SysTimers : public CNode {
 	void _start(char* name, bool);
 	void _stop(char* name);
 
+	inline void start(char* name, bool p2)
+	{
+#ifdef DEBUG
+		_start(name, p2);
+#endif
+	}
+
+	inline void stop(char* name)
+	{
+#ifdef DEBUG
+		_stop(name);
+#endif
+	}
+
 	s32 mFrameCount;   // _18
 	s32 mTimerCount;   // _1C
 	TimerInf* mTimers; // _20

@@ -1,7 +1,7 @@
+#include "Dolphin/gx.h"
+#include "Dolphin/hw_regs.h"
 #include "Dolphin/os.h"
 #include "Dolphin/vi.h"
-#include "Dolphin/hw_regs.h"
-#include "Dolphin/gx.h"
 
 // outside functions
 BOOL __OSReadROM(void* buffer, s32 length, s32 offset);
@@ -213,7 +213,10 @@ static BOOL IsSjisLeadByte(u8 letter)
  * @note Address: N/A
  * @note Size: 0x40
  */
-static BOOL IsSjisTrailByte(u8 letter) { return (letter >= 0x40 && letter <= 0xFC && letter != 0x7F); }
+static BOOL IsSjisTrailByte(u8 letter)
+{
+	return (letter >= 0x40 && letter <= 0xFC && letter != 0x7F);
+}
 
 /**
  * @note Address: 0x800EDD98
@@ -531,7 +534,7 @@ char* OSGetFontTexture(const char* string, void** image, s32* x, s32* y, s32* wi
 
 	if (firstChar == 0) {
 		((u32*)image)[0] = 0;
-		return string;
+		return (char*)string;
 	}
 	string++;
 	if (OSGetFontEncode() == OS_FONT_ENCODE_SJIS) {
@@ -564,7 +567,7 @@ char* OSGetFontTexture(const char* string, void** image, s32* x, s32* y, s32* wi
 		*width = WidthTable[code];
 	}
 
-	return string;
+	return (char*)string;
 }
 
 /**
@@ -576,7 +579,7 @@ char* OSGetFontWidth(const char* string, s32* width)
 	u16 firstChar = (u8)string[0];
 
 	if (firstChar == 0) {
-		return string;
+		return (char*)string;
 	}
 	string++;
 	if (OSGetFontEncode() == OS_FONT_ENCODE_SJIS) {
@@ -589,5 +592,5 @@ char* OSGetFontWidth(const char* string, s32* width)
 		*width = WidthTable[GetFontCode(firstChar)];
 	}
 
-	return string;
+	return (char*)string;
 }

@@ -1,7 +1,7 @@
-#include "types.h"
-#include "fdlibm.h"
 #include "Dolphin/mtx.h"
+#include "fdlibm.h"
 #include "math.h"
+#include "types.h"
 static f32 Unit01[] = { 0.0f, 1.0f };
 
 extern f32 sinf(f32);
@@ -545,7 +545,7 @@ void PSMTXRotAxisRad(Mtx m, const Vec* axis, f32 rad)
 	sinT = sinf(rad);
 	cosT = cosf(rad);
 
-	__PSMTXRotAxisRadInternal(m, axis, sinT, cosT);
+	// __PSMTXRotAxisRadInternal(m, axis, sinT, cosT);
 }
 
 /**

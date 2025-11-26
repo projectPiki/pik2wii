@@ -1,21 +1,21 @@
 #include "Dolphin/mtx.h"
 #include "Game/BaseItem.h"
-#include "Game/cellPyramid.h"
 #include "Game/CurrTriInfo.h"
 #include "Game/MapMgr.h"
+#include "Game/PlatInstance.h"
+#include "Game/cellPyramid.h"
 #include "Iterator.h"
 #include "ObjectMgr.h"
-#include "Platform.h"
 #include "PlatAttacher.h"
-#include "Game/PlatInstance.h"
+#include "Platform.h"
 #include "Rect.h"
 #include "Sys/OBBTree.h"
-#include "Sys/Sphere.h"
-#include "SysShape/Model.h"
-#include "SysShape/Joint.h"
 #include "Sys/RayIntersectInfo.h"
-#include "Vector3.h"
+#include "Sys/Sphere.h"
+#include "SysShape/Joint.h"
+#include "SysShape/Model.h"
 #include "System.h"
+#include "Vector3.h"
 #include "id32.h"
 
 namespace Game {
@@ -53,7 +53,10 @@ Vector3f PlatInstance::getPosition()
  * @note Address: 0x801C4C1C
  * @note Size: 0x50
  */
-void PlatInstance::getBoundingSphere(Sys::Sphere& sphere) { sphere = mPlatform->getTriDivider()->mRoot.mSphere; }
+void PlatInstance::getBoundingSphere(Sys::Sphere& sphere)
+{
+	sphere = mPlatform->getTriDivider()->mRoot.mSphere;
+}
 
 /**
  * @note Address: 0x801C4C6C
@@ -127,7 +130,7 @@ void PlatInstance::traceMove(MoveInfo& info, f32 step)
 	info.mWallTriangle  = nullptr;
 	info.mOtherTriangle = nullptr;
 
-	sys->mTimers->_start("plat-obb", true);
+	sys->mTimers->start("plat-obb", true);
 
 	Sys::OBBTree* triDivider = mPlatform->getTriDivider();
 	if (mGlobalPlatform && MapMgr::mTraceMoveOptLevel >= 3) {
@@ -138,7 +141,7 @@ void PlatInstance::traceMove(MoveInfo& info, f32 step)
 		triDivider->traceMove(mtx, invMtx, info, step);
 	}
 
-	sys->mTimers->_stop("plat-obb");
+	sys->mTimers->stop("plat-obb");
 
 	if (info.mMovingCreature) {
 		if (info.mFloorTriangle) {
@@ -308,7 +311,9 @@ void PlatInstanceAttacher::setShapeVisibility()
  * @note Address: 0x801C55E8
  * @note Size: 0xB8
  */
-PlatMgr::PlatMgr() { }
+PlatMgr::PlatMgr()
+{
+}
 
 /**
  * @note Address: 0x801C58C0
@@ -380,7 +385,10 @@ PlatInstance* PlatMgr::addInstance(PlatAddInstanceArg& arg)
  * @note Address: 0x801C5B98
  * @note Size: 0x20
  */
-void PlatMgr::delInstance(PlatInstance* instance) { NodeObjectMgr::delNode(instance); }
+void PlatMgr::delInstance(PlatInstance* instance)
+{
+	NodeObjectMgr::delNode(instance);
+}
 
 /**
  * @note Address: 0x801C5BB8
@@ -500,13 +508,18 @@ bool PlatMgr::findRayIntersection(Sys::RayIntersectInfo& info)
 void PlatMgr::resetOnCount()
 {
 	Iterator<PlatInstance> iter(this);
-	CI_LOOP(iter) { (*iter)->mOnCount = 0; }
+	CI_LOOP(iter)
+	{
+		(*iter)->mOnCount = 0;
+	}
 }
 
 /**
  * @note Address: 0x801C666C
  * @note Size: 0x4
  */
-void PlatMgr::doDirectDraw(Graphics&) { }
+void PlatMgr::doDirectDraw(Graphics&)
+{
+}
 
 } // namespace Game

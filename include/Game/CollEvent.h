@@ -1,6 +1,8 @@
 #ifndef _GAME_COLLEVENT_H
 #define _GAME_COLLEVENT_H
 
+#include "types.h"
+
 struct CollPart;
 
 namespace Game {

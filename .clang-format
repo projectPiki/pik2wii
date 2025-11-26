@@ -2,7 +2,7 @@ Language: Cpp
 
 BasedOnStyle: WebKit
 ColumnLimit: 140
-SortIncludes: false
+SortIncludes: true
 
 IndentWidth: 4
 TabWidth: 4
@@ -20,7 +20,7 @@ AlignConsecutiveMacros: true
 AlignEscapedNewlines: Left
 AlignOperands: AlignAfterOperator
 
-AllowShortFunctionsOnASingleLine: true
+AllowShortFunctionsOnASingleLine: InlineOnly
 AllowShortIfStatementsOnASingleLine: Never
 
 Cpp11BracedListStyle: false
@@ -28,3 +28,5 @@ Cpp11BracedListStyle: false
 AlwaysBreakTemplateDeclarations: true
 BreakStringLiterals: true
 ReflowComments: true
+
+InsertNewlineAtEOF: true

@@ -1,23 +1,25 @@
+#include "Game/Creature.h"
 #include "CollInfo.h"
 #include "Dolphin/mtx.h"
-#include "Game/cellPyramid.h"
-#include "Game/Creature.h"
-#include "Game/gameGenerator.h"
+#include "Game/CollEvent.h"
+#include "Game/DeathMgr.h"
 #include "Game/GameSystem.h"
+#include "Game/MapMgr.h"
+#include "Game/cellPyramid.h"
+#include "Game/gameGenerator.h"
 #include "Game/shadowMgr.h"
 #include "IDelegate.h"
 #include "JSystem/J3D/J3DModel.h"
 #include "ObjectTypes.h"
-#include "SysShape/Model.h"
 #include "Sys/Sphere.h"
-#include "types.h"
+#include "SysShape/Model.h"
 #include "Vector3.h"
-#include "Game/MapMgr.h"
-#include "Game/DeathMgr.h"
-#include "Game/CollEvent.h"
 #include "nans.h"
+#include "types.h"
 
 namespace Game {
+
+static const char unused[] = "creature";
 
 Creature* Creature::currOp;
 bool Creature::usePacketCulling = true;
@@ -33,7 +35,7 @@ Creature::Creature()
 	mMass      = 100.0f;
 	mGenerator = nullptr;
 
-	mScale = Vector3f(1.0f);
+	mScale.set(1.0f, 1.0f, 1.0f);
 
 	PSMTXIdentity(mBaseTrMatrix.mMatrix.mtxView);
 
@@ -60,11 +62,11 @@ void Creature::init(CreatureInitArg* arg)
 	clearStick();
 
 	mUpdateContext.init(collisionUpdateMgr);
-	mAcceleration = Vector3f(0.0f);
+	mAcceleration.set(0.0f, 0.0f, 0.0f);
 	clearCapture();
 
 	mFloorTriangle = nullptr;
-	mFloorNormal   = Vector3f(0.0f, 1.0f, 0.0f);
+	mFloorNormal.set(0.0f, 1.0f, 0.0f);
 	clearCapture();
 
 	if (getMabiki()) {
@@ -201,7 +203,10 @@ f32 Creature::getCellRadius()
  * @note Address: 0x8013B448
  * @note Size: 0x24
  */
-char* Creature::getTypeName() { return ObjType::getName(mObjectTypeID); }
+char* Creature::getTypeName()
+{
+	return ObjType::getName(mObjectTypeID);
+}
 
 /**
  * @brief Retrieves the shadow parameters for the creature.
@@ -217,16 +222,19 @@ void Creature::getShadowParam(ShadowParam& param)
 {
 	param.mPosition = getPosition();
 	param.mPosition.y += 0.5f;
-	param.mBoundingSphere.mRadius   = 10.0f;
-	param.mSize                     = 4.0f;
-	param.mBoundingSphere.mPosition = Vector3f(0.0f, 1.0f, 0.0f);
+	param.mBoundingSphere.mRadius = 10.0f;
+	param.mSize                   = 4.0f;
+	param.mBoundingSphere.mPosition.set(0.0f, 1.0f, 0.0f);
 }
 
 /**
  * @note Address: 0x8013B4F8
  * @note Size: 0xC
  */
-bool Creature::needShadow() { return mLod.isFlag(AILOD_IsVisible); }
+bool Creature::needShadow()
+{
+	return mLod.isFlag(AILOD_IsVisible);
+}
 
 /**
  * @brief Retrieves the parameters for the life gauge of the creature.
@@ -340,7 +348,9 @@ void Creature::doAnimation()
  * @note Address: 0x8013B8AC
  * @note Size: 0x4
  */
-void Creature::doEntry() { }
+void Creature::doEntry()
+{
+}
 
 /**
  * Sets the viewport for the creature.
@@ -391,31 +401,46 @@ void Creature::doViewCalc()
  * @note Address: 0x8013B9E4
  * @note Size: 0x10
  */
-bool Creature::isPiki() { return mObjectTypeID == OBJTYPE_Piki; }
+bool Creature::isPiki()
+{
+	return mObjectTypeID == OBJTYPE_Piki;
+}
 
 /**
  * @note Address: 0x8013B9F4
  * @note Size: 0x14
  */
-bool Creature::isNavi() { return mObjectTypeID == OBJTYPE_Navi; }
+bool Creature::isNavi()
+{
+	return mObjectTypeID == OBJTYPE_Navi;
+}
 
 /**
  * @note Address: 0x8013BA08
  * @note Size: 0x14
  */
-bool Creature::isTeki() { return mObjectTypeID == OBJTYPE_Teki; }
+bool Creature::isTeki()
+{
+	return mObjectTypeID == OBJTYPE_Teki;
+}
 
 /**
  * @note Address: 0x8013BA1C
  * @note Size: 0x14
  */
-bool Creature::isPellet() { return mObjectTypeID == OBJTYPE_Pellet; }
+bool Creature::isPellet()
+{
+	return mObjectTypeID == OBJTYPE_Pellet;
+}
 
 /**
  * @note Address: 0x8013BA30
  * @note Size: 0x20
  */
-bool Creature::sound_culling() { return !(mLod.isFlag(AILOD_PikiInCell) || mLod.isFlag(AILOD_IsVisible)); }
+bool Creature::sound_culling()
+{
+	return !(mLod.isFlag(AILOD_PikiInCell) || mLod.isFlag(AILOD_IsVisible));
+}
 
 /**
  * @note Address: 0x8013BA50

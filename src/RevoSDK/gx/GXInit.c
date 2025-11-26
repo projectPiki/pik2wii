@@ -1,6 +1,6 @@
 #include "Dolphin/gx.h"
-#include "Dolphin/os.h"
 #include "Dolphin/hw_regs.h"
+#include "Dolphin/os.h"
 
 static GXFifoObj FifoObj;
 static GXData gxData;
@@ -97,8 +97,8 @@ static GXTexRegion* __GXDefaultTexRegionCallback(const GXTexObj* obj, GXTexMapID
 	GXTexFmt format; // r31
 	GXBool isMipMap; // r3
 
-	format   = GXGetTexObjFmt(obj);
-	isMipMap = GXGetTexObjMipMap(obj);
+	format   = GXGetTexObjFmt((GXTexObj*)obj);
+	isMipMap = GXGetTexObjMipMap((GXTexObj*)obj);
 	id       = (GXTexMapID)(id % GX_MAX_TEXMAP);
 
 	switch (format) {

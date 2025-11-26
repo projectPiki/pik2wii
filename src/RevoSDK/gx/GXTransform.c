@@ -201,7 +201,7 @@ void WriteMTXPS4x2(register volatile void* dst, register const Mtx src)
 void GXLoadPosMtxImm(Mtx mtx, u32 id)
 {
 	GX_XF_LOAD_REGS(4 * 3 - 1, id * 4 + GX_XF_MEM_POSMTX);
-	WriteMTXPS4x3(&GXWGFifo, mtx);
+	// WriteMTXPS4x3(&GXWGFifo, mtx);
 }
 
 /**
@@ -220,7 +220,7 @@ void GXLoadPosMtxIndx(u16 index, u32 id)
 void GXLoadNrmMtxImm(Mtx mtx, u32 id)
 {
 	GX_XF_LOAD_REGS(3 * 3 - 1, id * 3 + GX_XF_MEM_NRMMTX);
-	WriteMTXPS3x3(&GXWGFifo, mtx);
+	// WriteMTXPS3x3(&GXWGFifo, mtx);
 }
 
 /**
@@ -272,9 +272,9 @@ void GXLoadTexMtxImm(const Mtx mtx, u32 id, GXTexMtxType type)
 	GX_XF_LOAD_REG_HDR(reg);
 
 	if (type == GX_MTX3x4) {
-		WriteMTXPS4x3(&GXWGFifo, mtx);
+		// WriteMTXPS4x3(&GXWGFifo, mtx);
 	} else {
-		WriteMTXPS4x2(&GXWGFifo, mtx);
+		// WriteMTXPS4x2(&GXWGFifo, mtx);
 	}
 }
 

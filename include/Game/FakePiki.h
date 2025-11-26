@@ -1,13 +1,13 @@
 #ifndef _GAME_FAKEPIKI_H
 #define _GAME_FAKEPIKI_H
 
-#include "Game/WaterBox.h"
 #include "Game/Creature.h"
 #include "Game/EnemyParmsBase.h"
+#include "Game/WaterBox.h"
 #include "Game/shadowMgr.h"
+#include "PikiAnimator.h"
 #include "SysShape/MotionListener.h"
 #include "Vector3.h"
-#include "PikiAnimator.h"
 
 struct J3DJoint;
 
@@ -120,6 +120,7 @@ struct FakePiki : public Creature, public SysShape::MotionListener {
 	virtual void movieSetFaceDir(f32);                                                          // _128
 	// vtable 2 (MotionListener + self)
 	// virtual void onKeyEvent(const SysShape::KeyEvent& event); // _1B8 thunk
+	virtual void FakePiki_unk_1BC(u32, u32);                                           // __1BC, unknown
 	virtual int getDownfloorMass() { return 0; }                                       // _1BC (weak)
 	virtual bool isPikmin() { return true; }                                           // _1C0 (weak)
 	virtual void doColorChange() { }                                                   // _1C4 (weak)
@@ -165,7 +166,7 @@ struct FakePiki : public Creature, public SysShape::MotionListener {
 	virtual bool isZikatu()
 	{
 		return isFPFlag(FPFLAGS_Zikatu);
-	}                                       // _1F4 (weak), is this a Wild Piki? (before type discovery, useless Pikmin)
+	} // _1F4 (weak), is this a Wild Piki? (before type discovery, useless Pikmin)
 	virtual void setZikatu(bool makeZikatu) // _1F8 (weak)
 	{
 		if (makeZikatu) {
@@ -237,33 +238,34 @@ struct FakePiki : public Creature, public SysShape::MotionListener {
 	// _000      = VTBL
 	// _000-_178 = Creature
 	// _178-_17C = MotionListener
-	BitFlag<u32> mFakePikiFlags;            // _17C
-	f32 mTraceMoveRadius;                   // _180, 0.0f for everything except carrot pikmin, which is 0.3f
-	u32 mDontUseWallCallback;               // _184
-	IDelegate* mDoAnimCallback;             // _188
-	s16 mRoomIndex;                         // _18C
-	WaterBox* mWaterBox;                    // _190
-	CollPart* mTargetCollObj;               // _194
-	f32 mNeckTheta;                         // _198
-	f32 mNeckPhi;                           // _19C
-	Vector3f* mLookAtPosition;              // _1A0
-	u8 mLookAtTimer;                        // _1A4
-	Creature* mLookAtTargetCreature;        // _1A8
-	PikiAnimator mAnimator;                 // _1AC
-	Vector3f mTargetVelocity;               // _1E4
-	Vector3f mSimPosition;                  // _1F0, unused
-	f32 mFaceDir;                           // _1FC
-	Vector3f mVelocity;                     // _200
-	Vector3f mPosition;                     // _20C
-	Sys::Sphere mBoundingSphere;            // _218, was mShadowParam.mBoundingSphere
-	int mBoundAnimIdx;                      // _228, current animIdx for held/bound object
-	int _22C;                               // _22C, anim id of some description?
-	int _230;                               // _230, anim id of some description?
-	f32 mAnimSpeed;                         // _234
-	Vector3f mPreviousPosition;             // _238, used to check what movements was made each frame
-	f32 mFaceDirOffset;                     // _244
-	Sys::Triangle* mFakePikiBounceTriangle; // _248
-	Sys::TriIndexList* mTriList;            // _24C
+	u8 _17C[4];                             // _17C, unknown - pointer to something of size 0x14
+	BitFlag<u32> mFakePikiFlags;            // _180
+	f32 mTraceMoveRadius;                   // _184, 0.0f for everything except carrot pikmin, which is 0.3f
+	u32 mDontUseWallCallback;               // _188
+	IDelegate* mDoAnimCallback;             // _18C
+	s16 mRoomIndex;                         // _190
+	WaterBox* mWaterBox;                    // _194
+	CollPart* mTargetCollObj;               // _198
+	f32 mNeckTheta;                         // _19C
+	f32 mNeckPhi;                           // _1A0
+	Vector3f* mLookAtPosition;              // _1A4
+	u8 mLookAtTimer;                        // _1A8
+	Creature* mLookAtTargetCreature;        // _1AC
+	PikiAnimator mAnimator;                 // _1B0
+	Vector3f mTargetVelocity;               // _1E8
+	Vector3f mSimPosition;                  // _1F4, unused
+	f32 mFaceDir;                           // _200
+	Vector3f mVelocity;                     // _204
+	Vector3f mPosition;                     // _210
+	Sys::Sphere mBoundingSphere;            // _21C, was mShadowParam.mBoundingSphere
+	int mBoundAnimIdx;                      // _22C, current animIdx for held/bound object
+	int _22C;                               // _230, anim id of some description?
+	int _230;                               // _234, anim id of some description?
+	f32 mAnimSpeed;                         // _238
+	Vector3f mPreviousPosition;             // _23C, used to check what movements was made each frame
+	f32 mFaceDirOffset;                     // _248
+	Sys::Triangle* mFakePikiBounceTriangle; // _24C
+	Sys::TriIndexList* mTriList;            // _250
 
 	static f32 sCurrNeckTheta;
 	static f32 sCurrNeckPhi;

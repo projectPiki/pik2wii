@@ -1,5 +1,5 @@
-#include "Dolphin/vec.h"
 #include "JSystem/JMath.h"
+#include "Dolphin/vec.h"
 #include "types.h"
 
 /**
@@ -167,62 +167,20 @@ void JMAVECLerp(register const Vec* vec1, register const Vec* vec2, register Vec
 		stfs v2z, 8(dst)
 	}
 #endif // clang-format on
-	/*dst->x = (vec2->x - vec1->x) * t + vec1->x;
-	dst->y = (vec2->y - vec1->y) * t + vec1->y;
-	dst->z = (vec2->z - vec1->z) * t + vec1->z;*/
+	   /*dst->x = (vec2->x - vec1->x) * t + vec1->x;
+	   dst->y = (vec2->y - vec1->y) * t + vec1->y;
+	   dst->z = (vec2->z - vec1->z) * t + vec1->z;*/
 }
 
 /**
  * @note Address: 0x8003509C
  * @note Size: 0x64
  */
-void JMAMTXApplyScale(register const Mtx src, register Mtx dst, register f32 xScale, register f32 yScale, register f32 zScale)
+void JMAMTXApplyScale(const Mtx src, Mtx dst, f32 xScale, f32 yScale, f32 zScale)
 {
-	register f32 scale, x, y, z;
-	register f32 normal = 1.0f;
-#ifdef __MWERKS__ // clang-format off
-	asm {
-		// scale first 2 components
-		psq_l x, 0(src), 0, 0
-		psq_l y, 0x10(src), 0, 0
-		psq_l z, 0x20(src), 0, 0
-		ps_merge00 scale, xScale, yScale
-		ps_mul x, x, scale
-		ps_mul y, y, scale
-		ps_mul z, z, scale
-		psq_st x, 0(dst), 0, 0
-		psq_st y, 0x10(dst), 0, 0
-		psq_st z, 0x20(dst), 0, 0
-
-		// scale last 2 components
-		psq_l x, 0x8(src), 0, 0
-		psq_l y, 0x18(src), 0, 0
-		psq_l z, 0x28(src), 0, 0
-		ps_merge00 scale, zScale, normal
-		ps_mul x, x, scale
-		ps_mul y, y, scale
-		ps_mul z, z, scale
-		psq_st x, 0x8(dst), 0, 0
-		psq_st y, 0x18(dst), 0, 0
-		psq_st z, 0x28(dst), 0, 0
-	}
-#endif // clang-format on
-
-	/*dst[0][0] = src[0][0] * xScale;
-	dst[0][1] = src[0][1] * yScale;
-	dst[0][2] = src[0][2] * zScale;
-
-	dst[1][0] = src[1][0] * xScale;
-	dst[1][1] = src[1][1] * yScale;
-	dst[1][2] = src[1][2] * zScale;
-
-	dst[2][0] = src[2][0] * zScale;
-	dst[2][1] = src[2][1] * zScale;
-	dst[2][2] = src[2][2] * zScale;
-
-	dst[3][0] = src[3][0] * normal;
-	dst[3][1] = src[3][1] * normal;
-	dst[3][2] = src[3][2] * normal;*/
+	Mtx mtx;
+	PSMTXScale(mtx, xScale, yScale, zScale);
+	PSMTXConcat(src, mtx, dst);
 }
 
 /**
