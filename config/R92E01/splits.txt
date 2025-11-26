@@ -2671,7 +2671,6 @@ plugProjectYamashitaU/enemyStoneMgr.cpp:
 
 plugProjectYamashitaU/enemyStoenInfo.cpp:
 	.text       start:0x801BB880 end:0x801BB9F8
-	.sdata2     start:0x8066F230 end:0x8066F238
 
 plugProjectYamashitaU/enemyStoneDrawInfo.cpp:
 	.text       start:0x801BB9F8 end:0x801BD05C
@@ -2805,7 +2804,7 @@ plugProjectYamashitaU/effectAnimator.cpp:
 	.text       start:0x801C5A1C end:0x801C5FF4
 	.rodata     start:0x80547840 end:0x80547868
 	.data       start:0x8058F848 end:0x8058FB98
-	.sdata2     start:0x8066F3A0 end:0x8066F3AC
+	.sdata2     start:0x8066F3A0 end:0x8066F3B0
 
 plugProjectKandoU/pikiAnimator.cpp:
 	.text       start:0x801C5FF4 end:0x801C6038
@@ -2922,7 +2921,7 @@ plugProjectKandoU/baseHIOSection.cpp:
 	.ctors      start:0x80534D80 end:0x80534D84
 	.rodata     start:0x805485C8 end:0x80548630
 	.data       start:0x80592190 end:0x805921F8
-	.bss        start:0x80638A80 end:0x80638A8C
+	.bss        start:0x80638A80 end:0x80638A90
 	.sbss       start:0x8066C918 end:0x8066C920
 
 plugProjectKandoU/naviWhistle.cpp:
@@ -3652,12 +3651,12 @@ plugProjectKandoU/vsCoinOtakaraName.cpp:
 
 plugProjectKandoU/sweepPrune.cpp:
 	.text       start:0x802C1284 end:0x802C162C
-	.sdata2     start:0x80670D40 end:0x80670D44
+	.sdata2     start:0x80670D40 end:0x80670D48
 
 plugProjectKandoU/texCaster.cpp:
 	.text       start:0x802C162C end:0x802C21F8
 	.data       start:0x805A0958 end:0x805A0968
-	.sbss       start:0x8066CC58 end:0x8066CC5C
+	.sbss       start:0x8066CC58 end:0x8066CC60
 	.sdata2     start:0x80670D48 end:0x80670D68
 
 plugProjectKandoU/pelletBirthBuffer.cpp:
@@ -4791,7 +4790,7 @@ plugProjectOgawaU/testScene.cpp:
 
 plugProjectOgawaU/testObj.cpp:
 	.text       start:0x80386848 end:0x803869D4
-	.data       start:0x805B8478 end:0x805B84D4
+	.data       start:0x805B8478 end:0x805B84D8
 
 plugProjectOgawaU/ogSceneGround.cpp:
 	.text       start:0x803869D4 end:0x80386ED8
@@ -4816,8 +4815,8 @@ plugProjectOgawaU/DispMemberBase.cpp:
 
 plugProjectOgawaU/ogLib2D.cpp:
 	.text       start:0x803885A0 end:0x8038867C
-	.data       start:0x805B85B0 end:0x805B85BC
-	.sbss       start:0x8066CDD0 end:0x8066CDD4
+	.data       start:0x805B85B0 end:0x805B85C0
+	.sbss       start:0x8066CDD0 end:0x8066CDD8
 
 plugProjectOgawaU/ogObjSMenuMap.cpp:
 	.text       start:0x8038867C end:0x8038C378
@@ -5197,14 +5196,13 @@ plugProjectMorimuraU/gameOver2D.cpp:
 plugProjectMorimuraU/testBase.cpp:
 	.text       start:0x803C73B4 end:0x803C75D4
 	.data       start:0x805BBD58 end:0x805BBDD8
-	.sbss       start:0x8066CEC0 end:0x8066CEC1
-	.sdata2     start:0x80673AD0 end:0x80673AE0
+	.sbss       start:0x8066CEC0 end:0x8066CEC8
 
 plugProjectMorimuraU/bombState.cpp:
 	.text       start:0x803C75D4 end:0x803C7ED8
 	.ctors      start:0x80534F5C end:0x80534F60
 	.data       start:0x805BBDD8 end:0x805BBE80
-	.bss        start:0x806392F8 end:0x80639304
+	.bss        start:0x806392F8 end:0x80639308
 	.sbss       start:0x8066CEC8 end:0x8066CED0
 
 plugProjectMorimuraU/bombAnimator.cpp:
