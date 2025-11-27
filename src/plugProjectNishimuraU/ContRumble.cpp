@@ -1,6 +1,6 @@
-#include "Dolphin/pad.h"
-#include "System.h"
 #include "Game/rumble.h"
+#include "RevoSDK/pad.h"
+#include "System.h"
 
 namespace Game {
 

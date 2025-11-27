@@ -1,14 +1,14 @@
-#include "Game/Entities/SnakeCrow.h"
+#include "Game/CameraMgr.h"
 #include "Game/EnemyAnimKeyEvent.h"
 #include "Game/EnemyFunc.h"
-#include "Game/CameraMgr.h"
-#include "Game/rumble.h"
-#include "Game/PikiMgr.h"
-#include "Game/Navi.h"
+#include "Game/Entities/SnakeCrow.h"
 #include "Game/Interaction.h"
-#include "efx/THebi.h"
+#include "Game/Navi.h"
+#include "Game/PikiMgr.h"
+#include "Game/rumble.h"
 #include "Iterator.h"
-#include "Dolphin/rand.h"
+#include "RevoSDK/rand.h"
+#include "efx/THebi.h"
 #include "nans.h"
 
 namespace Game {
@@ -90,7 +90,9 @@ void StateDead::exec(EnemyBase* enemy)
  * @note Address: 0x80290C80
  * @note Size: 0x4
  */
-void StateDead::cleanup(EnemyBase* enemy) { }
+void StateDead::cleanup(EnemyBase* enemy)
+{
+}
 
 /**
  * @note Address: 0x80290C84
@@ -1123,7 +1125,10 @@ void StateAttack::exec(EnemyBase* enemy)
  * @note Address: 0x8029279C
  * @note Size: 0x10
  */
-void StateAttack::cleanup(EnemyBase* enemy) { enemy->enableEvent(0, EB_Cullable); }
+void StateAttack::cleanup(EnemyBase* enemy)
+{
+	enemy->enableEvent(0, EB_Cullable);
+}
 
 /**
  * @note Address: 0x802927AC
@@ -1175,7 +1180,9 @@ void StateEat::exec(EnemyBase* enemy)
  * @note Address: 0x80292960
  * @note Size: 0x4
  */
-void StateEat::cleanup(EnemyBase* enemy) { }
+void StateEat::cleanup(EnemyBase* enemy)
+{
+}
 
 /**
  * @note Address: 0x80292964
@@ -1224,7 +1231,9 @@ void StateStruggle::exec(EnemyBase* enemy)
  * @note Address: 0x80292AFC
  * @note Size: 0x4
  */
-void StateStruggle::cleanup(EnemyBase* enemy) { }
+void StateStruggle::cleanup(EnemyBase* enemy)
+{
+}
 
 } // namespace SnakeCrow
 } // namespace Game

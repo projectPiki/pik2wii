@@ -1,5 +1,5 @@
 #include "KandoLib/Choice.h"
-#include "Dolphin/rand.h"
+#include "RevoSDK/rand.h"
 
 /**
  * @note Address: 0x801F78C8

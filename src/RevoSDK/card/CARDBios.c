@@ -1,5 +1,5 @@
-#include "Dolphin/card.h"
-#include "Dolphin/exi.h"
+#include "RevoSDK/card.h"
+#include "RevoSDK/exi.h"
 #include "types.h"
 
 const char* __CARDVersion = "<< Dolphin SDK - CARD\trelease build: Apr 17 2003 12:34:19 (0x2301) >>";
@@ -22,19 +22,24 @@ static OSResetFunctionInfo ResetFunctionInfo = { OnReset, 127 };
 #define AD1EX(x) ((u8)(AD1(x) | 0x80));
 #define AD2(x)   ((u8)(((x) >> 9) & 0xff))
 #define AD3(x)   ((u8)(((x) >> 7) & 0x03))
-#define BA(x)    ((u8)((x)&0x7f))
+#define BA(x)    ((u8)((x) & 0x7f))
 
 /**
  * @note Address: 0x800D466C
  * @note Size: 0x4
  */
-void __CARDDefaultApiCallback(s32 channel, s32 result) { }
+void __CARDDefaultApiCallback(s32 channel, s32 result)
+{
+}
 
 /**
  * @note Address: 0x800D4670
  * @note Size: 0x34
  */
-void __CARDSyncCallback(s32 channel, s32 result) { OSWakeupThread(&__CARDBlock[channel].threadQueue); }
+void __CARDSyncCallback(s32 channel, s32 result)
+{
+	OSWakeupThread(&__CARDBlock[channel].threadQueue);
+}
 
 /**
  * @note Address: 0x800D46A4
@@ -561,7 +566,10 @@ void CARDInit()
  * @note Address: 0x800D558C
  * @note Size: 0x8
  */
-u16 __CARDGetFontEncode() { return __CARDEncode; }
+u16 __CARDGetFontEncode()
+{
+	return __CARDEncode;
+}
 
 // /**
 //  * @note Address: N/A

@@ -1,8 +1,8 @@
-#include "Dolphin/os.h"
 #include "JSystem/JAudio/JAS/JASCalc.h"
 #include "JSystem/JAudio/JAS/JASMutexLock.h"
 #include "JSystem/JAudio/JAS/JASWave.h"
 #include "JSystem/JKernel/JKRHeap.h"
+#include "RevoSDK/os.h"
 
 /**
  * @note Address: 0x80099E60
@@ -165,7 +165,10 @@ JASBasicWaveBank::TWaveGroup::TWaveGroup(JASBasicWaveBank* bank)
  * @note Size: 0xB4
  * __dt__Q216JASBasicWaveBank10TWaveGroupFv
  */
-JASBasicWaveBank::TWaveGroup::~TWaveGroup() { delete[] mInfo; }
+JASBasicWaveBank::TWaveGroup::~TWaveGroup()
+{
+	delete[] mInfo;
+}
 
 /**
  * @note Address: 0x8009A2D0
@@ -254,10 +257,16 @@ lbl_8009A668:
  * @note Address: 0x8009A690
  * @note Size: 0xE8
  */
-void JASBasicWaveBank::TWaveGroup::onEraseDone() { mBank->decWaveTable(this); }
+void JASBasicWaveBank::TWaveGroup::onEraseDone()
+{
+	mBank->decWaveTable(this);
+}
 
 /**
  * @note Address: 0x8009A778
  * @note Size: 0x14
  */
-u32 JASBasicWaveBank::TWaveGroup::getWaveID(int infoIndex) const { return mInfo[infoIndex].mHandle.mWaveID; }
+u32 JASBasicWaveBank::TWaveGroup::getWaveID(int infoIndex) const
+{
+	return mInfo[infoIndex].mHandle.mWaveID;
+}

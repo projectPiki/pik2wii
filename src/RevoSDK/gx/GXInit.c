@@ -1,6 +1,6 @@
-#include "Dolphin/gx.h"
-#include "Dolphin/hw_regs.h"
-#include "Dolphin/os.h"
+#include "RevoSDK/gx.h"
+#include "RevoSDK/hw_regs.h"
+#include "RevoSDK/os.h"
 
 static GXFifoObj FifoObj;
 static GXData gxData;

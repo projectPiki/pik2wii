@@ -1,11 +1,11 @@
-#include "PikiAI.h"
-#include "Dolphin/rand.h"
-#include "KandoLib/Choice.h"
 #include "Game/Piki.h"
-#include "System.h"
+#include "KandoLib/Choice.h"
+#include "PSM/Scene.h"
 #include "PSSystem/PSGame.h"
 #include "PSSystem/PSScene.h"
-#include "PSM/Scene.h"
+#include "PikiAI.h"
+#include "RevoSDK/rand.h"
+#include "System.h"
 
 #define BORE_BEHAVIOURS_FLOAT (2.0f) // what behaviours to randomly choose between - should match BORE_BehaviourCount
 
@@ -109,7 +109,9 @@ int ActBore::exec()
  * @note Address: 0x8023189C
  * @note Size: 0x4
  */
-void ActBore::cleanup() { }
+void ActBore::cleanup()
+{
+}
 
 /**
  * @note Address: 0x802318A0
@@ -246,7 +248,9 @@ int ActRest::exec()
  * @note Address: 0x80231DC0
  * @note Size: 0x4
  */
-void ActRest::cleanup() { }
+void ActRest::cleanup()
+{
+}
 
 /**
  * @note Address: 0x80231DC4
@@ -347,7 +351,9 @@ int ActOneshot::exec()
  * @note Address: 0x802321C0
  * @note Size: 0x4
  */
-void ActOneshot::cleanup() { }
+void ActOneshot::cleanup()
+{
+}
 
 /**
  * @note Address: 0x802321C4

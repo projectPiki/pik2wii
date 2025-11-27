@@ -3,22 +3,22 @@
 
 #include "BoundBox.h"
 #include "CNode.h"
+#include "Game/Cave/Info.h"
+#include "Game/Cave/ObjectLayout.h"
+#include "Game/Entities/BlackMan.h"
+#include "Game/MapMgr.h"
 #include "Game/cellPyramid.h"
-#include "Dolphin/mtx.h"
 #include "Game/pathfinder.h"
 #include "Game/routeMgr.h"
-#include "Game/MapMgr.h"
 #include "Game/seaMgr.h"
 #include "MapCollision.h"
 #include "Matrixf.h"
 #include "ObjectMgr.h"
+#include "RevoSDK/mtx.h"
 #include "Sys/Cylinder.h"
 #include "Sys/Sphere.h"
-#include "types.h"
 #include "Vector3.h"
-#include "Game/Cave/Info.h"
-#include "Game/Cave/ObjectLayout.h"
-#include "Game/Entities/BlackMan.h"
+#include "types.h"
 
 struct Graphics;
 struct J3DModelData;

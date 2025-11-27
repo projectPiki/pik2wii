@@ -1,9 +1,9 @@
 #ifndef _NANS_H
 #define _NANS_H
 
-#include "types.h"
+#include "RevoSDK/vec.h"
 #include "math.h"
-#include "Dolphin/vec.h"
+#include "types.h"
 
 namespace Game {
 namespace P2JST {

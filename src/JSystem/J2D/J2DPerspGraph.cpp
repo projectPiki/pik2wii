@@ -1,8 +1,8 @@
-#include "types.h"
 #include "JSystem/J2D/J2DGrafContext.h"
+#include "RevoSDK/gx.h"
 #include "fdlibm.h"
 #include "math.h"
-#include "Dolphin/gx.h"
+#include "types.h"
 
 /**
  * __ct

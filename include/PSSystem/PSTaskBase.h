@@ -1,12 +1,12 @@
 #ifndef _PSSYSTEM_PSTASKBASE_H
 #define _PSSYSTEM_PSTASKBASE_H
 
-#include "Dolphin/os.h"
+#include "JSystem/JAudio/JAS/JASTrack.h"
 #include "JSystem/JSupport/JSUList.h"
 #include "P2Macros.h"
 #include "PSSystem/BankRandPrm.h"
 #include "PSSystem/MutexList.h"
-#include "JSystem/JAudio/JAS/JASTrack.h"
+#include "RevoSDK/os.h"
 
 namespace PSSystem {
 struct DirectorBase;

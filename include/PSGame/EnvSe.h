@@ -1,10 +1,10 @@
 #ifndef _PSGAME_ENVSE_H
 #define _PSGAME_ENVSE_H
 
-#include "Dolphin/vec.h"
 #include "PSSystem/EnvSeBase.h"
-#include "types.h"
+#include "RevoSDK/vec.h"
 #include "Vector3.h"
+#include "types.h"
 
 struct J3DAnmBase;
 

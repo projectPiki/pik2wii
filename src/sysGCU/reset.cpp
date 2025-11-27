@@ -1,15 +1,15 @@
-#include "ResetManager.h"
-#include "System.h"
 #include "Controller.h"
-#include "Dolphin/dvd.h"
-#include "Dolphin/__start.h"
-#include "JSystem/JFramework/JFWDisplay.h"
-#include "THP/THPDraw.h"
-#include "PSSystem/PSSystemIF.h"
+#include "Game/MemoryCard/Mgr.h"
 #include "JSystem/J2D/J2DGrafContext.h"
+#include "JSystem/JFramework/JFWDisplay.h"
 #include "JSystem/JUtility/JUTVideo.h"
 #include "MemoryCardMgr.h"
-#include "Game/MemoryCard/Mgr.h"
+#include "PSSystem/PSSystemIF.h"
+#include "ResetManager.h"
+#include "RevoSDK/__start.h"
+#include "RevoSDK/dvd.h"
+#include "System.h"
+#include "THP/THPDraw.h"
 
 /**
  * @note Address: 0x80429DB0
@@ -166,7 +166,10 @@ void ResetManager::draw()
  * @note Address: 0x8042A2BC
  * @note Size: 0x14
  */
-bool ResetManager::isWritingMemoryCard() { return sys->mCardMgr->isFlag(Game::MemoryCard::MCMFLAG_IsWriting); }
+bool ResetManager::isWritingMemoryCard()
+{
+	return sys->mCardMgr->isFlag(Game::MemoryCard::MCMFLAG_IsWriting);
+}
 
 /**
  * @note Address: 0x8042A2D0

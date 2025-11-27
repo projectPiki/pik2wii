@@ -1,6 +1,6 @@
+#include "RevoSDK/dvd.h"
+#include "RevoSDK/os.h"
 #include "types.h"
-#include "Dolphin/os.h"
-#include "Dolphin/dvd.h"
 
 struct bb2struct {
 	u32 _00;

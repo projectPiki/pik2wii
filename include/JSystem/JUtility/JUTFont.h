@@ -1,8 +1,8 @@
 #ifndef _JSYSTEM_JUT_JUTFONT_H
 #define _JSYSTEM_JUT_JUTFONT_H
 
-#include "Dolphin/gx.h"
 #include "JSystem/JUtility/TColor.h"
+#include "RevoSDK/gx.h"
 #include "string.h"
 
 #define ASCII_PRINTABLE_MIN (0x20) // space

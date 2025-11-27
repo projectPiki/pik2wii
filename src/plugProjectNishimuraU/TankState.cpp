@@ -1,7 +1,7 @@
-#include "Game/Entities/Tank.h"
 #include "Game/EnemyAnimKeyEvent.h"
 #include "Game/EnemyFunc.h"
-#include "Dolphin/rand.h"
+#include "Game/Entities/Tank.h"
+#include "RevoSDK/rand.h"
 
 namespace Game {
 namespace Tank {
@@ -48,7 +48,9 @@ void StateDead::exec(EnemyBase* enemy)
  * @note Address: 0x8027411C
  * @note Size: 0x4
  */
-void StateDead::cleanup(EnemyBase*) { }
+void StateDead::cleanup(EnemyBase*)
+{
+}
 
 /**
  * @note Address: 0x80274120
@@ -604,7 +606,7 @@ void StateMoveTurn::init(EnemyBase* enemy, StateArg* stateArg)
 	tank->mTurnGoalDir += PI / 3;
 	Vector3f homePos(tank->mHomePosition);
 	tank->mGoalPosition   = Vector3f(CG_GENERALPARMS(tank).mTerritoryRadius() * sinf(tank->mTurnGoalDir) + homePos.x, homePos.y,
-                                   CG_GENERALPARMS(tank).mTerritoryRadius() * cosf(tank->mTurnGoalDir) + homePos.z);
+	                                 CG_GENERALPARMS(tank).mTerritoryRadius() * cosf(tank->mTurnGoalDir) + homePos.z);
 	tank->mTargetCreature = nullptr;
 	tank->mTargetVelocity = Vector3f(0.0f);
 	tank->startMotion(TANKANIM_Turn, nullptr);

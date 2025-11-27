@@ -1,10 +1,10 @@
 #ifndef _JSYSTEM_JKR_JKRFILE_H
 #define _JSYSTEM_JKR_JKRFILE_H
 
-#include "Dolphin/os.h"
-#include "Dolphin/dvd.h"
 #include "JSystem/JKernel/JKRDisposer.h"
 #include "JSystem/JSupport/JSUList.h"
+#include "RevoSDK/dvd.h"
+#include "RevoSDK/os.h"
 #include "types.h"
 
 struct JSUFileInputStream;

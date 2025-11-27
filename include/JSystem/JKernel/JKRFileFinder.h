@@ -1,8 +1,8 @@
 #ifndef _JKRFILEFINDER_H
 #define _JKRFILEFINDER_H
 
-#include "Dolphin/dvd.h"
-#include "Dolphin/os.h"
+#include "RevoSDK/dvd.h"
+#include "RevoSDK/os.h"
 #include "types.h"
 
 struct JKRArchive;

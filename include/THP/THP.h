@@ -1,7 +1,7 @@
 #ifndef THP_H
 #define THP_H
 
-#include "Dolphin/os.h"
+#include "RevoSDK/os.h"
 #include "types.h"
 
 #ifdef __cplusplus

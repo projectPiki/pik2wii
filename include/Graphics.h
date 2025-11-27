@@ -1,12 +1,12 @@
 #ifndef _GRAPHICS_H
 #define _GRAPHICS_H
 
-#include "types.h"
-#include "Dolphin/gx.h"
-#include "Matrixf.h"
 #include "Color4.h"
 #include "JSystem/J2D/J2DGrafContext.h"
 #include "JSystem/JFramework/JFWSystem.h"
+#include "Matrixf.h"
+#include "RevoSDK/gx.h"
+#include "types.h"
 
 struct Color4;
 template <typename T>

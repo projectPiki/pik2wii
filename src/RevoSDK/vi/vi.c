@@ -1,7 +1,7 @@
-#include "Dolphin/vi.h"
-#include "Dolphin/gx.h"
-#include "Dolphin/hw_regs.h"
-#include "Dolphin/os.h"
+#include "RevoSDK/vi.h"
+#include "RevoSDK/gx.h"
+#include "RevoSDK/hw_regs.h"
+#include "RevoSDK/os.h"
 
 // Useful macros.
 #define CLAMP(x, l, h)    (((x) > (h)) ? (h) : (((x) < (l)) ? (l) : (x)))

@@ -1,8 +1,8 @@
-#include "Dolphin/dvd.h"
-#include "Dolphin/os.h"
-#include "types.h"
-#include "JSystem/JKernel/JKRArchive.h"
 #include "JSystem/JKernel/JKRFileFinder.h"
+#include "JSystem/JKernel/JKRArchive.h"
+#include "RevoSDK/dvd.h"
+#include "RevoSDK/os.h"
+#include "types.h"
 
 /**
  * @note Address: 0x80022ADC

@@ -1,5 +1,5 @@
-#include "Dolphin/os.h"
-#include "Dolphin/hw_regs.h"
+#include "RevoSDK/hw_regs.h"
+#include "RevoSDK/os.h"
 
 void __DVDLowSetWAType(unknown, unknown);
 
@@ -185,7 +185,10 @@ WEAKFUNC void __DVDInterruptHandler(__OSInterrupt interrupt, OSContext* context)
  * @note Address: 0x800DB5D0
  * @note Size: 0x84
  */
-static void AlarmHandler(OSAlarm* alarm, OSContext* context) { BOOL error = ProcessNextCommand(); }
+static void AlarmHandler(OSAlarm* alarm, OSContext* context)
+{
+	BOOL error = ProcessNextCommand();
+}
 
 /**
  * @note Address: 0x800DB654

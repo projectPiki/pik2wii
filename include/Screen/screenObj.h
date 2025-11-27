@@ -1,14 +1,14 @@
 #ifndef _SCREEN_BASES_H
 #define _SCREEN_BASES_H
 
-#include "Dolphin/gx.h"
+#include "Graphics.h"
 #include "JSystem/JKernel/JKRDisposer.h"
 #include "JSystem/JUtility/TColor.h"
 #include "Resource.h"
+#include "RevoSDK/gx.h"
 #include "Screen/Enums.h"
-#include "og/Screen/DispMember.h"
 #include "Screen/SceneInfoList.h"
-#include "Graphics.h"
+#include "og/Screen/DispMember.h"
 
 struct Controller;
 struct Graphics;

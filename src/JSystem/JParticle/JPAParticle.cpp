@@ -1,17 +1,19 @@
-#include "float.h"
-#include "Dolphin/mtx.h"
-#include "Dolphin/vec.h"
 #include "JSystem/JParticle/JPABlock.h"
 #include "JSystem/JParticle/JPAEmitter.h"
 #include "JSystem/JParticle/JPAResource.h"
 #include "JSystem/JParticle/JPAShape.h"
+#include "RevoSDK/mtx.h"
+#include "RevoSDK/vec.h"
+#include "float.h"
 #include "types.h"
 
 /**
  * @note Address: 0x80094028
  * @note Size: 0x48
  */
-JPAParticleCallBack::~JPAParticleCallBack() { }
+JPAParticleCallBack::~JPAParticleCallBack()
+{
+}
 
 /**
  * @note Address: 0x80094070

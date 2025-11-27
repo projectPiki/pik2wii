@@ -1,11 +1,14 @@
-#include "string.h"
-#include "System.h"
-#include "Dolphin/print.h"
 #include "Game/GameConfig.h"
+#include "RevoSDK/print.h"
+#include "System.h"
+#include "string.h"
 
 // TODO: How is this string actually (not) used?
 DEFINE__PRINT("gameConfig");
-void fakeMatch_printGameConfig() { printf("gameConfig"); }
+void fakeMatch_printGameConfig()
+{
+	printf("gameConfig");
+}
 
 namespace Game {
 

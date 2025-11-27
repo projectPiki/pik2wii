@@ -1,5 +1,5 @@
-#include "Dolphin/os.h"
-#include "Dolphin/db.h"
+#include "RevoSDK/db.h"
+#include "RevoSDK/os.h"
 #define PPCSYNC sc // system call performs PPCSync()
 
 // /**
@@ -294,8 +294,7 @@ ASM void ICFlashInvalidate(void) {
  * @note Address: 0x800EC840
  * @note Size: 0x14
  */
-ASM void ICEnable(void)
-{
+ASM void ICEnable(void) {
 #ifdef __MWERKS__ // clang-format off
 	nofralloc
 
@@ -624,7 +623,10 @@ inline static void L2Init(void)
  * @note Address: N/A
  * @note Size: 0x2C
  */
-inline void L2Enable(void) { PPCMtl2cr((PPCMfl2cr() | L2CR_L2E) & ~L2CR_L2I); }
+inline void L2Enable(void)
+{
+	PPCMtl2cr((PPCMfl2cr() | L2CR_L2E) & ~L2CR_L2I);
+}
 
 /**
  * @note Address: N/A

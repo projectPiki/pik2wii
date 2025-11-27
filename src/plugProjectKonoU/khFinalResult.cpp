@@ -1,17 +1,20 @@
 #include "kh/khFinalResult.h"
 #include "Controller.h"
-#include "PSSystem/PSSystemIF.h"
-#include "og/Screen/ogScreen.h"
-#include "og/Screen/callbackNodes.h"
 #include "Game/gamePlayData.h"
-#include "og/newScreen/ogUtil.h"
-#include "LoadResource.h"
 #include "JSystem/J2D/J2DAnmLoader.h"
-#include "Dolphin/rand.h"
+#include "LoadResource.h"
+#include "PSSystem/PSSystemIF.h"
+#include "RevoSDK/rand.h"
 #include "Screen/Game2DMgr.h"
+#include "og/Screen/callbackNodes.h"
+#include "og/Screen/ogScreen.h"
+#include "og/newScreen/ogUtil.h"
 #include "trig.h"
 
-static void _Print(char* format, ...) { OSReport(format, __FILE__); }
+static void _Print(char* format, ...)
+{
+	OSReport(format, __FILE__);
+}
 
 namespace kh {
 namespace Screen {

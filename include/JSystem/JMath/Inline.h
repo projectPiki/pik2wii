@@ -1,8 +1,8 @@
 #ifndef JSYSTEM_JMATH_INLINE_H
 #define JSYSTEM_JMATH_INLINE_H
 
-#include "Dolphin/mtx.h"
-#include "Dolphin/vec.h"
+#include "RevoSDK/mtx.h"
+#include "RevoSDK/vec.h"
 #include "types.h"
 
 namespace JMathInlineVEC {

@@ -243,6 +243,14 @@ cflags_pikmin = [
     "-enc SJIS",
 ]
 
+# NW4R library flags
+cflags_nw4r = [
+    *cflags_base,
+    "-enc SJIS",
+    "-fp_contract off",
+    "-ipa file",
+]
+
 config.linker_version = "GC/3.0a5.2"
 
 Matching = True                   # Object matches and should be linked
@@ -2445,15 +2453,15 @@ config.libs = [
         ],
     },
     {
-        "lib": "nw4r",
-        "cflags": cflags_runtime,   # unknown
-        "mw_version": "GC/3.0a3p1",  # unknown
+        "lib": "nw4r_ut",
+        "cflags": cflags_nw4r,
+        "mw_version": "GC/3.0a3p1",
         "progress_category" : "nw4r",
         "objects": [
-            Object(NonMatching, "nw4r/ut/ut_list.cpp"),
-            Object(NonMatching, "nw4r/ut/ut_LinkList.cpp"),
-            Object(NonMatching, "nw4r/ut/ut_binaryFileFormat.cpp"),
-            Object(NonMatching, "nw4r/ut/ut_CharStrmReader.cpp"),
+            Object(Matching, "nw4r/ut/ut_list.cpp"),
+            Object(Matching, "nw4r/ut/ut_LinkList.cpp"),
+            Object(Matching, "nw4r/ut/ut_binaryFileFormat.cpp"),
+            Object(Matching, "nw4r/ut/ut_CharStrmReader.cpp"),
             Object(NonMatching, "nw4r/ut/ut_TagProcessorBase.cpp"),
             Object(NonMatching, "nw4r/ut/ut_LockedCache.cpp"),
             Object(NonMatching, "nw4r/ut/ut_Font.cpp"),
@@ -2462,13 +2470,37 @@ config.libs = [
             Object(NonMatching, "nw4r/ut/ut_ResFont.cpp"),
             Object(NonMatching, "nw4r/ut/ut_CharWriter.cpp"),
             Object(NonMatching, "nw4r/ut/ut_TextWriterBase.cpp"),
-            Object(NonMatching, "nw4r/math/math_arithmetic.cpp"),
-            Object(NonMatching, "nw4r/math/math_triangular.cpp"),
+        ],
+    },
+    {
+        "lib": "nw4r_math",
+        "cflags": cflags_nw4r,
+        "mw_version": "GC/3.0a3p1",
+        "progress_category" : "nw4r",
+        "objects": [
+            Object(Matching, "nw4r/math/math_arithmetic.cpp"),
+            Object(Matching, "nw4r/math/math_triangular.cpp"),
             Object(NonMatching, "nw4r/math/math_types.cpp"),
-            Object(NonMatching, "nw4r/math/math_geometry.cpp"),
+            Object(Matching, "nw4r/math/math_geometry.cpp"),
+        ],
+    },
+    {
+        "lib": "nw4r_db",
+        "cflags": cflags_nw4r,
+        "mw_version": "GC/3.0a3p1",
+        "progress_category" : "nw4r",
+        "objects": [
             Object(NonMatching, "nw4r/db/db_directPrint.cpp"),
             Object(NonMatching, "nw4r/db/db_console.cpp"),
             Object(NonMatching, "nw4r/db/db_assert.cpp"),
+        ],
+    },
+    {
+        "lib": "nw4r_g3d",
+        "cflags": cflags_nw4r,
+        "mw_version": "GC/3.0a3p1",
+        "progress_category" : "nw4r",
+        "objects": [
             Object(NonMatching, "nw4r/g3d/g3d_rescommon.cpp"),
             Object(NonMatching, "nw4r/g3d/g3d_resdict.cpp"),
             Object(NonMatching, "nw4r/g3d/g3d_resfile.cpp"),
@@ -2517,6 +2549,14 @@ config.libs = [
             Object(NonMatching, "nw4r/g3d/g3d_fog.cpp"),
             Object(NonMatching, "nw4r/g3d/g3d_light.cpp"),
             Object(NonMatching, "nw4r/g3d/g3d_calcvtx.cpp"),
+        ],
+    },
+    {
+        "lib": "nw4r_lyt",
+        "cflags": cflags_nw4r,
+        "mw_version": "GC/3.0a3p1",
+        "progress_category" : "nw4r",
+        "objects": [
             Object(NonMatching, "nw4r/lyt/lyt_pane.cpp"),
             Object(NonMatching, "nw4r/lyt/lyt_group.cpp"),
             Object(NonMatching, "nw4r/lyt/lyt_layout.cpp"),

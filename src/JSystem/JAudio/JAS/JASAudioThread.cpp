@@ -1,13 +1,13 @@
 #include "JSystem/JAudio/JAS/JASAudioThread.h"
-#include "Dolphin/dsp.h"
-#include "Dolphin/os.h"
+#include "JSystem/JAudio/JAS/JASChannel.h"
+#include "JSystem/JAudio/JAS/JASDriver.h"
 #include "JSystem/JAudio/JAS/JASDsp.h"
+#include "JSystem/JAudio/JAS/JASGenericMemPool.h"
 #include "JSystem/JAudio/JAS/JASHeap.h"
 #include "JSystem/JAudio/JAS/JASKernel.h"
-#include "JSystem/JAudio/JAS/JASDriver.h"
-#include "JSystem/JAudio/JAS/JASGenericMemPool.h"
-#include "JSystem/JAudio/JAS/JASChannel.h"
 #include "JSystem/JKernel/JKRThread.h"
+#include "RevoSDK/dsp.h"
+#include "RevoSDK/os.h"
 
 JASAudioThread* JASAudioThread::sAudioThread;
 OSThreadQueue JASAudioThread::sThreadQueue;

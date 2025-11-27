@@ -1,12 +1,12 @@
 #ifndef _JSYSTEM_JAS_JASARAMSTREAM_H
 #define _JSYSTEM_JAS_JASARAMSTREAM_H
 
-#include "Dolphin/dvd.h"
-#include "Dolphin/os.h"
 #include "JSystem/JAudio/JAS/JASChannel.h"
 #include "JSystem/JAudio/JAS/JASDsp.h"
 #include "JSystem/JAudio/JAS/JASThread.h"
 #include "JSystem/JAudio/JAS/JASWave.h"
+#include "RevoSDK/dvd.h"
+#include "RevoSDK/os.h"
 #include "types.h"
 
 /**

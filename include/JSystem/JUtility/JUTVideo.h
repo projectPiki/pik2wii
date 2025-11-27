@@ -1,9 +1,9 @@
 #ifndef _JUTVIDEO_H
 #define _JUTVIDEO_H
 
-#include "Dolphin/os.h"
-#include "Dolphin/gx.h"
-#include "Dolphin/vi.h"
+#include "RevoSDK/gx.h"
+#include "RevoSDK/os.h"
+#include "RevoSDK/vi.h"
 #include "types.h"
 
 /**
@@ -75,6 +75,9 @@ struct JUTVideo {
 	OSMessageQueue mMessageQueue;                   // _38
 };
 
-inline JUTVideo* JUTGetVideoManager() { return JUTVideo::getManager(); }
+inline JUTVideo* JUTGetVideoManager()
+{
+	return JUTVideo::getManager();
+}
 
 #endif

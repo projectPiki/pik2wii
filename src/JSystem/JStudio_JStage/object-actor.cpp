@@ -1,4 +1,3 @@
-#include "Dolphin/mtx.h"
 #include "JSystem/JStage/TActor.h"
 #include "JSystem/JStudio/TAdaptor.h"
 #include "JSystem/JStudio/TControl.h"
@@ -6,6 +5,7 @@
 #include "JSystem/JStudio/data.h"
 #include "JSystem/JStudio/math.h"
 #include "JSystem/JStudio_JStage.h"
+#include "RevoSDK/mtx.h"
 #include "types.h"
 
 namespace JStudio_JStage {
@@ -34,7 +34,10 @@ TAdaptor_actor::TAdaptor_actor(const JStage::TSystem* system, JStage::TActor* ac
  * @note Size: 0x78
  * __dt__Q214JStudio_JStage14TAdaptor_actorFv
  */
-TAdaptor_actor::~TAdaptor_actor() { adaptor_do_end(nullptr); }
+TAdaptor_actor::~TAdaptor_actor()
+{
+	adaptor_do_end(nullptr);
+}
 
 /**
  * @note Address: 0x800122D8
@@ -70,7 +73,10 @@ void TAdaptor_actor::adaptor_do_begin(const JStudio::TObject* object)
  * @note Address: 0x80012494
  * @note Size: 0x54
  */
-void TAdaptor_actor::adaptor_do_end(const JStudio::TObject*) { mObject->setFlagOff(1); }
+void TAdaptor_actor::adaptor_do_end(const JStudio::TObject*)
+{
+	mObject->setFlagOff(1);
+}
 
 /**
  * @note Address: 0x800124E8

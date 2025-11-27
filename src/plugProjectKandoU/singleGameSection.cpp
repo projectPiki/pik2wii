@@ -1,38 +1,38 @@
+#include "Game/SingleGameSection.h"
+#include "Game/AIConstants.h"
 #include "Game/BaseGameSection.h"
+#include "Game/Cave/RandMapMgr.h"
+#include "Game/Entities/ItemCave.h"
+#include "Game/Entities/ItemOnyon.h"
+#include "Game/Entities/PelletCarcass.h"
+#include "Game/Entities/PelletItem.h"
+#include "Game/Entities/PelletOtakara.h"
+#include "Game/Farm.h"
 #include "Game/GameSystem.h"
+#include "Game/MapMgr.h"
+#include "Game/MoviePlayer.h"
+#include "Game/Navi.h"
+#include "Game/NaviParms.h"
 #include "Game/Piki.h"
 #include "Game/PikiMgr.h"
-#include "Game/SingleGameSection.h"
+#include "Game/PikiState.h"
 #include "Game/SingleGame.h"
-#include "Game/Entities/ItemOnyon.h"
-#include "Game/Entities/ItemCave.h"
 #include "Game/gameStat.h"
-#include "Game/Farm.h"
-#include "Game/Navi.h"
-#include "efx/TLastMomiji.h"
-#include "efx/TForestSakura.h"
-#include "efx/TTutorialSnow.h"
-#include "Game/MapMgr.h"
-#include "Screen/Enums.h"
+#include "Iterator.h"
 #include "PSM/Scene.h"
-#include "Screen/Game2DMgr.h"
 #include "PSSystem/PSGame.h"
 #include "PSSystem/PSMainSide_Scene.h"
-#include "string.h"
-#include "Iterator.h"
-#include "Game/Cave/RandMapMgr.h"
-#include "Game/MoviePlayer.h"
-#include "Radar.h"
-#include "utilityU.h"
-#include "Game/NaviParms.h"
-#include "Dolphin/rand.h"
-#include "Game/PikiState.h"
-#include "Game/AIConstants.h"
-#include "Game/Entities/PelletOtakara.h"
-#include "Game/Entities/PelletItem.h"
-#include "Game/Entities/PelletCarcass.h"
 #include "PikiAI.h"
+#include "Radar.h"
+#include "RevoSDK/rand.h"
+#include "Screen/Enums.h"
+#include "Screen/Game2DMgr.h"
+#include "efx/TForestSakura.h"
+#include "efx/TLastMomiji.h"
+#include "efx/TTutorialSnow.h"
 #include "nans.h"
+#include "string.h"
+#include "utilityU.h"
 
 namespace Game {
 
@@ -43,7 +43,10 @@ static const char className[] = "SingleGameSection";
  * @note Address: 0x80152074
  * @note Size: 0x84
  */
-SingleGameSection::~SingleGameSection() { Radar::mgr = nullptr; }
+SingleGameSection::~SingleGameSection()
+{
+	Radar::mgr = nullptr;
+}
 
 /**
  * @note Address: 0x801520F8
@@ -233,7 +236,10 @@ void SingleGame::CaveDayEndState::draw(SingleGameSection* section, Graphics& gfx
  * @note Address: 0x80152A08
  * @note Size: 0x34
  */
-void SingleGame::CaveDayEndState::cleanup(SingleGameSection* section) { gameSystem->setPause(false, "cavedayend", 3); }
+void SingleGame::CaveDayEndState::cleanup(SingleGameSection* section)
+{
+	gameSystem->setPause(false, "cavedayend", 3);
+}
 
 /**
  * @note Address: 0x80152A3C
@@ -252,13 +258,19 @@ SingleGameSection::SingleGameSection(JKRHeap* heap)
  * @note Address: 0x80152B1C
  * @note Size: 0x34
  */
-void SingleGameSection::section_fadeout() { mCurrentState->on_section_fadeout(this); }
+void SingleGameSection::section_fadeout()
+{
+	mCurrentState->on_section_fadeout(this);
+}
 
 /**
  * @note Address: 0x80152B54
  * @note Size: 0xC
  */
-void SingleGameSection::flow_goto_title() { mDoEnd = true; }
+void SingleGameSection::flow_goto_title()
+{
+	mDoEnd = true;
+}
 
 /**
  * @note Address: 0x80152B60
@@ -443,7 +455,10 @@ void SingleGameSection::onClearHeap()
  * @note Address: 0x80153410
  * @note Size: 0xC
  */
-void SingleGameSection::onStartHeap() { mIsExitingMap = 0; }
+void SingleGameSection::onStartHeap()
+{
+	mIsExitingMap = 0;
+}
 
 /**
  * @note Address: 0x8015341C
@@ -460,7 +475,9 @@ void SingleGameSection::gmOrimaDown(int naviID)
  * @note Address: 0x80153464
  * @note Size: 0x4
  */
-void SingleGameSection::gmPikminZero() { }
+void SingleGameSection::gmPikminZero()
+{
+}
 
 /**
  * @note Address: 0x80153468
@@ -632,7 +649,9 @@ void SingleGameSection::playMovie_helloPikmin(Piki* piki)
  * @note Address: 0x80153CC4
  * @note Size: 0x4
  */
-void SingleGameSection::playMovie_firstexperience(int, Game::Creature*) { }
+void SingleGameSection::playMovie_firstexperience(int, Game::Creature*)
+{
+}
 
 /**
  * @note Address: 0x80153CC8
@@ -662,7 +681,10 @@ void SingleGameSection::saveMainMapSituation(bool isSubmergedCastle)
  * @note Address: 0x80153F68
  * @note Size: 0x30
  */
-void SingleGameSection::loadMainMapSituation() { gameSystem->mTimeMgr->setTime(playData->mCaveSaveData.mTime); }
+void SingleGameSection::loadMainMapSituation()
+{
+	gameSystem->mTimeMgr->setTime(playData->mCaveSaveData.mTime);
+}
 
 /**
  * @note Address: 0x80153F98
@@ -764,7 +786,10 @@ void SingleGameSection::openCaveMoreMenu(ItemHole::Item* hole, Controller* input
  * @note Address: 0x8015456C
  * @note Size: 0x2C
  */
-void SingleGameSection::saveCaveMore() { pikiMgr->caveSaveAllPikmins(false, false); }
+void SingleGameSection::saveCaveMore()
+{
+	pikiMgr->caveSaveAllPikmins(false, false);
+}
 
 /**
  * @note Address: 0x80154598
@@ -905,13 +930,19 @@ void SingleGameSection::goMainMap(ItemBigFountain::Item* fountain)
  * @note Address: 0x80154B24
  * @note Size: 0x20
  */
-void SingleGameSection::setupMainMapGames() { createFallPikmins(); }
+void SingleGameSection::setupMainMapGames()
+{
+	createFallPikmins();
+}
 
 /**
  * @note Address: 0x80154B44
  * @note Size: 0x20
  */
-void SingleGameSection::setupCaveGames() { createFallPikmins(); }
+void SingleGameSection::setupCaveGames()
+{
+	createFallPikmins();
+}
 
 /**
  * @note Address: 0x80154B64
@@ -1189,7 +1220,9 @@ void SingleGameSection::updateMainMapScreen()
  * @note Address: 0x80155A78
  * @note Size: 0x4
  */
-void SingleGameSection::drawMainMapScreen() { }
+void SingleGameSection::drawMainMapScreen()
+{
+}
 
 /**
  * @note Address: 0x80155A7C
@@ -1281,7 +1314,9 @@ void SingleGameSection::updateCaveScreen()
  * @note Address: 0x80155F5C
  * @note Size: 0x4
  */
-void SingleGameSection::drawCaveScreen() { }
+void SingleGameSection::drawCaveScreen()
+{
+}
 
 /**
  * @note Address: 0x80155F60

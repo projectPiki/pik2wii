@@ -1,7 +1,7 @@
 #ifndef _JSYSTEM_J3D_J3DUSHADOW_H
 #define _JSYSTEM_J3D_J3DUSHADOW_H
 
-#include "Dolphin/gx.h"
+#include "RevoSDK/gx.h"
 #include "types.h"
 
 typedef GXColor _GXColor;
@@ -24,8 +24,7 @@ struct J3DUShadowInfo {
 	void getTexMtxForGX(f32 (*)[4]) const;
 };
 
-struct J3DUShadowTextureSizeRatioCalcBase {
-};
+struct J3DUShadowTextureSizeRatioCalcBase { };
 
 struct J3DUShadowTextureSizeRatioCalcDefault : J3DUShadowTextureSizeRatioCalcBase {
 	void operator()(const Vec&, J3DUShadowInfo*);

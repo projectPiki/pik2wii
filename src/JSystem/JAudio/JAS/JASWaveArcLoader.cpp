@@ -1,5 +1,3 @@
-#include "Dolphin/dvd.h"
-#include "string.h"
 #include "JSystem/JAudio/JAS/JASDisposer.h"
 #include "JSystem/JAudio/JAS/JASDvd.h"
 #include "JSystem/JAudio/JAS/JASHeap.h"
@@ -9,6 +7,8 @@
 #include "JSystem/JAudio/JAS/JASWave.h"
 #include "JSystem/JKernel/JKRDvdAramRipper.h"
 #include "JSystem/JKernel/JKRDvdRipper.h"
+#include "RevoSDK/dvd.h"
+#include "string.h"
 
 char JASWaveArcLoader::sCurrentDir[0x40] = "/Banks/";
 JASHeap* JASWaveArcLoader::sAramHeap;
@@ -232,7 +232,10 @@ bool JASWaveArc::loadBlockTail(JASHeap*)
  * @note Size: 0x24
  * erase__10JASWaveArcFv
  */
-bool JASWaveArc::erase() { return mHeap.free(); }
+bool JASWaveArc::erase()
+{
+	return mHeap.free();
+}
 
 /**
  * @note Address: 0x8009BEB4

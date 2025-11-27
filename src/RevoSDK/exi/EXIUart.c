@@ -1,5 +1,5 @@
-#include "Dolphin/os.h"
-#include "Dolphin/exi.h"
+#include "RevoSDK/exi.h"
+#include "RevoSDK/os.h"
 
 static s32 Chan;
 static u32 Dev;
@@ -113,7 +113,10 @@ u32 InitializeUART(u32 baudRate)
  * @note Address: N/A
  * @note Size: 0x8
  */
-u32 ReadUARTN(void* bytes, u32 len) { return 4; }
+u32 ReadUARTN(void* bytes, u32 len)
+{
+	return 4;
+}
 
 /**
  * @note Address: N/A

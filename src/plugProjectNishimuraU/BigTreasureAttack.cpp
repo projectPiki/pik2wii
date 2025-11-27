@@ -1,10 +1,10 @@
+#include "Game/EnemyFunc.h"
 #include "Game/Entities/BigTreasure.h"
 #include "Game/MapMgr.h"
-#include "Game/EnemyFunc.h"
-#include "Game/PikiMgr.h"
 #include "Game/Navi.h"
-#include "Dolphin/rand.h"
+#include "Game/PikiMgr.h"
 #include "PS.h"
+#include "RevoSDK/rand.h"
 
 #define FIRE_NAVI_FLICK_CHANCE  (0.33f)
 #define GAS_NAVI_FLICK_CHANCE   (0.67f)
@@ -1271,7 +1271,10 @@ void BigTreasureAttackMgr::updateFireAttack()
  * @note Address: N/A
  * @note Size: 0x30
  */
-void BigTreasureAttackMgr::finishFireAttack() { mEfxFire->fade(); }
+void BigTreasureAttackMgr::finishFireAttack()
+{
+	mEfxFire->fade();
+}
 
 /**
  * @note Address: 0x802F5A24
@@ -2197,7 +2200,9 @@ void BigTreasureAttackMgr::updateWaterAttack()
  * @note Address: N/A
  * @note Size: 0x4
  */
-void BigTreasureAttackMgr::finishWaterAttack() { }
+void BigTreasureAttackMgr::finishWaterAttack()
+{
+}
 
 /**
  * @note Address: 0x802F6A6C
@@ -3087,7 +3092,10 @@ void BigTreasureAttackMgr::delAttackShadow(BigTreasureElecAttack* elecAttack)
  */
 void BigTreasureAttackMgr::updateAttackShadow()
 {
-	FOREACH_NODE(AttackShadowNode, mShadowRootNode->mChild, shadow) { shadow->makeShadowSRT(); }
+	FOREACH_NODE(AttackShadowNode, mShadowRootNode->mChild, shadow)
+	{
+		shadow->makeShadowSRT();
+	}
 }
 } // namespace BigTreasure
 } // namespace Game

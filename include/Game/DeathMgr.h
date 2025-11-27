@@ -1,8 +1,8 @@
 #ifndef _GAME_DEATHMGR_H
 #define _GAME_DEATHMGR_H
 
-#include "Dolphin/gx.h"
 #include "Game/Piki.h"
+#include "RevoSDK/gx.h"
 #include "stream.h"
 
 namespace Game {

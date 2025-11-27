@@ -1,12 +1,12 @@
 #ifndef _GAME_P2JST_OBJECTCAMERA_H
 #define _GAME_P2JST_OBJECTCAMERA_H
 
-#include "types.h"
-#include "Dolphin/vec.h"
-#include "Matrixf.h"
-#include "Vector3.h"
 #include "Game/P2JST/ObjectBase.h"
 #include "JSystem/JStage/TCamera.h"
+#include "Matrixf.h"
+#include "RevoSDK/vec.h"
+#include "Vector3.h"
+#include "types.h"
 
 struct Camera;
 

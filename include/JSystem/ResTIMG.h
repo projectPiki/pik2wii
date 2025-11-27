@@ -1,7 +1,7 @@
 #ifndef _JSYSTEM_RESTIMG_H
 #define _JSYSTEM_RESTIMG_H
 
-#include "Dolphin/gx.h"
+#include "RevoSDK/gx.h"
 #include "types.h"
 
 #ifndef _JUTTransparency

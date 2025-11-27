@@ -1,5 +1,5 @@
+#include "RevoSDK/os.h"
 #include "types.h"
-#include "Dolphin/os.h"
 
 inline static void InitDefaultHeap()
 {

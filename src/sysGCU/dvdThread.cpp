@@ -1,12 +1,12 @@
 #include "AppThread.h"
-#include "Dolphin/OS/OSMessage.h"
-#include "Dolphin/OS/OSMutex.h"
-#include "Dolphin/OS/OSThread.h"
 #include "DvdThreadCommand.h"
 #include "IDelegate.h"
 #include "JSystem/JKernel/JKRArchive.h"
-#include "stl/string.h"
 #include "P2Macros.h"
+#include "RevoSDK/OS/OSMessage.h"
+#include "RevoSDK/OS/OSMutex.h"
+#include "RevoSDK/OS/OSThread.h"
+#include "stl/string.h"
 
 /**
  * @note Address: 0x80424818

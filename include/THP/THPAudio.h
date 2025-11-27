@@ -1,7 +1,7 @@
 #ifndef _THP_THPAUDIO_H
 #define _THP_THPAUDIO_H
 
-#include "Dolphin/os.h"
+#include "RevoSDK/os.h"
 
 #ifdef __cplusplus
 extern "C" {

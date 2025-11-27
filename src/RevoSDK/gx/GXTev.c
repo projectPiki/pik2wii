@@ -1,4 +1,4 @@
-#include "Dolphin/gx.h"
+#include "RevoSDK/gx.h"
 
 static u32 TEVCOpTableST0[] = {
 	0xC008F8AF, // modulate

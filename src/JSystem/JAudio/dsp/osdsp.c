@@ -1,6 +1,6 @@
-#include "Dolphin/os.h"
-#include "Dolphin/dsp.h"
 #include "JSystem/JAudio/DSP.h"
+#include "RevoSDK/dsp.h"
+#include "RevoSDK/os.h"
 #include "types.h"
 
 /**

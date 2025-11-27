@@ -1,14 +1,14 @@
-#include "Game/BaseHIO.h"
 #include "CNode.h"
 #include "Controller.h"
-#include "Dolphin/os.h"
+#include "Game/BaseHIO.h"
 #include "JSystem/JFramework/JFWDisplay.h"
 #include "JSystem/JKernel/JKRHeap.h"
-#include "JSystem/JUtility/JUTXfb.h"
 #include "JSystem/JUtility/JUTProcBar.h"
-#include "nans.h"
+#include "JSystem/JUtility/JUTXfb.h"
 #include "P2Macros.h"
+#include "RevoSDK/os.h"
 #include "System.h"
+#include "nans.h"
 
 namespace Game {
 
@@ -60,7 +60,7 @@ void BaseHIOSection::setDisplay(JFWDisplay* display, int secondsPer60Frames)
 	// Assign the new display and create a new JUTFader object for it
 	mDisplay = display;
 	mFader   = new JUTFader(0, 0, JUTVideo::sManager->mRenderModeObj->fbWidth, JUTVideo::sManager->mRenderModeObj->efbHeight,
-                          JUtility::TColor(0, 0, 0, 0));
+	                        JUtility::TColor(0, 0, 0, 0));
 
 	// Assign the new fader to the display's mFader member
 	mDisplay->mFader = mFader;
@@ -106,25 +106,35 @@ void BaseHIOSection::initHIO(Game::HIORootNode* node)
  * @note Address: 0x80164FA4
  * @note Size: 0x4
  */
-void BaseHIOSection::createScreenRootNode() { }
+void BaseHIOSection::createScreenRootNode()
+{
+}
 
 /**
  * @note Address: 0x80164FA8
  * @note Size: 0x8
  */
-bool BaseHIOSection::doUpdate() { return true; }
+bool BaseHIOSection::doUpdate()
+{
+	return true;
+}
 
 /**
  * @note Address: 0x80164FB0
  * @note Size: 0x24
  */
-void BaseHIOSection::addGenNode(CNode* node) { mRootNode->add(node); }
+void BaseHIOSection::addGenNode(CNode* node)
+{
+	mRootNode->add(node);
+}
 
 /**
  * @note Address: 0x80164FD4
  * @note Size: 0x4
  */
-void BaseHIOSection::refreshHIO() { }
+void BaseHIOSection::refreshHIO()
+{
+}
 
 /**
  * @note Address: 0x80164FD8

@@ -1,5 +1,3 @@
-#include "Dolphin/gx.h"
-#include "Dolphin/mtx.h"
 #include "JSystem/J2D/J2DAnm.h"
 #include "JSystem/J2D/J2DMaterial.h"
 #include "JSystem/J2D/J2DPicture.h"
@@ -7,6 +5,8 @@
 #include "JSystem/J3D/J3DAnmVtxColor.h"
 #include "JSystem/JGeometry.h"
 #include "JSystem/JUtility/JUTPalette.h"
+#include "RevoSDK/gx.h"
+#include "RevoSDK/mtx.h"
 #include "types.h"
 
 /**
@@ -2539,7 +2539,7 @@ void J2DPictureEx::setStage(J2DTevStage* tevStage, J2DPictureEx::stage_enum i)
 	u8 alphaABCDs[8][4] = { { 7, 4, 5, 7 }, { 5, 7, 7, 7 }, { 7, 4, 6, 7 }, { 7, 4, 6, 0 },
 		                    { 7, 5, 0, 7 }, { 1, 2, 4, 7 }, { 7, 7, 7, 2 }, { 1, 2, 0, 7 } };
 	u8 ops[8][5]        = { { 0, 0, 0, 1, 0 }, { 0, 0, 0, 1, 0 }, { 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0 },
-                     { 0, 0, 0, 1, 0 }, { 0, 0, 0, 1, 0 }, { 0, 0, 0, 1, 0 }, { 0, 0, 0, 0, 0 } };
+		                    { 0, 0, 0, 1, 0 }, { 0, 0, 0, 1, 0 }, { 0, 0, 0, 1, 0 }, { 0, 0, 0, 0, 0 } };
 
 	tevStage->setColorABCD(colorABCDs[i][0], colorABCDs[i][1], colorABCDs[i][2], colorABCDs[i][3]);
 	tevStage->setTevColorOp(ops[i][0], ops[i][1], ops[i][2], ops[i][3], ops[i][4]);
@@ -3565,7 +3565,10 @@ void J2DPictureEx::setAnimation(J2DAnmTevRegKey* animation)
  * @note Address: 0x80058BF8
  * @note Size: 0x8
  */
-void J2DPictureEx::setAnimation(J2DAnmVisibilityFull* animation) { mAnmVisibility = animation; }
+void J2DPictureEx::setAnimation(J2DAnmVisibilityFull* animation)
+{
+	mAnmVisibility = animation;
+}
 
 /**
  * @note Address: 0x80058C00

@@ -1,10 +1,10 @@
 #ifndef _JSYSTEM_J3D_J3DSYS_H
 #define _JSYSTEM_J3D_J3DSYS_H
 
-#include "Dolphin/mtx.h"
 #include "JSystem/J3D/J3DPacket.h"
 #include "JSystem/J3D/J3DTypes.h"
 #include "JSystem/JGeometry.h"
+#include "RevoSDK/mtx.h"
 #include "types.h"
 
 struct J3DDrawBuffer;

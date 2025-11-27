@@ -1,6 +1,6 @@
-#include "types.h"
-#include "Dolphin/pad.h"
+#include "RevoSDK/pad.h"
 #include "math.h"
+#include "types.h"
 
 typedef struct PADClampRegion {
 	u8 minTrigger;

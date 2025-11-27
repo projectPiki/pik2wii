@@ -1,7 +1,7 @@
-#include "Dolphin/os.h"
+#include "JSystem/JAudio/JAS/JASProbe.h"
 #include "JSystem/JAudio/JAS/JASKernel.h"
 #include "JSystem/JAudio/JAS/JASMutexLock.h"
-#include "JSystem/JAudio/JAS/JASProbe.h"
+#include "RevoSDK/os.h"
 
 static JASProbe* sProbes;
 static u32 sProbeCount; // unused

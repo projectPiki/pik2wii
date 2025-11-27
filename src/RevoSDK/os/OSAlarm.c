@@ -1,4 +1,4 @@
-#include "Dolphin/os.h"
+#include "RevoSDK/os.h"
 
 // forward declarations
 BOOL __DVDTestAlarm(OSAlarm* alarm);

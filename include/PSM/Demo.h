@@ -2,9 +2,9 @@
 #define _PSM_DEMO_H
 
 #include "JSystem/JKernel/JKRDisposer.h"
-#include "Dolphin/mtx.h"
 #include "PSM/Scene.h"
 #include "PSSystem/PSSeq.h"
+#include "RevoSDK/mtx.h"
 
 namespace PSM {
 struct DemoInitiator {

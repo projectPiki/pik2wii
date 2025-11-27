@@ -1,6 +1,7 @@
 #ifndef _JSYSTEM_JAI_JAINTER_BANKWAVE_H
 #define _JSYSTEM_JAI_JAINTER_BANKWAVE_H
 
+#include "JSystem/JAudio/JAS/JASBank.h"
 #include "types.h"
 
 namespace JAInter {
@@ -79,7 +80,10 @@ extern s32* wsGroupNumber;
 extern s32* wsLoadStatus;
 extern int wsMax;
 
-inline int getSceneSetFlag() { return SceneSetFlag; }
+inline int getSceneSetFlag()
+{
+	return SceneSetFlag;
+}
 
 } // namespace BankWave
 } // namespace JAInter

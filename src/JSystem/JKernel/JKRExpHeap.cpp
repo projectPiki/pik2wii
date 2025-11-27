@@ -1,7 +1,7 @@
-#include "Dolphin/os.h"
+#include "JSystem/JKernel/JKRHeap.h"
 #include "JSystem/JSupport.h"
 #include "JSystem/JUtility/JUTConsole.h"
-#include "JSystem/JKernel/JKRHeap.h"
+#include "RevoSDK/os.h"
 #include "stl/limits.h"
 #include "types.h"
 
@@ -97,7 +97,10 @@ JKRExpHeap::JKRExpHeap(void* p1, u32 p2, JKRHeap* p3, bool p4)
  * @note Address: 0x800200C8
  * @note Size: 0x68
  */
-JKRExpHeap::~JKRExpHeap() { dispose(); }
+JKRExpHeap::~JKRExpHeap()
+{
+	dispose();
+}
 
 /**
  * @note Address: 0x80020130
@@ -428,7 +431,9 @@ void JKRExpHeap::do_freeTail()
  * @note Address: 0x800209D0
  * @note Size: 0x4
  */
-void JKRExpHeap::do_fillFreeArea() { }
+void JKRExpHeap::do_fillFreeArea()
+{
+}
 
 /**
  * @note Address: 0x800209D4

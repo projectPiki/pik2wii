@@ -1,9 +1,9 @@
 #ifndef _VSFIFO_H
 #define _VSFIFO_H
 
+#include "RevoSDK/gx.h"
+#include "RevoSDK/os.h"
 #include "types.h"
-#include "Dolphin/os.h"
-#include "Dolphin/gx.h"
 
 struct VSFifo {
 	VSFifo(size_t size);

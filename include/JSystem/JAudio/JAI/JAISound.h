@@ -1,12 +1,12 @@
 #ifndef _JSYSTEM_JAI_JAISOUND_H
 #define _JSYSTEM_JAI_JAISOUND_H
 
-#include "Dolphin/vec.h"
 #include "JSystem/JAudio/JAI/JAIBasic.h"
 #include "JSystem/JAudio/JAI/JAIGlobalParameter.h"
 #include "JSystem/JAudio/JAI/JAInter.h"
 #include "JSystem/JGeometry.h"
 #include "JSystem/JSupport/JSUList.h"
+#include "RevoSDK/vec.h"
 #include "SoundID.h"
 #include "types.h"
 

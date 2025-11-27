@@ -1,7 +1,7 @@
-#include "Dolphin/os.h"
 #include "JSystem/JAudio/JAS/JASDvd.h"
 #include "JSystem/JAudio/JAS/JASHeap.h"
 #include "JSystem/JAudio/JAS/JASThread.h"
+#include "RevoSDK/os.h"
 
 JASTaskThread* JASDvd::sThread;
 
@@ -9,7 +9,10 @@ JASTaskThread* JASDvd::sThread;
  * @note Address: 0x800A698C
  * @note Size: 0x8
  */
-JASTaskThread* JASDvd::getThreadPointer() { return sThread; }
+JASTaskThread* JASDvd::getThreadPointer()
+{
+	return sThread;
+}
 
 /**
  * @note Address: 0x800A6994

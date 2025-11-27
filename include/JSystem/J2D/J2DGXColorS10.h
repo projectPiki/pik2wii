@@ -2,8 +2,8 @@
 #define _JSYSTEM_J2D_J2DGXCOLORS10_H
 
 #include "JSystem/JUtility/TColor.h"
+#include "RevoSDK/gx.h"
 #include "types.h"
-#include "Dolphin/gx.h"
 
 /**
  * Everything is fabricated here except for the default ctor.

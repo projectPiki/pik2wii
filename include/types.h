@@ -6,6 +6,7 @@
 #endif
 
 #include "BuildSettings.h"
+#include "compat.h"
 
 // r2 is  8051E360
 // r13 is 8051C680
@@ -49,9 +50,9 @@ typedef u16 wchar_t;
 #define SHORT_FLOAT_MIN (-32768.0f)
 
 // Basic defines to allow newer-like C++ code to be written
-#define TRUE  1
-#define FALSE 0
-#define NULL  ((void*)0)
+#define TRUE    1
+#define FALSE   0
+#define NULL    ((void*)0)
 #define nullptr 0
 
 // Maximum length of a path in engine
@@ -61,16 +62,19 @@ typedef u16 wchar_t;
 #define RESET_FLAG(x, val)   (x &= ~(val))
 #define IS_FLAG(x, val)      (x & val)
 #define ARRAY_SIZE(o)        (sizeof((o)) / sizeof(*(o)))
-#define ALIGN_PREV(X, N)     ((X) & ~((N)-1))
-#define ALIGN_NEXT(X, N)     ALIGN_PREV(((X) + (N)-1), N)
-#define IS_ALIGNED(X, N)     ((X & ((N)-1)) == 0)
-#define IS_NOT_ALIGNED(X, N) (((X) & ((N)-1)) != 0)
+#define ALIGN_PREV(X, N)     ((X) & ~((N) - 1))
+#define ALIGN_NEXT(X, N)     ALIGN_PREV(((X) + (N) - 1), N)
+#define IS_ALIGNED(X, N)     ((X & ((N) - 1)) == 0)
+#define IS_NOT_ALIGNED(X, N) (((X) & ((N) - 1)) != 0)
 #define ATTRIBUTE_ALIGN(num) __attribute__((aligned(num)))
 
 #define ASSERT_HANG(cond) \
 	if (!(cond)) {        \
 		while (true) { }  \
 	}
+
+#define __CONCAT(x, y) x##y
+#define CONCAT(x, y)   __CONCAT(x, y)
 
 #define CLAMP_VALUE_ABOVE(val, limit)              ((val) > (limit)) ? (limit) : (val)
 #define MAX(a, b)                                  (((a) > (b)) ? (a) : (b))
@@ -82,10 +86,17 @@ typedef u16 wchar_t;
 #define WEAKFUNC        __declspec(weak)
 #define DECL_SECT(name) __declspec(section name)
 #define ASM             asm
+#define DECOMP_FORCELITERAL(module, ...)               \
+	void CONCAT(FORCELITERAL##module, __LINE__)(void); \
+	void CONCAT(FORCELITERAL##module, __LINE__)(void)  \
+	{                                                  \
+		(__VA_ARGS__);                                 \
+	}
 #else
 #define WEAKFUNC
 #define DECL_SECT(name)
 #define ASM
+#define DECOMP_FORCELITERAL(module, ...)
 #endif
 
 #endif // _TYPES_H

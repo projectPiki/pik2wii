@@ -1,8 +1,8 @@
 #ifndef _JSYSTEM_JUT_JUTGRAPHFIFO_H
 #define _JSYSTEM_JUT_JUTGRAPHFIFO_H
 
+#include "RevoSDK/gx.h"
 #include "types.h"
-#include "Dolphin/gx.h"
 
 struct JUTGraphFifo {
 	JUTGraphFifo(u32);
@@ -37,6 +37,9 @@ struct JUTGraphFifo {
 	u8 _10[0xC];      // _10
 };
 
-inline void JUTCreateFifo(u32 bufSize) { new JUTGraphFifo(bufSize); }
+inline void JUTCreateFifo(u32 bufSize)
+{
+	new JUTGraphFifo(bufSize);
+}
 
 #endif

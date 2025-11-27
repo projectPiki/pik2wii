@@ -1,7 +1,7 @@
 #ifndef _THP_THPVIDEODECODE_H
 #define _THP_THPVIDEODECODE_H
 
-#include "Dolphin/os.h"
+#include "RevoSDK/os.h"
 #include "THP/THPRead.h"
 #include "types.h"
 

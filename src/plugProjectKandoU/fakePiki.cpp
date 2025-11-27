@@ -1,6 +1,5 @@
 #include "Game/FakePiki.h"
 #include "CollInfo.h"
-#include "Dolphin/rand.h"
 #include "Game/AIConstants.h"
 #include "Game/BaseItem.h"
 #include "Game/MapMgr.h"
@@ -10,6 +9,7 @@
 #include "Game/gameStat.h"
 #include "Game/mapParts.h"
 #include "JSystem/JMath.h"
+#include "RevoSDK/rand.h"
 #include "nans.h"
 #include "trig.h"
 

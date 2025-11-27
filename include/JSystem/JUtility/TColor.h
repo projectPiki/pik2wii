@@ -2,8 +2,8 @@
 #define _JSYSTEM_JUT_TCOLOR_H
 
 #include "JSystem/JSupport/JSUStream.h"
+#include "RevoSDK/gx.h"
 #include "types.h"
-#include "Dolphin/gx.h"
 
 #define TCOLOR_BLACK_U8 JUtility::TColor(0x0, 0x0, 0x0, 0x0)
 #define TCOLOR_WHITE_U8 JUtility::TColor(0xFF, 0xFF, 0xFF, 0xFF)

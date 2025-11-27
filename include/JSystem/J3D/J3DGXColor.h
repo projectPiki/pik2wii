@@ -1,10 +1,9 @@
 #ifndef _JSYSTEM_J3D_J3DGXCOLOR_H
 #define _JSYSTEM_J3D_J3DGXCOLOR_H
 
-#include "types.h"
-#include "Dolphin/gx.h"
-#include "Dolphin/gx.h"
 #include "Color4.h"
+#include "RevoSDK/gx.h"
+#include "types.h"
 
 struct J3DGXColor : public GXColor {
 	J3DGXColor() { }

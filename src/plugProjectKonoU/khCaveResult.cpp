@@ -1,20 +1,20 @@
-#include "types.h"
 #include "kh/khCaveResult.h"
-#include "kh/khLostItem.h"
-#include "Dolphin/rand.h"
-#include "efx2d/T2DChangesmoke.h"
-#include "efx2d/T2DCavecomp.h"
-#include "PSSystem/PSSystemIF.h"
-#include "JSystem/JKernel/JKRFileLoader.h"
-#include "JSystem/J2D/J2DAnmLoader.h"
-#include "og/Screen/ogScreen.h"
-#include "og/Screen/StickAnimMgr.h"
-#include "og/newScreen/ogUtil.h"
-#include "Game/MemoryCard/Mgr.h"
-#include "LoadResource.h"
 #include "Controller.h"
-#include "Dolphin/gx.h"
+#include "Game/MemoryCard/Mgr.h"
+#include "JSystem/J2D/J2DAnmLoader.h"
+#include "JSystem/JKernel/JKRFileLoader.h"
+#include "LoadResource.h"
+#include "PSSystem/PSSystemIF.h"
+#include "RevoSDK/gx.h"
+#include "RevoSDK/rand.h"
 #include "Screen/Game2DMgr.h"
+#include "efx2d/T2DCavecomp.h"
+#include "efx2d/T2DChangesmoke.h"
+#include "kh/khLostItem.h"
+#include "og/Screen/StickAnimMgr.h"
+#include "og/Screen/ogScreen.h"
+#include "og/newScreen/ogUtil.h"
+#include "types.h"
 
 namespace kh {
 namespace Screen {
@@ -915,7 +915,10 @@ void ObjCaveResult::updateAnimation()
 			resetFlag(CAVERESFLAG_DrawComp);
 		}
 	}
-	FOREACH_NODE(Game::Result::TNode, mResultNode->mChild, cNode) { cNode->mItemMgr->update(); }
+	FOREACH_NODE(Game::Result::TNode, mResultNode->mChild, cNode)
+	{
+		cNode->mItemMgr->update();
+	}
 }
 
 /**

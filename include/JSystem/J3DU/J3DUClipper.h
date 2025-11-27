@@ -1,8 +1,8 @@
 #ifndef _JSYSTEM_J3D_J3DUCLIPPER_H
 #define _JSYSTEM_J3D_J3DUCLIPPER_H
 
-#include "Dolphin/vec.h"
-#include "Dolphin/mtx.h"
+#include "RevoSDK/mtx.h"
+#include "RevoSDK/vec.h"
 
 struct J3DUClipper {
 	J3DUClipper() { init(); }

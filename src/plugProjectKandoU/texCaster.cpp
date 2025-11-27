@@ -1,8 +1,8 @@
 #include "TexCaster.h"
-#include "System.h"
-#include "JSystem/JKernel/JKRArchive.h"
-#include "Dolphin/gx.h"
 #include "Game/MapMgr.h"
+#include "JSystem/JKernel/JKRArchive.h"
+#include "RevoSDK/gx.h"
+#include "System.h"
 
 namespace TexCaster {
 
@@ -30,7 +30,9 @@ Caster::Caster()
  * @note Address: 0x8023C95C
  * @note Size: 0x60
  */
-Caster::~Caster() { }
+Caster::~Caster()
+{
+}
 
 /**
  * @note Address: N/A
@@ -152,7 +154,9 @@ void Caster::draw(Graphics& gfx)
  * @note Address: N/A
  * @note Size: 0x4
  */
-void Caster::drawLine(Graphics&) { }
+void Caster::drawLine(Graphics&)
+{
+}
 
 /**
  * @note Address: N/A
@@ -169,7 +173,10 @@ Mgr::Mgr()
  * @note Address: N/A
  * @note Size: 0x74
  */
-Mgr::~Mgr() { sInstance = nullptr; }
+Mgr::~Mgr()
+{
+	sInstance = nullptr;
+}
 
 /**
  * @note Address: 0x8023CA50
@@ -674,7 +681,10 @@ void Mgr::drawInit(Graphics& gfx)
 void Mgr::draw(Graphics& gfx)
 {
 	drawInit(gfx);
-	FOREACH_NODE(Caster, mCaster.mChild, child) { child->draw(gfx); }
+	FOREACH_NODE(Caster, mCaster.mChild, child)
+	{
+		child->draw(gfx);
+	}
 }
 
 } // namespace TexCaster

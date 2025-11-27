@@ -1,9 +1,9 @@
-#include "Dolphin/os.h"
-#include "Dolphin/ar.h"
 #include "JSystem/JKernel/JKRAram.h"
 #include "JSystem/JKernel/JKRDecomp.h"
 #include "JSystem/JKernel/JKRHeap.h"
 #include "JSystem/JKernel/JKRThread.h"
+#include "RevoSDK/ar.h"
+#include "RevoSDK/os.h"
 #include "mem.h"
 #include "types.h"
 

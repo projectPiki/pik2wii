@@ -1,9 +1,9 @@
-#include "Game/Entities/ShijimiChou.h"
 #include "Game/EnemyAnimKeyEvent.h"
 #include "Game/EnemyFunc.h"
-#include "efx/TEnemyDead.h"
-#include "Dolphin/rand.h"
+#include "Game/Entities/ShijimiChou.h"
 #include "PS.h"
+#include "RevoSDK/rand.h"
+#include "efx/TEnemyDead.h"
 
 namespace Game {
 namespace ShijimiChou {
@@ -250,7 +250,10 @@ void StateLeave::init(EnemyBase* enemy, StateArg* stateArg)
  * @note Address: 0x80387FE4
  * @note Size: 0x24
  */
-void StateLeave::exec(EnemyBase* enemy) { OBJ(enemy)->leave(); }
+void StateLeave::exec(EnemyBase* enemy)
+{
+	OBJ(enemy)->leave();
+}
 
 /**
  * @note Address: 0x80388008

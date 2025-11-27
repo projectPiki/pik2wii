@@ -1,8 +1,8 @@
 #ifndef _THP_THPDRAW_H
 #define _THP_THPDRAW_H
 
+#include "RevoSDK/GX/GXTypes.h"
 #include "types.h"
-#include "Dolphin/GX/GXTypes.h"
 
 #ifdef __cplusplus
 extern "C" {

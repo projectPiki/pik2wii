@@ -1,4 +1,4 @@
-#include "Dolphin/gx.h"
+#include "RevoSDK/gx.h"
 
 // clang-format off
 GXRenderModeObj GXNtsc480IntDf = {
@@ -383,7 +383,10 @@ void GXSetCopyFilter(GXBool useAA, u8 samplePattern[12][2], GXBool doVertFilt, u
  * @note Address: 0x800E6530
  * @note Size: 0x14
  */
-void GXSetDispCopyGamma(GXGamma gamma) { GX_SET_REG(gx->cpDisp, gamma, 23, 24); }
+void GXSetDispCopyGamma(GXGamma gamma)
+{
+	GX_SET_REG(gx->cpDisp, gamma, 23, 24);
+}
 
 /**
  * @note Address: 0x800E6544

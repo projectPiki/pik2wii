@@ -1,7 +1,7 @@
-#include "Dolphin/mtx.h"
 #include "Game/Cave/Info.h"
 #include "Game/mapParts.h"
 #include "JSystem/J3D/J3DModel.h"
+#include "RevoSDK/mtx.h"
 #include "SysShape/Model.h"
 
 namespace Game {
@@ -34,7 +34,9 @@ PartsView::PartsView()
  * @note Address: 0x8023247C
  * @note Size: 0x4
  */
-void PartsView::doDirectDraw(Graphics&) { }
+void PartsView::doDirectDraw(Graphics&)
+{
+}
 
 /**
  * @note Address: 0x80232480
@@ -53,7 +55,9 @@ void PartsView::doAnimation()
  * @note Address: 0x802324F4
  * @note Size: 0x4
  */
-void PartsView::doEntry() { }
+void PartsView::doEntry()
+{
+}
 
 /**
  * @note Address: 0x802324F8

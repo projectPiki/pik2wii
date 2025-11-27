@@ -1,13 +1,13 @@
 #ifndef _JSYSTEM_J3D_J3DPACKET_H
 #define _JSYSTEM_J3D_J3DPACKET_H
 
-#include "Dolphin/mtx.h"
 #include "JSystem/J3D/J3DDisplayListObj.h"
+#include "JSystem/J3D/J3DDrawBuffer.h"
 #include "JSystem/J3D/J3DShape.h"
 #include "JSystem/J3D/J3DTypes.h"
 #include "JSystem/JGadget/linklist.h"
 #include "JSystem/JSupport/JSUList.h"
-#include "JSystem/J3D/J3DDrawBuffer.h"
+#include "RevoSDK/mtx.h"
 #include "types.h"
 
 struct J3DTexMtxObj;
@@ -162,7 +162,7 @@ struct J3DMatPacket : public J3DDrawPacket {
 	{
 		sortFunc func = J3DDrawBuffer::sortFuncTable[buffer->mSortType];
 		return (buffer->*func)(this);
-	}                        // _08 (weak)
+	} // _08 (weak)
 	virtual void draw();     // _0C
 	virtual ~J3DMatPacket(); // _10
 

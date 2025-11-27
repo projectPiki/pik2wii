@@ -1,5 +1,5 @@
 #include "PowerPC_EABI_Support/MetroTRK/trk.h"
-#include "Dolphin/ar.h"
+#include "RevoSDK/ar.h"
 
 extern u8 _db_stack_addr[];
 #define EXCEPTIONMASK_ADDR 0x80000044
@@ -24,13 +24,19 @@ static u32 TRK_ISR_OFFSETS[15] = { PPC_SystemReset,
 	                               PPC_SystemManagementInterrupt,
 	                               PPC_ThermalManagementInterrupt };
 
-DECL_SECT(".init") void __TRK_reset() { OSResetSystem(FALSE, 0, FALSE); }
+DECL_SECT(".init") void __TRK_reset()
+{
+	OSResetSystem(FALSE, 0, FALSE);
+}
 
 /**
  * @note Address: 0x800C03EC
  * @note Size: 0x20
  */
-void EnableMetroTRKInterrupts(void) { EnableEXI2Interrupts(); }
+void EnableMetroTRKInterrupts(void)
+{
+	EnableEXI2Interrupts();
+}
 
 /**
  * @note Address: 0x800C0394

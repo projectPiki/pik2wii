@@ -1,8 +1,8 @@
 #ifndef _JSYSTEM_DSP_H
 #define _JSYSTEM_DSP_H
 
+#include "RevoSDK/dsp.h"
 #include "types.h"
-#include "Dolphin/dsp.h"
 
 // dspproc.c
 void DSPReleaseHalt2(u32 msg);

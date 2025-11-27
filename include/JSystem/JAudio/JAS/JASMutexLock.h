@@ -1,7 +1,7 @@
 #ifndef _JSYSTEM_JAS_JASMUTEXLOCK_H
 #define _JSYSTEM_JAS_JASMUTEXLOCK_H
 
-#include "Dolphin/os.h"
+#include "RevoSDK/os.h"
 #include "types.h"
 
 struct JASMutexLock {

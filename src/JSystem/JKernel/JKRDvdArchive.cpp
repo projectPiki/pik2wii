@@ -1,10 +1,10 @@
-#include "Dolphin/os.h"
+#include "JSystem/JKernel/JKRArchive.h"
 #include "JSystem/JKernel/JKRDecomp.h"
 #include "JSystem/JKernel/JKRDvdRipper.h"
 #include "JSystem/JUtility/JUTException.h"
-#include "types.h"
-#include "JSystem/JKernel/JKRArchive.h"
+#include "RevoSDK/os.h"
 #include "stl/mem.h"
+#include "types.h"
 
 extern "C" {
 int abs(int);

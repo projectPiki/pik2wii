@@ -1,10 +1,10 @@
+#include "Game/Piki.h"
+#include "JSystem/J3D/J3DModelLoader.h"
+#include "RevoSDK/rand.h"
 #include "ebi/title/Entities/TPikmin.h"
 #include "ebi/title/TTitle.h"
-#include "types.h"
-#include "JSystem/J3D/J3DModelLoader.h"
-#include "Game/Piki.h"
 #include "nans.h"
-#include "Dolphin/rand.h"
+#include "types.h"
 
 namespace ebi {
 namespace title {
@@ -123,7 +123,7 @@ void Pikmin::TAnimator::setArchive(JKRArchive* arc)
 	mWaveAnim           = (J3DAnmTransform*)J3DAnmLoaderDataBase::load(file);
 	mAnmCalcWait        = J3DNewMtxCalcAnm(mModelDataRed->mJointTree.mFlags & J3DMLF_MtxTypeMask, mWaitAnim);
 	mAnmCalcWave        = J3DUNewMtxCalcAnm(mModelDataRed->mJointTree.mFlags & J3DMLF_MtxTypeMask, mWaitAnim, mWaveAnim, nullptr, nullptr,
-                                     (J3DMtxCalcFlag)0);
+	                                        (J3DMtxCalcFlag)0);
 	J3DModelData* model = mModelDataBlue;
 	model->doMakeShared();
 	mModelDataRed->doMakeShared();
@@ -491,7 +491,10 @@ bool Pikmin::TMgr::isAssemble()
  * @note Address: 0x803E528C
  * @note Size: 0x10
  */
-Pikmin::TUnit* Pikmin::TMgr::getUnit(s32 idx) { return &mUnits[idx]; }
+Pikmin::TUnit* Pikmin::TMgr::getUnit(s32 idx)
+{
+	return &mUnits[idx];
+}
 
 /**
  * @note Address: 0x803E529C
@@ -575,13 +578,19 @@ bool Pikmin::TUnit::beAttacked()
  * @note Address: 0x803E5700
  * @note Size: 0xC
  */
-void Pikmin::TUnit::alive() { mIsDead = false; }
+void Pikmin::TUnit::alive()
+{
+	mIsDead = false;
+}
 
 /**
  * @note Address: 0x803E570C
  * @note Size: 0x14
  */
-bool Pikmin::TUnit::isCalc() { return (bool)(mCurrentState != STATE_Hidden); }
+bool Pikmin::TUnit::isCalc()
+{
+	return (bool)(mCurrentState != STATE_Hidden);
+}
 
 /**
  * @note Address: 0x803E5720

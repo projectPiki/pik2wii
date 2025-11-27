@@ -1,10 +1,10 @@
-#include "types.h"
+#include "Game/Cave/Info.h"
+#include "Game/Cave/Node.h"
 #include "Game/Cave/RandMapMgr.h"
 #include "Game/Cave/RandMapUnit.h"
-#include "Game/Cave/Node.h"
-#include "Game/Cave/Info.h"
+#include "RevoSDK/rand.h"
 #include "string.h"
-#include "Dolphin/rand.h"
+#include "types.h"
 
 namespace Game {
 namespace Cave {
@@ -28,7 +28,10 @@ RandCapEnemyUnit::RandCapEnemyUnit(MapUnitGenerator* mapUnitGenerator)
  * @note Address: 0x80300E94
  * @note Size: 0x8
  */
-void RandCapEnemyUnit::setManageClassPtr(RandItemUnit* randItemUnit) { mRandItemUnit = randItemUnit; }
+void RandCapEnemyUnit::setManageClassPtr(RandItemUnit* randItemUnit)
+{
+	mRandItemUnit = randItemUnit;
+}
 
 /**
  * Sets ground and falling teki slots in caps.

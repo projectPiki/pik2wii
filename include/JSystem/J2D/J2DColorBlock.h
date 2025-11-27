@@ -1,9 +1,9 @@
 #ifndef _JSYSTEM_J2D_J2DCOLORBLOCK_H
 #define _JSYSTEM_J2D_J2DCOLORBLOCK_H
 
-#include "Dolphin/gx.h"
 #include "JSystem/J2D/J2DTypes.h"
 #include "JSystem/JUtility/TColor.h"
+#include "RevoSDK/gx.h"
 #include "types.h"
 
 struct J2DColorBlock {

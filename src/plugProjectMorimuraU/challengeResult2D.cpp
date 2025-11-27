@@ -1,15 +1,15 @@
 #include "Morimura/challengeResult2d.h"
-#include "Morimura/mrUtil.h"
-#include "trig.h"
-#include "og/newScreen/ogUtil.h"
-#include "JSystem/JMath.h"
-#include "LoadResource.h"
 #include "Controller.h"
 #include "Game/GameConfig.h"
-#include "PSSystem/PSSystemIF.h"
-#include "Dolphin/rand.h"
 #include "Game/gameChallenge2D.h"
+#include "JSystem/JMath.h"
+#include "LoadResource.h"
+#include "Morimura/mrUtil.h"
+#include "PSSystem/PSSystemIF.h"
+#include "RevoSDK/rand.h"
 #include "efx2d/T2DChangesmoke.h"
+#include "og/newScreen/ogUtil.h"
+#include "trig.h"
 
 static const char name[] = "challengeResult2D";
 
@@ -41,7 +41,10 @@ const int cRandArray[] = { 0, 1, 2, 0, 2, 1, 1, 0, 2, 1, 2, 0, 2, 1, 0, 2, 0, 1,
  * @note Address: 0x80393348
  * @note Size: 0x20
  */
-void TChallengeResultScreen::create(char const* path, u32 flag) { TScreenBase::create(path, flag); }
+void TChallengeResultScreen::create(char const* path, u32 flag)
+{
+	TScreenBase::create(path, flag);
+}
 
 /**
  * @note Address: 0x80393368
@@ -129,7 +132,10 @@ void TChallengeResultDemoScreen::draw(Graphics& gfx, J2DPerspGraph* graf)
  * @note Address: N/A
  * @note Size: 0x3C
  */
-void TChallengeResultDemoScreen::startDemo() { setComplete(false); }
+void TChallengeResultDemoScreen::startDemo()
+{
+	setComplete(false);
+}
 
 /**
  * @note Address: N/A

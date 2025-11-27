@@ -1,7 +1,7 @@
 #ifndef _JSYSTEM_RESTLUT_H
 #define _JSYSTEM_RESTLUT_H
 
-#include "Dolphin/gx.h"
+#include "RevoSDK/gx.h"
 #include "types.h"
 
 struct ResTLUT {

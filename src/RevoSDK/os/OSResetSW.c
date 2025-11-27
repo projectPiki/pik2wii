@@ -1,5 +1,5 @@
-#include "Dolphin/os.h"
-#include "Dolphin/hw_regs.h"
+#include "RevoSDK/hw_regs.h"
+#include "RevoSDK/os.h"
 
 static OSResetCallback ResetCallback;
 static BOOL Down;
@@ -94,4 +94,7 @@ BOOL OSGetResetButtonState()
  * @note Address: 0x800F0A5C
  * @note Size: 0x20
  */
-BOOL OSGetResetSwitchState() { return OSGetResetButtonState(); }
+BOOL OSGetResetSwitchState()
+{
+	return OSGetResetButtonState();
+}

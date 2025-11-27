@@ -1,11 +1,11 @@
 #ifndef _JSYSTEM_J2D_J2DGRAFCONTEXT_H
 #define _JSYSTEM_J2D_J2DGRAFCONTEXT_H
 
-#include "types.h"
-#include "JSystem/JGeometry.h"
 #include "JSystem/J2D/J2DTypes.h"
+#include "JSystem/JGeometry.h"
 #include "JSystem/JUtility/TColor.h"
-#include "Dolphin/mtx.h"
+#include "RevoSDK/mtx.h"
+#include "types.h"
 
 /**
  * @fabricated
@@ -25,7 +25,7 @@ struct J2DGrafContext {
 	{
 		JGeometry::TBox2f box(x, y, x + width, y + height);
 		place(box);
-	}                                                                // _10 (weak)
+	} // _10 (weak)
 	virtual void setPort();                                          // _14
 	virtual void setup2D();                                          // _18
 	virtual void setScissor();                                       // _1C
@@ -91,7 +91,7 @@ struct J2DOrthoGraph : public J2DGrafContext {
 	J2DOrthoGraph();
 	J2DOrthoGraph(f32 left, f32 top, f32 right, f32 bottom, f32 nearPlaneDistance, f32 farPlaneDistance);
 
-	virtual ~J2DOrthoGraph() {};                                       // _08 (weak)
+	virtual ~J2DOrthoGraph() { };                                      // _08 (weak)
 	virtual void setPort();                                            // _14
 	virtual J2DGrafType getGrafType() const { return J2DGraf_Ortho; }; // _20 (weak)
 	virtual void setLookat();                                          // _24

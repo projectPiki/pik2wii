@@ -1,8 +1,8 @@
 #ifndef _JSYSTEM_JAS_JASRESARCLOADER_H
 #define _JSYSTEM_JAS_JASRESARCLOADER_H
 
-#include "Dolphin/os.h"
 #include "JSystem/JKernel/JKRArchive.h"
+#include "RevoSDK/os.h"
 #include "types.h"
 
 namespace JASResArcLoader {

@@ -1,18 +1,17 @@
 #ifndef _JSYSTEM_JKR_JKRTHREAD_H
 #define _JSYSTEM_JKR_JKRTHREAD_H
 
-#include "Dolphin/os.h"
 #include "JSystem/JKernel/JKRDisposer.h"
-#include "JSystem/JSupport/JSUList.h"
 #include "JSystem/JKernel/JKRHeap.h"
+#include "JSystem/JSupport/JSUList.h"
+#include "RevoSDK/os.h"
 #include "types.h"
 
 struct JKRThread;
 struct JUTConsole;
 struct JUTFont;
 
-struct JKRThreadName_ {
-};
+struct JKRThreadName_ { };
 
 struct JKRThreadSwitch {
 	typedef void (*Callback)(OSThread*, OSThread*);

@@ -1,6 +1,6 @@
 #include "Game/Entities/TamagoMushi.h"
 #include "JSystem/JUtility/JUTNameTab.h"
-#include "Dolphin/rand.h"
+#include "RevoSDK/rand.h"
 
 namespace Game {
 namespace TamagoMushi {

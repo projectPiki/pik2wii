@@ -1,12 +1,12 @@
-#include "string.h"
-#include "JSystem/JAudio/JAI/JAInter.h"
-#include "JSystem/JAudio/JAI/JAInter/BankWave.h"
-#include "JSystem/JAudio/JAI/JAInter/InitData.h"
-#include "JSystem/JAudio/JAI/JAInter/Fx.h"
 #include "JSystem/JAudio/JAI/JAIGlobalParameter.h"
 #include "JSystem/JAudio/JAI/JAIStream.h"
+#include "JSystem/JAudio/JAI/JAInter.h"
+#include "JSystem/JAudio/JAI/JAInter/BankWave.h"
+#include "JSystem/JAudio/JAI/JAInter/Fx.h"
+#include "JSystem/JAudio/JAI/JAInter/InitData.h"
 #include "JSystem/JAudio/JAS/JASHeap.h"
-#include "Dolphin/stl.h"
+#include "RevoSDK/stl.h"
+#include "string.h"
 #include "types.h"
 
 /*
@@ -54,13 +54,19 @@ JAInter::InitData::InitCallback JAInter::InitData::bnkInitCallback = initBnkList
  * @note Address: 0x800ADBA4
  * @note Size: 0x8
  */
-void JAInter::InitData::setWsInitCallback(void (*callback)(u32*)) { wsInitCallback = callback; }
+void JAInter::InitData::setWsInitCallback(void (*callback)(u32*))
+{
+	wsInitCallback = callback;
+}
 
 /**
  * @note Address: 0x800ADBAC
  * @note Size: 0x8
  */
-void JAInter::InitData::setBnkInitCallback(void (*callback)(u32*)) { bnkInitCallback = callback; }
+void JAInter::InitData::setBnkInitCallback(void (*callback)(u32*))
+{
+	bnkInitCallback = callback;
+}
 
 /**
  * @note Address: 0x800ADBB4

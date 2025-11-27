@@ -1,8 +1,8 @@
 #ifndef _JSYSTEM_JAS_JASDSP_H
 #define _JSYSTEM_JAS_JASDSP_H
 
+#include "RevoSDK/dsp.h"
 #include "types.h"
-#include "Dolphin/dsp.h"
 
 struct JASWaveInfo;
 

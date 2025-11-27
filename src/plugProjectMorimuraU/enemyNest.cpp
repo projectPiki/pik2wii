@@ -1,7 +1,7 @@
-#include "Dolphin/os.h"
 #include "Game/Entities/Nest.h"
 #include "Game/enemyInfo.h"
 #include "Game/shadowMgr.h"
+#include "RevoSDK/os.h"
 #include "Vector3.h"
 #include "types.h"
 

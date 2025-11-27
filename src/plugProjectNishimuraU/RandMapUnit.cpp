@@ -1,7 +1,7 @@
 #include "Game/Cave/RandMapUnit.h"
 #include "JSystem/JKernel/JKRDvdRipper.h"
 #include "PowerPC_EABI_Support/MSL_C/MSL_Common/arith.h"
-#include "Dolphin/rand.h"
+#include "RevoSDK/rand.h"
 #include "types.h"
 
 namespace Game {

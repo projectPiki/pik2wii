@@ -1,17 +1,17 @@
 #ifndef _JSYSTEM_J2D_J2DPANE_H
 #define _JSYSTEM_J2D_J2DPANE_H
 
-#include "Dolphin/gx.h"
-#include "Dolphin/mtx.h"
-#include "string.h"
 #include "JSystem/J2D/J2DAnm.h"
 #include "JSystem/J2D/J2DManage.h"
+#include "JSystem/J2D/J2DMaterial.h"
 #include "JSystem/J2D/J2DTypes.h"
 #include "JSystem/JGeometry.h"
 #include "JSystem/JSupport/JSUList.h"
 #include "JSystem/JSupport/JSUStream.h"
 #include "JSystem/JUtility/TColor.h"
-#include "JSystem/J2D/J2DMaterial.h"
+#include "RevoSDK/gx.h"
+#include "RevoSDK/mtx.h"
+#include "string.h"
 #include "types.h"
 
 struct J2DAnmBase;
@@ -158,7 +158,7 @@ struct J2DPane {
 			cullMode = GX_CULL_BACK;
 		}
 		setCullBack((GXCullMode)cullMode);
-	}                                                   // _1C (weak)
+	} // _1C (weak)
 	virtual void setCullBack(GXCullMode cullMode);      // _20
 	virtual void setAlpha(u8 alpha) { mAlpha = alpha; } // _24 (weak)
 	virtual bool setConnectParent(bool connectParent)
@@ -171,7 +171,7 @@ struct J2DPane {
 		if (mTree.getList()) {
 			makeMatrix(mOffset.x, mOffset.y);
 		}
-	}                                                                                             // _2C (weak)
+	} // _2C (weak)
 	virtual void update() { }                                                                     // _30 (weak)
 	virtual void drawSelf(f32, f32) { }                                                           // _34 (weak)
 	virtual void drawSelf(f32, f32, Mtx*) { }                                                     // _38 (weak)

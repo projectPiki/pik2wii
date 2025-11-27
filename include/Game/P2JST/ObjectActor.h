@@ -1,18 +1,18 @@
 #ifndef _GAME_P2JST_OBJECTACTOR_H
 #define _GAME_P2JST_OBJECTACTOR_H
 
-#include "Dolphin/mtx.h"
+#include "Game/Creature.h"
 #include "Game/P2JST/ObjectBase.h"
-#include "JSystem/JStage/TActor.h"
-#include "JSystem/J3D/J3DModel.h"
 #include "JSystem/J3D/J3DAnmTransform.h"
+#include "JSystem/J3D/J3DModel.h"
 #include "JSystem/JKernel/JKRArchive.h"
 #include "JSystem/JParticle/JPAEmitter.h"
-#include "SysShape/Model.h"
-#include "SysShape/Joint.h"
-#include "Game/Creature.h"
-#include "Vector3.h"
+#include "JSystem/JStage/TActor.h"
 #include "Matrixf.h"
+#include "RevoSDK/mtx.h"
+#include "SysShape/Joint.h"
+#include "SysShape/Model.h"
+#include "Vector3.h"
 
 namespace Game {
 struct Creature;

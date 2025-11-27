@@ -1,13 +1,13 @@
-#include "trig.h"
 #include "Game/generalEnemyMgr.h"
+#include "trig.h"
 
+#include "Game/Entities/ElecHiba.h"
 #include "Game/Entities/Pelplant.h"
 #include "Game/Entities/Qurione.h"
 #include "Game/Entities/Rock.h"
-#include "Game/Entities/ElecHiba.h"
-#include "Game/PelletBirthBuffer.h"
 #include "Game/MapMgr.h"
-#include "Dolphin/rand.h"
+#include "Game/PelletBirthBuffer.h"
+#include "RevoSDK/rand.h"
 
 namespace Game {
 
@@ -17,7 +17,10 @@ static const char unusedGenEnemyName[] = "genEnemy";
  * @note Address: 0x80124778
  * @note Size: 0x3C
  */
-static GenObject* makeObjectEnemy() { return new GenObjectEnemy; }
+static GenObject* makeObjectEnemy()
+{
+	return new GenObjectEnemy;
+}
 
 /**
  * @note Address: 0x801247B4
@@ -65,13 +68,17 @@ void GenObjectEnemy::initialise()
  * @note Address: 0x80124910
  * @note Size: 0x4
  */
-void GenObjectEnemy::ramSaveParameters(Stream&) { }
+void GenObjectEnemy::ramSaveParameters(Stream&)
+{
+}
 
 /**
  * @note Address: 0x80124914
  * @note Size: 0x4
  */
-void GenObjectEnemy::ramLoadParameters(Stream&) { }
+void GenObjectEnemy::ramLoadParameters(Stream&)
+{
+}
 
 /**
  * @note Address: 0x80124918
@@ -596,7 +603,10 @@ EnemyGeneratorBase* GenObjectEnemy::createEnemyGenerator()
  * @note Address: 0x801267D0
  * @note Size: 0x2C
  */
-J3DModelData* GenObjectEnemy::getShape() { return generalEnemyMgr->getJ3DModelData((int)mEnemyID); }
+J3DModelData* GenObjectEnemy::getShape()
+{
+	return generalEnemyMgr->getJ3DModelData((int)mEnemyID);
+}
 
 /**
  * @note Address: 0x801267FC

@@ -1,9 +1,9 @@
 #ifndef _EBI_CARDEREADER_H
 #define _EBI_CARDEREADER_H
 
-#include "types.h"
 #include "JSystem/JKernel/JKRDisposer.h"
-#include "Dolphin/os.h"
+#include "RevoSDK/os.h"
+#include "types.h"
 
 #define EREADER_GAMES 3
 

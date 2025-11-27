@@ -1,11 +1,11 @@
 #ifndef _PSSYSTEM_ENVSEBASE_H
 #define _PSSYSTEM_ENVSEBASE_H
 
-#include "Dolphin/os.h"
-#include "PSSystem/Reservator.h"
 #include "JSystem/JSupport/JSUList.h"
-#include "SoundID.h"
 #include "P2Macros.h"
+#include "PSSystem/Reservator.h"
+#include "RevoSDK/os.h"
+#include "SoundID.h"
 
 struct JAISound;
 

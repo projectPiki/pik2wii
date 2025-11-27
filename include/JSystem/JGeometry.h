@@ -1,9 +1,9 @@
 #ifndef _JSYSTEM_JGEOMETRY_H
 #define _JSYSTEM_JGEOMETRY_H
 
-#include "Dolphin/vec.h"
-#include "types.h"
+#include "RevoSDK/vec.h"
 #include "stl/float.h"
+#include "types.h"
 
 inline f32 fsqrt_step(f32 mag)
 {
@@ -644,8 +644,7 @@ typedef TBox3<f32> TBox3f;
 typedef TVec2<s16> TVec2s;
 
 template <typename T>
-struct TRotation3 {
-};
+struct TRotation3 { };
 
 template <typename T>
 // clang-format off

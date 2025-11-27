@@ -1,10 +1,6 @@
 #include "System.h"
 #include "ARAM.h"
 #include "Controller.h"
-#include "Dolphin/__start.h"
-#include "Dolphin/card.h"
-#include "Dolphin/os.h"
-#include "Dolphin/rand.h"
 #include "DvdStatus.h"
 #include "Game/Data.h"
 #include "Game/GameConfig.h"
@@ -29,6 +25,10 @@
 #include "Pikmin2ARAM.h"
 #include "ResetManager.h"
 #include "Resource.h"
+#include "RevoSDK/__start.h"
+#include "RevoSDK/card.h"
+#include "RevoSDK/os.h"
+#include "RevoSDK/rand.h"
 
 static GXRenderModeObj localNtsc608x448IntDfProg = { VI_TVMODE_NTSC_PROG,
 	                                                 608, // fbWidth

@@ -1,7 +1,7 @@
-#include "Dolphin/os.h"
 #include "JSystem/JKernel/JKRAram.h"
 #include "JSystem/JKernel/JKRDisposer.h"
 #include "JSystem/JSupport/JSUList.h"
+#include "RevoSDK/os.h"
 #include "types.h"
 
 JSUList<JKRAramBlock> JKRAramHeap::sAramList;

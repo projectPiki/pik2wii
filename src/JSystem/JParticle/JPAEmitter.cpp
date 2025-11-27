@@ -1,14 +1,16 @@
-#include "Dolphin/mtx.h"
-#include "JSystem/JParticle/JPABlock.h"
 #include "JSystem/JParticle/JPAEmitter.h"
+#include "JSystem/JParticle/JPABlock.h"
 #include "JSystem/JParticle/JPAResource.h"
 #include "JSystem/JParticle/JPAShape.h"
+#include "RevoSDK/mtx.h"
 
 /**
  * @note Address: 0x8008FC9C
  * @note Size: 0x48
  */
-JPAEmitterCallBack::~JPAEmitterCallBack() { }
+JPAEmitterCallBack::~JPAEmitterCallBack()
+{
+}
 
 /**
  * @note Address: 0x8008FCE4
@@ -200,7 +202,10 @@ void JPABaseEmitter::getEmitterAxisZ(JGeometry::TVec3<f32>*) const
  * @note Address: 0x80090528
  * @note Size: 0x10
  */
-int JPABaseEmitter::getCurrentCreateNumber() const { return mManager->mWorkData->mCreateNumber; }
+int JPABaseEmitter::getCurrentCreateNumber() const
+{
+	return mManager->mWorkData->mCreateNumber;
+}
 
 /**
  * @note Address: N/A

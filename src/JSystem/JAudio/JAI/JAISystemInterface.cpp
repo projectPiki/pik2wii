@@ -1,9 +1,9 @@
-#include "Dolphin/dvd.h"
 #include "JSystem/JAudio/JAI/JAIGlobalParameter.h"
 #include "JSystem/JAudio/JAI/JAISequence.h"
 #include "JSystem/JAudio/JAI/JAInter.h"
 #include "JSystem/JAudio/JAS/JASPortCmd.h"
 #include "JSystem/JAudio/JAS/JASTrack.h"
+#include "RevoSDK/dvd.h"
 #include "types.h"
 
 JASPortCmd JAInter::SystemInterface::systemPortCmd;

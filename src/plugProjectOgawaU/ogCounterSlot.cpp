@@ -1,9 +1,9 @@
-#include "og/Screen/callbackNodes.h"
+#include "RevoSDK/rand.h"
 #include "System.h"
-#include "og/Sound.h"
-#include "og/Screen/ogScreen.h"
-#include "Dolphin/rand.h"
 #include "math.h"
+#include "og/Screen/callbackNodes.h"
+#include "og/Screen/ogScreen.h"
+#include "og/Sound.h"
 #include "trig.h"
 
 namespace og {
@@ -659,12 +659,17 @@ CallBack_CounterSlot* setCallBack_CounterSlot(P2DScreen::Mgr* mgr, u64 tag, u32*
  * @note Address: 0x8032B27C
  * @note Size: 0x90
  */
-CallBack_CounterSlot::~CallBack_CounterSlot() { }
+CallBack_CounterSlot::~CallBack_CounterSlot()
+{
+}
 
 /**
  * @note Address: 0x8032B30C
  * @note Size: 0x34
  */
-void CallBack_CounterSlot::setValue() { setValue(false, false); }
+void CallBack_CounterSlot::setValue()
+{
+	setValue(false, false);
+}
 } // namespace Screen
 } // namespace og

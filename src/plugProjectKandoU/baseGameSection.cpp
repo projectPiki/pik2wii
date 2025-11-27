@@ -20,12 +20,12 @@
 #include "Game/generalEnemyMgr.h"
 #include "Game/rumble.h"
 
-#include "Dolphin/rand.h"
 #include "JSystem/J2D/J2DPrint.h"
 #include "JSystem/JFramework/JFWDisplay.h"
 #include "LifeGaugeMgr.h"
 #include "PSGame/Global.h"
 #include "PikiAI.h"
+#include "RevoSDK/rand.h"
 #include "Screen/Game2DMgr.h"
 #include "Sys/DrawBuffers.h"
 #include "TParticle2dMgr.h"

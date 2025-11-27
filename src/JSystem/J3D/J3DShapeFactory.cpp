@@ -1,9 +1,9 @@
 #include "JSystem/J3D/J3DShapeFactory.h"
-#include "Dolphin/gx.h"
 #include "JSystem/J3D/J3DShape.h"
-#include "JSystem/JSupport/JSU.h"
 #include "JSystem/JKernel/JKRHeap.h"
-#include "Dolphin/os.h"
+#include "JSystem/JSupport/JSU.h"
+#include "RevoSDK/gx.h"
+#include "RevoSDK/os.h"
 #include "types.h"
 
 /**
@@ -47,7 +47,10 @@ J3DShape* J3DShapeFactory::create(int id, u32 flags, GXVtxDescList* vtxDescList)
 	return shape;
 }
 
-static inline u32 getMdlDataFlag_MtxLoadType(u32 flag) { return flag & J3DMLF_UseImmediateMtx; }
+static inline u32 getMdlDataFlag_MtxLoadType(u32 flag)
+{
+	return flag & J3DMLF_UseImmediateMtx;
+}
 
 /**
  * @note Address: 0x80071F74
@@ -144,7 +147,10 @@ int J3DShapeFactory::calcSize(int shapeNo, u32 flag)
  * @note Address: 0x80072488
  * @note Size: 0x10
  */
-int J3DShapeFactory::calcSizeVcdVatCmdBuffer(u32 count) { return ALIGN_NEXT(count * J3DShape::kVcdVatDLSize, 0x20); }
+int J3DShapeFactory::calcSizeVcdVatCmdBuffer(u32 count)
+{
+	return ALIGN_NEXT(count * J3DShape::kVcdVatDLSize, 0x20);
+}
 
 /**
  * @note Address: 0x80072498

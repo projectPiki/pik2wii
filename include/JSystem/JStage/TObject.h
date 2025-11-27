@@ -1,7 +1,7 @@
 #ifndef _JSTAGE_TOBJECT_H
 #define _JSTAGE_TOBJECT_H
-#include "Dolphin/gx.h"
 #include "JSystem/JStudio/TObject.h"
+#include "RevoSDK/gx.h"
 #include "types.h"
 
 namespace JStage {

@@ -1,7 +1,7 @@
+#include "Game/VsGame.h"
 #include "Game/enemyInfo.h"
 #include "Game/generalEnemyMgr.h"
-#include "Game/VsGame.h"
-#include "Dolphin/rand.h"
+#include "RevoSDK/rand.h"
 
 namespace Game {
 namespace VsGame {
@@ -10,7 +10,10 @@ namespace VsGame {
  * @note Address: 0x802352F0
  * @note Size: 0x44
  */
-TekiMgr::TekiMgr() { mNodeCount = 0; }
+TekiMgr::TekiMgr()
+{
+	mNodeCount = 0;
+}
 
 /**
  * @note Address: 0x80235394
@@ -31,7 +34,10 @@ void TekiMgr::entry(EnemyTypeID::EEnemyTypeID id, int count)
  * @note Address: N/A
  * @note Size: 0x20
  */
-TekiNode* TekiMgr::getNode(int idx) { return static_cast<TekiNode*>(mNode.getChildAt(idx)); }
+TekiNode* TekiMgr::getNode(int idx)
+{
+	return static_cast<TekiNode*>(mNode.getChildAt(idx));
+}
 
 /**
  * @note Address: N/A

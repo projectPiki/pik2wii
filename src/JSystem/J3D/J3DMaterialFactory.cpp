@@ -1,5 +1,4 @@
 #include "JSystem/J3D/J3DMaterialFactory.h"
-#include "Dolphin/gx.h"
 #include "JSystem/J3D/J3DColorBlock.h"
 #include "JSystem/J3D/J3DDisplayListObj.h"
 #include "JSystem/J3D/J3DGXColor.h"
@@ -11,6 +10,7 @@
 #include "JSystem/J3D/J3DTexGenBlock.h"
 #include "JSystem/J3D/J3DTypes.h"
 #include "JSystem/JSupport/JSU.h"
+#include "RevoSDK/gx.h"
 
 /**
  * @note Address: 0x8006C3A4

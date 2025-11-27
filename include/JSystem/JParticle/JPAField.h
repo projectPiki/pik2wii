@@ -1,10 +1,10 @@
 #ifndef _JSYSTEM_JPA_JPAFIELD_H
 #define _JSYSTEM_JPA_JPAFIELD_H
 
-#include "Dolphin/mtx.h"
 #include "JSystem/JGeometry.h"
 #include "JSystem/JParticle/JPABlock.h"
 #include "JSystem/JParticle/JPAResource.h"
+#include "RevoSDK/mtx.h"
 
 struct JPAFieldBase {
 	virtual ~JPAFieldBase() { }                                                   // _08 (weak)

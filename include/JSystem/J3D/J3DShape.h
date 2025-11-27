@@ -1,10 +1,10 @@
 #ifndef _JSYSTEM_J3D_J3DSHAPE_H
 #define _JSYSTEM_J3D_J3DSHAPE_H
 
-#include "Dolphin/gx.h"
-#include "Dolphin/mtx.h"
-#include "JSystem/JGeometry.h"
 #include "JSystem/J3D/J3DMaterial.h"
+#include "JSystem/JGeometry.h"
+#include "RevoSDK/gx.h"
+#include "RevoSDK/mtx.h"
 #include "types.h"
 
 struct J3DDrawMtxData;

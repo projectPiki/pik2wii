@@ -1,5 +1,4 @@
 #include "Game/PikiMgr.h"
-#include "Dolphin/rand.h"
 #include "Game/DeathMgr.h"
 #include "Game/Entities/ItemOnyon.h"
 #include "Game/Entities/ItemPikihead.h"
@@ -11,6 +10,7 @@
 #include "JSystem/JKernel/JKRDvdRipper.h"
 #include "PSSystem/PSSystemIF.h"
 #include "PikiAI.h"
+#include "RevoSDK/rand.h"
 #include "SysShape/ModelMgr.h"
 #include "nans.h"
 

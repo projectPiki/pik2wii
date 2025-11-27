@@ -1,9 +1,9 @@
 #ifndef _PSMATH_H
 #define _PSMATH_H
 
-#include "types.h"
 #include "P2Macros.h"
-#include "Dolphin/vec.h"
+#include "RevoSDK/vec.h"
+#include "types.h"
 
 namespace PSMath {
 

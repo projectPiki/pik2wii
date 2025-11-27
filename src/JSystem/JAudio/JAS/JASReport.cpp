@@ -1,6 +1,6 @@
-#include "JSystem/JKernel/JKRHeap.h"
 #include "JSystem/JAudio/JAS/JASMutexLock.h"
-#include "Dolphin/os.h"
+#include "JSystem/JKernel/JKRHeap.h"
+#include "RevoSDK/os.h"
 #include "stdarg.h"
 #include "stdio.h"
 

@@ -3,7 +3,7 @@
 
 #include "CNode.h"
 #include "Color4.h"
-#include "Dolphin/gx.h"
+#include "RevoSDK/gx.h"
 
 struct Graphics;
 

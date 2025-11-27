@@ -1,6 +1,6 @@
-#include "types.h"
 #include "JSystem/JKernel/JKRFile.h"
-#include "Dolphin/vi.h"
+#include "RevoSDK/vi.h"
+#include "types.h"
 
 /**
  * @note Address: 0x80022E1C

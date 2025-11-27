@@ -1,12 +1,12 @@
-#include "og/newScreen/Floor.h"
 #include "JSystem/J3D/J3DSys.h"
-#include "og/newScreen/TitleMsg.h"
+#include "RevoSDK/rand.h"
+#include "System.h"
+#include "TParticle2dMgr.h"
 #include "og/Screen/AlphaMgr.h"
 #include "og/Screen/anime.h"
 #include "og/Screen/callbackNodes.h"
-#include "System.h"
-#include "TParticle2dMgr.h"
-#include "Dolphin/rand.h"
+#include "og/newScreen/Floor.h"
+#include "og/newScreen/TitleMsg.h"
 #include "trig.h"
 
 namespace og {
@@ -57,7 +57,9 @@ ObjFloor::ObjFloor(const char* name)
  * @note Address: 0x8031A4B0
  * @note Size: 0xAC
  */
-ObjFloor::~ObjFloor() { }
+ObjFloor::~ObjFloor()
+{
+}
 
 /**
  * @note Address: N/A
@@ -570,7 +572,10 @@ bool newScreen::ObjFloor::commonUpdate()
  * @note Address: 0x8031B820
  * @note Size: 0x20
  */
-bool newScreen::ObjFloor::doUpdate() { return commonUpdate(); }
+bool newScreen::ObjFloor::doUpdate()
+{
+	return commonUpdate();
+}
 
 /**
  * @note Address: 0x8031B840
@@ -629,7 +634,9 @@ bool newScreen::ObjFloor::doEnd(::Screen::EndSceneArg const* arg)
  * @note Address: 0x8031BA20
  * @note Size: 0x4
  */
-void ObjFloor::doUpdateFadeinFinish() { }
+void ObjFloor::doUpdateFadeinFinish()
+{
+}
 
 /**
  * @note Address: 0x8031BA24
@@ -645,7 +652,9 @@ void ObjFloor::doUpdateFinish()
  * @note Address: 0x8031BA54
  * @note Size: 0x4
  */
-void ObjFloor::doUpdateFadeoutFinish() { }
+void ObjFloor::doUpdateFadeoutFinish()
+{
+}
 
 /**
  * @note Address: 0x8031BA58

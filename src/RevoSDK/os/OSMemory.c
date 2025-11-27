@@ -1,5 +1,5 @@
-#include "Dolphin/os.h"
-#include "Dolphin/hw_regs.h"
+#include "RevoSDK/hw_regs.h"
+#include "RevoSDK/os.h"
 
 // forward declarations.
 static BOOL OnReset(BOOL final);
@@ -8,20 +8,26 @@ static BOOL OnReset(BOOL final);
 static OSResetFunctionInfo ResetFunctionInfo = { OnReset, OS_RESET_PRIO_MEM };
 
 // useful macros.
-#define TRUNC(n, a) (((u32)(n)) & ~((a)-1))
-#define ROUND(n, a) (((u32)(n) + (a)-1) & ~((a)-1))
+#define TRUNC(n, a) (((u32)(n)) & ~((a) - 1))
+#define ROUND(n, a) (((u32)(n) + (a) - 1) & ~((a) - 1))
 
 /**
  * @note Address: N/A
  * @note Size: 0xC
  */
-static u32 OSGetPhysicalMemSize() { return *(u32*)(OSPhysicalToCached(0x28)); }
+static u32 OSGetPhysicalMemSize()
+{
+	return *(u32*)(OSPhysicalToCached(0x28));
+}
 
 /**
  * @note Address: N/A
  * @note Size: 0xC
  */
-static u32 OSGetConsoleSimulatedMemSize() { return *(u32*)(OSPhysicalToCached(0xF0)); }
+static u32 OSGetConsoleSimulatedMemSize()
+{
+	return *(u32*)(OSPhysicalToCached(0xF0));
+}
 
 /**
  * @note Address: 0x800EF794

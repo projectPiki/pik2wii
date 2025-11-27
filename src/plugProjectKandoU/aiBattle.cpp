@@ -1,15 +1,14 @@
-#include "PikiAI.h"
-#include "Game/Piki.h"
-#include "efx/TPk.h"
-#include "efx/PikiDamage.h"
-#include "PikiAI.h"
 #include "Game/EnemyBase.h"
+#include "Game/EnemyFunc.h"
+#include "Game/Footmark.h"
+#include "Game/Piki.h"
+#include "Game/PikiState.h"
 #include "Game/enemyInfo.h"
 #include "Game/gameStat.h"
-#include "Game/PikiState.h"
-#include "Game/Footmark.h"
-#include "Game/EnemyFunc.h"
-#include "Dolphin/rand.h"
+#include "PikiAI.h"
+#include "RevoSDK/rand.h"
+#include "efx/PikiDamage.h"
+#include "efx/TPk.h"
 #include "utilityU.h"
 
 namespace PikiAI {
@@ -180,13 +179,18 @@ int ActBattle::exec()
  * @note Address: 0x8022F19C
  * @note Size: 0xC
  */
-void ActBattle::cleanup() { mOther = nullptr; }
+void ActBattle::cleanup()
+{
+	mOther = nullptr;
+}
 
 /**
  * @note Address: 0x8022F1A8
  * @note Size: 0x4
  */
-void ActBattle::collisionCallback(Game::Piki*, Game::CollEvent&) { }
+void ActBattle::collisionCallback(Game::Piki*, Game::CollEvent&)
+{
+}
 
 /**
  * @note Address: 0x8022F1AC

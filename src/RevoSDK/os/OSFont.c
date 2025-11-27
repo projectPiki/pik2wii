@@ -1,7 +1,7 @@
-#include "Dolphin/gx.h"
-#include "Dolphin/hw_regs.h"
-#include "Dolphin/os.h"
-#include "Dolphin/vi.h"
+#include "RevoSDK/gx.h"
+#include "RevoSDK/hw_regs.h"
+#include "RevoSDK/os.h"
+#include "RevoSDK/vi.h"
 
 // outside functions
 BOOL __OSReadROM(void* buffer, s32 length, s32 offset);

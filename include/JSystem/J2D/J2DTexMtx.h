@@ -1,9 +1,9 @@
 #ifndef _JSYSTEM_J2D_J2DTEXMTX_H
 #define _JSYSTEM_J2D_J2DTEXMTX_H
 
-#include "Dolphin/mtx.h"
-#include "Dolphin/vec.h"
 #include "JSystem/J2D/J2DTypes.h"
+#include "RevoSDK/mtx.h"
+#include "RevoSDK/vec.h"
 #include "types.h"
 
 struct J2DTexMtxInfo {

@@ -1,6 +1,6 @@
 #include "JSystem/JKernel/JKRAram.h"
 #include "JSystem/JSupport/JSUStream.h"
-#include "Dolphin/os.h"
+#include "RevoSDK/os.h"
 #include "types.h"
 
 void* JKRAramStream::sMessageBuffer[4]      = { 0 }; // OSMessage
@@ -39,7 +39,9 @@ JKRAramStream::JKRAramStream(s32 prio)
  * @note Address: 0x80019FE0
  * @note Size: 0x60
  */
-JKRAramStream::~JKRAramStream() { }
+JKRAramStream::~JKRAramStream()
+{
+}
 
 /**
  * @note Address: 0x8001A040
@@ -68,7 +70,10 @@ void* JKRAramStream::run()
  * @note Address: 0x8001A0B0
  * @note Size: 0x8
  */
-u32 JKRAramStream::readFromAram() { return 1; } // probably a define evaluating to 1
+u32 JKRAramStream::readFromAram()
+{
+	return 1;
+} // probably a define evaluating to 1
 
 /**
  * @note Address: 0x8001A0B8

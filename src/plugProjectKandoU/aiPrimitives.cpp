@@ -1,20 +1,20 @@
-#include "Dolphin/rand.h"
+#include "Game/Entities/ItemOnyon.h"
 #include "Game/Interaction.h"
+#include "Game/MapMgr.h"
+#include "Game/PikiParms.h"
+#include "Game/Stickers.h"
+#include "Game/mapParts.h"
+#include "Game/pathfinder.h"
+#include "Game/pelletMgr.h"
+#include "Game/routeMgr.h"
+#include "P2Macros.h"
+#include "PikiAI.h"
+#include "RevoSDK/rand.h"
+#include "Vector3.h"
 #include "efx/PikiDamage.h"
 #include "efx/TPk.h"
-#include "types.h"
-#include "P2Macros.h"
-#include "Vector3.h"
-#include "PikiAI.h"
-#include "Game/pelletMgr.h"
-#include "Game/Entities/ItemOnyon.h"
-#include "Game/pathfinder.h"
-#include "Game/routeMgr.h"
-#include "Game/MapMgr.h"
-#include "Game/mapParts.h"
-#include "Game/Stickers.h"
-#include "Game/PikiParms.h"
 #include "nans.h"
+#include "types.h"
 
 static const int unusedAiPrimArray[] = { 0, 0, 0 };
 static const char unusedAiPrimName[] = "aiPrimitives";
@@ -64,7 +64,9 @@ int ActGotoPos::exec()
  * @note Address: 0x801974AC
  * @note Size: 0x4
  */
-void ActGotoPos::cleanup() { }
+void ActGotoPos::cleanup()
+{
+}
 
 /**
  * @note Address: 0x801974B0
@@ -414,7 +416,10 @@ lbl_801978EC:
  * @note Address: 0x80197918
  * @note Size: 0x34
  */
-void ActApproachPos::cleanup() { mParent->setMoveRotation(true); }
+void ActApproachPos::cleanup()
+{
+	mParent->setMoveRotation(true);
+}
 
 /**
  * @note Address: 0x8019794C
@@ -1472,7 +1477,9 @@ lbl_80198580:
  * @note Address: 0x801985D4
  * @note Size: 0x4
  */
-void ActGotoSlot::cleanup() { }
+void ActGotoSlot::cleanup()
+{
+}
 
 /**
  * @note Address: 0x801985D8
@@ -1865,7 +1872,10 @@ int ActPathMove::execPathfinding()
 		// debug
 		Game::PathNode* startNode = mStartNode;
 		s16 endIdx                = -1;
-		FOREACH_NODE(Game::PathNode, startNode, node) { endIdx = node->mWpIndex; }
+		FOREACH_NODE(Game::PathNode, startNode, node)
+		{
+			endIdx = node->mWpIndex;
+		}
 		char buf[256];
 		sprintf(buf, "%d->%d->...->%d", startNode->mWpIndex, (startNode->mNext) ? (char*)startNode->mNext->mWpIndex : "...", endIdx);
 		return ACTEXEC_Continue;
@@ -2171,7 +2181,10 @@ int ActPathMove::execMoveGoal()
 			// make all pikis carrying pellet movie extras
 			Game::Stickers stickers(mPellet);
 			Iterator<Game::Creature> iter(&stickers);
-			CI_LOOP(iter) { (*iter)->movie_begin(false); }
+			CI_LOOP(iter)
+			{
+				(*iter)->movie_begin(false);
+			}
 		}
 
 		// stop carrying the pellet
@@ -4937,7 +4950,10 @@ void ActStickAttack::onKeyEvent(SysShape::KeyEvent const& keyEvent)
  * @note Address: 0x8019C758
  * @note Size: 0x24
  */
-void ActStickAttack::cleanup() { mParent->endStick(); }
+void ActStickAttack::cleanup()
+{
+	mParent->endStick();
+}
 
 /**
  * @note Address: 0x8019C77C
@@ -4998,7 +5014,9 @@ int ActClimb::exec()
  * @note Address: 0x8019C99C
  * @note Size: 0x4
  */
-void ActClimb::cleanup() { }
+void ActClimb::cleanup()
+{
+}
 
 /**
  * @note Address: 0x8019C9A0
@@ -5051,7 +5069,9 @@ int ActGather::exec()
  * @note Address: 0x8019CC10
  * @note Size: 0x4
  */
-void ActGather::cleanup() { }
+void ActGather::cleanup()
+{
+}
 
 /**
  * @note Address: 0x8019CC14
@@ -5093,6 +5113,8 @@ int ActFollowVectorField::exec()
  * @note Address: 0x8019CD30
  * @note Size: 0x4
  */
-void ActFollowVectorField::cleanup() { }
+void ActFollowVectorField::cleanup()
+{
+}
 
 } // namespace PikiAI

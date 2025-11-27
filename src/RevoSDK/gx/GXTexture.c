@@ -1,4 +1,4 @@
-#include "Dolphin/gx.h"
+#include "RevoSDK/gx.h"
 
 u8 GXTexMode0Ids[8]  = { 0x80, 0x81, 0x82, 0x83, 0xA0, 0xA1, 0xA2, 0xA3 };
 u8 GXTexMode1Ids[8]  = { 0x84, 0x85, 0x86, 0x87, 0xA4, 0xA5, 0xA6, 0xA7 };
@@ -159,7 +159,7 @@ void GXInitTexObj(GXTexObj* obj, void* imagePtr, u16 width, u16 height, GXTexFmt
 
 		maxDimSize = width > height ? 31 - __cntlzw(width) : 31 - __cntlzw(height);
 
-		GX_SET_REG(internal->mode1, (maxDimSize)*16.f, 16, 23);
+		GX_SET_REG(internal->mode1, (maxDimSize) * 16.f, 16, 23);
 	} else {
 		GX_SET_REG(internal->mode0, 4, 24, 26);
 	}

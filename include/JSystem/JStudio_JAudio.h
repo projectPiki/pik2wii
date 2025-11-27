@@ -1,12 +1,12 @@
 #ifndef _JSTUDIO_JAUDIO_H
 #define _JSTUDIO_JAUDIO_H
 
-#include "Dolphin/gx.h"
-#include "Dolphin/vec.h"
-#include "JSystem/JStudio/data.h"
+#include "JSystem/JStage/TSystem.h"
 #include "JSystem/JStudio/TAdaptor.h"
 #include "JSystem/JStudio/TCreateObject.h"
-#include "JSystem/JStage/TSystem.h"
+#include "JSystem/JStudio/data.h"
+#include "RevoSDK/gx.h"
+#include "RevoSDK/vec.h"
 
 struct JAIBasic;
 struct JAISound;

@@ -1,10 +1,10 @@
-#include "ebi/title/TTitle.h"
-#include "JSystem/J3D/J3DDrawBuffer.h"
-#include "Game/GameConfig.h"
-#include "Dolphin/rand.h"
 #include "Controller.h"
-#include "trig.h"
+#include "Game/GameConfig.h"
+#include "JSystem/J3D/J3DDrawBuffer.h"
+#include "RevoSDK/rand.h"
+#include "ebi/title/TTitle.h"
 #include "nans.h"
+#include "trig.h"
 
 static const char idk[]  = "\0\0\0\0\0\0\0\0\0";
 static const char name[] = "ebiP2Title";
@@ -72,7 +72,10 @@ TTitleMgr::~TTitleMgr()
  * @note Address: 0x803BE774
  * @note Size: 0x24
  */
-void TTitleMgr::globalInstance() { titleMgr = Instance(); }
+void TTitleMgr::globalInstance()
+{
+	titleMgr = Instance();
+}
 
 /**
  * @note Address: 0x803BE798

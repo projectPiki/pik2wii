@@ -1,13 +1,13 @@
 #ifndef _JSYSTEM_JKR_ARAM_H
 #define _JSYSTEM_JKR_ARAM_H
 
-#include "Dolphin/ar.h"
-#include "Dolphin/os.h"
 #include "JSystem/JKernel/JKRArchive.h"
-#include "JSystem/JKernel/JKRThread.h"
 #include "JSystem/JKernel/JKRDvdRipper.h"
+#include "JSystem/JKernel/JKRThread.h"
 #include "JSystem/JSupport/JSUList.h"
 #include "JSystem/JUtility/JUTException.h"
+#include "RevoSDK/ar.h"
+#include "RevoSDK/os.h"
 #include "types.h"
 
 struct JKRDvdFile;
@@ -275,14 +275,20 @@ struct JKRAramPiece {
 
 int JKRDecompressFromAramToMainRam(u32 src, void* dst, u32 srcLength, u32 dstLength, u32 offset, u32* resourceSize);
 
-inline JKRAramStream* JKRCreateAramStreamManager(s32 priority) { return JKRAramStream::create(priority); }
+inline JKRAramStream* JKRCreateAramStreamManager(s32 priority)
+{
+	return JKRAramStream::create(priority);
+}
 
 inline JKRAramBlock* JKRAllocFromAram(u32 size, JKRAramHeap::EAllocMode allocMode)
 {
 	return JKRAram::getAramHeap()->alloc(size, allocMode);
 }
 
-inline void JKRFreeToAram(JKRAramBlock* block) { JKRAram::getAramHeap()->free(block); }
+inline void JKRFreeToAram(JKRAramBlock* block)
+{
+	JKRAram::getAramHeap()->free(block);
+}
 
 inline JKRAramBlock* JKRMainRamToAram(u8* buf, u32 bufSize, u32 alignedSize, JKRExpandSwitch expandSwitch, u32 fileSize, JKRHeap* heap,
                                       int id, u32* pSize)

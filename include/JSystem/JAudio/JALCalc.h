@@ -1,8 +1,8 @@
 #ifndef _JSYSTEM_JAL_JALCALC_H
 #define _JSYSTEM_JAL_JALCALC_H
 
-#include "Dolphin/vec.h"
 #include "JSystem/JMath.h"
+#include "RevoSDK/vec.h"
 #include "types.h"
 
 namespace JALCalc {

@@ -1,30 +1,30 @@
-#include "Game/IllustratedBook.h"
-#include "Game/SingleGame.h"
-#include "Game/Entities/PelletOtakara.h"
+#include "Game/AIConstants.h"
+#include "Game/CameraMgr.h"
+#include "Game/DynParticle.h"
 #include "Game/Entities/PelletItem.h"
 #include "Game/Entities/PelletNumber.h"
+#include "Game/Entities/PelletOtakara.h"
 #include "Game/Entities/ShijimiChou.h"
-#include "Game/AIConstants.h"
+#include "Game/Farm.h"
+#include "Game/GameLight.h"
+#include "Game/IllustratedBook.h"
 #include "Game/MapMgr.h"
+#include "Game/Navi.h"
 #include "Game/PikiMgr.h"
 #include "Game/PikiState.h"
-#include "Game/DynParticle.h"
-#include "Game/Farm.h"
-#include "Game/rumble.h"
+#include "Game/SingleGame.h"
 #include "Game/generalEnemyMgr.h"
-#include "Game/GameLight.h"
-#include "Game/CameraMgr.h"
-#include "Game/Navi.h"
+#include "Game/rumble.h"
 #include "Morimura/Zukan.h"
-#include "Dolphin/rand.h"
-#include "Screen/Game2DMgr.h"
-#include "TParticle2dMgr.h"
-#include "PSSystem/PSGame.h"
-#include "PSM/ObjMgr.h"
-#include "PSSystem/PSSystemIF.h"
 #include "PSGame/SceneInfo.h"
+#include "PSM/ObjMgr.h"
 #include "PSM/Scene.h"
+#include "PSSystem/PSGame.h"
+#include "PSSystem/PSSystemIF.h"
+#include "RevoSDK/rand.h"
+#include "Screen/Game2DMgr.h"
 #include "Splitter.h"
+#include "TParticle2dMgr.h"
 #include "nans.h"
 
 int sParentHeapFreeSize;
@@ -6096,7 +6096,10 @@ void ZukanState::clearHeapB_teki()
 		int j = 0;
 		Piki* buffer2[200];
 		Iterator<Piki> iterator2(pikiMgr);
-		CI_LOOP(iterator2) { buffer2[j++] = *iterator2; }
+		CI_LOOP(iterator2)
+		{
+			buffer2[j++] = *iterator2;
+		}
 
 		PikiKillArg arg(CKILL_DontCountAsDeath | CKILL_Unk17);
 		for (int k = 0; k < j; k++) {

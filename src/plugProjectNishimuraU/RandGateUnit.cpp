@@ -1,5 +1,5 @@
-#include "Dolphin/rand.h"
 #include "Game/Cave/RandMapMgr.h"
+#include "RevoSDK/rand.h"
 
 namespace Game {
 namespace Cave {

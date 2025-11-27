@@ -1,9 +1,9 @@
-#include "types.h"
+#include "Game/Cave/Info.h"
+#include "Game/Cave/Node.h"
 #include "Game/Cave/RandMapMgr.h"
 #include "Game/Cave/RandMapUnit.h"
-#include "Game/Cave/Node.h"
-#include "Game/Cave/Info.h"
-#include "Dolphin/rand.h"
+#include "RevoSDK/rand.h"
+#include "types.h"
 
 namespace Game {
 namespace Cave {

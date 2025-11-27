@@ -1,14 +1,14 @@
-#include "Dolphin/os.h"
-#include "JSystem/JMath.h"
 #include "JSystem/JKernel/JKRAram.h"
 #include "JSystem/JKernel/JKRArchive.h"
 #include "JSystem/JKernel/JKRDecomp.h"
 #include "JSystem/JKernel/JKRDvdAramRipper.h"
 #include "JSystem/JKernel/JKRDvdRipper.h"
-#include "types.h"
-#include "stl/stdlib.h"
+#include "JSystem/JMath.h"
+#include "RevoSDK/os.h"
 #include "stl/limits.h"
 #include "stl/mem.h"
+#include "stl/stdlib.h"
+#include "types.h"
 
 /**
  * @note Address: N/A

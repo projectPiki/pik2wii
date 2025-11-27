@@ -1,10 +1,10 @@
 #ifndef _JSYSTEM_JAS_JASHEAP_H
 #define _JSYSTEM_JAS_JASHEAP_H
 
-#include "Dolphin/os.h"
 #include "JSystem/JAudio/JAS/JASDisposer.h"
 #include "JSystem/JKernel/JKRHeap.h"
 #include "JSystem/JSupport/JSUList.h"
+#include "RevoSDK/os.h"
 #include "types.h"
 
 struct JASHeap {

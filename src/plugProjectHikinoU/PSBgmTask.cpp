@@ -1,8 +1,8 @@
-#include "types.h"
-#include "Dolphin/os.h"
-#include "PSSystem/BankRandPrm.h"
 #include "PSSystem/PSBgmTask.h"
 #include "JSystem/JUtility/JUTException.h"
+#include "PSSystem/BankRandPrm.h"
+#include "RevoSDK/os.h"
+#include "types.h"
 
 namespace PSSystem {
 

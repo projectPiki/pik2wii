@@ -1,9 +1,9 @@
 #include "Game/EnemyBase.h"
-#include "types.h"
-#include "PikiAI.h"
 #include "Game/Piki.h"
 #include "Game/PikiState.h"
-#include "Dolphin/rand.h"
+#include "PikiAI.h"
+#include "RevoSDK/rand.h"
+#include "types.h"
 #include "utilityU.h"
 
 #define PIKIATTACK_JUMP_CHANCE (0.2f)

@@ -1,7 +1,7 @@
-#include "types.h"
-#include "PowerPC_EABI_Support/MetroTRK/trk.h"
-#include "Dolphin/AmcExi2Stubs.h"
 #include "PowerPC_EABI_Support/MetroTRK/custconn/CircleBuffer.h"
+#include "PowerPC_EABI_Support/MetroTRK/trk.h"
+#include "RevoSDK/AmcExi2Stubs.h"
+#include "types.h"
 
 #define DDH_BUF_SIZE (0x800)
 
@@ -26,7 +26,10 @@ int ddh_cc_initialize(void* inputPendingPtrRef, AmcEXICallback monitorCallback)
  * @note Address: 0x800C0F04
  * @note Size: 0x8
  */
-int ddh_cc_shutdown() { return 0; }
+int ddh_cc_shutdown()
+{
+	return 0;
+}
 
 /**
  * @note Address: 0x800C0EE0
@@ -46,7 +49,10 @@ int ddh_cc_open()
  * @note Address: 0x800C0ED8
  * @note Size: 0x8
  */
-int ddh_cc_close() { return 0; }
+int ddh_cc_close()
+{
+	return 0;
+}
 
 /**
  * @note Address: 0x800C0DEC

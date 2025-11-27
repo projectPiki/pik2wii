@@ -1,32 +1,32 @@
+#include "Game/Cave/RandMapMgr.h"
+#include "Game/DeathMgr.h"
 #include "Game/Entities/BlackMan.h"
-#include "Game/GameSystem.h"
 #include "Game/Entities/ItemBigFountain.h"
 #include "Game/Entities/ItemHole.h"
+#include "Game/Entities/ItemOnyon.h"
+#include "Game/Entities/ItemPikihead.h"
+#include "Game/Entities/PelletItem.h"
+#include "Game/Entities/PelletOtakara.h"
+#include "Game/GameSystem.h"
 #include "Game/MapMgr.h"
 #include "Game/MoviePlayer.h"
 #include "Game/Navi.h"
-#include "Game/mapParts.h"
-#include "Game/SingleGame.h"
-#include "PSM/Global.h"
-#include "Screen/Game2DMgr.h"
-#include "og/Screen/DispMember.h"
-#include "Game/Entities/ItemOnyon.h"
 #include "Game/PikiMgr.h"
-#include "PikiAI.h"
-#include "Game/Cave/RandMapMgr.h"
-#include "Game/DeathMgr.h"
-#include "Radar.h"
-#include "TParticle2dMgr.h"
-#include "utilityU.h"
 #include "Game/PikiState.h"
-#include "Dolphin/rand.h"
-#include "Game/Entities/PelletOtakara.h"
-#include "Game/Entities/PelletItem.h"
-#include "PSSystem/PSGame.h"
+#include "Game/SingleGame.h"
+#include "Game/mapParts.h"
+#include "PSM/Global.h"
 #include "PSM/Scene.h"
+#include "PSSystem/PSGame.h"
 #include "PSSystem/PSMainSide_Scene.h"
-#include "Game/Entities/ItemPikihead.h"
+#include "PikiAI.h"
+#include "Radar.h"
+#include "RevoSDK/rand.h"
+#include "Screen/Game2DMgr.h"
+#include "TParticle2dMgr.h"
 #include "nans.h"
+#include "og/Screen/DispMember.h"
+#include "utilityU.h"
 
 static const u32 padding[]    = { 0, 0, 0 };
 static const char className[] = "SingleGS_Game";
@@ -124,7 +124,10 @@ void CaveState::gameStart(SingleGameSection* game)
  * @note Address: 0x80217A64
  * @note Size: 0xC
  */
-void CaveState::on_section_fadeout(SingleGameSection*) { mFadeout = true; }
+void CaveState::on_section_fadeout(SingleGameSection*)
+{
+	mFadeout = true;
+}
 
 /**
  * @note Address: 0x80217A70

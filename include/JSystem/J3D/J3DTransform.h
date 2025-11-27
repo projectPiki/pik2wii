@@ -1,8 +1,8 @@
 #ifndef _JSYSTEM_J3D_J3DTRANSFORM_H
 #define _JSYSTEM_J3D_J3DTRANSFORM_H
 
-#include "Dolphin/mtx.h"
 #include "JSystem/J3D/J3DTypes.h"
+#include "RevoSDK/mtx.h"
 
 extern const Mtx j3dDefaultMtx;
 extern const Vec j3dDefaultScale;

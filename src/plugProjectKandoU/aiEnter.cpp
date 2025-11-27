@@ -1,7 +1,7 @@
-#include "PikiAI.h"
-#include "Game/Piki.h"
 #include "Game/Entities/ItemOnyon.h"
-#include "Dolphin/rand.h"
+#include "Game/Piki.h"
+#include "PikiAI.h"
+#include "RevoSDK/rand.h"
 
 #define PIKI_ENTERSHIP_RADIUS  (30.0f)
 #define PIKI_ENTERONYON_RADIUS (10.0f)
@@ -142,7 +142,9 @@ void ActEnter::cleanup()
  * @note Address: 0x801A2DD0
  * @note Size: 0x4
  */
-void ActEnter::onKeyEvent(SysShape::KeyEvent const&) { }
+void ActEnter::onKeyEvent(SysShape::KeyEvent const&)
+{
+}
 
 /**
  * @note Address: 0x801A2DD4

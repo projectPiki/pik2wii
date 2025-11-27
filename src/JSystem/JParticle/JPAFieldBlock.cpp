@@ -1,10 +1,10 @@
-#include "float.h"
-#include "math.h"
-#include "Dolphin/mtx.h"
 #include "JSystem/JGeometry.h"
 #include "JSystem/JParticle/JPABlock.h"
 #include "JSystem/JParticle/JPAEmitter.h"
 #include "JSystem/JParticle/JPAField.h"
+#include "RevoSDK/mtx.h"
+#include "float.h"
+#include "math.h"
 #include "types.h"
 
 /**
@@ -69,7 +69,10 @@ void JPAFieldGravity::prepare(JPAEmitterWorkData* workData, JPAFieldBlock* block
  * @note Address: 0x80091648
  * @note Size: 0x1BC
  */
-void JPAFieldGravity::calc(JPAEmitterWorkData* workData, JPAFieldBlock* block, JPABaseParticle* particle) { calcAffect(block, particle); }
+void JPAFieldGravity::calc(JPAEmitterWorkData* workData, JPAFieldBlock* block, JPABaseParticle* particle)
+{
+	calcAffect(block, particle);
+}
 
 /**
  * @note Address: 0x80091804

@@ -1,9 +1,9 @@
 #ifndef _THP_THPREAD_H
 #define _THP_THPREAD_H
 
-#include "Dolphin/os.h"
-#include "types.h"
+#include "RevoSDK/os.h"
 #include "THP/THPBuffer.h"
+#include "types.h"
 
 static void* Reader(void* arg);
 

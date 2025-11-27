@@ -1,12 +1,12 @@
-#include "Dolphin/dvd.h"
-#include "Dolphin/os.h"
+#include "JSystem/JAudio/JAS/JASAramStream.h"
 #include "JSystem/JAudio/JAS/JASDriver.h"
 #include "JSystem/JAudio/JAS/JASDvd.h"
 #include "JSystem/JAudio/JAS/JASHeap.h"
 #include "JSystem/JAudio/JAS/JASMutexLock.h"
-#include "JSystem/JAudio/JAS/JASAramStream.h"
 #include "JSystem/JAudio/JAS/JASThread.h"
 #include "JSystem/JKernel/JKRAram.h"
+#include "RevoSDK/dvd.h"
+#include "RevoSDK/os.h"
 
 JASTaskThread* JASAramStream::sLoadThread;
 u8* JASAramStream::sReadBuffer;
@@ -334,13 +334,19 @@ BOOL JASAramStream::prepare(s32 entryNum, int index)
  * @note Address: 0x800A933C
  * @note Size: 0x34
  */
-BOOL JASAramStream::start() { return OSSendMessage(&mMsgQueueA, nullptr, OS_MESSAGE_NOBLOCK) != FALSE; }
+BOOL JASAramStream::start()
+{
+	return OSSendMessage(&mMsgQueueA, nullptr, OS_MESSAGE_NOBLOCK) != FALSE;
+}
 
 /**
  * @note Address: 0x800A9370
  * @note Size: 0x38
  */
-int JASAramStream::stop(u16 p1) { return OSSendMessage(&mMsgQueueA, (void*)((u32)p1 << 0x10 | 1), OS_MESSAGE_NOBLOCK) != FALSE; }
+int JASAramStream::stop(u16 p1)
+{
+	return OSSendMessage(&mMsgQueueA, (void*)((u32)p1 << 0x10 | 1), OS_MESSAGE_NOBLOCK) != FALSE;
+}
 
 /**
  * @note Address: 0x800A93A8
@@ -424,7 +430,10 @@ void JASAramStream::firstLoadTask(void* args)
  * @note Address: 0x800A9540
  * @note Size: 0x20
  */
-void JASAramStream::loadToAramTask(void* p1) { static_cast<JASAramStream*>(p1)->load(); }
+void JASAramStream::loadToAramTask(void* p1)
+{
+	static_cast<JASAramStream*>(p1)->load();
+}
 
 /**
  * @note Address: 0x800A9560
@@ -827,7 +836,10 @@ lbl_800A9A84:
  * @note Address: 0x800A9A98
  * @note Size: 0x20
  */
-s32 JASAramStream::channelProcCallback(void* stream) { return static_cast<JASAramStream*>(stream)->channelProc(); }
+s32 JASAramStream::channelProcCallback(void* stream)
+{
+	return static_cast<JASAramStream*>(stream)->channelProc();
+}
 
 /**
  * @note Address: 0x800A9AB8

@@ -1,6 +1,6 @@
-#include "types.h"
+#include "RevoSDK/dvd.h"
 #include "string.h"
-#include "Dolphin/dvd.h"
+#include "types.h"
 
 /**
  * @note Address: N/A

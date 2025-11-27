@@ -1,9 +1,9 @@
 #ifndef _JSYSTEM_J3D_J3DMTXBUFFER_H
 #define _JSYSTEM_J3D_J3DMTXBUFFER_H
 
-#include "Dolphin/mtx.h"
-#include "Matrixf.h"
 #include "JSystem/J3D/J3DTransform.h"
+#include "Matrixf.h"
+#include "RevoSDK/mtx.h"
 #include "types.h"
 
 struct J3DJointTree;

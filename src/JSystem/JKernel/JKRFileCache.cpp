@@ -1,13 +1,13 @@
-#include "ctype.h"
-#include "Dolphin/dvd.h"
-#include "Dolphin/os.h"
-#include "string.h"
 #include "JSystem/JKernel/JKRFileCache.h"
 #include "JSystem/JKernel/JKRFile.h"
 #include "JSystem/JKernel/JKRFileFinder.h"
 #include "JSystem/JKernel/JKRFileLoader.h"
 #include "JSystem/JKernel/JKRHeap.h"
 #include "JSystem/JSupport/JSUList.h"
+#include "RevoSDK/dvd.h"
+#include "RevoSDK/os.h"
+#include "ctype.h"
+#include "string.h"
 #include "types.h"
 
 /**

@@ -1,9 +1,9 @@
-#include "PikiAI.h"
 #include "Game/EnemyBase.h"
-#include "Game/gameStat.h"
-#include "Game/PikiState.h"
 #include "Game/Footmark.h"
-#include "Dolphin/rand.h"
+#include "Game/PikiState.h"
+#include "Game/gameStat.h"
+#include "PikiAI.h"
+#include "RevoSDK/rand.h"
 
 #define FOLLOW_DISTANCE 100.0f
 
@@ -275,7 +275,9 @@ void ActTeki::setTimer()
  * @note Address: 0x802134A0
  * @note Size: 0x4
  */
-void ActTeki::cleanup() { }
+void ActTeki::cleanup()
+{
+}
 
 /**
  * @note Address: 0x802134A4
@@ -299,5 +301,7 @@ void ActTeki::collisionCallback(Game::Piki* piki, Game::CollEvent& event)
 	}
 }
 
-void ActTeki::onKeyEvent(const SysShape::KeyEvent& event) { }
+void ActTeki::onKeyEvent(const SysShape::KeyEvent& event)
+{
+}
 } // namespace PikiAI

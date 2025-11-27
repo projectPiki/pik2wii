@@ -1,5 +1,5 @@
-#include "Dolphin/gx.h"
-#include "Dolphin/GX/GXHardware.h"
+#include "RevoSDK/GX/GXHardware.h"
+#include "RevoSDK/gx.h"
 
 /**
  * @note Address: N/A
@@ -468,7 +468,10 @@ void GXSetArray(GXAttr attr, void* basePtr, u8 stride)
  * @note Address: 0x800E4D0C
  * @note Size: 0x10
  */
-void GXInvalidateVtxCache(void) { GX_WRITE_U8(GX_FIFO_CMD_INVAL_VTX); }
+void GXInvalidateVtxCache(void)
+{
+	GX_WRITE_U8(GX_FIFO_CMD_INVAL_VTX);
+}
 
 /**
  * @note Address: 0x800E4D1C

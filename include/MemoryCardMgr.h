@@ -1,9 +1,9 @@
 #ifndef MEMORYCARDMGR_H
 #define MEMORYCARDMGR_H
 
-#include "JSystem/JKernel/JKRHeap.h"
 #include "BitFlag.h"
-#include "Dolphin/card.h"
+#include "JSystem/JKernel/JKRHeap.h"
+#include "RevoSDK/card.h"
 #include "types.h"
 
 struct MemoryCardMgrCommandBase {

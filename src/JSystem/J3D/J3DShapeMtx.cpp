@@ -1,5 +1,3 @@
-#include "Dolphin/gx.h"
-#include "Dolphin/mtx.h"
 #include "JSystem/J3D/J3DGD.h"
 #include "JSystem/J3D/J3DMaterial.h"
 #include "JSystem/J3D/J3DModel.h"
@@ -10,6 +8,8 @@
 #include "JSystem/J3D/J3DTexGenBlock.h"
 #include "JSystem/J3D/J3DTexMtx.h"
 #include "JSystem/J3D/J3DTransform.h"
+#include "RevoSDK/gx.h"
+#include "RevoSDK/mtx.h"
 #include "types.h"
 
 J3DShapeMtx::LoadMtxIndxFunction J3DShapeMtx::sMtxLoadPipeline[4] = {

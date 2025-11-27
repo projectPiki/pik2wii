@@ -1,6 +1,6 @@
-#include "ebi/title/TTitle.h"
-#include "Dolphin/gx.h"
+#include "RevoSDK/gx.h"
 #include "System.h"
+#include "ebi/title/TTitle.h"
 #include "nans.h"
 
 namespace ebi {

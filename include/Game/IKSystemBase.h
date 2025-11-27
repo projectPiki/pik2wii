@@ -1,9 +1,9 @@
 #ifndef _GAME_IKSYSTEMBASE_H
 #define _GAME_IKSYSTEMBASE_H
 
-#include "Vector3.h"
 #include "Matrixf.h"
-#include "Dolphin/mtx.h"
+#include "RevoSDK/mtx.h"
+#include "Vector3.h"
 
 #define IK_LEG_COUNT (4)
 

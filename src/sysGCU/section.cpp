@@ -1,5 +1,4 @@
 #include "Section.h"
-#include "Dolphin/__start.h"
 #include "Game/MemoryCard/Mgr.h"
 #include "Graphics.h"
 #include "JSystem/JFramework/JFWDisplay.h"
@@ -8,6 +7,7 @@
 #include "JSystem/JUtility/JUTFader.h"
 #include "PSM/Scene.h"
 #include "PSSystem/PSGame.h"
+#include "RevoSDK/__start.h"
 #include "System.h"
 #include "THP/THPRead.h"
 #include "nans.h"

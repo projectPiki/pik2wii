@@ -1,11 +1,11 @@
 #ifndef _JSYSTEM_J3D_J3DTEXMTX_H
 #define _JSYSTEM_J3D_J3DTEXMTX_H
 
-#include "Dolphin/mtx.h"
-#include "Dolphin/vec.h"
 #include "JSystem/J3D/J3DPacket.h"
 #include "JSystem/J3D/J3DTexGenBlock.h"
 #include "JSystem/J3D/J3DTypes.h"
+#include "RevoSDK/mtx.h"
+#include "RevoSDK/vec.h"
 #include "types.h"
 
 enum J3DTEXMTX {
@@ -61,7 +61,7 @@ struct J3DTexMtxInfo {
 	Vec mCenter;            // _04
 	J3DTextureSRTInfo mSRT; // _10
 	Mtx44 mEffectMtx;       // _24
-};                          // Size: 0x64
+}; // Size: 0x64
 extern const J3DTexMtxInfo j3dDefaultTexMtxInfo;
 
 struct J3DTexMtx {

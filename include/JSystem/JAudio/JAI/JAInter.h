@@ -1,6 +1,8 @@
 #ifndef _JSYSTEM_JAI_JAINTER_H
 #define _JSYSTEM_JAI_JAINTER_H
 
+#include "JSystem/JAudio/JAI/JAIGlobalParameter.h"
+#include "JSystem/JAudio/JAI/JAInter/BankWave.h"
 #include "JSystem/JAudio/JAI/JAInter/MoveParaSet.h"
 #include "JSystem/JAudio/JAS/JASPortArgs.h"
 #include "JSystem/JAudio/JAS/JASPortCmd.h"
@@ -8,10 +10,8 @@
 #include "JSystem/JGeometry.h"
 #include "JSystem/JKernel/JKRArchive.h"
 #include "JSystem/JSupport/JSUList.h"
-#include "JSystem/JAudio/JAI/JAIGlobalParameter.h"
-#include "JSystem/JAudio/JAI/JAInter/BankWave.h"
+#include "RevoSDK/mtx.h"
 #include "types.h"
-#include "Dolphin/mtx.h"
 
 struct JAISequence;
 struct JAISound;
@@ -219,8 +219,7 @@ struct DummyObjectMgr {
 	static DummyObject* deadObjectObject;
 };
 
-struct DummyVec {
-};
+struct DummyVec { };
 
 struct HeapBlock {
 	HeapBlock();
@@ -477,8 +476,8 @@ void* getDvdThreadPointer();
 void setAudioThreadPauseFlag(bool);
 }; // namespace JAInterface
 
-#define IsJAISoundIDInUse(id)    (((id)&0x800) == 0)
-#define IsJAISoundIDFree(id)     (((id)&0x800) == 1)
+#define IsJAISoundIDInUse(id)    (((id) & 0x800) == 0)
+#define IsJAISoundIDFree(id)     (((id) & 0x800) == 1)
 #define JAISoundID_TypeMask      0xC0000000
 #define JAISoundID_Type_Se       0x00000000
 #define JAISoundID_Type_Sequence 0x80000000

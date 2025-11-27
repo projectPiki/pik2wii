@@ -1,14 +1,14 @@
-#include "Dolphin/gd.h"
-#include "Dolphin/gx.h"
 #include "JSystem/J3D/J3DGD.h"
 #include "JSystem/J3D/J3DInd.h"
 #include "JSystem/J3D/J3DMaterialFactory.h"
 #include "JSystem/J3D/J3DSys.h"
 #include "JSystem/J3D/J3DTevBlock.h"
 #include "JSystem/J3D/J3DTexMtx.h"
+#include "JSystem/J3D/J3DTransform.h"
 #include "JSystem/J3D/J3DTypes.h"
 #include "JSystem/JGeometry.h"
-#include "JSystem/J3D/J3DTransform.h"
+#include "RevoSDK/gd.h"
+#include "RevoSDK/gx.h"
 #include "types.h"
 
 #define J3DTEXCOORDTABLE_DIM_0 11
@@ -172,7 +172,10 @@ void J3DTexMtx::load(u32 p1) const
  * @note Address: 0x80064CF4
  * @note Size: 0x20
  */
-void J3DTexMtx::calc(const f32 (*mtx)[4]) { calcTexMtx(mtx); }
+void J3DTexMtx::calc(const f32 (*mtx)[4])
+{
+	calcTexMtx(mtx);
+}
 
 /**
  * @note Address: 0x80064D14
@@ -394,7 +397,10 @@ bool isTexNoReg(void* ptr)
  * @note Address: 0x8006537C
  * @note Size: 0xC
  */
-u16 getTexNoReg(void* p1) { return *(u32*)(static_cast<u8*>(p1) + 1); }
+u16 getTexNoReg(void* p1)
+{
+	return *(u32*)(static_cast<u8*>(p1) + 1);
+}
 
 /**
  * @note Address: 0x80065388
@@ -425,7 +431,10 @@ void loadTexNo(u32 id, const u16& data)
  * @note Address: 0x80065540
  * @note Size: 0x24
  */
-void patchTexNo_PtrToIdx(u32 texID, const u16& idx) { J3DGDSetTexImgPtrRaw((GXTexMapID)texID, idx); }
+void patchTexNo_PtrToIdx(u32 texID, const u16& idx)
+{
+	J3DGDSetTexImgPtrRaw((GXTexMapID)texID, idx);
+}
 
 /**
  * @note Address: 0x80065564

@@ -1,5 +1,5 @@
-#include "Dolphin/gx.h"
-#include "Dolphin/os.h"
+#include "RevoSDK/gx.h"
+#include "RevoSDK/os.h"
 
 static GXFifoObj* CPUFifo;
 static GXFifoObj* GPFifo;
@@ -505,13 +505,19 @@ void GXGetCurrentGXThread(void)
  * @note Address: 0x800E4274
  * @note Size: 0x8
  */
-GXFifoObj* GXGetCPUFifo(void) { return CPUFifo; }
+GXFifoObj* GXGetCPUFifo(void)
+{
+	return CPUFifo;
+}
 
 /**
  * @note Address: 0x800E427C
  * @note Size: 0x8
  */
-GXFifoObj* GXGetGPFifo(void) { return GPFifo; }
+GXFifoObj* GXGetGPFifo(void)
+{
+	return GPFifo;
+}
 
 /**
  * @note Address: N/A

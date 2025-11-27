@@ -1,6 +1,6 @@
-#include "Dolphin/pad.h"
-#include "Dolphin/si.h"
-#include "Dolphin/os.h"
+#include "RevoSDK/pad.h"
+#include "RevoSDK/os.h"
+#include "RevoSDK/si.h"
 
 const char* __PADVersion = "<< Dolphin SDK - PAD\trelease build: Aug  6 2003 04:30:02 (0x2301) >>";
 
@@ -386,7 +386,7 @@ BOOL PADInit(void)
 	if (__PADFixBits != 0) {
 		OSTime time = OSGetTime();
 		__OSWirelessPadFixMode
-		    = (u16)((((time)&0xffff) + ((time >> 16) & 0xffff) + ((time >> 32) & 0xffff) + ((time >> 48) & 0xffff)) & 0x3fffu);
+		    = (u16)((((time) & 0xffff) + ((time >> 16) & 0xffff) + ((time >> 32) & 0xffff) + ((time >> 48) & 0xffff)) & 0x3fffu);
 		RecalibrateBits = PAD_CHAN0_BIT | PAD_CHAN1_BIT | PAD_CHAN2_BIT | PAD_CHAN3_BIT;
 	}
 
@@ -592,7 +592,10 @@ void PADSetSpec(u32 spec)
  * @note Address: N/A
  * @note Size: 0x8
  */
-u32 PADGetSpec(void) { return Spec; }
+u32 PADGetSpec(void)
+{
+	return Spec;
+}
 
 /**
  * @note Address: 0x800F4544
@@ -1128,7 +1131,10 @@ BOOL PADGetType(s32 chan, u32* type)
  * @note Address: N/A
  * @note Size: 0x64
  */
-BOOL PADSync(void) { return ResettingBits == 0 && ResettingChan == 32 && !SIBusy(); }
+BOOL PADSync(void)
+{
+	return ResettingBits == 0 && ResettingChan == 32 && !SIBusy();
+}
 
 /**
  * @note Address: 0x800F4C9C
@@ -1244,7 +1250,10 @@ static BOOL OnReset(BOOL f)
  * @note Address: N/A
  * @note Size: 0xC
  */
-void __PADDisableXPatch(void) { XPatchBits = 0; }
+void __PADDisableXPatch(void)
+{
+	XPatchBits = 0;
+}
 
 /**
  * @note Address: 0x800F4DCC

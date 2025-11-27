@@ -1,0 +1,131 @@
+#ifndef NW4R_MATH_ARITHMETIC_H
+#define NW4R_MATH_ARITHMETIC_H
+
+#include <nw4r/types_nw4r.h>
+
+#include <nw4r/math/math_constant.h>
+
+#include <RevoSDK/os.h>
+
+namespace nw4r {
+namespace math {
+
+/////////////////// GLOBAL FUNCTIONS ///////////////////
+
+f32 FrSqrt(f32 x);
+
+////////////////////////////////////////////////////////
+/////////////////// INLINE FUNCTIONS ///////////////////
+
+inline f32 FAbs(register f32 x)
+{
+	register f32 ax;
+
+#ifdef __MWERKS__
+	// clang-format off
+	ASM(
+        fabs ax, x
+    )
+	// clang-format on
+#endif
+
+	return ax;
+}
+
+inline f32 FInv(register f32 x)
+{
+	register f32 work0, work1, work2, work3;
+
+#ifdef __MWERKS__
+	// clang-format off
+    ASM (
+        fmr  work1, x     // x
+        fres work0, work1 // 1/x
+
+        // Refine estimate
+        ps_add   work2, work0, work0        // 2/x
+        ps_mul   work3, work0, work0        // 1/x^2
+        ps_nmsub work0, work1, work3, work2 // -(x * 1/x^2 - 2/x)
+    )
+	// clang-format on
+#endif
+
+	return work0;
+}
+
+inline f32 FSqrt(f32 x)
+{
+	return x <= 0.0f ? 0.0f : x * FrSqrt(x);
+}
+
+inline f32 FSelect(register f32 value, register f32 ge_zero, register f32 lt_zero)
+{
+	register f32 ret;
+
+#ifdef __MWERKS__
+	// clang-format off
+    ASM (
+        fsel ret, value, ge_zero, lt_zero
+    )
+	// clang-format on
+#endif
+
+	return ret;
+}
+
+////////////////////////////////////////////////////////
+////////////////// FAST CAST FUNCTIONS /////////////////
+
+inline f32 U16ToF32(u16 arg)
+{
+	f32 ret;
+	OSu16tof32(&arg, &ret);
+	return ret;
+}
+
+inline u16 F32ToU16(f32 arg)
+{
+	u16 ret;
+	OSf32tou16(&arg, &ret);
+	return ret;
+}
+
+// inline f32 S16ToF32(s16 arg) {
+//     f32 ret;
+//     OSs16tof32(&arg, &ret);
+//     return ret;
+// }
+
+inline s16 F32ToS16(f32 arg)
+{
+	s16 ret;
+	OSf32tos16(&arg, &ret);
+	return ret;
+}
+
+inline u32 F32AsU32(f32 arg)
+{
+	return *reinterpret_cast<u32*>(&arg);
+}
+inline f32 U32AsF32(u32 arg)
+{
+	return *reinterpret_cast<f32*>(&arg);
+}
+
+inline s32 FGetExpPart(f32 x)
+{
+	s32 s = F32AsU32(x);
+	return ((s >> 23) & 0xFF) - 127;
+}
+inline f32 FGetMantPart(f32 x)
+{
+	u32 u = F32AsU32(x);
+	return U32AsF32((u & 0x807FFFFF) | 0x3F800000);
+}
+
+////////////////////////////////////////////////////////
+
+} // namespace math
+} // namespace nw4r
+
+#endif

@@ -1,6 +1,6 @@
-#include "Dolphin/dsp.h"
-#include "types.h"
 #include "JSystem/JAudio/DSP.h"
+#include "RevoSDK/dsp.h"
+#include "types.h"
 
 static DSPTaskInfo audio_task ATTRIBUTE_ALIGN(32);
 static u16 AUDIO_YIELD_BUFFER[4096] ATTRIBUTE_ALIGN(32);

@@ -1,8 +1,8 @@
 #ifndef _PSM_DIRECTOR_H
 #define _PSM_DIRECTOR_H
 
-#include "Dolphin/os.h"
 #include "PSSystem/PSDirector.h"
+#include "RevoSDK/os.h"
 
 struct JASTrack;
 

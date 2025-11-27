@@ -1,5 +1,5 @@
-#include "Dolphin/gd.h"
-#include "Dolphin/os.h"
+#include "RevoSDK/gd.h"
+#include "RevoSDK/os.h"
 
 /**
  * @note Address: 0x800E1C70

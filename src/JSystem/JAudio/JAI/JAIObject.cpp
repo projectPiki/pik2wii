@@ -1,10 +1,10 @@
-#include "Dolphin/vec.h"
 #include "JSystem/JAudio/JAI/JAIBasic.h"
 #include "JSystem/JAudio/JAI/JAISound.h"
 #include "JSystem/JAudio/JAI/JAInter.h"
 #include "JSystem/JAudio/JAI/JAInter/Object.h"
 #include "JSystem/JKernel/JKRDisposer.h"
 #include "JSystem/JKernel/JKRHeap.h"
+#include "RevoSDK/vec.h"
 #include "types.h"
 
 /**
@@ -34,7 +34,10 @@ JAInter::ObjectBase::ObjectBase(Vec* p1, JKRHeap* heap, u8 handleCount)
  * @note Size: 0x74
  * __dt__Q27JAInter10ObjectBaseFv
  */
-JAInter::ObjectBase::~ObjectBase() { dispose(); }
+JAInter::ObjectBase::~ObjectBase()
+{
+	dispose();
+}
 
 /**
  * @note Address: 0x800B9670
@@ -242,7 +245,9 @@ JAInter::Object::Object(Vec* p1, JKRHeap* heap, u8 handleCount)
  * @note Size: 0x84
  * __dt__Q27JAInter6ObjectFv
  */
-JAInter::Object::~Object() { }
+JAInter::Object::~Object()
+{
+}
 
 /**
  * @note Address: 0x800B9C64

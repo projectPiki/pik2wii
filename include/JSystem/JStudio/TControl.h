@@ -1,11 +1,11 @@
 #ifndef _JSTUDIO_TCONTROL_H
 #define _JSTUDIO_TCONTROL_H
 
-#include "Dolphin/mtx.h"
-#include "Dolphin/vec.h"
-#include "JSystem/JStudio/stb.h"
-#include "JSystem/JStudio/fvb.h"
 #include "JSystem/JStudio/TFactory.h"
+#include "JSystem/JStudio/fvb.h"
+#include "JSystem/JStudio/stb.h"
+#include "RevoSDK/mtx.h"
+#include "RevoSDK/vec.h"
 #include "types.h"
 
 namespace JStudio {

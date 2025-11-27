@@ -1,8 +1,8 @@
 #ifndef _JSTAGE_TACTOR_H
 #define _JSTAGE_TACTOR_H
 #include "JSystem/JStage/TObject.h"
-#include "Dolphin/vec.h"
 #include "JSystem/JStudio/TObject.h"
+#include "RevoSDK/vec.h"
 
 namespace JStage {
 struct TActor : public TObject {

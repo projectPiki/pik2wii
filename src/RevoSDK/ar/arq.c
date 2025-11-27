@@ -1,4 +1,4 @@
-#include "Dolphin/ar.h"
+#include "RevoSDK/ar.h"
 
 const char* __ARQVersion = "<< Dolphin SDK - ARQ\trelease build: Nov 26 2003 05:19:43 (0x2301) >>";
 
@@ -84,7 +84,9 @@ void __ARQServiceQueueLo()
  * @note Address: 0x800D42BC
  * @note Size: 0x4
  */
-void __ARQCallbackHack() { }
+void __ARQCallbackHack()
+{
+}
 
 /**
  * @note Address: 0x800D42C0

@@ -1,4 +1,3 @@
-#include "Dolphin/mtx.h"
 #include "Game/BaseItem.h"
 #include "Game/CurrTriInfo.h"
 #include "Game/MapMgr.h"
@@ -9,6 +8,7 @@
 #include "PlatAttacher.h"
 #include "Platform.h"
 #include "Rect.h"
+#include "RevoSDK/mtx.h"
 #include "Sys/OBBTree.h"
 #include "Sys/RayIntersectInfo.h"
 #include "Sys/Sphere.h"

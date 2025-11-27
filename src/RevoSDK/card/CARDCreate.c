@@ -1,4 +1,4 @@
-#include "Dolphin/card.h"
+#include "RevoSDK/card.h"
 
 /**
  * @note Address: 0x800D9AB0

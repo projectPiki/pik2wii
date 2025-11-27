@@ -1,5 +1,5 @@
+#include "RevoSDK/os.h"
 #include "types.h"
-#include "Dolphin/os.h"
 typedef struct HeapCell {
 	struct HeapCell* prev;
 	struct HeapCell* next;
@@ -19,7 +19,7 @@ struct Heap* HeapArray;
 volatile OSHeapHandle __OSCurrHeap = -1;
 
 #define InRange(addr, start, end) ((u8*)(start) <= (u8*)(addr) && (u8*)(addr) < (u8*)(end))
-#define OFFSET(addr, align)       (((u32)(addr) & ((align)-1)))
+#define OFFSET(addr, align)       (((u32)(addr) & ((align) - 1)))
 
 #define ALIGNMENT  32
 #define MINOBJSIZE 64

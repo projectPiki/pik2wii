@@ -1,8 +1,8 @@
 #ifndef _JSYSTEM_J3D_J3DDISPLAYLISTOBJ_H
 #define _JSYSTEM_J3D_J3DDISPLAYLISTOBJ_H
 
-#include "Dolphin/gd.h"
 #include "JSystem/J3D/J3DTypes.h"
+#include "RevoSDK/gd.h"
 #include "types.h"
 
 struct J3DDisplayListObj {

@@ -1,4 +1,4 @@
-#include "Dolphin/gba.h"
+#include "RevoSDK/gba.h"
 
 /**
  * @note Address: 0x800FED70

@@ -1,16 +1,16 @@
 #ifndef _PSSYSTEM_SEQ_H
 #define _PSSYSTEM_SEQ_H
 
-#include "types.h"
-#include "Dolphin/os.h"
-#include "JSystem/JSupport/JSUList.h"
 #include "JSystem/JAudio/JAI/JAISequence.h"
 #include "JSystem/JAudio/JAI/JAInter.h"
 #include "JSystem/JAudio/JAI/JAInter/SeMgr.h"
-#include "PSSystem/PSBgmTask.h"
 #include "JSystem/JAudio/JAS/JASTrack.h"
+#include "JSystem/JSupport/JSUList.h"
+#include "PSSystem/PSBgmTask.h"
 #include "PSSystem/Reservator.h"
+#include "RevoSDK/os.h"
 #include "stl/string.h"
+#include "types.h"
 
 #define P2_STREAM_SOUND_ID(soundID) (JAISoundID_Type_Stream | 0x10000 | soundID)
 

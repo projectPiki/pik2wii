@@ -1,8 +1,8 @@
 #ifndef _JSYSTEM_JPA_JPAMATH_H
 #define _JSYSTEM_JPA_JPAMATH_H
 
-#include "Dolphin/mtx.h"
 #include "JSystem/JGeometry.h"
+#include "RevoSDK/mtx.h"
 
 f32 JPAConvertFixToFloat(s16);
 void JPAGetDirMtx(const JGeometry::TVec3<f32>&, Mtx);

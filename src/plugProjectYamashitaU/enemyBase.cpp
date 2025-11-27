@@ -39,7 +39,7 @@
 #include "PSSystem/PSSystemIF.h"
 
 // Utility
-#include "Dolphin/rand.h"
+#include "RevoSDK/rand.h"
 #include "nans.h"
 
 // Archives

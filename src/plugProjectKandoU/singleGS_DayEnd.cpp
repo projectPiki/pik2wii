@@ -1,26 +1,26 @@
 #include "Game/Entities/ItemOnyon.h"
-#include "Game/GameSystem.h"
-#include "Game/MoviePlayer.h"
-#include "Game/NaviState.h"
-#include "Game/PikiMgr.h"
-#include "Game/PikiState.h"
-#include "Game/cellPyramid.h"
-#include "Game/SingleGame.h"
-#include "Game/gameStat.h"
-#include "Game/generalEnemyMgr.h"
 #include "Game/Entities/PelletCarcass.h"
 #include "Game/Entities/PelletFruit.h"
 #include "Game/Entities/PelletItem.h"
 #include "Game/Entities/PelletOtakara.h"
-#include "Game/Navi.h"
+#include "Game/GameSystem.h"
 #include "Game/MapMgr.h"
-#include "efx/TNaviEffect.h"
-#include "Screen/Game2DMgr.h"
-#include "Dolphin/rand.h"
-#include "PikiAI.h"
+#include "Game/MoviePlayer.h"
+#include "Game/Navi.h"
+#include "Game/NaviState.h"
+#include "Game/PikiMgr.h"
+#include "Game/PikiState.h"
+#include "Game/SingleGame.h"
+#include "Game/cellPyramid.h"
+#include "Game/gameStat.h"
+#include "Game/generalEnemyMgr.h"
 #include "Iterator.h"
-#include "utilityU.h"
+#include "PikiAI.h"
+#include "RevoSDK/rand.h"
+#include "Screen/Game2DMgr.h"
+#include "efx/TNaviEffect.h"
 #include "nans.h"
+#include "utilityU.h"
 
 static const u32 padding[]    = { 0, 0, 0 };
 static const char className[] = "singleGS_DayEnd";
@@ -298,7 +298,10 @@ void DayEndState::onMovieCommand(SingleGameSection* game, int id)
  * @note Address: 0x8023B468
  * @note Size: 0x28
  */
-void DayEndState::draw(SingleGameSection* game, Graphics& gfx) { game->BaseGameSection::doDraw(gfx); }
+void DayEndState::draw(SingleGameSection* game, Graphics& gfx)
+{
+	game->BaseGameSection::doDraw(gfx);
+}
 
 /**
  * @note Address: 0x8023B490

@@ -1,17 +1,17 @@
-#include "types.h"
-#include "Dolphin/rand.h"
+#include "Game/AIConstants.h"
+#include "Game/Entities/ItemOnyon.h"
+#include "Game/GameConfig.h"
+#include "Game/Stickers.h"
 #include "Game/VsGame.h"
+#include "Game/pelletMgr.h"
+#include "JSystem/JKernel/JKRArchive.h"
+#include "Light.h"
+#include "PSSystem/PSSystemIF.h"
+#include "RevoSDK/rand.h"
 #include "efx2d/Arg.h"
 #include "efx2d/T2DSprayset.h"
-#include "Light.h"
-#include "JSystem/JKernel/JKRArchive.h"
-#include "PSSystem/PSSystemIF.h"
-#include "Game/Entities/ItemOnyon.h"
-#include "Game/Stickers.h"
-#include "Game/pelletMgr.h"
-#include "Game/GameConfig.h"
-#include "Game/AIConstants.h"
 #include "nans.h"
+#include "types.h"
 
 namespace Game {
 namespace VsGame {
@@ -219,13 +219,18 @@ void VsGame::CardMgr::draw(Graphics& gfx)
  * @note Address: N/A
  * @note Size: 0x78
  */
-Vector3f VsGame::CardMgr::getPlayerCard(int user) { }
+Vector3f VsGame::CardMgr::getPlayerCard(int user)
+{
+}
 
 /**
  * @note Address: 0x80235A50
  * @note Size: 0x30
  */
-void VsGame::CardMgr::stopSlot(int idx) { mSlotMachines[idx].startStop(); }
+void VsGame::CardMgr::stopSlot(int idx)
+{
+	mSlotMachines[idx].startStop();
+}
 
 /**
  * @note Address: 0x80235A80
@@ -334,7 +339,10 @@ bool VsGame::CardMgr::usePlayerCard(int user, Game::VsGame::TekiMgr* tekiMgr)
 			{ // needed for stickers to call dtor
 				Stickers stickers            = bedama;
 				Iterator<Creature> ICreature = &stickers;
-				CI_LOOP(ICreature) { (*ICreature)->endStick(); }
+				CI_LOOP(ICreature)
+				{
+					(*ICreature)->endStick();
+				}
 			}
 			Vector3f onyonPos  = onyon->getFlagSetPos();
 			Vector3f bedamaPos = bedama->getPosition();
@@ -641,7 +649,9 @@ bool VsGame::CardMgr::SlotMachine::equalTo(int slot)
  * @note Address: N/A
  * @note Size: 0x4C
  */
-bool CardMgr::SlotMachine::goodPlace() { }
+bool CardMgr::SlotMachine::goodPlace()
+{
+}
 
 /**
  * @note Address: 0x80237060
@@ -896,13 +906,19 @@ void VsGame::CardMgr::initDraw()
  * @note Address: N/A
  * @note Size: 0x20
  */
-void VsGame::CardMgr::vert(int id) { GXPosition3f32(mVertices[id].x, mVertices[id].y, mVertices[id].z); }
+void VsGame::CardMgr::vert(int id)
+{
+	GXPosition3f32(mVertices[id].x, mVertices[id].y, mVertices[id].z);
+}
 
 /**
  * @note Address: N/A
  * @note Size: 0x20
  */
-void VsGame::CardMgr::norm(int id) { GXPosition3f32(mNormals[id].x, mNormals[id].y, mNormals[id].z); }
+void VsGame::CardMgr::norm(int id)
+{
+	GXPosition3f32(mNormals[id].x, mNormals[id].y, mNormals[id].z);
+}
 
 /**
  * @note Address: 0x80237CBC

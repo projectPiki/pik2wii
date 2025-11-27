@@ -1,6 +1,6 @@
 #include "JSystem/JUtility/JUTGraphFifo.h"
-#include "Dolphin/gx.h"
 #include "JSystem/JKernel/JKRHeap.h"
+#include "RevoSDK/gx.h"
 #include "types.h"
 
 bool JUTGraphFifo::sInitiated;

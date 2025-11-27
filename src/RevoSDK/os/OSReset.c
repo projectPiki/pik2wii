@@ -1,5 +1,5 @@
-#include "Dolphin/os.h"
-#include "Dolphin/hw_regs.h"
+#include "RevoSDK/hw_regs.h"
+#include "RevoSDK/os.h"
 
 static OSResetQueue ResetFunctionQueue;
 static u32 bootThisDol;

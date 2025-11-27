@@ -1,9 +1,9 @@
 #include "JSystem/JUtility/JUTTexture.h"
-#include "Dolphin/gx.h"
-#include "Dolphin/os.h"
-#include "JSystem/JUtility/JUTPalette.h"
 #include "JSystem/JKernel/JKRHeap.h"
+#include "JSystem/JUtility/JUTPalette.h"
 #include "JSystem/ResTIMG.h"
+#include "RevoSDK/gx.h"
+#include "RevoSDK/os.h"
 #include "types.h"
 
 /**

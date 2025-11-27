@@ -1,4 +1,4 @@
-#include "Dolphin/os.h"
+#include "RevoSDK/os.h"
 
 /**
  * @note Address: 0x800F17D4

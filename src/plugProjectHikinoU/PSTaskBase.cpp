@@ -1,8 +1,8 @@
-#include "Dolphin/os.h"
+#include "PSSystem/PSTaskBase.h"
 #include "JSystem/JAudio/JAS/JASTrack.h"
 #include "P2Macros.h"
-#include "PSSystem/PSTaskBase.h"
 #include "PSSystem/PSBgmTask.h"
+#include "RevoSDK/os.h"
 
 namespace PSSystem {
 
@@ -58,13 +58,19 @@ bool TaskEntry::stackTask(JASTrack& track)
  * @note Address: 0x8033E24C
  * @note Size: 0x24
  */
-void TaskEntry::append(PSSystem::TaskBase* task) { append_Lock(&task->mLink); }
+void TaskEntry::append(PSSystem::TaskBase* task)
+{
+	append_Lock(&task->mLink);
+}
 
 /**
  * @note Address: N/A
  * @note Size: 0x24
  */
-void TaskEntry::remove(PSSystem::TaskBase* task) { remove_Lock(&task->mLink); }
+void TaskEntry::remove(PSSystem::TaskBase* task)
+{
+	remove_Lock(&task->mLink);
+}
 
 /**
  * @note Address: 0x8033E270

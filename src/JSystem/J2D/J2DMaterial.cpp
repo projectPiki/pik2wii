@@ -1,14 +1,14 @@
-#include "Dolphin/gx.h"
+#include "JSystem/J2D/J2DMaterial.h"
 #include "JSystem/J2D/J2DAnm.h"
 #include "JSystem/J2D/J2DIndBlock.h"
-#include "JSystem/J2D/J2DMaterial.h"
 #include "JSystem/J2D/J2DTevBlock.h"
 #include "JSystem/J2D/J2DTypes.h"
+#include "JSystem/J3D/J3DAnmTevRegKey.h"
+#include "JSystem/J3D/J3DAnmTexPattern.h"
 #include "JSystem/J3D/J3DTypes.h"
 #include "JSystem/JKernel/JKRHeap.h"
-#include "JSystem/J3D/J3DAnmTexPattern.h"
-#include "JSystem/J3D/J3DAnmTevRegKey.h"
 #include "JSystem/JUtility/JUTTexture.h"
+#include "RevoSDK/gx.h"
 #include "types.h"
 
 /**

@@ -1,15 +1,15 @@
 #ifndef _JSYSTEM_J2D_J2DTEVBLOCK_H
 #define _JSYSTEM_J2D_J2DTEVBLOCK_H
 
-#include "Dolphin/gx.h"
 #include "JSystem/J2D/J2DGXColorS10.h"
 #include "JSystem/J2D/J2DTypes.h"
 #include "JSystem/J3D/J3DTypes.h"
 #include "JSystem/JUtility/JUTFont.h"
 #include "JSystem/JUtility/JUTPalette.h"
 #include "JSystem/JUtility/TColor.h"
-#include "JSystem/ResTLUT.h"
 #include "JSystem/ResTIMG.h"
+#include "JSystem/ResTLUT.h"
+#include "RevoSDK/gx.h"
 #include "types.h"
 
 struct J2DTevBlock {
@@ -84,7 +84,7 @@ struct J2DTevBlock1 : public J2DTevBlock {
 		mKColors[index].g = color.g;
 		mKColors[index].b = color.b;
 		mKColors[index].a = color.a;
-	}                                                                                                                // _3C (weak)
+	} // _3C (weak)
 	virtual JUtility::TColor* getTevKColor(u32 index) { return mKColors + index; }                                   // _40 (weak)
 	virtual void setTevKColorSel(u32 index, u8 sel) { mKColorSels[index] = sel; }                                    // _44 (weak)
 	virtual u8 getTevKColorSel(u32 index) { return mKColorSels[index]; }                                             // _48 (weak)
@@ -162,7 +162,7 @@ struct J2DTevBlock2 : public J2DTevBlock {
 		mKColors[index].g = color.g;
 		mKColors[index].b = color.b;
 		mKColors[index].a = color.a;
-	}                                                                                                                // _3C (weak)
+	} // _3C (weak)
 	virtual JUtility::TColor* getTevKColor(u32 index) { return mKColors + index; }                                   // _40 (weak)
 	virtual void setTevKColorSel(u32 index, u8 sel) { mKColorSels[index] = sel; }                                    // _44 (weak)
 	virtual u8 getTevKColorSel(u32 index) { return mKColorSels[index]; }                                             // _48 (weak)
@@ -242,7 +242,7 @@ struct J2DTevBlock4 : J2DTevBlock {
 		mKColors[index].g = color.g;
 		mKColors[index].b = color.b;
 		mKColors[index].a = color.a;
-	}                                                                                                                // _3C (weak)
+	} // _3C (weak)
 	virtual JUtility::TColor* getTevKColor(u32 index) { return mKColors + index; }                                   // _40 (weak)
 	virtual void setTevKColorSel(u32 index, u8 sel) { mKColorSels[index] = sel; }                                    // _44 (weak)
 	virtual u8 getTevKColorSel(u32 index) { return mKColorSels[index]; }                                             // _48 (weak)
@@ -322,7 +322,7 @@ struct J2DTevBlock8 : J2DTevBlock {
 		mKColors[index].g = color.g;
 		mKColors[index].b = color.b;
 		mKColors[index].a = color.a;
-	}                                                                                                                // _3C (weak)
+	} // _3C (weak)
 	virtual JUtility::TColor* getTevKColor(u32 index) { return mKColors + index; }                                   // _40 (weak)
 	virtual void setTevKColorSel(u32 index, u8 sel) { mKColorSels[index] = sel; }                                    // _44 (weak)
 	virtual u8 getTevKColorSel(u32 index) { return mKColorSels[index]; }                                             // _48 (weak)
@@ -403,7 +403,7 @@ struct J2DTevBlock16 : J2DTevBlock {
 		mKColors[index].g = color.g;
 		mKColors[index].b = color.b;
 		mKColors[index].a = color.a;
-	}                                                                                                                // _3C (weak)
+	} // _3C (weak)
 	virtual JUtility::TColor* getTevKColor(u32 index) { return mKColors + index; }                                   // _40 (weak)
 	virtual void setTevKColorSel(u32 index, u8 sel) { mKColorSels[index] = sel; }                                    // _44 (weak)
 	virtual u8 getTevKColorSel(u32 index) { return mKColorSels[index]; }                                             // _48 (weak)

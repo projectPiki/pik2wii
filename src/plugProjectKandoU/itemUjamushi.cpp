@@ -1,10 +1,10 @@
 #include "Game/Entities/ItemUjamushi.h"
-#include "Dolphin/rand.h"
 #include "Game/Entities/ItemHoney.h"
 #include "Game/Navi.h"
 #include "Game/PikiMgr.h"
 #include "Game/gamePlayData.h"
 #include "JSystem/J3D/J3DTransform.h"
+#include "RevoSDK/rand.h"
 #include "nans.h"
 
 #define UJAMUSHI_DROP_CHANCE (0.6f)

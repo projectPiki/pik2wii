@@ -1,13 +1,13 @@
 #ifndef _PSSYSTEM_PSSEQ_H
 #define _PSSYSTEM_PSSEQ_H
 
-#include "types.h"
-#include "PSSystem/Seq.h"
-#include "JSystem/JAudio/JAI/JAInter.h"
 #include "JSystem/JAudio/JAI/JAISound.h"
-#include "Dolphin/os.h"
+#include "JSystem/JAudio/JAI/JAInter.h"
 #include "JSystem/JAudio/JAS/JASTrack.h"
+#include "PSSystem/Seq.h"
 #include "PSSystem/SeqTrack.h"
+#include "RevoSDK/os.h"
+#include "types.h"
 
 namespace PSSystem {
 struct DirectorMgrBase;

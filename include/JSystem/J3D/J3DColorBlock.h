@@ -1,10 +1,10 @@
 #ifndef _JSYSTEM_J3D_J3DCOLORBLOCK_H
 #define _JSYSTEM_J3D_J3DCOLORBLOCK_H
 
-#include "Dolphin/gx.h"
+#include "JSystem/J3D/J3DGD.h"
 #include "JSystem/J3D/J3DGXColor.h"
 #include "JSystem/J3D/J3DTypes.h"
-#include "JSystem/J3D/J3DGD.h"
+#include "RevoSDK/gx.h"
 #include "types.h"
 
 struct J3DColorBlock {

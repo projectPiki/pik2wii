@@ -3,8 +3,8 @@
 
 #include "JSystem/J3D/J3DFileBlock.h"
 #include "JSystem/JMath.h"
+#include "RevoSDK/gx.h"
 #include "types.h"
-#include "Dolphin/gx.h"
 
 struct J3DAnmKeyTableBase;
 

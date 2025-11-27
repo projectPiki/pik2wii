@@ -1,13 +1,13 @@
-#include "ebi/Screen/TPressStart.h"
-#include "System.h"
-#include "P2DScreen.h"
-#include "ebi/Utility.h"
-#include "JSystem/J2D/J2DMaterial.h"
-#include "ebi/E2DGraph.h"
-#include "PSSystem/PSSystemIF.h"
 #include "Graphics.h"
+#include "JSystem/J2D/J2DMaterial.h"
+#include "P2DScreen.h"
+#include "PSSystem/PSSystemIF.h"
+#include "RevoSDK/rand.h"
 #include "SoundID.h"
-#include "Dolphin/rand.h"
+#include "System.h"
+#include "ebi/E2DGraph.h"
+#include "ebi/Screen/TPressStart.h"
+#include "ebi/Utility.h"
 
 static const char name[] = "ebiScreenPushStart";
 

@@ -1,9 +1,9 @@
-#include "Game/Entities/TamagoMushi.h"
 #include "Game/EnemyAnimKeyEvent.h"
+#include "Game/Entities/TamagoMushi.h"
+#include "PS.h"
+#include "RevoSDK/rand.h"
 #include "efx/TEnemyBomb.h"
 #include "efx/TEnemyDead.h"
-#include "Dolphin/rand.h"
-#include "PS.h"
 
 namespace Game {
 namespace TamagoMushi {

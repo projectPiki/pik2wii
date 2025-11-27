@@ -1,12 +1,12 @@
 #include "FogMgr.h"
 #include "Camera.h"
-#include "Dolphin/gx.h"
-#include "Dolphin/vi.h"
 #include "Graphics.h"
+#include "RevoSDK/gx.h"
+#include "RevoSDK/vi.h"
 #include "System.h"
-#include "types.h"
 #include "Viewport.h"
 #include "nans.h"
+#include "types.h"
 
 /**
  * __ct
@@ -27,7 +27,10 @@ FogMgr::FogMgr()
  * @note Address: 0x804329BC
  * @note Size: 0x40
  */
-void FogMgr::off(Graphics&) { GXSetFog(GX_FOG_NONE, 0.0f, 0.0f, 0.0f, 0.0f, mColor.GXColorView); }
+void FogMgr::off(Graphics&)
+{
+	GXSetFog(GX_FOG_NONE, 0.0f, 0.0f, 0.0f, 0.0f, mColor.GXColorView);
+}
 
 /**
  * @note Address: 0x804329FC
@@ -51,10 +54,16 @@ void FogMgr::set(Graphics& graphics)
  * @note Address: 0x80432AA8
  * @note Size: 0x24
  */
-void FogMgr::setColor(Color4& color) { mColor.colorView = color; }
+void FogMgr::setColor(Color4& color)
+{
+	mColor.colorView = color;
+}
 
 /**
  * @note Address: 0x80432ACC
  * @note Size: 0x24
  */
-void FogMgr::getColor(Color4& color) { color = mColor.colorView; }
+void FogMgr::getColor(Color4& color)
+{
+	color = mColor.colorView;
+}

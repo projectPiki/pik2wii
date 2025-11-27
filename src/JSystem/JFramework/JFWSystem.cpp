@@ -1,7 +1,4 @@
 #include "JSystem/JFramework/JFWSystem.h"
-#include "Dolphin/dvd.h"
-#include "Dolphin/gx.h"
-#include "Dolphin/os.h"
 #include "JSystem/JKernel/JKRAram.h"
 #include "JSystem/JKernel/JKRHeap.h"
 #include "JSystem/JKernel/JKRThread.h"
@@ -14,6 +11,9 @@
 #include "JSystem/JUtility/JUTGamePad.h"
 #include "JSystem/JUtility/JUTGraphFifo.h"
 #include "JSystem/JUtility/JUTVideo.h"
+#include "RevoSDK/dvd.h"
+#include "RevoSDK/gx.h"
+#include "RevoSDK/os.h"
 #include "types.h"
 
 extern ResFONT JUTResFONT_Ascfont_fix12;

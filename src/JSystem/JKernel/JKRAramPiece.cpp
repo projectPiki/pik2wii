@@ -1,8 +1,8 @@
-#include "Dolphin/ar.h"
-#include "Dolphin/os.h"
 #include "JSystem/JKernel/JKRAram.h"
 #include "JSystem/JKernel/JKRDecomp.h"
 #include "JSystem/JKernel/JKRHeap.h"
+#include "RevoSDK/ar.h"
+#include "RevoSDK/os.h"
 #include "types.h"
 
 JSUList<JKRAMCommand> JKRAramPiece::sAramPieceCommandList;
@@ -12,7 +12,10 @@ OSMutex JKRAramPiece::mMutex;
  * @note Address: 0x80019AD8
  * @note Size: 0x20
  */
-void JKRAramPiece::sendCommand(JKRAMCommand* command) { startDMA(command); }
+void JKRAramPiece::sendCommand(JKRAMCommand* command)
+{
+	startDMA(command);
+}
 
 struct OrderSyncMsg {
 	int _00;

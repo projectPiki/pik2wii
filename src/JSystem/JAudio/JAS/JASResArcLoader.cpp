@@ -1,8 +1,8 @@
-#include "Dolphin/os.h"
-#include "JSystem/JAudio/JAS/JASDvd.h"
 #include "JSystem/JAudio/JAS/JASResArcLoader.h"
+#include "JSystem/JAudio/JAS/JASDvd.h"
 #include "JSystem/JAudio/JAS/JASThread.h"
 #include "JSystem/JKernel/JKRArchive.h"
+#include "RevoSDK/os.h"
 
 /**
  * @note Address: 0x800A7670

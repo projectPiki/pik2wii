@@ -1,5 +1,5 @@
-#include "Dolphin/card.h"
-#include "Dolphin/hw_regs.h"
+#include "RevoSDK/card.h"
+#include "RevoSDK/hw_regs.h"
 
 /**
  * @note Address: 0x800D8E2C
@@ -24,7 +24,7 @@ static void FormatCallback(s32 channel, s32 result)
 	} else if (card->formatStep < 2 * CARD_NUM_SYSTEM_BLOCK) {
 		int step = card->formatStep - CARD_NUM_SYSTEM_BLOCK;
 		result   = __CARDWrite(channel, (u32)card->sectorSize * step, CARD_SYSTEM_BLOCK_SIZE,
-                             (u8*)card->workArea + (CARD_SYSTEM_BLOCK_SIZE * step), FormatCallback);
+		                       (u8*)card->workArea + (CARD_SYSTEM_BLOCK_SIZE * step), FormatCallback);
 		if (result >= 0) {
 			return;
 		}

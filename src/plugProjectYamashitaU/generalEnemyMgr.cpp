@@ -1,5 +1,4 @@
 #include "Game/generalEnemyMgr.h"
-#include "Dolphin/rand.h"
 #include "Game/Entities/Armor.h"
 #include "Game/Entities/Baby.h"
 #include "Game/Entities/BigFoot.h"
@@ -73,6 +72,7 @@
 #include "Game/gamePlayData.h"
 #include "Game/plantsMgr.h"
 #include "LoadResource.h"
+#include "RevoSDK/rand.h"
 
 static const char matchText[] = "enemyBase";
 

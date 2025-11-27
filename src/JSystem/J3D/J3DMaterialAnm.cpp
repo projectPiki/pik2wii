@@ -1,13 +1,13 @@
-#include "Dolphin/gx.h"
+#include "JSystem/J3D/J3DMaterialAnm.h"
 #include "JSystem/J3D/J3DAnmTevRegKey.h"
 #include "JSystem/J3D/J3DAnmTextureSRTKey.h"
 #include "JSystem/J3D/J3DColorBlock.h"
-#include "JSystem/J3D/J3DMaterialAnm.h"
 #include "JSystem/J3D/J3DMaterial.h"
 #include "JSystem/J3D/J3DTevBlock.h"
 #include "JSystem/J3D/J3DTexGenBlock.h"
 #include "JSystem/J3D/J3DTexMtx.h"
 #include "JSystem/J3D/J3DTypes.h"
+#include "RevoSDK/gx.h"
 
 /**
  * @note Address: 0x8006A0F4

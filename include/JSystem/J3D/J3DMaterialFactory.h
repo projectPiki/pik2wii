@@ -1,16 +1,16 @@
 #ifndef _JSYSTEM_J3D_J3DMATERIALFACTORY_H
 #define _JSYSTEM_J3D_J3DMATERIALFACTORY_H
 
-#include "Dolphin/gx.h"
-#include "Dolphin/mtx.h"
 #include "JSystem/J3D/J3DFileBlock.h"
 #include "JSystem/J3D/J3DGXColor.h"
 #include "JSystem/J3D/J3DInd.h"
 #include "JSystem/J3D/J3DMaterial.h"
 #include "JSystem/J3D/J3DPE.h"
-#include "JSystem/J3D/J3DTexMtx.h"
 #include "JSystem/J3D/J3DTevBlock.h"
+#include "JSystem/J3D/J3DTexMtx.h"
 #include "JSystem/J3D/J3DTypes.h"
+#include "RevoSDK/gx.h"
+#include "RevoSDK/mtx.h"
 #include "types.h"
 
 struct J3DDisplayListInit {
@@ -30,8 +30,7 @@ struct J3DIndInitData {
 	J3DIndTevStageInfo mIndTevStageInfo[16];          // _78
 };
 
-struct J3DLightInfo {
-};
+struct J3DLightInfo { };
 
 struct J3DPatchingInfo {
 	u16 mMatColorOffset;  // _00
@@ -43,8 +42,7 @@ struct J3DPatchingInfo {
 	u8 _0C[4];            // _0C
 };
 
-struct J3DTexCoord2Info {
-};
+struct J3DTexCoord2Info { };
 
 /**
  * @size{0x14C}

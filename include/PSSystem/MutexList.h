@@ -1,8 +1,8 @@
 #ifndef _PSSYSTEM_MUTEXLIST_H
 #define _PSSYSTEM_MUTEXLIST_H
 
-#include "Dolphin/os.h"
 #include "JSystem/JSupport/JSUList.h"
+#include "RevoSDK/os.h"
 
 namespace PSSystem {
 template <typename T>

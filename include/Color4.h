@@ -1,8 +1,8 @@
 #ifndef _COLOR4_H
 #define _COLOR4_H
 
+#include "RevoSDK/gx.h"
 #include "types.h"
-#include "Dolphin/gx.h"
 
 // TODO: See if this inherits GXColor
 struct Color4 {

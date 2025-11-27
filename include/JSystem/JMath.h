@@ -1,9 +1,9 @@
 #ifndef _JSYSTEM_JMATH_H
 #define _JSYSTEM_JMATH_H
 
-#include "Dolphin/mtx.h"
-#include "Dolphin/vec.h"
 #include "JSystem/JMath/Inline.h"
+#include "RevoSDK/mtx.h"
+#include "RevoSDK/vec.h"
 #include "math.h"
 #include "stl/utility.h"
 #include "types.h"

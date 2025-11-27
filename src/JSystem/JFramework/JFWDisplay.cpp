@@ -1,7 +1,4 @@
 #include "JSystem/JFramework/JFWDisplay.h"
-#include "Dolphin/gx.h"
-#include "Dolphin/mtx.h"
-#include "Dolphin/os.h"
 #include "JSystem/J2D/J2DGrafContext.h"
 #include "JSystem/JFramework/JFWAlarm.h"
 #include "JSystem/JSupport/JSUList.h"
@@ -13,6 +10,9 @@
 #include "JSystem/JUtility/JUTVideo.h"
 #include "JSystem/JUtility/JUTXfb.h"
 #include "JSystem/JUtility/TColor.h"
+#include "RevoSDK/gx.h"
+#include "RevoSDK/mtx.h"
+#include "RevoSDK/os.h"
 #include "types.h"
 
 Mtx e_mtx = { { 1.0f, 0.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 1.0f, 0.0f } };
@@ -591,7 +591,10 @@ void JFWDisplay::clearEfb_init()
  * @note Address: N/A
  * @note Size: 0x2C
  */
-void JFWDisplay::clearEfb() { clearEfb(mClearColor); }
+void JFWDisplay::clearEfb()
+{
+	clearEfb(mClearColor);
+}
 
 /**
  * @note Address: 0x8008A8B8
@@ -729,7 +732,7 @@ void JFWDrawDoneAlarm()
 	alarm.createAlarm();
 	alarm.appendLink();
 	OSRestoreInterrupts(status);
-	OSSetAlarm(&alarm, (OS_TIMER_CLOCK)*0.5, JFWGXAbortAlarmHandler);
+	OSSetAlarm(&alarm, (OS_TIMER_CLOCK) * 0.5, JFWGXAbortAlarmHandler);
 	GXDrawDone();
 	status = OSDisableInterrupts();
 	alarm.cancelAlarm();

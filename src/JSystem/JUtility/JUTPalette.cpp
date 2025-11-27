@@ -1,6 +1,6 @@
 #include "JSystem/JUtility/JUTPalette.h"
-#include "Dolphin/os.h"
 #include "JSystem/ResTLUT.h"
+#include "RevoSDK/os.h"
 #include "types.h"
 
 /**

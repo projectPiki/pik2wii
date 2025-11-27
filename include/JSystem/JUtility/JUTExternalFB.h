@@ -1,8 +1,8 @@
 #ifndef _JSYSTEM_JUT_JUTEXTERNALFB_H
 #define _JSYSTEM_JUT_JUTEXTERNALFB_H
 
+#include "RevoSDK/gx.h"
 #include "types.h"
-#include "Dolphin/gx.h"
 
 struct JUTExternalFB {
 	JUTExternalFB(GXRenderModeObj*, GXGamma, void*, u32);

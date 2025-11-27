@@ -1,7 +1,7 @@
-#include "Dolphin/gx.h"
-#include "JSystem/JUtility/JUTFont.h"
 #include "JSystem/JKernel/JKRHeap.h"
 #include "JSystem/JUtility/JUTConsole.h"
+#include "JSystem/JUtility/JUTFont.h"
+#include "RevoSDK/gx.h"
 #include "types.h"
 
 JUTFont::IsLeadByte const JUTResFont::saoAboutEncoding_[3]
@@ -49,7 +49,10 @@ JUTResFont::~JUTResFont()
  * @note Size: 0x24
  * Matches
  */
-void JUTResFont::deleteMemBlocks_ResFont() { delete[] mMemBlocks; }
+void JUTResFont::deleteMemBlocks_ResFont()
+{
+	delete[] mMemBlocks;
+}
 
 /**
  * @note Address: 0x800312F0
@@ -447,7 +450,10 @@ int JUTResFont::getCellHeight() const
  * @note Address: 0x800320B8
  * @note Size: 0x30
  */
-bool JUTResFont::isLeadByte(int chr) const { return (*mIsLeadByte)(chr); }
+bool JUTResFont::isLeadByte(int chr) const
+{
+	return (*mIsLeadByte)(chr);
+}
 
 /**
  * @note Address: 0x800320E8

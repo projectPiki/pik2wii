@@ -1,7 +1,6 @@
 #ifndef _PSSYSTEM_SYSIF_H
 #define _PSSYSTEM_SYSIF_H
 
-#include "Dolphin/os.h"
 #include "JSystem/JAudio/JAI/JAIBasic.h"
 #include "JSystem/JAudio/JAI/JAIStream.h"
 #include "JSystem/JKernel/JKRDisposer.h"
@@ -12,6 +11,7 @@
 #include "PSM/Se.h"
 #include "PSSystem/PSSeq.h"
 #include "PSSystem/SeqData.h"
+#include "RevoSDK/os.h"
 #include "types.h"
 
 namespace PSSystem {

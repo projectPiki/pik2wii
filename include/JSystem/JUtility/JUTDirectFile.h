@@ -1,7 +1,7 @@
 #ifndef _JSYSTEM_JUT_JUTDIRECTFILE_H
 #define _JSYSTEM_JUT_JUTDIRECTFILE_H
 
-#include "Dolphin/dvd.h"
+#include "RevoSDK/dvd.h"
 #include "types.h"
 
 #define JUTDF_BUFSIZE (0x800)

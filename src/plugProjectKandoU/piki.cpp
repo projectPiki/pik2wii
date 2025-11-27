@@ -1,5 +1,4 @@
 #include "Game/Piki.h"
-#include "Dolphin/rand.h"
 #include "Game/BaseHIO.h"
 #include "Game/DeathMgr.h"
 #include "Game/Entities/ItemOnyon.h"
@@ -16,6 +15,7 @@
 #include "Game/gameStat.h"
 #include "PikiAI.h"
 #include "Radar.h"
+#include "RevoSDK/rand.h"
 #include "SoundID.h"
 #include "System.h"
 #include "efx/TPk.h"

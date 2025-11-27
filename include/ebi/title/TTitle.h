@@ -1,19 +1,19 @@
 #ifndef _EBI_TITLE_TTITLE_H
 #define _EBI_TITLE_TTITLE_H
 
-#include "FogMgr.h"
-#include "Light.h"
-#include "Camera.h"
-#include "Parameters.h"
 #include "BaseParm.h"
-#include "ebi/title/TObjects.h"
-#include "ebi/title/Entities/TPikmin.h"
+#include "Camera.h"
+#include "FogMgr.h"
+#include "JSystem/JKernel/JKRArchive.h"
+#include "Light.h"
+#include "Parameters.h"
+#include "RevoSDK/rand.h"
+#include "Viewport.h"
 #include "ebi/title/Entities/TChappy.h"
 #include "ebi/title/Entities/TKogane.h"
+#include "ebi/title/Entities/TPikmin.h"
 #include "ebi/title/TCoordMgr.h"
-#include "Viewport.h"
-#include "JSystem/JKernel/JKRArchive.h"
-#include "Dolphin/rand.h"
+#include "ebi/title/TObjects.h"
 
 struct Controller;
 

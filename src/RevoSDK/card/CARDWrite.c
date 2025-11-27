@@ -1,4 +1,4 @@
-#include "Dolphin/card.h"
+#include "RevoSDK/card.h"
 
 static void EraseCallback(s32 chan, s32 result);
 

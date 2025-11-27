@@ -1,11 +1,11 @@
-#include "Dolphin/OS/OSMessage.h"
-#include "Dolphin/os.h"
 #include "JSystem/JAudio/JAS/JASCalc.h"
 #include "JSystem/JAudio/JAS/JASHeap.h"
 #include "JSystem/JAudio/JAS/JASKernel.h"
 #include "JSystem/JAudio/JAS/JASMutexLock.h"
 #include "JSystem/JAudio/JAS/JASThread.h"
 #include "JSystem/JKernel/JKRThread.h"
+#include "RevoSDK/OS/OSMessage.h"
+#include "RevoSDK/os.h"
 
 /**
  * @note Address: 0x800A8840

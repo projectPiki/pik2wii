@@ -1,4 +1,4 @@
-#include "Dolphin/gba.h"
+#include "RevoSDK/gba.h"
 
 char* __GBAVersion                           = "<< Dolphin SDK - GBA\trelease build: Dec  3 2003 18:41:55 (0x2301) >>";
 static OSResetFunctionInfo ResetFunctionInfo = { OnReset, 0x7E };

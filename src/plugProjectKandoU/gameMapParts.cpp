@@ -1,4 +1,3 @@
-#include "Dolphin/rand.h"
 #include "Game/Cave/Node.h"
 #include "Game/CurrTriInfo.h"
 #include "Game/EnemyBase.h"
@@ -8,6 +7,7 @@
 #include "Game/generalEnemyMgr.h"
 #include "Game/mapParts.h"
 #include "JSystem/JUtility/JUTTexture.h"
+#include "RevoSDK/rand.h"
 #include "Sys/RayIntersectInfo.h"
 #include "Sys/TriangleTable.h"
 #include "Vector3.h"

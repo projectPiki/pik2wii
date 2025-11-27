@@ -1,7 +1,7 @@
 #include "JSystem/J3D/J3DSys.h"
-#include "Dolphin/gx.h"
-#include "Dolphin/mtx.h"
-#include "Dolphin/os.h"
+#include "RevoSDK/gx.h"
+#include "RevoSDK/mtx.h"
+#include "RevoSDK/os.h"
 #include "types.h"
 
 J3DSys j3dSys;
@@ -396,4 +396,6 @@ static void fakeFunc()
  * @note Address: 0x8005EB54
  * @note Size: 0x4
  */
-void J3DSys::ErrorReport(J3DErrType) const { }
+void J3DSys::ErrorReport(J3DErrType) const
+{
+}

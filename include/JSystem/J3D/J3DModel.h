@@ -1,19 +1,19 @@
 #ifndef _JSYSTEM_J3D_J3DMODEL_H
 #define _JSYSTEM_J3D_J3DMODEL_H
 
-#include "Dolphin/mtx.h"
-#include "JSystem/J3D/J3DVertexData.h"
-#include "types.h"
-#include "JSystem/J3D/J3DShape.h"
-#include "JSystem/J3D/J3DMaterial.h"
+#include "BitFlag.h"
 #include "JSystem/J3D/J3DJointTree.h"
+#include "JSystem/J3D/J3DMaterial.h"
+#include "JSystem/J3D/J3DMtxBuffer.h"
+#include "JSystem/J3D/J3DPacket.h"
+#include "JSystem/J3D/J3DShape.h"
 #include "JSystem/J3D/J3DTypes.h"
 #include "JSystem/J3D/J3DVertexBuffer.h"
-#include "JSystem/J3D/J3DMtxBuffer.h"
+#include "JSystem/J3D/J3DVertexData.h"
 #include "JSystem/JGeometry.h"
-#include "JSystem/J3D/J3DPacket.h"
 #include "JSystem/JUtility/JUTNameTab.h"
-#include "BitFlag.h"
+#include "RevoSDK/mtx.h"
+#include "types.h"
 
 struct J3DDeformData;
 struct J3DMatPacket;

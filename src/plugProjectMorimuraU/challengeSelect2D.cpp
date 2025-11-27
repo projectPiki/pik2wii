@@ -1,13 +1,13 @@
 #include "Morimura/challengeSelect2d.h"
-#include "Dolphin/rand.h"
-#include "Game/gameChallenge2D.h"
-#include "trig.h"
+#include "Controller.h"
 #include "Game/GameConfig.h"
-#include "efx2d/T2DChangesmoke.h"
+#include "Game/gameChallenge2D.h"
 #include "JSystem/JKernel/JKRDvdRipper.h"
 #include "PSSystem/PSSystemIF.h"
-#include "Controller.h"
+#include "RevoSDK/rand.h"
 #include "Screen/Game2DMgr.h"
+#include "efx2d/T2DChangesmoke.h"
+#include "trig.h"
 
 namespace Morimura {
 
@@ -78,9 +78,9 @@ void TChallengePiki::reset()
 void TChallengePiki::jumpStart(f32 time)
 {
 	mVec[0]  = Vector2f(mPanes[0]->getGlbVtx(GLBVTX_BtmLeft).x - mPanes[1]->getGlbVtx(GLBVTX_BtmRight).x,
-                       mPanes[0]->getGlbVtx(GLBVTX_BtmLeft).y - mPanes[1]->getGlbVtx(GLBVTX_BtmRight).y);
+	                    mPanes[0]->getGlbVtx(GLBVTX_BtmLeft).y - mPanes[1]->getGlbVtx(GLBVTX_BtmRight).y);
 	mVec[1]  = Vector2f(mPanes[0]->getGlbVtx(GLBVTX_BtmLeft).x - mPanes[2]->getGlbVtx(GLBVTX_BtmLeft).x,
-                       mPanes[0]->getGlbVtx(GLBVTX_BtmLeft).y - mPanes[2]->getGlbVtx(GLBVTX_BtmLeft).y);
+	                    mPanes[0]->getGlbVtx(GLBVTX_BtmLeft).y - mPanes[2]->getGlbVtx(GLBVTX_BtmLeft).y);
 	mYOffset = -500.0f;
 	for (int i = 0; i < 50; i++) {
 		mPosInfo[i].mTimer      = (0.1f * randFloat()) + -(0.1f * (f32)i - time);
@@ -1071,7 +1071,10 @@ lbl_8038CB44:
  * @note Address: N/A
  * @note Size: 0x34
  */
-void TChallengePanel::startScaleUp() { mScaleMgr->up(0.3f, 30.0f, 0.6f, 0.0f); }
+void TChallengePanel::startScaleUp()
+{
+	mScaleMgr->up(0.3f, 30.0f, 0.6f, 0.0f);
+}
 
 /**
  * @note Address: 0x8038CCC8
@@ -1130,7 +1133,7 @@ void TChallengeScreen::create(char const* path, u32 flags)
 void TChallengeScreen::createAnimPane(char* path)
 {
 	u64 tags[16]   = { 'Nhl_00', 'Nhl_01', 'Nhl_02', 'Nhl_03', 'Nhl_04', 'Nhl_05', 'Nhl_06', 'Nhl_07',
-                     'Nhl_08', 'Nhl_09', 'Nhl_10', 'Nhl_11', 'Nhl_12', 'Nhl_13', 'Nhl_14', 'NULL_001' };
+		               'Nhl_08', 'Nhl_09', 'Nhl_10', 'Nhl_11', 'Nhl_12', 'Nhl_13', 'Nhl_14', 'NULL_001' };
 	mAnimPaneCount = 15;
 	mAnimPanes     = new og::Screen::AnimPane*[mAnimPaneCount];
 	for (int i = 0; i < mAnimPaneCount; i++) {
@@ -1191,7 +1194,10 @@ void TChallengeScreen::updateBckPane()
  * @note Address: 0x8038D43C
  * @note Size: 0x20
  */
-bool TChallengeScreen::isRandAnimStart() { return mAnimPanes[0]->mCurrentFrame == 2.0f; }
+bool TChallengeScreen::isRandAnimStart()
+{
+	return mAnimPanes[0]->mCurrentFrame == 2.0f;
+}
 
 /**
  * @note Address: 0x8038D45C
@@ -2032,7 +2038,9 @@ void TChallengeSelectExplanationWindow::create(char const* path, u32 flags)
  * @note Address: 0x8038E9B4
  * @note Size: 0x4
  */
-void TChallengeSelectExplanationWindow::screenScaleUp() { }
+void TChallengeSelectExplanationWindow::screenScaleUp()
+{
+}
 
 /**
  * @note Address: 0x8038E9B8
@@ -2092,7 +2100,10 @@ TChallengeSelect::TChallengeSelect()
  * @note Size: 0x44
  * Probably something like this
  */
-void TChallengeSelect::setDebugHeapParent(JKRHeap* heap) { mDebugHeap = static_cast<JKRExpHeap*>(heap); }
+void TChallengeSelect::setDebugHeapParent(JKRHeap* heap)
+{
+	mDebugHeap = static_cast<JKRExpHeap*>(heap);
+}
 
 /**
  * @note Address: 0x8038EBE8
@@ -6904,13 +6915,19 @@ int TChallengeSelect::getIndexMax()
  * @note Address: 0x80392B20
  * @note Size: 0x24
  */
-void TChallengeSelect::openWindow() { mRulesScreen->openWindow(); }
+void TChallengeSelect::openWindow()
+{
+	mRulesScreen->openWindow();
+}
 
 /**
  * @note Address: 0x80392B44
  * @note Size: 0x24
  */
-void TChallengeSelect::closeWindow() { mRulesScreen->closeWindow(); }
+void TChallengeSelect::closeWindow()
+{
+	mRulesScreen->closeWindow();
+}
 
 /**
  * @note Address: 0x80392B68

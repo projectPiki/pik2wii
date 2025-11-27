@@ -1,14 +1,14 @@
-#include "Dolphin/OS/OSCache.h"
-#include "math.h"
+#include "JSystem/JAudio/JAS/JASTrack.h"
 #include "JSystem/JAudio/JAS/JASBank.h"
 #include "JSystem/JAudio/JAS/JASCalc.h"
 #include "JSystem/JAudio/JAS/JASChannel.h"
 #include "JSystem/JAudio/JAS/JASDriver.h"
 #include "JSystem/JAudio/JAS/JASPlayer.h"
 #include "JSystem/JAudio/JAS/JASSeqParser.h"
-#include "JSystem/JAudio/JAS/JASTrack.h"
-#include "JSystem/JSupport/JSUList.h"
 #include "JSystem/JMath.h"
+#include "JSystem/JSupport/JSUList.h"
+#include "RevoSDK/OS/OSCache.h"
+#include "math.h"
 #include "trig.h"
 
 static f32 c32 = 1.0f;
@@ -246,7 +246,10 @@ s8 JASTrack::mainProc()
  * @note Address: 0x8009F648
  * @note Size: 0x28
  */
-void JASTrack::setInterrupt(u16 interrupt) { mIntrMgr.request(interrupt); }
+void JASTrack::setInterrupt(u16 interrupt)
+{
+	mIntrMgr.request(interrupt);
+}
 
 /**
  * @note Address: 0x8009F670
@@ -277,7 +280,10 @@ void JASTrack::setBankNumber(u8)
  * @note Address: 0x8009F6D0
  * @note Size: 0x8
  */
-void JASTrack::assignExtBuffer(JASOuterParam* buffer) { mExtBuffer = buffer; }
+void JASTrack::assignExtBuffer(JASOuterParam* buffer)
+{
+	mExtBuffer = buffer;
+}
 
 /**
  * @note Address: N/A
@@ -399,7 +405,10 @@ void JASTrack::initTimed()
  * @note Address: 0x8009F7A4
  * @note Size: 0x10
  */
-void JASTrack::connectBus(int mixConfigIdx, int value) { mChannelUpdater.mMixConfigs[mixConfigIdx] = value; }
+void JASTrack::connectBus(int mixConfigIdx, int value)
+{
+	mChannelUpdater.mMixConfigs[mixConfigIdx] = value;
+}
 
 /**
  * @note Address: 0x8009F7B4
@@ -2940,13 +2949,19 @@ lbl_800A2090:
  * @note Address: 0x800A20A4
  * @note Size: 0x24
  */
-u16 JASTrack::readSelfPort(int portNo) { return mTrackPort.readImport(portNo); }
+u16 JASTrack::readSelfPort(int portNo)
+{
+	return mTrackPort.readImport(portNo);
+}
 
 /**
  * @note Address: 0x800A20C8
  * @note Size: 0x24
  */
-void JASTrack::writeSelfPort(int portNo, u16 value) { mTrackPort.writeExport(portNo, value); }
+void JASTrack::writeSelfPort(int portNo, u16 value)
+{
+	mTrackPort.writeExport(portNo, value);
+}
 
 /**
  * @note Address: 0x800A20EC
@@ -3303,7 +3318,10 @@ s32 JASTrack::rootCallback(void* obj)
  * @note Address: 0x800A274C
  * @note Size: 0x8
  */
-void JASTrack::registerSeqCallback(JASTrack::SeqCallback cb) { sCallBackFunc = cb; }
+void JASTrack::registerSeqCallback(JASTrack::SeqCallback cb)
+{
+	sCallBackFunc = cb;
+}
 
 /**
  * @note Address: 0x800A2754
@@ -3404,7 +3422,10 @@ int JASTrack::getFreeMemCount()
  * @note Address: 0x800A2828
  * @note Size: 0x30
  */
-JASVibrate::JASVibrate() { init(); }
+JASVibrate::JASVibrate()
+{
+	init();
+}
 
 /**
  * @note Address: 0x800A2858

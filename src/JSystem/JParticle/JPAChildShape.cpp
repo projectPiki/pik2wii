@@ -1,6 +1,6 @@
-#include "Dolphin/gx.h"
 #include "JSystem/JParticle/JPAEmitter.h"
 #include "JSystem/JParticle/JPAShape.h"
+#include "RevoSDK/gx.h"
 
 /**
  * @note Address: 0x8008EE44
@@ -48,7 +48,10 @@ void JPACalcChildScaleOut(JPAEmitterWorkData* workData, JPABaseParticle* particl
  * @note Address: 0x8008EFC8
  * @note Size: 0x8
  */
-JPAChildShape::JPAChildShape(const u8* data) { mData = (JPAChildShapeData*)data; }
+JPAChildShape::JPAChildShape(const u8* data)
+{
+	mData = (JPAChildShapeData*)data;
+}
 
 /**
  * @note Address: N/A

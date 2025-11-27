@@ -1,11 +1,11 @@
 #ifndef _JSYSTEM_JUT_JUTEXCEPTION_H
 #define _JSYSTEM_JUT_JUTEXCEPTION_H
 
-#include "Dolphin/os.h"
 #include "JSystem/JKernel/JKRThread.h"
 #include "JSystem/JSupport/JSUList.h"
-#include "JSystem/JUtility/JUTGamePad.h"
 #include "JSystem/JUtility/JUTExternalFB.h"
+#include "JSystem/JUtility/JUTGamePad.h"
+#include "RevoSDK/os.h"
 #include "stdarg.h"
 #include "types.h"
 

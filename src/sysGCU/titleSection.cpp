@@ -1,27 +1,26 @@
-#include "PSSystem/PSCommon.h"
-#include "Title.h"
-#include "ebi/title/TTitle.h"
-#include "og/ogLib2D.h"
-#include "Pikmin2ARAM.h"
-#include "Game/THPPlayer.h"
-#include "Screen/Game2DMgr.h"
-#include "PSSystem/PSGame.h"
-#include "PSSystem/PSSystemIF.h"
-#include "JSystem/JFramework/JFWDisplay.h"
-#include "PSM/ObjMgr.h"
-#include "GameFlow.h"
-#include "PSSystem/PSCommon.h"
 #include "Game/Data.h"
 #include "Game/GameConfig.h"
 #include "Game/MemoryCard/Mgr.h"
-#include "og/newScreen/ogUtil.h"
-#include "TParticle2dMgr.h"
+#include "Game/THPPlayer.h"
+#include "GameFlow.h"
+#include "JSystem/JFramework/JFWDisplay.h"
 #include "JSystem/JUtility/JUTProcBar.h"
-#include "Dolphin/rand.h"
 #include "Morimura/HiScore.h"
+#include "PSM/ObjMgr.h"
+#include "PSSystem/PSCommon.h"
+#include "PSSystem/PSGame.h"
+#include "PSSystem/PSSystemIF.h"
+#include "Pikmin2ARAM.h"
+#include "RevoSDK/rand.h"
+#include "Screen/Game2DMgr.h"
+#include "TParticle2dMgr.h"
+#include "Title.h"
 #include "ebi/E2DGraph.h"
+#include "ebi/title/TTitle.h"
 #include "menu.h"
 #include "nans.h"
+#include "og/newScreen/ogUtil.h"
+#include "og/ogLib2D.h"
 
 static const u32 padding[]    = { 0, 0, 0 };
 static const char className[] = "titleSection";
@@ -54,7 +53,10 @@ Section::Section(JKRHeap* heap)
  * @note Address: 0x8044A460
  * @note Size: 0xA4
  */
-Section::~Section() { ebi::title::TTitleMgr::deleteInstance(); }
+Section::~Section()
+{
+	ebi::title::TTitleMgr::deleteInstance();
+}
 
 /**
  * @note Address: 0x8044A504
@@ -164,7 +166,10 @@ void Section::init()
  * @note Address: 0x8044AB00
  * @note Size: 0x2C
  */
-void Section::menuCancel(Menu&) { PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_CANCEL, 0); }
+void Section::menuCancel(Menu&)
+{
+	PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_CANCEL, 0);
+}
 
 /**
  * @note Address: 0x8044AB2C
@@ -563,7 +568,10 @@ bool Section::isFinishable()
  * @note Address: 0x8044BEE0
  * @note Size: 0x8C
  */
-void Section::doLoadingStart() { sys->dvdLoadUseCallBack(&mThreadCommand, new Delegate<Section>(this, loadResource)); }
+void Section::doLoadingStart()
+{
+	sys->dvdLoadUseCallBack(&mThreadCommand, new Delegate<Section>(this, loadResource));
+}
 
 /**
  * @note Address: 0x8044BF6C

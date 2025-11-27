@@ -1,9 +1,9 @@
 #include "JSystem/J3D/J3DJoint.h"
-#include "Dolphin/mtx.h"
 #include "JSystem/J3D/J3DModel.h"
 #include "JSystem/J3D/J3DMtxCalc.h"
 #include "JSystem/J3D/J3DTransform.h"
 #include "JSystem/JMath.h"
+#include "RevoSDK/mtx.h"
 #include "types.h"
 
 J3DMtxBuffer* J3DMtxCalc::mMtxBuffer;

@@ -1,10 +1,10 @@
 #ifndef _JSYSTEM_JUT_JUTTEXTURE_H
 #define _JSYSTEM_JUT_JUTTEXTURE_H
 
-#include "Dolphin/gx.h"
-#include "types.h"
-#include "JSystem/ResTIMG.h"
 #include "JSystem/J2D/J2DScreen.h"
+#include "JSystem/ResTIMG.h"
+#include "RevoSDK/gx.h"
+#include "types.h"
 
 struct JUTPalette;
 struct ResTIMG;

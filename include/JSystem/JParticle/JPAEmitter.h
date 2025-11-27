@@ -1,19 +1,19 @@
 #ifndef _JSYSTEM_JPA_JPAEMITTER_H
 #define _JSYSTEM_JPA_JPAEMITTER_H
 
-#include "Dolphin/gx.h"
-#include "Dolphin/mtx.h"
+#include "Color4.h"
 #include "JSystem/JGeometry.h"
 #include "JSystem/JMath.h"
+#include "JSystem/JParticle/JPABlock.h"
+#include "JSystem/JParticle/JPAMath.h"
 #include "JSystem/JParticle/JPANode.h"
 #include "JSystem/JParticle/JPAResource.h"
 #include "JSystem/JSupport/JSUList.h"
 #include "JSystem/JUtility/TColor.h"
-#include "JSystem/JParticle/JPABlock.h"
-#include "JSystem/JParticle/JPAMath.h"
-#include "types.h"
-#include "Color4.h"
+#include "RevoSDK/gx.h"
+#include "RevoSDK/mtx.h"
 #include "Vector3.h"
+#include "types.h"
 
 struct JPABaseEmitter;
 struct JPAEmitterWorkData;

@@ -1,13 +1,13 @@
 #ifndef _JSYSTEM_J3D_J3DMTXCALC_H
 #define _JSYSTEM_J3D_J3DMTXCALC_H
 
-#include "Dolphin/mtx.h"
+#include "JSystem/J3D/J3DAnmTransform.h"
 #include "JSystem/J3D/J3DJoint.h"
 #include "JSystem/J3D/J3DSys.h"
 #include "JSystem/J3D/J3DTypes.h"
+#include "RevoSDK/mtx.h"
+#include "RevoSDK/vec.h"
 #include "types.h"
-#include "JSystem/J3D/J3DAnmTransform.h"
-#include "Dolphin/vec.h"
 
 struct J3DMtxBuffer;
 
@@ -95,7 +95,7 @@ struct J3DMtxCalcAnimation : public J3DMtxCalcAnmBase {
 	{
 	}
 
-	virtual ~J3DMtxCalcAnimation() {};                                              // _08
+	virtual ~J3DMtxCalcAnimation() { };                                             // _08
 	virtual void setAnmTransform(J3DAnmTransform* p1) { mBaseAnim = p1; }           // _0C
 	virtual void init(const Vec& p1, const f32 (&p2)[3][4]) { Init::init(p1, p2); } // _24
 	virtual void calc()                                                             // _28

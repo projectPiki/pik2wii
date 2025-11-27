@@ -1,12 +1,12 @@
 #ifndef _P2JME_MOVIE_H
 #define _P2JME_MOVIE_H
 
-#include "P2JME/messageObj.h"
-#include "P2DScreen.h"
-#include "Vector3.h"
-#include "System.h"
-#include "Dolphin/rand.h"
 #include "Game/gamePlayData.h"
+#include "P2DScreen.h"
+#include "P2JME/messageObj.h"
+#include "RevoSDK/rand.h"
+#include "System.h"
+#include "Vector3.h"
 
 namespace P2JME {
 namespace Movie {

@@ -1,30 +1,30 @@
-#include "types.h"
 #include "Game/Entities/BlackMan.h"
-#include "Game/generalEnemyMgr.h"
-#include "efx/TKage.h"
-#include "PSSystem/PSMainSide_ObjSound.h"
-#include "PSM/EnemyBoss.h"
+#include "Game/EnemyAnimKeyEvent.h"
+#include "Game/EnemyFunc.h"
+#include "Game/Entities/ItemOnyon.h"
 #include "Game/MapMgr.h"
+#include "Game/MoviePlayer.h"
+#include "Game/Navi.h"
+#include "Game/PikiMgr.h"
+#include "Game/generalEnemyMgr.h"
+#include "Game/mapParts.h"
 #include "Game/pathfinder.h"
 #include "Game/routeMgr.h"
+#include "JSystem/J3D/J3DTexMtx.h"
+#include "PS.h"
+#include "PSM/EnemyBoss.h"
+#include "PSM/Scene.h"
+#include "PSSystem/PSGame.h"
+#include "PSSystem/PSMainSide_ObjSound.h"
+#include "PSSystem/PSScene.h"
+#include "PSSystem/Seq.h"
 #include "Radar.h"
+#include "RevoSDK/rand.h"
 #include "Sys/MatBaseAnimation.h"
 #include "Sys/MatBaseAnimator.h"
-#include "Game/Navi.h"
-#include "PSSystem/PSGame.h"
-#include "PSSystem/PSScene.h"
-#include "PSM/Scene.h"
-#include "PSSystem/Seq.h"
-#include "Game/MoviePlayer.h"
-#include "JSystem/J3D/J3DTexMtx.h"
-#include "Game/EnemyAnimKeyEvent.h"
-#include "Game/Entities/ItemOnyon.h"
-#include "Game/mapParts.h"
-#include "Game/EnemyFunc.h"
-#include "Game/PikiMgr.h"
-#include "Dolphin/rand.h"
-#include "PS.h"
+#include "efx/TKage.h"
 #include "nans.h"
+#include "types.h"
 
 namespace Game {
 namespace BlackMan {
@@ -135,7 +135,10 @@ void Obj::setParameters()
  * @note Address: 0x803A5FC8
  * @note Size: 0x20
  */
-void Obj::birth(Vector3f& position, f32 faceDirection) { EnemyBase::birth(position, faceDirection); }
+void Obj::birth(Vector3f& position, f32 faceDirection)
+{
+	EnemyBase::birth(position, faceDirection);
+}
 
 /**
  * @note Address: 0x803A5FE8
@@ -903,13 +906,18 @@ lbl_803A72D0:
  * @note Address: 0x803A730C
  * @note Size: 0x4
  */
-void BlackMan::Obj::doDirectDraw(Graphics&) { }
+void BlackMan::Obj::doDirectDraw(Graphics&)
+{
+}
 
 /**
  * @note Address: 0x803A7310
  * @note Size: 0x20
  */
-void BlackMan::Obj::doDebugDraw(Graphics& gfx) { EnemyBase::doDebugDraw(gfx); }
+void BlackMan::Obj::doDebugDraw(Graphics& gfx)
+{
+	EnemyBase::doDebugDraw(gfx);
+}
 
 /**
  * @note Address: 0x803A7330
@@ -2343,7 +2351,10 @@ lbl_803A8B4C:
  * @note Address: 0x803A8B7C
  * @note Size: 0x34
  */
-bool BlackMan::Obj::isReachToGoal(f32 rad) { return (u8)(sqrDistanceXZ(mPosition, mTargetPosition) < SQUARE(rad)); }
+bool BlackMan::Obj::isReachToGoal(f32 rad)
+{
+	return (u8)(sqrDistanceXZ(mPosition, mTargetPosition) < SQUARE(rad));
+}
 
 /**
  * @note Address: 0x803A8BB0
@@ -4775,19 +4786,27 @@ void BlackMan::Obj::moveRestart()
  * @note Address: 0x803AA9C0
  * @note Size: 0x4
  */
-void BlackMan::Obj::escape() { }
+void BlackMan::Obj::escape()
+{
+}
 
 /**
  * @note Address: 0x803AA9C4
  * @note Size: 0x8
  */
-void BlackMan::Obj::setTimer(f32 time) { mWraithFallTimer = time; }
+void BlackMan::Obj::setTimer(f32 time)
+{
+	mWraithFallTimer = time;
+}
 
 /**
  * @note Address: 0x803AA9CC
  * @note Size: 0x8
  */
-f32 BlackMan::Obj::getTimer() { return mWraithFallTimer; }
+f32 BlackMan::Obj::getTimer()
+{
+	return mWraithFallTimer;
+}
 
 /**
  * @note Address: 0x803AA9D4
@@ -4916,7 +4935,10 @@ void BlackMan::Obj::deadEffect()
  * @note Address: 0x803AAE9C
  * @note Size: 0x34
  */
-void BlackMan::Obj::deadTraceEffect() { mEfxDead->create(nullptr); }
+void BlackMan::Obj::deadTraceEffect()
+{
+	mEfxDead->create(nullptr);
+}
 
 /**
  * @note Address: 0x803AAED0

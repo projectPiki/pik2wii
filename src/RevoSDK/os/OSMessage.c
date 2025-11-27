@@ -1,4 +1,4 @@
-#include "Dolphin/os.h"
+#include "RevoSDK/os.h"
 
 // TODO: this matches, but breaks JKRAramStream with types etc, need to fix both together
 

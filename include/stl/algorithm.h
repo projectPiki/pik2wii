@@ -10,6 +10,20 @@ static InputIterator find_if(InputIterator first, InputIterator last, Predicate 
 template <typename ForwardIterator, typename Element, typename Predicate>
 ForwardIterator upper_bound(ForwardIterator first, ForwardIterator last, const Element& value, Predicate predicate);
 
+template <typename T>
+inline T& move(T& x)
+{
+	return x;
+}
+
+template <typename T>
+inline void swap(T& a, T& b)
+{
+	T tmp = move(a);
+	a     = move(b);
+	b     = move(tmp);
+}
+
 } // namespace std
 
 #endif

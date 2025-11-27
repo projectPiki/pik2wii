@@ -1,5 +1,5 @@
-#include "Dolphin/os.h"
-#include "Dolphin/db.h"
+#include "RevoSDK/db.h"
+#include "RevoSDK/os.h"
 
 // necessary for some asm functions
 extern void __RAS_OSDisableInterrupts_begin();

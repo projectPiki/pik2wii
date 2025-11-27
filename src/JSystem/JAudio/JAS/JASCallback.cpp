@@ -1,6 +1,6 @@
-#include "Dolphin/os.h"
 #include "JSystem/JAudio/JAS/JASCallbackMgr.h"
 #include "JSystem/JAudio/JAS/JASMutexLock.h"
+#include "RevoSDK/os.h"
 
 /**
  * @note Address: 0x800A6500

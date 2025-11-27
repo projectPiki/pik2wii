@@ -1,9 +1,9 @@
-#include "Dolphin/rand.h"
 #include "Game/EnemyFunc.h"
 #include "Game/MoviePlayer.h"
 #include "Game/Navi.h"
 #include "Game/PikiMgr.h"
 #include "Game/Stickers.h"
+#include "RevoSDK/rand.h"
 #include "nans.h"
 #include "stl/float.h"
 

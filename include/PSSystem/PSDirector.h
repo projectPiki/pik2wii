@@ -1,10 +1,10 @@
 #ifndef _PSSYSTEM_DIRECTOR_H
 #define _PSSYSTEM_DIRECTOR_H
 
-#include "Dolphin/os.h"
 #include "JSystem/JAudio/JAD/JADHioNode.h"
 #include "JSystem/JAudio/JAS/JASTrack.h"
 #include "PSSystem/PSSeq.h"
+#include "RevoSDK/os.h"
 
 namespace PSSystem {
 struct SeqTrackBase;

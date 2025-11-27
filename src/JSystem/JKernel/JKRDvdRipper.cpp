@@ -1,10 +1,10 @@
 #include "JSystem/JKernel/JKRDvdRipper.h"
-#include "Dolphin/dvd.h"
-#include "Dolphin/os.h"
-#include "Dolphin/vi.h"
 #include "JSystem/JKernel/JKRAram.h"
 #include "JSystem/JKernel/JKRDecomp.h"
 #include "JSystem/JKernel/JKRFile.h"
+#include "RevoSDK/dvd.h"
+#include "RevoSDK/os.h"
+#include "RevoSDK/vi.h"
 #include "mem.h"
 #include "types.h"
 

@@ -1,6 +1,6 @@
 #include "Game/Entities/ShijimiChou.h"
 #include "JSystem/JUtility/JUTNameTab.h"
-#include "Dolphin/rand.h"
+#include "RevoSDK/rand.h"
 
 namespace Game {
 namespace ShijimiChou {

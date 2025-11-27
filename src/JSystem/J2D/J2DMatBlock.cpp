@@ -1,4 +1,3 @@
-#include "Dolphin/gx.h"
 #include "JSystem/J2D/J2DColorBlock.h"
 #include "JSystem/J2D/J2DGXColorS10.h"
 #include "JSystem/J2D/J2DIndBlock.h"
@@ -12,6 +11,7 @@
 #include "JSystem/JUtility/JUTPalette.h"
 #include "JSystem/JUtility/JUTTexture.h"
 #include "JSystem/JUtility/TColor.h"
+#include "RevoSDK/gx.h"
 #include "types.h"
 
 /**
@@ -170,13 +170,19 @@ void J2DTexGenBlock::getTexMtx(u32 id, J2DTexMtx& texMtx)
  * @note Address: 0x8004A104
  * @note Size: 0x8
  */
-JUTTexture* J2DTevBlock::getTexture(u32 index) { return nullptr; }
+JUTTexture* J2DTevBlock::getTexture(u32 index)
+{
+	return nullptr;
+}
 
 /**
  * @note Address: 0x8004A10C
  * @note Size: 0x8
  */
-JUTPalette* J2DTevBlock::getPalette(u32 index) { return nullptr; }
+JUTPalette* J2DTevBlock::getPalette(u32 index)
+{
+	return nullptr;
+}
 
 /**
  * @note Address: 0x8004A114
@@ -665,7 +671,10 @@ bool J2DTevBlock1::setPalette(u32 index, const ResTLUT* lut)
  * @note Size: 0x10
  * shiftDeleteFlag__12J2DTevBlock1FUcb
  */
-void J2DTevBlock1::shiftDeleteFlag(u8 flag, bool direction) { mUndeleteFlag = mUndeleteFlag & 0x80; }
+void J2DTevBlock1::shiftDeleteFlag(u8 flag, bool direction)
+{
+	mUndeleteFlag = mUndeleteFlag & 0x80;
+}
 
 /**
  * @note Address: 0x8004ADA8

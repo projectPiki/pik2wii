@@ -1,10 +1,10 @@
-#include "Dolphin/mtx.h"
 #include "JSystem/JStage/TObject.h"
 #include "JSystem/JStage/TSystem.h"
 #include "JSystem/JStudio/TControl.h"
 #include "JSystem/JStudio/data.h"
 #include "JSystem/JStudio/math.h"
 #include "JSystem/JStudio_JStage.h"
+#include "RevoSDK/mtx.h"
 #include "types.h"
 
 /**

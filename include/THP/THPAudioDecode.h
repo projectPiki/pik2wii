@@ -1,7 +1,7 @@
 #ifndef _THP_THPAUDIODECODE_H
 #define _THP_THPAUDIODECODE_H
 
-#include "Dolphin/os.h"
+#include "RevoSDK/os.h"
 #include "THP/THPAudio.h"
 
 static void* AudioDecoderForOnMemory(void* bufPtr);

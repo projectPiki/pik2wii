@@ -1,5 +1,5 @@
+#include "RevoSDK/vec.h"
 #include "types.h"
-#include "Dolphin/vec.h"
 
 #define R_RET fp1
 #define FP2   fp2

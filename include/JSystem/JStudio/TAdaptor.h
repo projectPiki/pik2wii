@@ -1,10 +1,10 @@
 #ifndef _JSTUDIO_TADAPTOR_H
 #define _JSTUDIO_TADAPTOR_H
 
-#include "Dolphin/gx.h"
-#include "Dolphin/vec.h"
-#include "JSystem/JStudio/data.h"
 #include "JSystem/JStudio/TVariableValue.h"
+#include "JSystem/JStudio/data.h"
+#include "RevoSDK/gx.h"
+#include "RevoSDK/vec.h"
 
 namespace JStudio {
 struct TObject;

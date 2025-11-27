@@ -1,12 +1,12 @@
-#include "Dolphin/mtx.h"
-#include "JSystem/J3D/J3DMaterial.h"
-#include "JSystem/JKernel/JKRHeap.h"
 #include "JSystem/J3D/J3DMtxBuffer.h"
+#include "JSystem/J3D/J3DMaterial.h"
 #include "JSystem/J3D/J3DModel.h"
 #include "JSystem/J3D/J3DModelLoader.h"
-#include "JSystem/J3D/J3DTexGenBlock.h"
 #include "JSystem/J3D/J3DSys.h"
+#include "JSystem/J3D/J3DTexGenBlock.h"
 #include "JSystem/J3D/J3DTransform.h"
+#include "JSystem/JKernel/JKRHeap.h"
+#include "RevoSDK/mtx.h"
 #include "types.h"
 
 Mtx J3DMtxBuffer::sNoUseDrawMtx;

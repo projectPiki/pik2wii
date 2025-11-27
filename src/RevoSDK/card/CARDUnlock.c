@@ -1,5 +1,5 @@
-#include "Dolphin/card.h"
-#include "Dolphin/dsp.h"
+#include "RevoSDK/card.h"
+#include "RevoSDK/dsp.h"
 
 static void InitCallback(void* task);
 static void DoneCallback(void* task);
@@ -48,7 +48,10 @@ int CARDRand()
  * makes the inlined versions of this not match (:
  * LOVE this compiler.
  */
-void CARDSrand(uint seed) { next = seed; }
+void CARDSrand(uint seed)
+{
+	next = seed;
+}
 
 /**
  * @note Address: N/A

@@ -1,7 +1,7 @@
-#include "Dolphin/gx.h"
 #include "JSystem/JKernel/JKRAram.h"
 #include "JSystem/JUtility/JUTConsole.h"
 #include "JSystem/JUtility/JUTFont.h"
+#include "RevoSDK/gx.h"
 #include "types.h"
 
 /**

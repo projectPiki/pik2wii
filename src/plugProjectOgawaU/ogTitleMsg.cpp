@@ -1,11 +1,11 @@
-#include "og/newScreen/TitleMsg.h"
-#include "og/Screen/ogScreen.h"
 #include "P2JME/Analyzer.h"
-#include "efx2d/T2DCvname.h"
-#include "Dolphin/rand.h"
-#include "og/ogLib2D.h"
-#include "og/Sound.h"
+#include "RevoSDK/rand.h"
 #include "System.h"
+#include "efx2d/T2DCvname.h"
+#include "og/Screen/ogScreen.h"
+#include "og/Sound.h"
+#include "og/newScreen/TitleMsg.h"
+#include "og/ogLib2D.h"
 
 namespace og {
 namespace newScreen {
@@ -353,7 +353,9 @@ TitleMsgWave::TitleMsgWave(J2DScreen* screen, J2DPane* pane, char* str)
  * @note Address: 0x8032FA1C
  * @note Size: 0x4
  */
-void TitleMsgWave::init() { }
+void TitleMsgWave::init()
+{
+}
 
 /**
  * @note Address: 0x8032FA20

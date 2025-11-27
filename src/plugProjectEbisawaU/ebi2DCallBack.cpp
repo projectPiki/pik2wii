@@ -2,10 +2,10 @@
 #include "JSystem/J2D/J2DAnmLoader.h"
 #include "JSystem/JKernel/JKRArchive.h"
 #include "JSystem/JKernel/JKRFileLoader.h"
+#include "P2Macros.h"
+#include "RevoSDK/rand.h"
 #include "ebi/E2DCallBack.h"
 #include "ebi/Utility.h"
-#include "Dolphin/rand.h"
-#include "P2Macros.h"
 
 namespace ebi {
 
@@ -434,7 +434,10 @@ void E2DCallBack_AnmBase::do_update()
  * @note Address: 0x803D0FB0
  * @note Size: 0x8
  */
-bool E2DCallBack_AnmBase::isFinish() { return mIsFinished; }
+bool E2DCallBack_AnmBase::isFinish()
+{
+	return mIsFinished;
+}
 
 /**
  * @note Address: 0x803D0FB8

@@ -1,11 +1,11 @@
 #include "JSystem/J3D/J3DShape.h"
-#include "Dolphin/gd.h"
-#include "Dolphin/gx.h"
-#include "Dolphin/os.h"
 #include "JSystem/J3D/J3DGD.h"
 #include "JSystem/J3D/J3DPacket.h"
 #include "JSystem/J3D/J3DSys.h"
 #include "JSystem/J3D/J3DVertexData.h"
+#include "RevoSDK/gd.h"
+#include "RevoSDK/gx.h"
+#include "RevoSDK/os.h"
 #include "types.h"
 
 u8* J3DShape::sOldVcdVatCmd;

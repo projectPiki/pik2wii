@@ -1,4 +1,4 @@
-#include "Dolphin/os.h"
+#include "RevoSDK/os.h"
 
 #define OS_TIME_MONTH_MAX    12
 #define OS_TIME_WEEK_DAY_MAX 7
@@ -64,7 +64,10 @@ OSTime __OSGetSystemTime()
  * @note Address: N/A
  * @note Size: 0x88
  */
-static BOOL IsLeapYear(s32 year) { return (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0); }
+static BOOL IsLeapYear(s32 year)
+{
+	return (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);
+}
 
 /**
  * @note Address: N/A

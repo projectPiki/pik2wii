@@ -1,8 +1,8 @@
-#include "Dolphin/gx.h"
-#include "Dolphin/vi.h"
+#include "JSystem/JUtility/JUTXfb.h"
 #include "JSystem/JKernel/JKRHeap.h"
 #include "JSystem/JUtility/JUTVideo.h"
-#include "JSystem/JUtility/JUTXfb.h"
+#include "RevoSDK/gx.h"
+#include "RevoSDK/vi.h"
 
 JUTXfb* JUTXfb::sManager;
 

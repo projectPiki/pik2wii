@@ -2,7 +2,7 @@
 #include "JSystem/JKernel/JKRHeap.h"
 #include "PowerPC_EABI_Support\MSL_C\MSL_Common\strtold.h"
 #include "PowerPC_EABI_Support\MSL_C\MSL_Common\strtoul.h"
-#include "Dolphin/stl.h"
+#include "RevoSDK/stl.h"
 
 const u8* J2DPrint::mStrBuff;
 bool J2DPrint::mHeapFlag;
@@ -41,7 +41,9 @@ J2DPrint::J2DPrint(JUTFont* font, f32 width, f32 height, JUtility::TColor charCo
  * @note Address: 0x8003D910
  * @note Size: 0x48
  */
-J2DPrint::~J2DPrint() { }
+J2DPrint::~J2DPrint()
+{
+}
 
 /**
  * @note Address: 0x8003D958

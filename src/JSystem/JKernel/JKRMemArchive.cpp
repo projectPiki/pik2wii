@@ -1,9 +1,9 @@
-#include "Dolphin/os.h"
 #include "JSystem/JKernel/JKRArchive.h"
 #include "JSystem/JKernel/JKRDecomp.h"
 #include "JSystem/JKernel/JKRDvdRipper.h"
 #include "JSystem/JKernel/JKRHeap.h"
 #include "JSystem/JUtility/JUTException.h"
+#include "RevoSDK/os.h"
 #include "stl/mem.h"
 #include "types.h"
 
@@ -11,7 +11,9 @@
  * @note Address: N/A
  * @note Size: 0x3C
  */
-JKRMemArchive::JKRMemArchive() { }
+JKRMemArchive::JKRMemArchive()
+{
+}
 
 /**
  * @note Address: 0x80024644

@@ -1,7 +1,7 @@
 #include "THP/THPDraw.h"
-#include "Dolphin/gx.h"
-#include "Dolphin/Mtx.h"
-#include "Dolphin/os.h"
+#include "RevoSDK/Mtx.h"
+#include "RevoSDK/gx.h"
+#include "RevoSDK/os.h"
 /**
  * @note Address: 0x8044D684
  * @note Size: 0x118

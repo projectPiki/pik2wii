@@ -1,9 +1,9 @@
 #ifndef _MATRIXF_H
 #define _MATRIXF_H
 
-#include "Dolphin/mtx.h"
-#include "types.h"
+#include "RevoSDK/mtx.h"
 #include "Vector3.h"
+#include "types.h"
 
 struct Quat;
 
@@ -530,6 +530,9 @@ struct Matrixf {
  *
  * @param other The Matrixf object to multiply with.
  */
-inline void Vector3f::operator*=(Matrixf& other) { *this = other * *this; }
+inline void Vector3f::operator*=(Matrixf& other)
+{
+	*this = other * *this;
+}
 
 #endif

@@ -1,7 +1,7 @@
-#include "Dolphin/db.h"
-#include "PowerPC_EABI_Support/MetroTRK/trk.h"
-#include "Dolphin/AmcExi2Stubs.h"
 #include "PowerPC_EABI_Support/MetroTRK/custconn/CircleBuffer.h"
+#include "PowerPC_EABI_Support/MetroTRK/trk.h"
+#include "RevoSDK/AmcExi2Stubs.h"
+#include "RevoSDK/db.h"
 
 #define GDEV_BUF_SIZE (0x500)
 
@@ -26,7 +26,10 @@ int gdev_cc_initialize(void* inputPendingPtrRef, AmcEXICallback monitorCallback)
  * @note Address: 0x800C14B8
  * @note Size: 0x8
  */
-int gdev_cc_shutdown() { return 0; }
+int gdev_cc_shutdown()
+{
+	return 0;
+}
 
 /**
  * @note Address: 0x800C1494
@@ -46,7 +49,10 @@ int gdev_cc_open()
  * @note Address: 0x800C148C
  * @note Size: 0x8
  */
-int gdev_cc_close() { return 0; }
+int gdev_cc_close()
+{
+	return 0;
+}
 
 /**
  * @note Address: 0x800C1398

@@ -1,12 +1,12 @@
 #ifndef _THP_THPPLAYER_H
 #define _THP_THPPLAYER_H
 
-#include "types.h"
-#include "Dolphin/os.h"
-#include "Dolphin/gx.h"
+#include "RevoSDK/gx.h"
+#include "RevoSDK/os.h"
 #include "THP/THPBuffer.h"
 #include "THP/THPFile.h"
 #include "THP/THPInfo.h"
+#include "types.h"
 
 #ifdef __cplusplus
 extern "C" {

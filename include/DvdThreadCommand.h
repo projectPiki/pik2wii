@@ -1,9 +1,9 @@
 #ifndef _DVDTHREADCOMMAND_H
 #define _DVDTHREADCOMMAND_H
 
-#include "JSystem/JSupport/JSUList.h"
-#include "Dolphin/os.h"
 #include "AppThread.h"
+#include "JSystem/JSupport/JSUList.h"
+#include "RevoSDK/os.h"
 #include "types.h"
 
 struct JKRArchive;
@@ -28,7 +28,7 @@ struct DvdThreadCommand {
 	};
 
 	DvdThreadCommand();
-	~DvdThreadCommand() {};
+	~DvdThreadCommand() { };
 	void loadUseCallBack(struct IDelegate*);
 
 	// unused/inlined:
