@@ -243,6 +243,13 @@ cflags_pikmin = [
     "-enc SJIS",
 ]
 
+# EGG library flags
+cflags_egg = [
+    *cflags_base,
+    "-enc SJIS",
+    "-ipa file",
+]
+
 # NW4R library flags
 cflags_nw4r = [
     *cflags_base,
@@ -2419,23 +2426,55 @@ config.libs = [
         ],
     },
     {
-        "lib": "egg",
-        "cflags": cflags_runtime,   # unknown
+        "lib": "egg_gfx",
+        "cflags": [*cflags_egg, "-Cpp_exceptions on"],   # unknown
         "mw_version": "GC/3.0a3p1",  # unknown
         "progress_category" : "egg",
         "objects": [
-            Object(NonMatching, "egg/gfx/eggCamera.cpp"),
+            Object(
+                NonMatching,
+                "egg/gfx/eggCamera.cpp",
+                extra_cflags=["-RTTI on"],
+            ),
             Object(NonMatching, "egg/gfx/eggDrawHelper.cpp"),
             Object(NonMatching, "egg/gfx/eggTexture.cpp"),
             Object(NonMatching, "egg/gfx/eggPalette.cpp"),
-            Object(NonMatching, "egg/gfx/eggProjection.cpp"),
+            Object(
+                NonMatching,
+                "egg/gfx/eggProjection.cpp",
+                extra_cflags=["-RTTI on"],
+            ),
             Object(NonMatching, "egg/gfx/eggViewport.cpp"),
+        ],
+    },
+    {
+        "lib": "egg_prim",
+        "cflags": [*cflags_egg, "-Cpp_exceptions on"],   # unknown
+        "mw_version": "GC/3.0a3p1",  # unknown
+        "progress_category" : "egg",
+        "objects": [
             Object(NonMatching, "egg/prim/eggAssert.cpp"),
             Object(NonMatching, "egg/prim/eggList.cpp"),
+        ],
+    },
+    {
+        "lib": "egg_math",
+        "cflags": [*cflags_egg, "-Cpp_exceptions on"],   # unknown
+        "mw_version": "GC/3.0a3p1",  # unknown
+        "progress_category" : "egg",
+        "objects": [
             Object(NonMatching, "egg/math/eggMath.cpp"),
             Object(NonMatching, "egg/math/eggMatrix.cpp"),
             Object(NonMatching, "egg/math/eggVector.cpp"),
             Object(NonMatching, "egg/math/eggBoundBox.cpp"),
+        ],
+    },
+    {
+        "lib": "egg_core",
+        "cflags": cflags_egg,   # unknown
+        "mw_version": "GC/3.0a3p1",  # unknown
+        "progress_category" : "egg",
+        "objects": [
             Object(NonMatching, "egg/core/eggExpHeap.cpp"),
             Object(NonMatching, "egg/core/eggHeap.cpp"),
             Object(NonMatching, "egg/core/eggAllocator.cpp"),
