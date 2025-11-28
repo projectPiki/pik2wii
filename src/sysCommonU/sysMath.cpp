@@ -1,13 +1,13 @@
-#include "types.h"
 #include "sysMath.h"
-#include "trig.h"
-#include "Vector3.h"
 #include "BoundBox.h"
-#include "Plane.h"
-#include "Matrix3f.h"
 #include "Color4.h"
+#include "Matrix3f.h"
+#include "Plane.h"
 #include "Quat.h"
 #include "Sys/Sphere.h"
+#include "Vector3.h"
+#include "trig.h"
+#include "types.h"
 
 Vector3f Vector3f::zero(0.0f);
 
@@ -15,13 +15,19 @@ Vector3f Vector3f::zero(0.0f);
  * @note Address: 0x80411730
  * @note Size: 0x68
  */
-f32 pikmin2_sinf(f32 x) { return sinf(x); }
+f32 pikmin2_sinf(f32 x)
+{
+	return sinf(x);
+}
 
 /**
  * @note Address: 0x80411798
  * @note Size: 0x44
  */
-f32 pikmin2_cosf(f32 x) { return cosf(x); }
+f32 pikmin2_cosf(f32 x)
+{
+	return cosf(x);
+}
 
 f32 acosfDumb(f32 x)
 {
@@ -69,7 +75,10 @@ const f32 pikmin2_asinf(f32 x)
  * @note Address: 0x804117DC
  * @note Size: 0x28
  */
-f32 pikmin2_atan2f(f32 x, f32 y) { return JMAAtan2Radian(x, y); }
+f32 pikmin2_atan2f(f32 x, f32 y)
+{
+	return JMAAtan2Radian(x, y);
+}
 
 /**
  * @note Address: 0x80411804
@@ -235,6 +244,15 @@ void Color4::read(Stream& stream)
 	g = stream.readByte();
 	b = stream.readByte();
 	a = stream.readByte();
+}
+
+/**
+ * @note Address: ?
+ * @note Size: ?
+ */
+bool isNan(f32 x)
+{
+	// TODO
 }
 
 /**
@@ -474,7 +492,10 @@ void Quat::set(f32 a, f32 b, f32 c, f32 d)
  * @note Address: N/A
  * @note Size: 0x20
  */
-void Quat::set(f32 w, Vector3f& xyz) { set(w, xyz.x, xyz.y, xyz.z); }
+void Quat::set(f32 w, Vector3f& xyz)
+{
+	set(w, xyz.x, xyz.y, xyz.z);
+}
 
 /**
  * @note Address: N/A

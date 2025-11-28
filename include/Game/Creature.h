@@ -1,13 +1,13 @@
 #ifndef _GAME_CREATURE_H
 #define _GAME_CREATURE_H
 
-#include "Game/AILOD.h"
-#include "Game/cellPyramid.h"
-#include "Game/EnemyAnimatorBase.h"
-#include "Game/updateMgr.h"
 #include "BitFlag.h"
-#include "ObjectTypes.h"
+#include "Game/AILOD.h"
+#include "Game/EnemyAnimatorBase.h"
 #include "Game/P2JST/ObjectActor.h"
+#include "Game/cellPyramid.h"
+#include "Game/updateMgr.h"
+#include "ObjectTypes.h"
 #include "trig.h"
 
 // Shorthand cast to obj-specific 'parms'
@@ -143,6 +143,12 @@ struct CreatureKillArg {
 
 	// _00 VTBL
 	int mFlags; // _04
+};
+
+enum CreatureHellResult {
+	HELL_Alive,    // 0
+	HELL_BelowMap, // 1
+	HELL_Death,    // 1
 };
 
 #define CREATURE_HELL_ALIVE    (0)
@@ -328,14 +334,11 @@ struct Creature : public CellObject {
 	 */
 	inline bool isCreatureWithinRange(Creature* c, f32 range)
 	{
-		Vector2f delta;
-		getDistanceTo(c, delta);
+		// subtly wrong - see EnemyBase::isFinishableWaitingBirthTypeDrop
+		f32 x = getPosition().x - c->getPosition().x;
+		f32 z = getPosition().z - c->getPosition().z;
 
-		if (IS_WITHIN_CIRCLE(delta.x, delta.y, range)) {
-			return true;
-		}
-
-		return false;
+		return SQUARE(x) + SQUARE(z) < SQUARE(range);
 	}
 
 	/**

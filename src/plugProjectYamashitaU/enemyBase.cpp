@@ -436,7 +436,7 @@ void EnemyBaseFSM::LivingState::simulation(EnemyBase* enemy, f32 frameRate)
 
 	Creature::CheckHellArg hellArg;
 	hellArg.mIsKillPiki = false;
-	if (enemy->checkHell(hellArg) == CREATURE_HELL_DEATH) {
+	if (enemy->checkHell(hellArg) == HELL_Death) {
 		enemy->getCreatureName();
 		enemy->getCreatureID();
 		enemy->gotoHell();
@@ -847,10 +847,10 @@ EnemyBase::EnemyBase()
     : Creature()
     , SysShape::MotionListener()
     , PelletView()
-    , mPosition(Vector3f(0.0f))
-    , mRotation(Vector3f(0.0f))
-    , mDamageAnimRotation(Vector3f(0.0f))
-    , mStunAnimRotation(Vector3f(0.0f))
+    , mPosition(0.0f, 0.0f, 0.0f)
+    , mRotation(0.0f, 0.0f, 0.0f)
+    , mDamageAnimRotation(0.0f, 0.0f, 0.0f)
+    , mStunAnimRotation(0.0f, 0.0f, 0.0f)
     , mEvents()
     , mEventBuffer()
     , mSfxEmotion(EMOTE_Caution)
@@ -1112,13 +1112,13 @@ void EnemyBase::onInitPost(CreatureInitArg* arg)
 				mLifecycleFSM->start(this, EnemyBaseFSM::EBS_DropEarthquake, nullptr);
 				break;
 			default:
-				JUT_PANICLINE(1483, "Unknown birth type:%d", mDropGroup);
+				JUT_PANICLINE(1490, "Unknown birth type:%d", mDropGroup);
 				break;
 			}
 		}
 		break;
 	default:
-		JUT_PANICLINE(1490, "Unknown birth type:%d", mDropGroup);
+		JUT_PANICLINE(1497, "Unknown birth type:%d", mDropGroup);
 		break;
 	}
 
@@ -1212,26 +1212,56 @@ void EnemyBase::setCarcassArg(PelletViewArg& carcassArg)
  * @note Address: N/A
  * @note Size: 0x234
  */
-void EnemyBase::becomeCarcass()
+bool EnemyBase::becomeCarcass()
 {
-	if (lifeGaugeMgr != nullptr) {
-		lifeGaugeMgr->inactiveLifeGauge(this);
+	bool carcassCheck = false;
+	if (!mPellet) {
+		PelletViewArg pvArg;
+		setCarcassArg(pvArg);
+		if (!becomePellet(&pvArg)) {
+			if (mHeldPellet) {
+				doKillEffects();
+			}
+
+			mSoundObj->setKilled();
+
+			if (lifeGaugeMgr != nullptr) {
+				lifeGaugeMgr->inactiveLifeGauge(this);
+			}
+
+			if (shadowMgr != nullptr) {
+				shadowMgr->delShadow(this);
+			}
+
+			fadeEffects();
+
+			mSfxEmotion = EMOTE_None;
+
+			if (PSGetDirectedMainBgm()) {
+				mSoundObj->battleOff();
+			}
+
+			mSoundObj->setAnime(nullptr, 1, 0.0f, 0.0f);
+			mMgr->kill(this);
+		} else {
+			lifeGaugeMgr->inactiveLifeGauge(this);
+			mSfxEmotion = 0;
+			if (PSGetDirectedMainBgm()) {
+				mSoundObj->battleOff();
+			}
+			carcassCheck = doBecomeCarcass();
+		}
 	}
 
-	if (shadowMgr != nullptr) {
-		shadowMgr->delShadow(this);
+	if (mHeldPellet) {
+		InteractMattuan interactMatt(this, 2.5f);
+
+		mHeldPellet->stimulate(interactMatt);
+		mHeldPellet = nullptr;
 	}
 
-	fadeEffects();
-
-	mSfxEmotion = EMOTE_None;
-
-	if (PSGetDirectedMainBgm()) {
-		mSoundObj->battleOff();
-	}
-
-	mSoundObj->setAnime(nullptr, 1, 0.0f, 0.0f);
-	mMgr->kill(this);
+	mSoundObj->setKilled();
+	return carcassCheck;
 }
 
 /**
@@ -1251,12 +1281,6 @@ void EnemyBase::doUpdateCarcass()
 {
 }
 
-void EnemyBase::deathMethod()
-{
-	forceKillEffects();
-	becomeCarcass();
-}
-
 /**
  * @brief Handles the logic when an enemy is killed.
  *
@@ -1270,8 +1294,8 @@ void EnemyBase::deathMethod()
  */
 void EnemyBase::onKill(CreatureKillArg* inputArg)
 {
-	getCreatureName();
-	getCreatureID();
+	// getCreatureName();
+	// getCreatureID();
 
 	CreatureKillArg* killArg = nullptr;
 	if (inputArg && strcmp(inputArg->getName(), "EnemyKillArg") == 0) {
@@ -1294,14 +1318,15 @@ void EnemyBase::onKill(CreatureKillArg* inputArg)
 	}
 
 	if (!killArg || !(killArg->isFlag(CKILL_NotKilledByPlayer))) {
-		if (isEvent(0, EB_Bittered)) {
+		bool isBittered = isEvent(0, EB_Bittered);
+		if (isBittered) {
 			mEnemyStoneObj->dead();
 			deathProcedure();
 			disableEvent(0, EB_Bittered);
 			constraintOff();
 			if (ItemHoney::mgr) {
 				s8 bitterDrop = (s8)EnemyInfoFunc::getEnemyInfo(getEnemyTypeID(), 0xFFFF)->mBitterDrops;
-				f32 scaledChance, dropChance;
+				f32 dropChance;
 				int dropRolls;
 
 				switch (bitterDrop) {
@@ -1333,15 +1358,13 @@ void EnemyBase::onKill(CreatureKillArg* inputArg)
 					break;
 				}
 
-				scaledChance = (0.5f * (1.0f - dropChance)) + dropChance;
-
 				for (int i = 0; i < dropRolls; i++) {
 					f32 randRoll = randFloat();
 
 					u8 honeyKind;
 					if (randRoll < dropChance) {
 						honeyKind = HONEY_Y;
-					} else if (randRoll < scaledChance) {
+					} else if (randRoll < (0.5f * (1.0f - dropChance)) + dropChance) {
 						honeyKind = HONEY_R;
 					} else {
 						honeyKind = HONEY_B;
@@ -1371,27 +1394,47 @@ void EnemyBase::onKill(CreatureKillArg* inputArg)
 				}
 			}
 			forceKillEffects();
-			becomeCarcass();
-
-		} else if (mExistDuration == 0.0f && isEvent(0, EB_LeaveCarcass) && (!killArg || !(killArg->isFlag(CKILL_LeaveNoCarcass)))) {
-			if (!mPellet) {
-				PelletViewArg pvArg;
-				setCarcassArg(pvArg);
-				if (!becomePellet(&pvArg)) {
-					deathMethod();
-				} else {
-					lifeGaugeMgr->inactiveLifeGauge(this);
-					mSfxEmotion = 0;
-					if (PSGetDirectedMainBgm()) {
-						mSoundObj->battleOff();
-					}
-					doBecomeCarcass();
-				}
+			if (lifeGaugeMgr != nullptr) {
+				lifeGaugeMgr->inactiveLifeGauge(this);
 			}
-			forceKillEffects();
+
+			if (shadowMgr != nullptr) {
+				shadowMgr->delShadow(this);
+			}
+
+			fadeEffects();
+
+			mSfxEmotion = EMOTE_None;
+
+			if (PSGetDirectedMainBgm()) {
+				mSoundObj->battleOff();
+			}
+
+			mSoundObj->setAnime(nullptr, 1, 0.0f, 0.0f);
+			mMgr->kill(this);
+
+		} else if (mExistDuration == 0.0f && (isBittered >> 7 & 0x1) && (!killArg || !(killArg->isFlag(CKILL_LeaveNoCarcass)))) {
+			becomeCarcass();
 		} else {
 			forceKillEffects();
-			becomeCarcass();
+			if (lifeGaugeMgr != nullptr) {
+				lifeGaugeMgr->inactiveLifeGauge(this);
+			}
+
+			if (shadowMgr != nullptr) {
+				shadowMgr->delShadow(this);
+			}
+
+			fadeEffects();
+
+			mSfxEmotion = EMOTE_None;
+
+			if (PSGetDirectedMainBgm()) {
+				mSoundObj->battleOff();
+			}
+
+			mSoundObj->setAnime(nullptr, 1, 0.0f, 0.0f);
+			mMgr->kill(this);
 		}
 
 		setZukanVisible(true);
@@ -1403,7 +1446,24 @@ void EnemyBase::onKill(CreatureKillArg* inputArg)
 	}
 
 	forceKillEffects();
-	becomeCarcass();
+	if (lifeGaugeMgr != nullptr) {
+		lifeGaugeMgr->inactiveLifeGauge(this);
+	}
+
+	if (shadowMgr != nullptr) {
+		shadowMgr->delShadow(this);
+	}
+
+	fadeEffects();
+
+	mSfxEmotion = EMOTE_None;
+
+	if (PSGetDirectedMainBgm()) {
+		mSoundObj->battleOff();
+	}
+
+	mSoundObj->setAnime(nullptr, 1, 0.0f, 0.0f);
+	mMgr->kill(this);
 }
 
 /**
@@ -1426,7 +1486,7 @@ void EnemyBase::setZukanVisible(bool updateStats)
 		EnemyInfo* enemyInfo = EnemyInfoFunc::getEnemyInfo(getEnemyTypeID(), 0xFFFF);
 		if ((enemyInfo->mFlags & EFlag_HasNoInfo) == FALSE) {
 			TekiStat::Info* tekiInfo = playData->mTekiStatMgr.getTekiInfo(getEnemyTypeID());
-			P2ASSERTLINE(1859, tekiInfo);
+			P2ASSERTLINE(1866, tekiInfo);
 
 			if (updateStats) {
 				tekiInfo->incKilled();
@@ -1462,9 +1522,9 @@ void EnemyBase::birth(Vector3f& pos, f32 faceDir)
 	setPosition(pos, false);
 	mHomePosition = pos;
 
-	mRotation        = Vector3f(0.0f);
-	mCurrentVelocity = Vector3f(0.0f);
-	mTargetVelocity  = Vector3f(0.0f);
+	mRotation.set(0.0f, 0.0f, 0.0f);
+	mCurrentVelocity.set(0.0f, 0.0f, 0.0f);
+	mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 
 	mTargetCreature = nullptr;
 
@@ -1504,7 +1564,8 @@ void EnemyBase::birth(Vector3f& pos, f32 faceDir)
  */
 void EnemyBase::updateTrMatrix()
 {
-	Vector3f rot = mRotation + mDamageAnimRotation + mStunAnimRotation;
+	Vector3f rot;
+	rot = mRotation + mDamageAnimRotation + mStunAnimRotation;
 	mBaseTrMatrix.makeTR(mPosition, rot);
 }
 
@@ -1543,7 +1604,7 @@ void EnemyBase::update()
  */
 bool EnemyBase::isFinishableWaitingBirthTypeDrop()
 {
-	Sys::Sphere sphere(mPosition, static_cast<EnemyParmsBase*>(mParms)->mGeneral.mPrivateRadius.mValue);
+	Sys::Sphere sphere(mPosition, E_GENERALPARMS.mPrivateRadius());
 	bool result = false;
 
 	CellIteratorArg ciArg(sphere);
@@ -1557,12 +1618,8 @@ bool EnemyBase::isFinishableWaitingBirthTypeDrop()
 
 		// Is creature Pikmin or Navi?
 		if (creature->isNavi() || (creature->isPiki() && static_cast<Piki*>(creature)->isPikmin())) {
-			f32 privateRadius = static_cast<EnemyParmsBase*>(mParms)->mGeneral.mPrivateRadius.mValue;
-			Vector2f delta;
-			getDistanceTo(creature, delta);
-
 			// Is creature within private radius?
-			if (IS_WITHIN_CIRCLE(delta.x, delta.y, privateRadius)) {
+			if (isCreatureWithinRange(creature, E_GENERALPARMS.mPrivateRadius())) {
 				result = true;
 			}
 		}
@@ -1598,7 +1655,7 @@ void EnemyBase::startStoneState()
  */
 void EnemyBase::doStartStoneState()
 {
-	mTargetVelocity = Vector3f(0.0f);
+	mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 }
 
 /**
@@ -1649,7 +1706,7 @@ void EnemyBase::doAnimation()
  */
 void EnemyBase::doAnimationUpdateAnimator()
 {
-	mAnimator->animate(mAnimator->mSpeed * sys->mDeltaTime);
+	mAnimator->animate(mAnimator->mSpeed * sys->getDeltaTime());
 
 	SysShape::Animator* animator = &mAnimator->getAnimator();
 	animator->setModelCalc(mModel, 0);

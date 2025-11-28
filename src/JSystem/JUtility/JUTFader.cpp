@@ -1,6 +1,6 @@
+#include "JSystem/JUtility/JUTFader.h"
 #include "JSystem/J2D/J2DGrafContext.h"
 #include "JSystem/JUtility/TColor.h"
-#include "JSystem/JUtility/JUTFader.h"
 #include "types.h"
 
 /**
@@ -70,7 +70,7 @@ void JUTFader::draw()
 	}
 
 	J2DOrthoGraph orthograph;
-	orthograph.setColor(mColor);
+	orthograph.setColor((u32)mColor);
 	orthograph.fillBox(mViewBox);
 }
 

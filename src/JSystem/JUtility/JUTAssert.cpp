@@ -52,8 +52,8 @@ u32 flush_subroutine()
 void flushMessage()
 {
 	if (flush_subroutine() != 0 && sVisible == true) {
-		JUTDirectPrint* mgr            = JUTDirectPrint::getManager();
-		JUtility::TColor existingColor = mgr->mCharColor;
+		JUTDirectPrint* mgr = JUTDirectPrint::getManager();
+		u32 existingColor   = mgr->mCharColor;
 		mgr->setCharColor(JUtility::TColor(255, 200, 200, 255));
 		mgr->drawString(0x10, 0x10, sMessageFileLine);
 		mgr->drawString(0x10, 0x18, sMessageString);

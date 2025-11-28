@@ -56,6 +56,18 @@ void OSPanic(const char* file, int line, const char* message, ...);
 #define OSErrorLine(line, ...) OSPanic(__FILE__, line, __VA_ARGS__)
 #endif
 
+#ifdef DEBUG
+#define OS_REPORT(...)       OSReport(__VA_ARGS__)
+#define OS_WARNING(...)      OSReport_Warning(__VA_ARGS__)
+#define OS_REPORT_ERROR(...) OSReport_Error(__VA_ARGS__)
+#define OS_PANIC(line, msg)  OSPanic(__FILE__, line, msg)
+#else
+#define OS_REPORT(...)
+#define OS_WARNING(...)
+#define OS_REPORT_ERROR(...)
+#define OS_PANIC(...)
+#endif
+
 // Other OS functions.
 void OSRegisterVersion(const char*);
 #define OS_CONSOLE_RETAIL4     0x00000004

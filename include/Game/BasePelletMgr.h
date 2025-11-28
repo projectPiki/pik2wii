@@ -1,23 +1,23 @@
 #ifndef _GAME_BASEPELLETMGR_H
 #define _GAME_BASEPELLETMGR_H
 
-#include "types.h"
-#include "GenericObjectMgr.h"
+#include "CollInfo.h"
 #include "Game/PelletList.h"
+#include "GenericObjectMgr.h"
+#include "JSystem/JKernel/JKRArchive.h"
+#include "SysShape/AnimMgr.h"
 #include "SysShape/Model.h"
 #include "SysShape/ModelMgr.h"
-#include "SysShape/AnimMgr.h"
-#include "JSystem/JKernel/JKRArchive.h"
-#include "CollInfo.h"
+#include "types.h"
 
 namespace Game {
+struct Pellet;
 struct PelletConfig;
 struct GenPelletParm;
 
 // BasePelletMgr inherits something virtual, but I cannot work out what
 // it seems like all these BaseXMgrs are inheriting something virtual....
-struct _BasePelletMgrParent2 {
-};
+struct _BasePelletMgrParent2 { };
 
 struct BasePelletMgr : public GenericObjectMgr, virtual public _BasePelletMgrParent2 {
 	BasePelletMgr(PelletList::cKind);

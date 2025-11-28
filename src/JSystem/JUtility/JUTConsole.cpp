@@ -159,17 +159,16 @@ void JUTConsole::doDraw(JUTConsole::EConsoleType consoleType) const
 					ortho.setPort();
 				}
 
-				const JUtility::TColor* TColorChoice;
+				u32 TColorChoice;
 
 				if (isActiveConsole) {
-					TColorChoice = &this->mActiveConsoleColor;
+					TColorChoice = mActiveConsoleColor;
 				} else {
-					TColorChoice = &this->mInactiveConsoleColor;
+					TColorChoice = mInactiveConsoleColor;
 				}
 
-				J2DFillBox((f32)(mPositionX - 2), (f32)(s32)((f32)mPositionY - fontYOffset),
-				           (f32)(s32)((mFontSizeX * (f32)mLineLength) + 4.0f), (f32)(s32)(fontYOffset * (f32)mHeight),
-				           (JUtility::TColor)*TColorChoice);
+				J2DFillBox((mPositionX - 2), (int)(mPositionY - fontYOffset), (int)((mFontSizeX * mLineLength) + 4.0f),
+				           (int)(fontYOffset * mHeight), TColorChoice);
 
 				mFont->setGX();
 				if (isActiveConsole) {
@@ -336,6 +335,9 @@ extern "C" void JUTConsole_print_f_va_(JUTConsole* console, const char* format, 
  */
 void JUTConsole::dumpToTerminal(uint)
 {
+	OSReport("[%03d] %s\n");
+	OSReport("%s\n");
+
 	// UNUSED FUNCTION
 }
 
@@ -345,6 +347,8 @@ void JUTConsole::dumpToTerminal(uint)
  */
 void JUTConsole::dumpToConsole(JUTConsole*, uint)
 {
+	OSReport("\n:::dump of console[%x]----------------\n", this);
+	OSReport(":::dump of console[%x] END------------\n", this);
 	// UNUSED FUNCTION
 }
 
@@ -363,7 +367,7 @@ void JUTConsole::scroll(int amount)
 		}
 	} else if (amount > 0) {
 		int var2 = mCurrentLineIndex_ - mStartLineIndex;
-		var2     = var2 >= 0 ? var2 : var2 + mMaxLines;
+		var2     = mCurrentLineIndex_ - mStartLineIndex >= 0 ? var2 : var2 + mMaxLines;
 
 		if (var2 + 1 <= mHeight) {
 			amount = 0;

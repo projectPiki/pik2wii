@@ -76,6 +76,16 @@ typedef u16 wchar_t;
 #define __CONCAT(x, y) x##y
 #define CONCAT(x, y)   __CONCAT(x, y)
 
+// Multi-character character constants
+// clang-format off
+#define TWOCC(c0, c1)                                                          \
+    (u32)((c0 & 0xFF) << 8  | (c1 & 0xFF))
+#define THREECC(c0, c1, c2)                                                    \
+    (u32)((c0 & 0xFF) << 16 | (c1 & 0xFF) << 8  | (c2 & 0xFF))
+#define FOURCC(c0, c1, c2, c3)                                                 \
+    (u32)((c0 & 0xFF) << 24 | (c1 & 0xFF) << 16 | (c2 & 0xFF) << 8 | (c3 & 0xFF))
+// clang-format on
+
 #define CLAMP_VALUE_ABOVE(val, limit)              ((val) > (limit)) ? (limit) : (val)
 #define MAX(a, b)                                  (((a) > (b)) ? (a) : (b))
 #define MIN(a, b)                                  (((a) < (b)) ? (a) : (b))

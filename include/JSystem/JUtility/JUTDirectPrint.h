@@ -1,10 +1,10 @@
 #ifndef _JUTDIRECTPRINT_H
 #define _JUTDIRECTPRINT_H
 
-#include "types.h"
 #include "JSystem/JUtility/TColor.h"
 #include "stdarg.h"
 #include "stdio.h"
+#include "types.h"
 
 struct JUTDirectPrint {
 	JUTDirectPrint(); // unused/inlined

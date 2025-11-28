@@ -3405,7 +3405,7 @@ void Pellet::doSimulation(f32 constraint)
 {
 	Creature::CheckHellArg hellArg;
 	hellArg.mIsKillPiki = false;
-	if (checkHell(hellArg) == CREATURE_HELL_DEATH) {
+	if (checkHell(hellArg) == HELL_Death) {
 		Vector3f position   = getPosition();
 		Vector3f wpPosition = position;
 		wpPosition.y        = 0.0f;

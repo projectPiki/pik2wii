@@ -47,6 +47,11 @@ extern void GXGetLineWidth(u8* width, GXTexOffset* offset);
 extern void GXGetPointSize(u8* pointSize, GXTexOffset* offset);
 extern void GXGetCullMode(GXCullMode* mode);
 
+inline static void GXSetTexCoordGen(GXTexCoordID id, GXTexGenType type, GXTexGenSrc src, u32 texMtxIdx)
+{
+	GXSetTexCoordGen2(id, type, src, texMtxIdx, FALSE, GX_PTIDENTITY);
+}
+
 ////////////////////////////////////////////
 
 #ifdef __cplusplus

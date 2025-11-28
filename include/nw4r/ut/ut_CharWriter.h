@@ -18,18 +18,89 @@ struct Glyph;
 //////////////////////// TYPES /////////////////////////
 
 /**
- * @brief TODO
+ * @brief Base class for printing any character.
  *
- * @note Size: 0x8.
+ * @note Size: 0x4C.
  */
 class CharWriter {
 public:
+	/**
+	 * @brief Gradient coloring types.
+	 */
 	enum GradationMode {
 		GRADMODE_NONE, // 0
 		GRADMODE_H,    // 1
 		GRADMODE_V,    // 2
 
 		GRADMODE_MAX, // 3
+	};
+
+private:
+	/**
+	 * @brief Color object for blending/mapping.
+	 *
+	 * @note Size: 0x8.
+	 */
+	struct ColorMapping {
+		Color min; // _00
+		Color max; // _04
+	};
+
+	/**
+	 * @brief Color object for vertices of a box.
+	 *
+	 * @note Size: 0x10.
+	 */
+	struct VertexColor {
+		Color lu; // _00
+		Color ru; // _04
+		Color ld; // _08
+		Color rd; // _0C
+	};
+
+	/**
+	 * @brief Color object for text.
+	 *
+	 * @note Size: 0xC.
+	 */
+	struct TextColor {
+		Color start;                 // _00
+		Color end;                   // _04
+		GradationMode gradationMode; // _08
+	};
+
+	/**
+	 * @brief Object for handling texture filtering at different sizes.
+	 *
+	 * @note Size: 0x8.
+	 */
+	struct TextureFilter {
+		bool operator!=(const TextureFilter& rOther) const { return atSmall != rOther.atSmall || atLarge != rOther.atLarge; }
+
+		GXTexFilter atSmall; // _00
+		GXTexFilter atLarge; // _04
+	};
+
+	/**
+	 * @brief Object for handling font texture loading.
+	 *
+	 * @note Size: 0x10.
+	 */
+	struct LoadingTexture {
+		bool operator!=(const LoadingTexture& rOther) const
+		{
+			return slot != rOther.slot || texture != rOther.texture || filter != rOther.filter;
+		}
+
+		void Reset()
+		{
+			slot    = GX_TEXMAP_NULL;
+			texture = nullptr;
+		}
+
+		GXTexMapID slot;      // _00
+		void* texture;        // _04
+		TextureFilter filter; // _08
 	};
 
 public:
@@ -121,48 +192,6 @@ public:
 	f32 GetFontDescent() const;
 
 private:
-	struct ColorMapping {
-		Color min; // at 0x0
-		Color max; // at 0x4
-	};
-
-	struct VertexColor {
-		Color lu; // at 0x0
-		Color ru; // at 0x4
-		Color ld; // at 0x8
-		Color rd; // at 0xC
-	};
-
-	struct TextColor {
-		Color start;                 // at 0x0
-		Color end;                   // at 0x4
-		GradationMode gradationMode; // at 0x8
-	};
-
-	struct TextureFilter {
-		GXTexFilter atSmall; // at 0x0
-		GXTexFilter atLarge; // at 0x4
-
-		bool operator!=(const TextureFilter& rOther) const { return atSmall != rOther.atSmall || atLarge != rOther.atLarge; }
-	};
-
-	struct LoadingTexture {
-		GXTexMapID slot;      // at 0x0
-		void* texture;        // at 0x4
-		TextureFilter filter; // at 0x8
-
-		bool operator!=(const LoadingTexture& rOther) const
-		{
-			return slot != rOther.slot || texture != rOther.texture || filter != rOther.filter;
-		}
-
-		void Reset()
-		{
-			slot    = GX_TEXMAP_nullptr;
-			texture = nullptr;
-		}
-	};
-
 	static const u32 DEFAULT_COLOR_MAPPING_MIN = 0x00000000;
 	static const u32 DEFAULT_COLOR_MAPPING_MAX = 0xFFFFFFFF;
 
@@ -180,19 +209,20 @@ private:
 	void ResetTextureCache() { mLoadingTexture.Reset(); }
 
 private:
-	ColorMapping mColorMapping;   // at 0x0
-	VertexColor mVertexColor;     // at 0x8
-	TextColor mTextColor;         // at 0x18
-	math::VEC2 mScale;            // at 0x24
-	math::VEC3 mCursorPos;        // at 0x2C
-	TextureFilter mFilter;        // at 0x38
-	u8 PADDING_0x40[0x42 - 0x40]; // at 0x40
-	u8 mAlpha;                    // at 0x42
-	bool mIsWidthFixed;           // at 0x43
-	f32 mFixedWidth;              // at 0x44
-	const Font* mFont;            // at 0x48
-
 	static LoadingTexture mLoadingTexture;
+
+private:
+	ColorMapping mColorMapping; // _00
+	VertexColor mVertexColor;   // _08
+	TextColor mTextColor;       // _18
+	math::VEC2 mScale;          // _24
+	math::VEC3 mCursorPos;      // _2C
+	TextureFilter mFilter;      // _38
+	u8 _40[0x42 - 0x40];        // _40, unknown/padding
+	u8 mAlpha;                  // _42
+	bool mIsWidthFixed;         // _43
+	f32 mFixedWidth;            // _44
+	const Font* mFont;          // _48
 };
 
 ////////////////////////////////////////////////////////

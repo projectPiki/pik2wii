@@ -1535,7 +1535,7 @@ void FakePiki::doSimulation(f32 rate)
 
 	// check if we've hit the death plane
 	CheckHellArg hellArg;
-	if (checkHell(hellArg) != CREATURE_HELL_BELOWMAP) {
+	if (checkHell(hellArg) != HELL_BelowMap) {
 		// we haven't hit the death plane, we're done
 		return;
 	}

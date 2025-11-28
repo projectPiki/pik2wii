@@ -73,10 +73,30 @@ struct Vector3 {
 	// Arithmetic Operators
 	inline Vector3<T> operator*(const Vector3<T>& other) const;
 	inline void operator*=(Matrixf& other);
-	inline void operator*=(const T other);
-	inline void operator+=(const Vector3& other);
-	inline void operator-=(const Vector3& other);
-	inline void operator/=(const Vector3& other);
+	inline void operator*=(const T other)
+	{
+		this->x *= other;
+		this->y *= other;
+		this->z *= other;
+	}
+	inline void operator+=(const Vector3& other)
+	{
+		this->x += other.x;
+		this->y += other.y;
+		this->z += other.z;
+	}
+	inline void operator-=(const Vector3& other)
+	{
+		this->x -= other.x;
+		this->y -= other.y;
+		this->z -= other.z;
+	}
+	inline void operator/=(const Vector3& other)
+	{
+		this->x /= other.x;
+		this->y /= other.y;
+		this->z /= other.z;
+	}
 	inline Vector3 operator-() const;
 
 	// Set Functions
@@ -130,7 +150,7 @@ struct Vector3 {
 	inline void toFlatDirection();
 
 	// Calculation Functions
-	inline T dot(const Vector3& other);
+	inline T dot(const Vector3& other) { return this->x * other.x + this->y * other.y + this->z * other.z; }
 	inline Vector3 cross(const Vector3& other);
 	inline void cross(const Vector3& v1, const Vector3& v2);
 	inline T absX();
@@ -289,38 +309,6 @@ inline void Vector3<T>::negate2()
 }
 
 template <typename T>
-inline void Vector3<T>::operator*=(const T other)
-{
-	this->x *= other;
-	this->y *= other;
-	this->z *= other;
-}
-
-template <typename T>
-inline void Vector3<T>::operator+=(const Vector3& other)
-{
-	this->x += other.x;
-	this->y += other.y;
-	this->z += other.z;
-}
-
-template <typename T>
-inline void Vector3<T>::operator-=(const Vector3& other)
-{
-	this->x -= other.x;
-	this->y -= other.y;
-	this->z -= other.z;
-}
-
-template <typename T>
-inline void Vector3<T>::operator/=(const Vector3& other)
-{
-	this->x /= other.x;
-	this->y /= other.y;
-	this->z /= other.z;
-}
-
-template <typename T>
 inline Vector3<T> Vector3<T>::operator-() const
 {
 	return Vector3<T>(-x, -y, -z);
@@ -363,12 +351,6 @@ inline void Vector3<T>::set2D(const Vector3& other)
 {
 	x = other.x;
 	z = other.z;
-}
-
-template <typename T>
-inline T Vector3<T>::dot(const Vector3& other)
-{
-	return this->x * other.x + this->y * other.y + this->z * other.z;
 }
 
 template <typename T>

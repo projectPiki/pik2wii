@@ -16,6 +16,7 @@ f32 roundAng(f32 x);
 f32 angDist(f32 x, f32 y);
 
 f32 qdist2(f32, f32, f32, f32);
+bool isNan(f32);
 
 inline f32 log(f32& a, f64 b)
 {
@@ -23,5 +24,9 @@ inline f32 log(f32& a, f64 b)
 	f32 dividend = log10(a);
 	return dividend / divisor;
 }
+
+// this is needed for Creature::resolveOneColl but it's not right yet
+// might be a vector inline instead
+#define ASSERT_DIR_NOT_NAN(x, y, z) isNan(x) | isNan(y) | isNan(z)
 
 #endif

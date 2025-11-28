@@ -15,7 +15,7 @@
 import argparse
 import sys
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import List
 
 from tools.project import (
     Object,
@@ -206,7 +206,7 @@ cflags_base = [
     "-enum int",
     "-fp hardware",
     "-Cpp_exceptions off",
-    # "-W all",
+    "-w off",
     "-O4,p",
     "-inline auto",
     '-pragma "cats off"',
@@ -221,8 +221,7 @@ cflags_base = [
     "-i include/stl",
     f"-i build/{config.version}/include",
     f"-DVERNUM={version_num}",
-    # "-DNDEBUG=1", 
-    "-w off",
+    # "-DNDEBUG=1",
 ]
 
 # Metrowerks library flags
@@ -253,9 +252,11 @@ cflags_nw4r = [
 
 config.linker_version = "GC/3.0a5.2"
 
-Matching = True                   # Object matches and should be linked
-NonMatching = False               # Object does not match and should not be linked
-Equivalent = config.non_matching  # Object should be linked when configured with --non-matching
+Matching = True  # Object matches and should be linked
+NonMatching = False  # Object does not match and should not be linked
+Equivalent = (
+    config.non_matching
+)  # Object should be linked when configured with --non-matching
 
 config.warn_missing_config = True
 config.warn_missing_source = False
@@ -264,7 +265,7 @@ config.libs = [
         "lib": "System12",
         "cflags": cflags_pikmin,
         "mw_version": "GC/3.0a3p1",
-        "progress_category" : "sys12",
+        "progress_category": "sys12",
         "objects": [
             Object(NonMatching, "System12/sys12System.cpp"),
             Object(NonMatching, "System12/system12Controller.cpp"),
@@ -310,7 +311,7 @@ config.libs = [
         "lib": "homebuttonLib",
         "cflags": cflags_pikmin,
         "mw_version": "GC/3.0a3p1",
-        "progress_category" : "hbm",
+        "progress_category": "hbm",
         "objects": [
             Object(NonMatching, "homebuttonLib/HBMFrameController.cpp"),
             Object(NonMatching, "homebuttonLib/HBMAnmController.cpp"),
@@ -359,7 +360,7 @@ config.libs = [
         "lib": "JStudio_JAudio",
         "cflags": cflags_pikmin,
         "mw_version": "GC/3.0a3p1",
-        "progress_category" : "jsystem",
+        "progress_category": "jsystem",
         "objects": [
             Object(NonMatching, "JSystem/JStudio_JAudio/object-sound.cpp"),
             Object(NonMatching, "JSystem/JStudio_JAudio/control.cpp"),
@@ -369,7 +370,7 @@ config.libs = [
         "lib": "JAudio_JAS",
         "cflags": cflags_pikmin,
         "mw_version": "GC/3.0a3p1",
-        "progress_category" : "jsystem",
+        "progress_category": "jsystem",
         "objects": [
             Object(NonMatching, "JSystem/JAudio/JAS/JASWSParser.cpp"),
             Object(Matching, "JSystem/JAudio/JAS/JASBankMgr.cpp"),
@@ -426,7 +427,7 @@ config.libs = [
             "-O4,s",
         ],
         "mw_version": "GC/3.0a3p1",
-        "progress_category" : "jsystem",
+        "progress_category": "jsystem",
         "objects": [
             Object(NonMatching, "JSystem/JAudio/dsp/dspproc.c"),
             Object(NonMatching, "JSystem/JAudio/dsp/dsptask.c"),
@@ -438,7 +439,7 @@ config.libs = [
         "lib": "JAudio_JAI",
         "cflags": cflags_pikmin,
         "mw_version": "GC/3.0a3p1",
-        "progress_category" : "jsystem",
+        "progress_category": "jsystem",
         "objects": [
             Object(NonMatching, "JSystem/JAudio/JAI/JAIAnimation.cpp"),
             Object(NonMatching, "JSystem/JAudio/JAI/JAIBankWave.cpp"),
@@ -462,31 +463,31 @@ config.libs = [
         "lib": "JAudio_JAD",
         "cflags": cflags_pikmin,
         "mw_version": "GC/3.0a3p1",
-        "progress_category" : "jsystem",
+        "progress_category": "jsystem",
         "objects": [Object(Matching, "JSystem/JAudio/JAD/JADHioNode.cpp")],
     },
     {
         "lib": "JAudio_JAL",
         "cflags": cflags_pikmin,
         "mw_version": "GC/3.0a3p1",
-        "progress_category" : "jsystem",
+        "progress_category": "jsystem",
         "objects": [Object(NonMatching, "JSystem/JAudio/JAL/JALCalc.cpp")],
     },
     {
         "lib": "JAudio_JAU",
         "cflags": cflags_pikmin,
         "mw_version": "GC/3.0a3p1",
-        "progress_category" : "jsystem",
+        "progress_category": "jsystem",
         "objects": [
             Object(Matching, "JSystem/JAudio/JAU/JAUData.cpp"),
             Object(NonMatching, "JSystem/JAudio/JAU/JAUDataMgr.cpp"),
         ],
     },
-   {
+    {
         "lib": "JStudio_JParticle",
         "cflags": cflags_pikmin,
         "mw_version": "GC/3.0a3p1",
-        "progress_category" : "jsystem",
+        "progress_category": "jsystem",
         "objects": [
             Object(NonMatching, "JSystem/JStudio_JParticle/object-particle.cpp"),
             Object(NonMatching, "JSystem/JStudio_JParticle/control.cpp"),
@@ -496,7 +497,7 @@ config.libs = [
         "lib": "JMessage",
         "cflags": cflags_pikmin,
         "mw_version": "GC/3.0a3p1",
-        "progress_category" : "jsystem",
+        "progress_category": "jsystem",
         "objects": [
             Object(Matching, "JSystem/JMessage/data.cpp"),
             Object(NonMatching, "JSystem/JMessage/resource.cpp"),
@@ -509,7 +510,7 @@ config.libs = [
         "lib": "JStudio",
         "cflags": cflags_pikmin,
         "mw_version": "GC/3.0a3p1",
-        "progress_category" : "jsystem",
+        "progress_category": "jsystem",
         "objects": [
             Object(Matching, "JSystem/JStudio/stb-data-parse.cpp"),
             Object(NonMatching, "JSystem/JStudio/functionvalue.cpp"),
@@ -531,7 +532,7 @@ config.libs = [
         "lib": "JStudio_JStage",
         "cflags": cflags_pikmin,
         "mw_version": "GC/3.0a3p1",
-        "progress_category" : "jsystem",
+        "progress_category": "jsystem",
         "objects": [
             Object(NonMatching, "JSystem/JStudio_JStage/object-light.cpp"),
             Object(NonMatching, "JSystem/JStudio_JStage/object.cpp"),
@@ -546,7 +547,7 @@ config.libs = [
         "lib": "JStudio_JMessage",
         "cflags": cflags_pikmin,
         "mw_version": "GC/3.0a3p1",
-        "progress_category" : "jsystem",
+        "progress_category": "jsystem",
         "objects": [
             Object(NonMatching, "JSystem/JStudio_JMessage/object-message.cpp"),
             Object(NonMatching, "JSystem/JStudio_JMessage/control.cpp"),
@@ -556,7 +557,7 @@ config.libs = [
         "lib": "J3DU",
         "cflags": cflags_pikmin,
         "mw_version": "GC/3.0a3p1",
-        "progress_category" : "jsystem",
+        "progress_category": "jsystem",
         "objects": [
             Object(Matching, "JSystem/J3DU/J3DUDL.cpp"),
             Object(NonMatching, "JSystem/J3DU/J3DUMotion.cpp"),
@@ -568,7 +569,7 @@ config.libs = [
         "lib": "JKernel",
         "cflags": cflags_pikmin,
         "mw_version": "GC/3.0a3p1",
-        "progress_category" : "jsystem",
+        "progress_category": "jsystem",
         "objects": [
             Object(NonMatching, "JSystem/JKernel/JKRAram.cpp"),
             Object(NonMatching, "JSystem/JKernel/JKRAramArchive.cpp"),
@@ -600,7 +601,7 @@ config.libs = [
         "lib": "aralt",
         "cflags": cflags_pikmin,
         "mw_version": "GC/3.0a3p1",
-        "progress_category" : "sdk",
+        "progress_category": "sdk",
         "objects": [
             Object(NonMatching, "aralt/aralt.c"),
         ],
@@ -609,7 +610,7 @@ config.libs = [
         "lib": "JSupport",
         "cflags": cflags_pikmin,
         "mw_version": "GC/3.0a3p1",
-        "progress_category" : "jsystem",
+        "progress_category": "jsystem",
         "objects": [
             Object(NonMatching, "JSystem/JSupport/JSUOutputStream.cpp"),
             Object(NonMatching, "JSystem/JSupport/JSUInputStream.cpp"),
@@ -622,7 +623,7 @@ config.libs = [
         "lib": "JGadget",
         "cflags": cflags_pikmin,
         "mw_version": "GC/3.0a3p1",
-        "progress_category" : "jsystem",
+        "progress_category": "jsystem",
         "objects": [
             Object(Matching, "JSystem/JGadget/binary.cpp"),
             Object(NonMatching, "JSystem/JGadget/linklist.cpp"),
@@ -634,15 +635,15 @@ config.libs = [
         "lib": "JUtility",
         "cflags": cflags_pikmin,
         "mw_version": "GC/3.0a3p1",
-        "progress_category" : "jsystem",
+        "progress_category": "jsystem",
         "objects": [
-            Object(NonMatching, "JSystem/JUtility/JUTAssert.cpp"),
-            Object(NonMatching, "JSystem/JUtility/JUTConsole.cpp"),
-            Object(NonMatching, "JSystem/JUtility/JUTDbPrint.cpp"),
-            Object(NonMatching, "JSystem/JUtility/JUTDirectFile.cpp"),
+            Object(Matching, "JSystem/JUtility/JUTAssert.cpp"),
+            Object(Equivalent, "JSystem/JUtility/JUTConsole.cpp"),
+            Object(Matching, "JSystem/JUtility/JUTDbPrint.cpp"),
+            Object(Matching, "JSystem/JUtility/JUTDirectFile.cpp"),
             Object(NonMatching, "JSystem/JUtility/JUTDirectPrint.cpp"),
             Object(NonMatching, "JSystem/JUtility/JUTException.cpp"),
-            Object(NonMatching, "JSystem/JUtility/JUTFader.cpp"),
+            Object(Matching, "JSystem/JUtility/JUTFader.cpp"),
             Object(Matching, "JSystem/JUtility/JUTFont.cpp"),
             Object(NonMatching, "JSystem/JUtility/JUTGamePad.cpp"),
             Object(NonMatching, "JSystem/JUtility/JUTGraphFifo.cpp"),
@@ -655,7 +656,7 @@ config.libs = [
             Object(Matching, "JSystem/JUtility/JUTTexture.cpp"),
             Object(NonMatching, "JSystem/JUtility/JUTVideo.cpp"),
             Object(Matching, "JSystem/JUtility/JUTFontData_Ascfont_fix12.cpp"),
-            Object(NonMatching, "JSystem/JUtility/JUTXfb.cpp"),
+            Object(Matching, "JSystem/JUtility/JUTXfb.cpp"),
             Object(NonMatching, "JSystem/JUtility/JUTCacheFont.cpp"),
         ],
     },
@@ -663,7 +664,7 @@ config.libs = [
         "lib": "JMath",
         "cflags": cflags_pikmin,
         "mw_version": "GC/3.0a3p1",
-        "progress_category" : "jsystem",
+        "progress_category": "jsystem",
         "objects": [
             Object(Matching, "JSystem/JMath/JMath.cpp"),
             Object(Matching, "JSystem/JMath/random.cpp"),
@@ -674,7 +675,7 @@ config.libs = [
         "lib": "J2D",
         "cflags": cflags_pikmin,
         "mw_version": "GC/3.0a3p1",
-        "progress_category" : "jsystem",
+        "progress_category": "jsystem",
         "objects": [
             Object(NonMatching, "JSystem/J2D/J2DOrthoGraph.cpp"),
             Object(Matching, "JSystem/J2D/J2DPerspGraph.cpp"),
@@ -702,7 +703,7 @@ config.libs = [
         "lib": "J3D",
         "cflags": cflags_pikmin,
         "mw_version": "GC/3.0a3p1",
-        "progress_category" : "jsystem",
+        "progress_category": "jsystem",
         "objects": [
             Object(NonMatching, "JSystem/J3D/J3DSys.cpp"),
             Object(Matching, "JSystem/J3D/J3DVertex.cpp"),
@@ -743,7 +744,7 @@ config.libs = [
         "lib": "JFramework",
         "cflags": cflags_pikmin,
         "mw_version": "GC/3.0a3p1",
-        "progress_category" : "jsystem",
+        "progress_category": "jsystem",
         "objects": [
             Object(NonMatching, "JSystem/JFramework/JFWSystem.cpp"),
             Object(NonMatching, "JSystem/JFramework/JFWDisplay.cpp"),
@@ -753,7 +754,7 @@ config.libs = [
         "lib": "JParticle",
         "cflags": cflags_pikmin,
         "mw_version": "GC/3.0a3p1",
-        "progress_category" : "jsystem",
+        "progress_category": "jsystem",
         "objects": [
             Object(NonMatching, "JSystem/JParticle/JPABaseShape.cpp"),
             Object(NonMatching, "JSystem/JParticle/JPAChildShape.cpp"),
@@ -776,7 +777,7 @@ config.libs = [
         "lib": "JStage",
         "cflags": cflags_pikmin,
         "mw_version": "GC/3.0a3p1",
-        "progress_category" : "jsystem",
+        "progress_category": "jsystem",
         "objects": [
             Object(Matching, "JSystem/JStage/JSGSystem.cpp"),
             Object(Matching, "JSystem/JStage/JSGCamera.cpp"),
@@ -788,7 +789,7 @@ config.libs = [
         "lib": "TRK_Hollywood_Revolution",
         "cflags": [*cflags_runtime, "-inline deferred", "-sdata 0", "-sdata2 0"],
         "mw_version": "GC/1.3.2",
-        "progress_category" : "sdk",
+        "progress_category": "sdk",
         "objects": [
             Object(NonMatching, "RevoSDK/TRK_Hollywood_Revolution/mainloop.c"),
             Object(NonMatching, "RevoSDK/TRK_Hollywood_Revolution/nubevent.c"),
@@ -827,7 +828,7 @@ config.libs = [
             Object(NonMatching, "RevoSDK/TRK_Hollywood_Revolution/UDP_Stubs.c"),
             Object(
                 NonMatching,
-                "RevoSDK/TRK_Hollywood_Revolution/main.c", # using ddh/main.c - might be gdev/main.c instead?
+                "RevoSDK/TRK_Hollywood_Revolution/main.c",  # using ddh/main.c - might be gdev/main.c instead?
                 extra_cflags=["-sdata 8"],
             ),
             Object(NonMatching, "RevoSDK/TRK_Hollywood_Revolution/CircleBuffer.c"),
@@ -837,14 +838,16 @@ config.libs = [
             #     extra_cflags=["-sdata 8"],
             # ),
             # Object(NonMatching, "RevoSDK/TRK_Hollywood_Revolution/MWTrace.c"),
-            Object(NonMatching, "RevoSDK/TRK_Hollywood_Revolution/MWCriticalSection_gc.c"),
+            Object(
+                NonMatching, "RevoSDK/TRK_Hollywood_Revolution/MWCriticalSection_gc.c"
+            ),
         ],
     },
     {
         "lib": "runtime",
         "cflags": [*cflags_runtime, "-inline deferred"],
         "mw_version": "GC/3.0a3p1",
-        "progress_category" : "sdk",
+        "progress_category": "sdk",
         "objects": [
             Object(NonMatching, "RevoSDK/runtime/__mem.c"),
             Object(NonMatching, "RevoSDK/runtime/__va_arg.c"),
@@ -870,7 +873,7 @@ config.libs = [
         "lib": "MSL_C",
         "cflags": [*cflags_runtime, "-inline deferred -fp_contract off"],
         "mw_version": "GC/3.0a3p1",
-        "progress_category" : "sdk",
+        "progress_category": "sdk",
         "objects": [
             # Object(NonMatching, "RevoSDK/MSL_C/PPC_EABI/abort_exit.c"),
             Object(NonMatching, "RevoSDK/MSL_C/MSL_Common/alloc.c"),
@@ -1045,15 +1048,15 @@ config.libs = [
     {
         "lib": "ai",
         "cflags": [*cflags_runtime, "-str noreadonly"],
-        "mw_version": "GC/1.2.5n",
-        "progress_category" : "sdk",
+        "mw_version": "GC/3.0a3p1",
+        "progress_category": "sdk",
         "objects": [Object(NonMatching, "RevoSDK/ai/ai.c")],
     },
     {
         "lib": "ax",
-        "cflags": [*cflags_runtime, "-str noreadonly"], # unknown
-        "mw_version": "GC/1.2.5n",                      # unknown
-        "progress_category" : "sdk",
+        "cflags": [*cflags_runtime, "-str noreadonly"],  # unknown
+        "mw_version": "GC/3.0a3p1",  # unknown
+        "progress_category": "sdk",
         "objects": [
             Object(NonMatching, "RevoSDK/ax/AX.c"),
             Object(NonMatching, "RevoSDK/ax/AXAlloc.c"),
@@ -1068,9 +1071,9 @@ config.libs = [
     },
     {
         "lib": "axfx",
-        "cflags": [*cflags_runtime, "-str noreadonly"], # unknown
-        "mw_version": "GC/1.2.5n",                      # unknown
-        "progress_category" : "sdk",
+        "cflags": [*cflags_runtime, "-str noreadonly"],  # unknown
+        "mw_version": "GC/3.0a3p1",  # unknown
+        "progress_category": "sdk",
         "objects": [
             Object(NonMatching, "RevoSDK/axfx/AXFXReverbHi.c"),
             Object(NonMatching, "RevoSDK/axfx/AXFXReverbHiExp.c"),
@@ -1080,22 +1083,22 @@ config.libs = [
     {
         "lib": "base",
         "cflags": cflags_runtime,
-        "mw_version": "GC/1.2.5n",
-        "progress_category" : "sdk",
+        "mw_version": "GC/3.0a3p1",
+        "progress_category": "sdk",
         "objects": [Object(NonMatching, "RevoSDK/base/PPCArch.c")],
     },
     {
         "lib": "db",
         "cflags": [*cflags_runtime, "-str noreadonly"],
-        "mw_version": "GC/1.2.5n",
-        "progress_category" : "sdk",
+        "mw_version": "GC/3.0a3p1",
+        "progress_category": "sdk",
         "objects": [Object(NonMatching, "RevoSDK/db/db.c")],
     },
     {
         "lib": "dsp",
         "cflags": [*cflags_runtime, "-str noreadonly"],
         "mw_version": "GC/3.0a3p1",
-        "progress_category" : "sdk",
+        "progress_category": "sdk",
         "objects": [
             Object(NonMatching, "RevoSDK/dsp/DSPCode.c"),
             Object(NonMatching, "RevoSDK/dsp/dsp.c"),
@@ -1107,7 +1110,7 @@ config.libs = [
         "lib": "dvd",
         "cflags": [*cflags_runtime, "-str noreadonly"],
         "mw_version": "GC/3.0a3p1",
-        "progress_category" : "sdk",
+        "progress_category": "sdk",
         "objects": [
             # Object(NonMatching, "RevoSDK/dvd/dvdlow.c"),
             Object(NonMatching, "RevoSDK/dvd/dvdfs.c"),
@@ -1125,7 +1128,7 @@ config.libs = [
         "lib": "exi",
         "cflags": [*cflags_runtime, "-str noreadonly"],
         "mw_version": "GC/3.0a3p1",
-        "progress_category" : "sdk",
+        "progress_category": "sdk",
         "objects": [
             Object(NonMatching, "RevoSDK/exi/EXIBios.c"),
             Object(NonMatching, "RevoSDK/exi/EXIUart.c"),
@@ -1136,7 +1139,7 @@ config.libs = [
         "lib": "gd",
         "cflags": cflags_runtime,
         "mw_version": "GC/3.0a3p1",
-        "progress_category" : "sdk",
+        "progress_category": "sdk",
         "objects": [
             Object(NonMatching, "RevoSDK/gd/GDBase.c"),
             Object(NonMatching, "RevoSDK/gd/GDGeometry.c"),
@@ -1146,7 +1149,7 @@ config.libs = [
         "lib": "gx",
         "cflags": [*cflags_runtime, "-str noreadonly", "-fp_contract off"],
         "mw_version": "GC/3.0a3p1",
-        "progress_category" : "sdk",
+        "progress_category": "sdk",
         "objects": [
             Object(NonMatching, "RevoSDK/gx/GXInit.c"),
             Object(NonMatching, "RevoSDK/gx/GXFifo.c"),
@@ -1168,7 +1171,7 @@ config.libs = [
         "lib": "mtx",
         "cflags": cflags_runtime,
         "mw_version": "GC/3.0a3p1",
-        "progress_category" : "sdk",
+        "progress_category": "sdk",
         "objects": [
             Object(NonMatching, "RevoSDK/mtx/mtx.c"),
             Object(NonMatching, "RevoSDK/mtx/mtxvec.c"),
@@ -1181,7 +1184,7 @@ config.libs = [
         "lib": "NdevExi2A",
         "cflags": [*cflags_runtime, "-inline deferred"],
         "mw_version": "GC/3.0a3p1",
-        "progress_category" : "sdk",
+        "progress_category": "sdk",
         "objects": [
             Object(NonMatching, "RevoSDK/NdevExi2A/DebuggerDriver.c"),
             Object(NonMatching, "RevoSDK/NdevExi2A/exi2.c"),
@@ -1191,7 +1194,7 @@ config.libs = [
         "lib": "os",
         "cflags": [*cflags_runtime, "-str noreadonly"],
         "mw_version": "GC/3.0a3p1",
-        "progress_category" : "sdk",
+        "progress_category": "sdk",
         "objects": [
             Object(NonMatching, "RevoSDK/os/OS.c"),
             Object(NonMatching, "RevoSDK/os/OSAlarm.c"),
@@ -1233,7 +1236,7 @@ config.libs = [
         "lib": "pad",
         "cflags": [*cflags_runtime, "-fp_contract off", "-str noreadonly"],
         "mw_version": "GC/3.0a3p1",
-        "progress_category" : "sdk",
+        "progress_category": "sdk",
         "objects": [
             Object(NonMatching, "RevoSDK/pad/Padclamp.c"),
             Object(NonMatching, "RevoSDK/pad/Pad.c"),
@@ -1243,7 +1246,7 @@ config.libs = [
         "lib": "si",
         "cflags": [*cflags_runtime, "-str noreadonly"],
         "mw_version": "GC/3.0a3p1",
-        "progress_category" : "sdk",
+        "progress_category": "sdk",
         "objects": [
             Object(NonMatching, "RevoSDK/si/SIBios.c"),
             Object(NonMatching, "RevoSDK/si/SISamplingRate.c"),
@@ -1252,8 +1255,8 @@ config.libs = [
     {
         "lib": "vi",
         "cflags": [*cflags_runtime, "-str noreadonly"],
-        "mw_version": "GC/2.6", # should be 3.0a3p1 but vi.c yells about something
-        "progress_category" : "sdk",
+        "mw_version": "GC/2.6",  # should be 3.0a3p1 but vi.c yells about something
+        "progress_category": "sdk",
         "objects": [
             Object(NonMatching, "RevoSDK/vi/vi.c"),
             Object(NonMatching, "RevoSDK/vi/i2c.c"),
@@ -1264,7 +1267,7 @@ config.libs = [
         "lib": "thp",
         "cflags": [*cflags_runtime, "-str noreadonly"],
         "mw_version": "GC/3.0a3p1",
-        "progress_category" : "sdk",
+        "progress_category": "sdk",
         "objects": [
             Object(NonMatching, "RevoSDK/thp/THPDec.c"),
             Object(NonMatching, "RevoSDK/thp/THPAudio.c"),
@@ -1272,36 +1275,36 @@ config.libs = [
     },
     {
         "lib": "tpl",
-        "cflags": [*cflags_runtime, "-str noreadonly"], # unknown
-        "mw_version": "GC/3.0a3p1",                      # unknown
-        "progress_category" : "sdk",
+        "cflags": [*cflags_runtime, "-str noreadonly"],  # unknown
+        "mw_version": "GC/3.0a3p1",  # unknown
+        "progress_category": "sdk",
         "objects": [
             Object(NonMatching, "RevoSDK/tpl/TPL.c"),
         ],
     },
     {
         "lib": "usb",
-        "cflags": [*cflags_runtime, "-str noreadonly"], # unknown
-        "mw_version": "GC/3.0a3p1",                      # unknown
-        "progress_category" : "sdk",
+        "cflags": [*cflags_runtime, "-str noreadonly"],  # unknown
+        "mw_version": "GC/3.0a3p1",  # unknown
+        "progress_category": "sdk",
         "objects": [
             Object(NonMatching, "RevoSDK/usb/usb.c"),
         ],
     },
     {
         "lib": "wenc",
-        "cflags": [*cflags_runtime, "-str noreadonly"], # unknown
-        "mw_version": "GC/3.0a3p1",                      # unknown
-        "progress_category" : "sdk",
+        "cflags": [*cflags_runtime, "-str noreadonly"],  # unknown
+        "mw_version": "GC/3.0a3p1",  # unknown
+        "progress_category": "sdk",
         "objects": [
             Object(NonMatching, "RevoSDK/wenc/wenc.c"),
         ],
     },
     {
         "lib": "wpad",
-        "cflags": [*cflags_runtime, "-str noreadonly"], # unknown
-        "mw_version": "GC/3.0a3p1",                      # unknown
-        "progress_category" : "sdk",
+        "cflags": [*cflags_runtime, "-str noreadonly"],  # unknown
+        "mw_version": "GC/3.0a3p1",  # unknown
+        "progress_category": "sdk",
         "objects": [
             Object(NonMatching, "RevoSDK/wpad/WPAD.c"),
             Object(NonMatching, "RevoSDK/wpad/WPADHIDParser.c"),
@@ -1311,9 +1314,9 @@ config.libs = [
     },
     {
         "lib": "wud",
-        "cflags": [*cflags_runtime, "-str noreadonly"], # unknown
-        "mw_version": "GC/3.0a3p1",                      # unknown
-        "progress_category" : "sdk",
+        "cflags": [*cflags_runtime, "-str noreadonly"],  # unknown
+        "mw_version": "GC/3.0a3p1",  # unknown
+        "progress_category": "sdk",
         "objects": [
             Object(NonMatching, "RevoSDK/wud/WUD.c"),
             Object(NonMatching, "RevoSDK/wud/WUDHidHost.c"),
@@ -1322,18 +1325,18 @@ config.libs = [
     },
     {
         "lib": "arc",
-        "cflags": [*cflags_runtime, "-str noreadonly"], # unknown
-        "mw_version": "GC/3.0a3p1",                      # unknown
-        "progress_category" : "sdk",
+        "cflags": [*cflags_runtime, "-str noreadonly"],  # unknown
+        "mw_version": "GC/3.0a3p1",  # unknown
+        "progress_category": "sdk",
         "objects": [
             Object(NonMatching, "RevoSDK/arc/arc.c"),
         ],
     },
     {
         "lib": "bte",
-        "cflags": [*cflags_runtime, "-str noreadonly"], # unknown
-        "mw_version": "GC/3.0a3p1",                      # unknown
-        "progress_category" : "sdk",
+        "cflags": [*cflags_runtime, "-str noreadonly"],  # unknown
+        "mw_version": "GC/3.0a3p1",  # unknown
+        "progress_category": "sdk",
         "objects": [
             Object(NonMatching, "RevoSDK/bte/gki_buffer.c"),
             Object(NonMatching, "RevoSDK/bte/gki_time.c"),
@@ -1382,9 +1385,9 @@ config.libs = [
     },
     {
         "lib": "enc",
-        "cflags": [*cflags_runtime, "-str noreadonly"], # unknown
-        "mw_version": "GC/3.0a3p1",                      # unknown
-        "progress_category" : "sdk",
+        "cflags": [*cflags_runtime, "-str noreadonly"],  # unknown
+        "mw_version": "GC/3.0a3p1",  # unknown
+        "progress_category": "sdk",
         "objects": [
             Object(NonMatching, "RevoSDK/enc/encutility.c"),
             Object(NonMatching, "RevoSDK/enc/encjapanese.c"),
@@ -1392,27 +1395,27 @@ config.libs = [
     },
     {
         "lib": "euart",
-        "cflags": [*cflags_runtime, "-str noreadonly"], # unknown
-        "mw_version": "GC/3.0a3p1",                      # unknown
-        "progress_category" : "sdk",
+        "cflags": [*cflags_runtime, "-str noreadonly"],  # unknown
+        "mw_version": "GC/3.0a3p1",  # unknown
+        "progress_category": "sdk",
         "objects": [
             Object(NonMatching, "RevoSDK/euart/euart.c"),
         ],
     },
     {
         "lib": "fs",
-        "cflags": [*cflags_runtime, "-str noreadonly"], # unknown
-        "mw_version": "GC/3.0a3p1",                      # unknown
-        "progress_category" : "sdk",
+        "cflags": [*cflags_runtime, "-str noreadonly"],  # unknown
+        "mw_version": "GC/3.0a3p1",  # unknown
+        "progress_category": "sdk",
         "objects": [
             Object(NonMatching, "RevoSDK/fs/fs.c"),
         ],
     },
     {
         "lib": "ipc",
-        "cflags": [*cflags_runtime, "-str noreadonly"], # unknown
-        "mw_version": "GC/3.0a3p1",                      # unknown
-        "progress_category" : "sdk",
+        "cflags": [*cflags_runtime, "-str noreadonly"],  # unknown
+        "mw_version": "GC/3.0a3p1",  # unknown
+        "progress_category": "sdk",
         "objects": [
             Object(NonMatching, "RevoSDK/ipc/ipcMain.c"),
             Object(NonMatching, "RevoSDK/ipc/ipcclt.c"),
@@ -1422,18 +1425,18 @@ config.libs = [
     },
     {
         "lib": "kpad",
-        "cflags": [*cflags_runtime, "-str noreadonly"], # unknown
-        "mw_version": "GC/3.0a3p1",                      # unknown
-        "progress_category" : "sdk",
+        "cflags": [*cflags_runtime, "-str noreadonly"],  # unknown
+        "mw_version": "GC/3.0a3p1",  # unknown
+        "progress_category": "sdk",
         "objects": [
             Object(NonMatching, "RevoSDK/kpad/KPAD.c"),
         ],
     },
     {
         "lib": "mem",
-        "cflags": [*cflags_runtime, "-str noreadonly"], # unknown
-        "mw_version": "GC/3.0a3p1",                      # unknown
-        "progress_category" : "sdk",
+        "cflags": [*cflags_runtime, "-str noreadonly"],  # unknown
+        "mw_version": "GC/3.0a3p1",  # unknown
+        "progress_category": "sdk",
         "objects": [
             Object(NonMatching, "RevoSDK/mem/mem_heapCommon.c"),
             Object(NonMatching, "RevoSDK/mem/mem_expHeap.c"),
@@ -1443,9 +1446,9 @@ config.libs = [
     },
     {
         "lib": "nand",
-        "cflags": [*cflags_runtime, "-str noreadonly"], # unknown
-        "mw_version": "GC/3.0a3p1",                      # unknown
-        "progress_category" : "sdk",
+        "cflags": [*cflags_runtime, "-str noreadonly"],  # unknown
+        "mw_version": "GC/3.0a3p1",  # unknown
+        "progress_category": "sdk",
         "objects": [
             Object(NonMatching, "RevoSDK/nand/nand.c"),
             Object(NonMatching, "RevoSDK/nand/NANDOpenClose.c"),
@@ -1456,9 +1459,9 @@ config.libs = [
     },
     {
         "lib": "sc",
-        "cflags": [*cflags_runtime, "-str noreadonly"], # unknown
-        "mw_version": "GC/3.0a3p1",                      # unknown
-        "progress_category" : "sdk",
+        "cflags": [*cflags_runtime, "-str noreadonly"],  # unknown
+        "mw_version": "GC/3.0a3p1",  # unknown
+        "progress_category": "sdk",
         "objects": [
             Object(NonMatching, "RevoSDK/sc/scsystem.c"),
             Object(NonMatching, "RevoSDK/sc/scapi.c"),
@@ -1467,9 +1470,9 @@ config.libs = [
     },
     {
         "lib": "esp",
-        "cflags": [*cflags_runtime, "-str noreadonly"], # unknown
-        "mw_version": "GC/3.0a3p1",                      # unknown
-        "progress_category" : "sdk",
+        "cflags": [*cflags_runtime, "-str noreadonly"],  # unknown
+        "mw_version": "GC/3.0a3p1",  # unknown
+        "progress_category": "sdk",
         "objects": [
             Object(NonMatching, "RevoSDK/esp/esp.c"),
         ],
@@ -1536,7 +1539,7 @@ config.libs = [
         "lib": "plugProjectYamashitaU",
         "cflags": cflags_pikmin,
         "mw_version": "GC/3.0a3p1",
-        "progress_category" : "game",
+        "progress_category": "game",
         "objects": [
             Object(NonMatching, "plugProjectYamashitaU/enemyBase.cpp"),
             Object(NonMatching, "plugProjectYamashitaU/pelplant.cpp"),
@@ -1596,7 +1599,7 @@ config.libs = [
         "lib": "plugProjectKandoU",
         "cflags": cflags_pikmin,
         "mw_version": "GC/3.0a3p1",
-        "progress_category" : "game",
+        "progress_category": "game",
         "objects": [
             Object(NonMatching, "plugProjectKandoU/pikiAnimator.cpp"),
             Object(NonMatching, "plugProjectKandoU/collinfo.cpp"),
@@ -1741,7 +1744,7 @@ config.libs = [
         "lib": "plugProjectNishimuraU",
         "cflags": cflags_pikmin,
         "mw_version": "GC/3.0a3p1",
-        "progress_category" : "game",
+        "progress_category": "game",
         "objects": [
             Object(NonMatching, "plugProjectNishimuraU/nslibmath.cpp"),
             Object(NonMatching, "plugProjectNishimuraU/ShadowCylinder.cpp"),
@@ -1984,7 +1987,7 @@ config.libs = [
         "lib": "plugProjectOgawaU",
         "cflags": cflags_pikmin,
         "mw_version": "GC/3.0a3p1",
-        "progress_category" : "game",
+        "progress_category": "game",
         "objects": [
             Object(NonMatching, "plugProjectOgawaU/ogScreen.cpp"),
             Object(NonMatching, "plugProjectOgawaU/ogDopingScreen.cpp"),
@@ -2072,7 +2075,7 @@ config.libs = [
         "lib": "plugProjectHikinoU",
         "cflags": [*cflags_pikmin, "-sym on"],
         "mw_version": "GC/3.0a3p1",
-        "progress_category" : "game",
+        "progress_category": "game",
         "objects": [
             Object(NonMatching, "plugProjectHikinoU/PSSeq.cpp"),
             Object(NonMatching, "plugProjectHikinoU/PSGame.cpp"),
@@ -2094,7 +2097,7 @@ config.libs = [
         "lib": "plugProjectMorimuraU",
         "cflags": cflags_pikmin,
         "mw_version": "GC/3.0a3p1",
-        "progress_category" : "game",
+        "progress_category": "game",
         "objects": [
             Object(NonMatching, "plugProjectMorimuraU/dayEndCount.cpp"),
             Object(NonMatching, "plugProjectMorimuraU/hurryUp2D.cpp"),
@@ -2162,7 +2165,7 @@ config.libs = [
         "lib": "plugProjectEbisawaU",
         "cflags": cflags_pikmin,
         "mw_version": "GC/3.0a3p1",
-        "progress_category" : "game",
+        "progress_category": "game",
         "objects": [
             Object(NonMatching, "plugProjectEbisawaU/efxBase.cpp"),
             Object(NonMatching, "plugProjectEbisawaU/efxEnemy.cpp"),
@@ -2269,7 +2272,7 @@ config.libs = [
         "lib": "plugProjectKonoU",
         "cflags": cflags_pikmin,
         "mw_version": "GC/3.0a3p1",
-        "progress_category" : "game",
+        "progress_category": "game",
         "objects": [
             Object(NonMatching, "plugProjectKonoU/khWorldMap.cpp"),
             Object(NonMatching, "plugProjectKonoU/khCaveResult.cpp"),
@@ -2291,14 +2294,14 @@ config.libs = [
         "lib": "sysBootupU",
         "cflags": cflags_pikmin,
         "mw_version": "GC/3.0a3p1",
-        "progress_category" : "game",
+        "progress_category": "game",
         "objects": [Object(NonMatching, "sysBootupU/sysBootup.cpp")],
     },
     {
         "lib": "sysCommonU",
         "cflags": cflags_pikmin,
         "mw_version": "GC/3.0a3p1",
-        "progress_category" : "game",
+        "progress_category": "game",
         "objects": [
             Object(NonMatching, "sysCommonU/node.cpp"),
             Object(NonMatching, "sysCommonU/sysMath.cpp"),
@@ -2322,7 +2325,7 @@ config.libs = [
         "lib": "sysGCU",
         "cflags": [*cflags_pikmin, "-lang=c++"],
         "mw_version": "GC/3.0a3p1",
-        "progress_category" : "game",
+        "progress_category": "game",
         "objects": [
             Object(NonMatching, "sysGCU/system.cpp"),
             Object(NonMatching, "sysGCU/section.cpp"),
@@ -2401,7 +2404,7 @@ config.libs = [
         "lib": "utilityU",
         "cflags": [*cflags_pikmin, "-sym on"],
         "mw_version": "GC/3.0a3p1",
-        "progress_category" : "game",
+        "progress_category": "game",
         "objects": [
             Object(NonMatching, "utilityU/menu.cpp"),
             Object(NonMatching, "utilityU/PSMainSide_Director.cpp"),
@@ -2420,9 +2423,9 @@ config.libs = [
     },
     {
         "lib": "egg",
-        "cflags": cflags_runtime,   # unknown
+        "cflags": cflags_runtime,  # unknown
         "mw_version": "GC/3.0a3p1",  # unknown
-        "progress_category" : "egg",
+        "progress_category": "egg",
         "objects": [
             Object(NonMatching, "egg/gfx/eggCamera.cpp"),
             Object(NonMatching, "egg/gfx/eggDrawHelper.cpp"),
@@ -2456,27 +2459,27 @@ config.libs = [
         "lib": "nw4r_ut",
         "cflags": cflags_nw4r,
         "mw_version": "GC/3.0a3p1",
-        "progress_category" : "nw4r",
+        "progress_category": "nw4r",
         "objects": [
             Object(Matching, "nw4r/ut/ut_list.cpp"),
             Object(Matching, "nw4r/ut/ut_LinkList.cpp"),
             Object(Matching, "nw4r/ut/ut_binaryFileFormat.cpp"),
             Object(Matching, "nw4r/ut/ut_CharStrmReader.cpp"),
-            Object(NonMatching, "nw4r/ut/ut_TagProcessorBase.cpp"),
-            Object(NonMatching, "nw4r/ut/ut_LockedCache.cpp"),
-            Object(NonMatching, "nw4r/ut/ut_Font.cpp"),
-            Object(NonMatching, "nw4r/ut/ut_RomFont.cpp"),
-            Object(NonMatching, "nw4r/ut/ut_ResFontBase.cpp"),
-            Object(NonMatching, "nw4r/ut/ut_ResFont.cpp"),
-            Object(NonMatching, "nw4r/ut/ut_CharWriter.cpp"),
-            Object(NonMatching, "nw4r/ut/ut_TextWriterBase.cpp"),
+            Object(Matching, "nw4r/ut/ut_TagProcessorBase.cpp"),
+            Object(Matching, "nw4r/ut/ut_LockedCache.cpp"),
+            Object(Matching, "nw4r/ut/ut_Font.cpp"),
+            Object(Matching, "nw4r/ut/ut_RomFont.cpp"),
+            Object(Matching, "nw4r/ut/ut_ResFontBase.cpp"),
+            Object(Matching, "nw4r/ut/ut_ResFont.cpp"),
+            Object(Matching, "nw4r/ut/ut_CharWriter.cpp"),
+            Object(Matching, "nw4r/ut/ut_TextWriterBase.cpp"),
         ],
     },
     {
         "lib": "nw4r_math",
         "cflags": cflags_nw4r,
         "mw_version": "GC/3.0a3p1",
-        "progress_category" : "nw4r",
+        "progress_category": "nw4r",
         "objects": [
             Object(Matching, "nw4r/math/math_arithmetic.cpp"),
             Object(Matching, "nw4r/math/math_triangular.cpp"),
@@ -2488,7 +2491,7 @@ config.libs = [
         "lib": "nw4r_db",
         "cflags": cflags_nw4r,
         "mw_version": "GC/3.0a3p1",
-        "progress_category" : "nw4r",
+        "progress_category": "nw4r",
         "objects": [
             Object(NonMatching, "nw4r/db/db_directPrint.cpp"),
             Object(NonMatching, "nw4r/db/db_console.cpp"),
@@ -2499,7 +2502,7 @@ config.libs = [
         "lib": "nw4r_g3d",
         "cflags": cflags_nw4r,
         "mw_version": "GC/3.0a3p1",
-        "progress_category" : "nw4r",
+        "progress_category": "nw4r",
         "objects": [
             Object(NonMatching, "nw4r/g3d/g3d_rescommon.cpp"),
             Object(NonMatching, "nw4r/g3d/g3d_resdict.cpp"),
@@ -2555,7 +2558,7 @@ config.libs = [
         "lib": "nw4r_lyt",
         "cflags": cflags_nw4r,
         "mw_version": "GC/3.0a3p1",
-        "progress_category" : "nw4r",
+        "progress_category": "nw4r",
         "objects": [
             Object(NonMatching, "nw4r/lyt/lyt_pane.cpp"),
             Object(NonMatching, "nw4r/lyt/lyt_group.cpp"),
@@ -2577,6 +2580,7 @@ config.libs = [
     },
 ]
 
+
 # Optional callback to adjust link order. This can be used to add, remove, or reorder objects.
 # This is called once per module, with the module ID and the current link order.
 #
@@ -2589,6 +2593,7 @@ def link_order_callback(module_id: int, objects: List[str]) -> List[str]:
     if module_id == 0:  # DOL
         return objects + ["dummy.c"]
     return objects
+
 
 # Uncomment to enable the link order callback.
 # config.link_order_callback = link_order_callback

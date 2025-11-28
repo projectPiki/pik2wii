@@ -1,13 +1,13 @@
 #ifndef _GAME_ENEMYBASE_H
 #define _GAME_ENEMYBASE_H
 
-#include "Game/Creature.h"
 #include "Game/CollEvent.h"
+#include "Game/Creature.h"
+#include "Game/EnemyEffectNode.h"
+#include "Game/EnemyPelletInfo.h"
 #include "Game/EnemyStateMachine.h"
 #include "Game/MoveInfo.h"
-#include "Game/EnemyEffectNode.h"
 #include "Game/PelletView.h"
-#include "Game/EnemyPelletInfo.h"
 #include "Game/pelletMgr.h"
 
 #include "SysShape/MotionListener.h"
@@ -21,7 +21,12 @@
 #define EMOTE_Caution    (1)
 #define EMOTE_Excitement (2)
 
-#define OBJ(enemy) (static_cast<Obj*>(enemy))
+#define OBJ(enemy)      (static_cast<Obj*>(enemy))
+#define EG_PARMS(enemy) (static_cast<EnemyParmsBase*>(enemy->mParms))
+#define E_PARMS         (EG_PARMS(this))
+
+#define EG_GENERALPARMS(x) (EG_PARMS(x)->mGeneral)
+#define E_GENERALPARMS     (E_PARMS->mGeneral)
 
 struct MouthSlots;
 
@@ -104,8 +109,7 @@ enum DropGroup {
 };
 
 // Interface for specific overrides (e.g. PelplantInitialParams)
-struct EnemyInitialParamBase {
-};
+struct EnemyInitialParamBase { };
 
 struct EnemyKillArg : public CreatureKillArg {
 	inline EnemyKillArg(int flag)
@@ -273,8 +277,9 @@ struct EnemyBase : public Creature, public SysShape::MotionListener, virtual pub
 	virtual void doFinishEarthquakeState();                  // _2B4
 	virtual void doStartEarthquakeFitState();                // _2B8
 	virtual void doFinishEarthquakeFitState();               // _2BC
-	virtual void lifeRecover();                              // _2C0
-	virtual void startCarcassMotion()                        // _2C4 (weak)
+	virtual void setZukanVisible(bool updateTekiDeathInfo);  // _2C0, new (used to not be virtual)
+	virtual void lifeRecover();                              // _2C4
+	virtual void startCarcassMotion()                        // _2C8 (weak)
 	{
 		SysShape::MotionListener* listener = this;
 
@@ -323,18 +328,18 @@ struct EnemyBase : public Creature, public SysShape::MotionListener, virtual pub
 
 		mSoundObj->setAnime(nullptr, 1, 0.0f, 0.0f);
 	}
-	virtual void setCarcassArg(PelletViewArg& settings);                  // _2C8
-	virtual f32 getCarcassArgHeight() { return mBoundingSphere.mRadius; } // _2CC (weak)
-	virtual bool doBecomeCarcass();                                       // _2D0
-	virtual void startWaitingBirthTypeDrop();                             // _2D4
-	virtual void finishWaitingBirthTypeDrop();                            // _2D8
-	virtual bool isFinishableWaitingBirthTypeDrop();                      // _2DC
-	virtual void doStartWaitingBirthTypeDrop();                           // _2E0
-	virtual void doFinishWaitingBirthTypeDrop();                          // _2E4
-	virtual void wallCallback(const MoveInfo& info) { }                   // _2E8 (weak)
-	virtual f32 getDownSmokeScale();                                      // _2EC
-	virtual void doStartMovie() { }                                       // _2F0 (weak)
-	virtual void doEndMovie() { }                                         // _2F4 (weak)
+	virtual void setCarcassArg(PelletViewArg& settings);                  // _2CC
+	virtual f32 getCarcassArgHeight() { return mBoundingSphere.mRadius; } // _2D0 (weak)
+	virtual bool doBecomeCarcass();                                       // _2D4
+	virtual void startWaitingBirthTypeDrop();                             // _2D8
+	virtual void finishWaitingBirthTypeDrop();                            // _2DC
+	virtual bool isFinishableWaitingBirthTypeDrop();                      // _2E0
+	virtual void doStartWaitingBirthTypeDrop();                           // _2E4
+	virtual void doFinishWaitingBirthTypeDrop();                          // _2E8
+	virtual void wallCallback(const MoveInfo& info) { }                   // _2EC (weak)
+	virtual f32 getDownSmokeScale();                                      // _2F0
+	virtual void doStartMovie() { }                                       // _2F4 (weak)
+	virtual void doEndMovie() { }                                         // _2F8 (weak)
 
 	// vtable 3 (PelletView)
 
@@ -389,7 +394,6 @@ struct EnemyBase : public Creature, public SysShape::MotionListener, virtual pub
 	void setAnimMgr(SysShape::AnimMgr* animMgr);
 	void setOtakaraCode(PelletMgr::OtakaraItemCode& code);
 	void setPSEnemyBaseAnime();
-	void setZukanVisible(bool updateTekiDeathInfo);
 
 	void startBlend(int srcAnimIdx, int destAnimIdx, SysShape::BlendFunction* blendFunc, f32 frameRate, SysShape::MotionListener* listener);
 	void endBlend();
@@ -420,8 +424,16 @@ struct EnemyBase : public Creature, public SysShape::MotionListener, virtual pub
 	void resetDroppingMassZero();
 
 	void resetCollEvent();
-	void becomeCarcass();
+	bool becomeCarcass();
 	void updateEffects();
+
+	inline void doKillEffects()
+	{
+		InteractMattuan interactMatt(this, 2.5f);
+
+		mHeldPellet->stimulate(interactMatt);
+		mHeldPellet = nullptr;
+	}
 
 	inline void setCreatureID(u8 idx) { mCreatureID = idx; }
 
@@ -1051,7 +1063,10 @@ struct StateMachine : public Game::EnemyStateMachine {
 
 // defined here to avoid include loop
 namespace efx {
-inline Arg::Arg(Game::EnemyBase* enemy) { mPosition = enemy->mPosition; }
+inline Arg::Arg(Game::EnemyBase* enemy)
+{
+	mPosition = enemy->mPosition;
+}
 } // namespace efx
 
 #endif
