@@ -1,6 +1,6 @@
+#include "System.h"
 #include "og/Screen/ScaleMgr.h"
 #include "sysMath.h"
-#include "System.h"
 #include "trig.h"
 
 namespace og {
@@ -103,7 +103,7 @@ f32 ScaleMgr::calc()
 		break;
 
 	case SCM_Up:
-		mRestoreTimer += sys->mDeltaTime;
+		mRestoreTimer += sys->getDeltaTime();
 		if (mRestoreTimer > mMaxRestoreTime) {
 			mState        = SCM_Inactive;
 			mScale        = 1.0f;
@@ -116,7 +116,7 @@ f32 ScaleMgr::calc()
 		break;
 
 	case SCM_Down:
-		mRestoreTimer += sys->mDeltaTime;
+		mRestoreTimer += sys->getDeltaTime();
 		if (mRestoreTimer > mMaxRestoreTime) {
 			mState        = SCM_Inactive;
 			mScale        = 1.0f;
@@ -130,7 +130,7 @@ f32 ScaleMgr::calc()
 
 	case SCM_DelayedUp:
 		mScale = 1.0f;
-		mDelayTimer -= sys->mDeltaTime;
+		mDelayTimer -= sys->getDeltaTime();
 		if (mDelayTimer < 0.0f) {
 			mState      = SCM_Up;
 			mDelayTimer = 0.0f;

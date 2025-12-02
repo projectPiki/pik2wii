@@ -1,9 +1,9 @@
+#include "System.h"
+#include "og/Screen/anime.h"
 #include "og/Screen/callbackNodes.h"
 #include "og/Screen/ogScreen.h"
-#include "og/Screen/anime.h"
 #include "og/newscreen/SMenu.h"
 #include "trig.h"
-#include "System.h"
 
 namespace og {
 namespace Screen {
@@ -155,7 +155,7 @@ void AnimText_Screen::update()
 		//     else, set body white to col1
 		if (mIsBlinking) {
 			if (mBlinkFactor > 0.0f) {
-				mBlinkTimer += sys->mDeltaTime;
+				mBlinkTimer += sys->getDeltaTime();
 				if (mBlinkTimer >= mBlinkFactor) {
 					mBlinkTimer = 0.0f;
 				}
@@ -212,7 +212,10 @@ void AnimText_Screen::update()
  * @note Address: 0x80309418
  * @note Size: 0x8
  */
-void AnimText_Screen::setAnimScreen(AnimScreen* screen) { mAnmScreen = screen; }
+void AnimText_Screen::setAnimScreen(AnimScreen* screen)
+{
+	mAnmScreen = screen;
+}
 
 /**
  * @note Address: 0x80309420

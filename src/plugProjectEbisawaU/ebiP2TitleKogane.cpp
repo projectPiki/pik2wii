@@ -183,7 +183,7 @@ void TUnit::startState(enumState state)
 		mPosition = title::titleMgr->getPosOutOfViewField();
 
 	case KSTATE_Controlled:
-		u32 time  = mManager->mParams.mControlStateTime.mValue / sys->mDeltaTime;
+		u32 time  = mManager->mParams.mControlStateTime.mValue / sys->getDeltaTime();
 		mCounter  = time;
 		mCounter2 = time;
 		break;
@@ -191,7 +191,7 @@ void TUnit::startState(enumState state)
 		f32 max, min;
 		min       = mManager->mParams.mMinWaitTime.mValue;
 		max       = mManager->mParams.mMaxWaitTime.mValue;
-		u32 time2 = ((max - min) * randEbisawaFloat() + min) / sys->mDeltaTime;
+		u32 time2 = ((max - min) * randEbisawaFloat() + min) / sys->getDeltaTime();
 		mCounter  = time2;
 		mCounter2 = time2;
 		break;
@@ -206,7 +206,7 @@ void TUnit::startState(enumState state)
 		max2 = mManager->mParams.mMaxMoveTime.mValue;
 		min2 = mManager->mParams.mMinMoveTime.mValue;
 
-		u32 time3 = ((max2 - min2) * randEbisawaFloat() + min2) / sys->mDeltaTime;
+		u32 time3 = ((max2 - min2) * randEbisawaFloat() + min2) / sys->getDeltaTime();
 		mCounter  = time3;
 		mCounter2 = time3;
 		break;
@@ -281,7 +281,7 @@ void TUnit::update()
 
 	case KSTATE_Turn: {
 		mActionID   = KOGANEACT_1;
-		f32 product = 60.0f * sys->mDeltaTime * 0.5f * 0.1f;
+		f32 product = 60.0f * sys->getDeltaTime() * 0.5f * 0.1f;
 		mAngle      = mAngle + mTargetAngle * product;
 		mAngle.normalise();
 

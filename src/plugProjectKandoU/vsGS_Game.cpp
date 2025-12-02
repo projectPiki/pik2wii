@@ -1,27 +1,27 @@
-#include "Game/VsGame.h"
+#include "Controller.h"
+#include "Game/AIConstants.h"
+#include "Game/Data.h"
 #include "Game/DeathMgr.h"
-#include "Game/MoviePlayer.h"
-#include "Game/Entities/ItemOnyon.h"
 #include "Game/Entities/ItemHole.h"
+#include "Game/Entities/ItemOnyon.h"
 #include "Game/Entities/PelletItem.h"
 #include "Game/MapMgr.h"
-#include "Game/AIConstants.h"
+#include "Game/MoviePlayer.h"
+#include "Game/VsGame.h"
 #include "Game/gameStat.h"
-#include "Game/Data.h"
 #include "Game/mapParts.h"
-#include "VsOtakaraName.h"
-#include "Screen/Game2DMgr.h"
-#include "kh/khWinLose.h"
 #include "PSM/Director.h"
 #include "PSM/Global.h"
-#include "PSSystem/PSScene.h"
 #include "PSSystem/PSGame.h"
 #include "PSSystem/PSMainSide_Scene.h"
-#include "utilityU.h"
-#include "Controller.h"
+#include "PSSystem/PSScene.h"
 #include "PikiAI.h"
 #include "Radar.h"
+#include "Screen/Game2DMgr.h"
+#include "VsOtakaraName.h"
+#include "kh/khWinLose.h"
 #include "nans.h"
+#include "utilityU.h"
 
 namespace Game {
 namespace VsGame {
@@ -140,14 +140,20 @@ void GameState::do_init(VsGameSection* section)
  * @note Address: 0x802296E8
  * @note Size: 0xC
  */
-bool GameState::goingToCave(VsGameSection* section) { return isFlag(VSGS_EnteringCave); }
+bool GameState::goingToCave(VsGameSection* section)
+{
+	return isFlag(VSGS_EnteringCave);
+}
 
 /**
  * This fake function is here to generate the vtables in the correct order
  * - I cannot see a way for them to generate correctly without something here to
  * spawn DispMemberChallenge2P 'before' (after) DispWinLose, so this will have to suffice. - HP
  */
-static void fakeFuncVsGsGame() { og::Screen::DispMemberChallenge2P disp; }
+static void fakeFuncVsGsGame()
+{
+	og::Screen::DispMemberChallenge2P disp;
+}
 
 /**
  * @note Address: 0x802296F4
@@ -287,7 +293,7 @@ void GameState::exec(VsGameSection* section)
 		    && moviePlayer->mDemoState
 		           == DEMOSTATE_Inactive) { // check game is in a state where timer should go down (not paused/menu/CS/etc)
 
-			section->mTimeLimit -= sys->mDeltaTime * 0.5f;
+			section->mTimeLimit -= sys->getDeltaTime() * 0.5f;
 			if (section->mTimeLimit <= 0.0f && !isFlag(VSGS_TimeUp)) {
 				gameSystem->resetFlag(GAMESYS_IsGameWorldActive);
 				gameSystem->setPause(true, "timeup", 3);
@@ -551,7 +557,10 @@ void GameState::onBattleFinished(VsGameSection* section, int winningPlayerIndex,
  * @note Address: 0x8022A858
  * @note Size: 0x10
  */
-bool GameState::isCardUsable(VsGameSection* section) { return (u32) !(mSubState); }
+bool GameState::isCardUsable(VsGameSection* section)
+{
+	return (u32) !(mSubState);
+}
 
 /**
  * @note Address: 0x8022A868
@@ -736,8 +745,8 @@ void GameState::onMovieDone(VsGameSection* section, MovieConfig* config, u32 unu
 			pikiPos.y        = mapMgr->getMinY(pikiPos);
 
 			piki->setPosition(pikiPos, false);
-			piki->mVelocity       = Vector3f(0.0f);
-			piki->mTargetVelocity = Vector3f(0.0f);
+			piki->mVelocity.set(0.0f, 0.0f, 0.0f);
+			piki->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 		}
 
 		Screen::gGame2DMgr->close_Floor();
@@ -1050,7 +1059,9 @@ void GameState::update_GameChallenge(VsGameSection* section)
  * @note Address: 0x8022C70C
  * @note Size: 0x4
  */
-void GameState::drawStatus(Graphics&, VsGameSection* section) { }
+void GameState::drawStatus(Graphics&, VsGameSection* section)
+{
+}
 
 } // namespace VsGame
 } // namespace Game

@@ -293,7 +293,7 @@ void Obj::doUpdateCarcass()
 {
 	if (mPellet->isAlive()) {
 		if (mHealthGaugeTimer < C_PROPERPARMS.mHealthGaugeTimer.mValue) {
-			mHealthGaugeTimer += sys->mDeltaTime;
+			mHealthGaugeTimer += sys->getDeltaTime();
 			if (lifeGaugeMgr && mHealthGaugeTimer >= C_PROPERPARMS.mHealthGaugeTimer.mValue) {
 				lifeGaugeMgr->activeLifeGauge(this, 0.0f);
 			}
@@ -352,7 +352,7 @@ void Obj::updateCaution()
 	}
 
 	if (mHealthGaugeTimer < C_GENERALPARMS.mAlertDuration.mValue) {
-		mHealthGaugeTimer += sys->mDeltaTime;
+		mHealthGaugeTimer += sys->getDeltaTime();
 	}
 }
 

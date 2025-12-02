@@ -1,13 +1,13 @@
 #ifndef _GAME_ENTITIES_FUEFUKI_H
 #define _GAME_ENTITIES_FUEFUKI_H
 
-#include "Game/EnemyStateMachine.h"
 #include "Game/EnemyAnimatorBase.h"
-#include "Game/EnemyParmsBase.h"
-#include "Game/EnemyMgrBase.h"
 #include "Game/EnemyBase.h"
-#include "efx/TFuebugOnpa.h"
+#include "Game/EnemyMgrBase.h"
+#include "Game/EnemyParmsBase.h"
+#include "Game/EnemyStateMachine.h"
 #include "efx/TCursor.h"
+#include "efx/TFuebugOnpa.h"
 
 /**
  * --Header for Antenna Beetle (Fuefuki)--
@@ -82,6 +82,8 @@ struct Obj : public EnemyBase {
 	void createDownEffect(f32);
 	void effectDrawOn();
 	void effectDrawOff();
+
+	inline bool doScuttle() { return mSquadTimer > 0.0f; }
 
 	// _00 		= VTBL
 	// _00-_2BC	= EnemyBase

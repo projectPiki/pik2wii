@@ -254,7 +254,7 @@ void Obj::setRandTarget()
  */
 f32 Obj::getMovePitchOffset()
 {
-	mMovePitchTimer += sys->mDeltaTime * PI;
+	mMovePitchTimer += sys->getDeltaTime() * PI;
 
 	if (mMovePitchTimer > TAU) {
 		mMovePitchTimer -= TAU;
@@ -381,7 +381,7 @@ f32 Obj::getFallPitchOffset(f32 currFrame)
 void Obj::updateFallTimer()
 {
 	if (mStuckPikminCount != 0) {
-		mFallTimer += sys->mDeltaTime;
+		mFallTimer += sys->getDeltaTime();
 		return;
 	}
 

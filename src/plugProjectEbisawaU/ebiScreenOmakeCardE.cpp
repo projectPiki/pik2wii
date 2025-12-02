@@ -1,7 +1,7 @@
-#include "ebi/Omake.h"
-#include "ebi/E2DGraph.h"
 #include "Morimura/Zukan.h"
 #include "PSSystem/PSSystemIF.h"
+#include "ebi/E2DGraph.h"
+#include "ebi/Omake.h"
 
 static const char name[] = "ebiScreenOmakeCardE";
 
@@ -72,8 +72,8 @@ void TOmakeCardE::doSetArchive(JKRArchive* arc)
 void TOmakeCardE::doOpenScreen(ArgOpen*)
 {
 	mState = MainMenu;
-	mAnimationEnter.play(sys->mDeltaTime * 60.0f, J3DAA_UNKNOWN_0, true);
-	mAnimationColor.play(sys->mDeltaTime * 60.0f, J3DAA_UNKNOWN_2, true);
+	mAnimationEnter.play(sys->getDeltaTime() * 60.0f, J3DAA_UNKNOWN_0, true);
+	mAnimationColor.play(sys->getDeltaTime() * 60.0f, J3DAA_UNKNOWN_2, true);
 	mMesgScroll->reset();
 
 	mPaneArrowUp->setAlpha(0);
@@ -89,14 +89,17 @@ void TOmakeCardE::doOpenScreen(ArgOpen*)
 void TOmakeCardE::doCloseScreen(ArgClose*)
 {
 	mAnimationIdle.stop();
-	mAnimationExit.play(sys->mDeltaTime * 60.0f, J3DAA_UNKNOWN_0, true);
+	mAnimationExit.play(sys->getDeltaTime() * 60.0f, J3DAA_UNKNOWN_0, true);
 }
 
 /**
  * @note Address: 0x803F08F4
  * @note Size: 0x3C
  */
-void TOmakeCardE::doInitWaitState() { mAnimationIdle.play(sys->mDeltaTime * 60.0f, J3DAA_UNKNOWN_2, true); }
+void TOmakeCardE::doInitWaitState()
+{
+	mAnimationIdle.play(sys->getDeltaTime() * 60.0f, J3DAA_UNKNOWN_2, true);
+}
 
 /**
  * @note Address: 0x803F0930
@@ -131,13 +134,13 @@ bool TOmakeCardE::doUpdateStateWait()
 		}
 		if (press & Controller::PRESS_Z) {
 			mAnimationIdle.stop();
-			mAnimationChange.play(sys->mDeltaTime * 60.0f, J3DAA_UNKNOWN_0, true);
+			mAnimationChange.play(sys->getDeltaTime() * 60.0f, J3DAA_UNKNOWN_0, true);
 			PSSystem::spSysIF->playSystemSe(PSSE_SY_MESSAGE_EXIT, 0);
 			mState = EnteringZoomed;
 		}
 		mMesgScroll->scroll(mInput->mMStick.mYPos);
 		f32 scroll            = mMesgScroll->getPosRate();
-		const int changeAlpha = sys->mDeltaTime * 2550.0f;
+		const int changeAlpha = sys->getDeltaTime() * 2550.0f;
 		int alphaArrowUp      = mPaneArrowUp->getAlpha();
 		int alphaArrowDown    = mPaneArrowDown->mAlpha;
 		if (scroll <= 0.0f) {
@@ -171,14 +174,14 @@ bool TOmakeCardE::doUpdateStateWait()
 	case InZoomed:
 		if (mInput->getButtonDown() & (Controller::PRESS_B | Controller::PRESS_Z)) {
 			mAnimationIdle.stop();
-			mAnimationChange.playBack(sys->mDeltaTime * 60.0f, true);
+			mAnimationChange.playBack(sys->getDeltaTime() * 60.0f, true);
 			PSSystem::spSysIF->playSystemSe(PSSE_SY_MESSAGE_EXIT, 0);
 			mState = ExitingZoomed;
 		}
 		break;
 	case ExitingZoomed:
 		if (mAnimationChange.isFinish()) {
-			mAnimationIdle.play(sys->mDeltaTime * 60.0f, J3DAA_UNKNOWN_2, true);
+			mAnimationIdle.play(sys->getDeltaTime() * 60.0f, J3DAA_UNKNOWN_2, true);
 			mState = MainMenu;
 		}
 		break;

@@ -1,8 +1,8 @@
 #include "Game/Entities/OtakaraBase.h"
-#include "Game/Entities/Bomb.h"
-#include "Game/EnemyFunc.h"
-#include "Game/generalEnemyMgr.h"
 #include "Game/ConditionNotStick.h"
+#include "Game/EnemyFunc.h"
+#include "Game/Entities/Bomb.h"
+#include "Game/generalEnemyMgr.h"
 #include "efx/TOta.h"
 
 namespace Game {
@@ -22,7 +22,9 @@ Obj::Obj()
  * @note Address: 0x802B637C
  * @note Size: 0x4
  */
-void Obj::setInitialSetting(EnemyInitialParamBase*) { }
+void Obj::setInitialSetting(EnemyInitialParamBase*)
+{
+}
 
 /**
  * @note Address: 0x802B6380
@@ -71,7 +73,10 @@ void Obj::onKill(CreatureKillArg* killArg)
  * @note Address: 0x802B64EC
  * @note Size: 0x34
  */
-void Obj::doUpdate() { mFsm->exec(this); }
+void Obj::doUpdate()
+{
+	mFsm->exec(this);
+}
 
 /**
  * @note Address: 0x802B6520
@@ -81,7 +86,7 @@ void Obj::doUpdateCommon()
 {
 	EnemyBase::doUpdateCommon();
 	if (mAttackActiveTimer < 1.0f) {
-		mAttackActiveTimer += sys->mDeltaTime;
+		mAttackActiveTimer += sys->getDeltaTime();
 		startDisChargeSE();
 		attackTarget();
 	}
@@ -125,13 +130,18 @@ void Obj::doAnimationCullingOff()
  * @note Address: 0x802B6690
  * @note Size: 0x4
  */
-void Obj::doDirectDraw(Graphics&) { }
+void Obj::doDirectDraw(Graphics&)
+{
+}
 
 /**
  * @note Address: 0x802B6694
  * @note Size: 0x20
  */
-void Obj::doDebugDraw(Graphics& gfx) { EnemyBase::doDebugDraw(gfx); }
+void Obj::doDebugDraw(Graphics& gfx)
+{
+	EnemyBase::doDebugDraw(gfx);
+}
 
 /**
  * @note Address: 0x802B66B4
@@ -321,19 +331,28 @@ void Obj::doFinishWaitingBirthTypeDrop()
  * @note Address: 0x802B6BA0
  * @note Size: 0x28
  */
-void Obj::startCarcassMotion() { EnemyBase::startMotion(OTAKARAANIM_Carry, nullptr); }
+void Obj::startCarcassMotion()
+{
+	EnemyBase::startMotion(OTAKARAANIM_Carry, nullptr);
+}
 
 /**
  * @note Address: 0x802B6BC8
  * @note Size: 0x2C
  */
-void Obj::doStartMovie() { effectDrawOff(); }
+void Obj::doStartMovie()
+{
+	effectDrawOff();
+}
 
 /**
  * @note Address: 0x802B6BF4
  * @note Size: 0x2C
  */
-void Obj::doEndMovie() { effectDrawOn(); }
+void Obj::doEndMovie()
+{
+	effectDrawOn();
+}
 
 /**
  * @note Address: 0x802B6C20
@@ -345,7 +364,7 @@ bool OtakaraBase::Obj::isMovePositionSet(bool ignoringTreasures)
 	if (!ignoringTreasures && (mItemSearchDelayTimer > C_PROPERPARMS.mTreasureCatch.mValue)) {
 		target = getNearestTreasure();
 	} else {
-		mItemSearchDelayTimer += sys->mDeltaTime;
+		mItemSearchDelayTimer += sys->getDeltaTime();
 	}
 
 	if (target) {
@@ -618,7 +637,7 @@ void Obj::startEscapeSE()
 			getJAIObject()->startSound(PSSE_EN_OTAKARA_STANDUP, 0);
 			mEscapeSfxTimer = 0.0f;
 		} else {
-			mEscapeSfxTimer += sys->mDeltaTime;
+			mEscapeSfxTimer += sys->getDeltaTime();
 		}
 	}
 }
@@ -679,7 +698,7 @@ bool Obj::isTransitChaseState()
  */
 bool Obj::stimulateBomb()
 {
-	mItemSearchDelayTimer += sys->mDeltaTime;
+	mItemSearchDelayTimer += sys->getDeltaTime();
 	if ((mItemSearchDelayTimer > 1.5f) && (mTargetCreature != nullptr) && (mTargetCreature->isAlive())) {
 		disableEvent(0, EB_Cullable);
 		static_cast<Bomb::Obj*>(mTargetCreature)->forceBomb();

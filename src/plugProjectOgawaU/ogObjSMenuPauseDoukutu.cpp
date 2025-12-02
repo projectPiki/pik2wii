@@ -1,18 +1,21 @@
-#include "og/newScreen/SMenu.h"
-#include "og/Screen/MenuMgr.h"
-#include "og/Screen/ogScreen.h"
-#include "og/Screen/callbackNodes.h"
-#include "og/Screen/anime.h"
-#include "og/Sound.h"
-#include "System.h"
 #include "Controller.h"
+#include "System.h"
+#include "og/Screen/MenuMgr.h"
+#include "og/Screen/anime.h"
+#include "og/Screen/callbackNodes.h"
+#include "og/Screen/ogScreen.h"
+#include "og/Sound.h"
+#include "og/newScreen/SMenu.h"
 #include "trig.h"
 
 /**
  * @note Address: N/A
  * @note Size: 0xE4
  */
-static void _Print(char* format, ...) { OSReport(format, __FILE__); }
+static void _Print(char* format, ...)
+{
+	OSReport(format, __FILE__);
+}
 
 namespace og {
 namespace newScreen {
@@ -54,7 +57,9 @@ ObjSMenuPauseDoukutu::ObjSMenuPauseDoukutu(char const* name)
  * @note Address: 0x8032213C
  * @note Size: 0xC4
  */
-ObjSMenuPauseDoukutu::~ObjSMenuPauseDoukutu() { }
+ObjSMenuPauseDoukutu::~ObjSMenuPauseDoukutu()
+{
+}
 
 /**
  * @note Address: 0x80322200
@@ -192,7 +197,10 @@ bool ObjSMenuPauseDoukutu::doStart(::Screen::StartSceneArg const* arg)
  * @note Address: 0x803229E8
  * @note Size: 0x8
  */
-bool ObjSMenuPauseDoukutu::doEnd(::Screen::EndSceneArg const*) { return true; }
+bool ObjSMenuPauseDoukutu::doEnd(::Screen::EndSceneArg const*)
+{
+	return true;
+}
 
 /**
  * @note Address: 0x803229F0
@@ -268,7 +276,7 @@ bool ObjSMenuPauseDoukutu::menu_pause()
 {
 	bool ret = false;
 	if (!mPauseOpened) {
-		mMenuPauseTimer += sys->mDeltaTime;
+		mMenuPauseTimer += sys->getDeltaTime();
 		if (mMenuPauseTimer >= 1.0f) {
 			mPauseOpened = true;
 		}
@@ -324,7 +332,10 @@ bool ObjSMenuPauseDoukutu::menu_pause()
  * @note Address: 0x80322DA8
  * @note Size: 0x10
  */
-void ObjSMenuPauseDoukutu::doUpdateCancelAction() { mDisp->mExitStatus = og::Screen::MENUFINISH_ContinueCave; }
+void ObjSMenuPauseDoukutu::doUpdateCancelAction()
+{
+	mDisp->mExitStatus = og::Screen::MENUFINISH_ContinueCave;
+}
 
 /**
  * @note Address: 0x80322DB8
@@ -359,7 +370,7 @@ bool ObjSMenuPauseDoukutu::menu_giveup()
 {
 	bool ret = false;
 	if (!mGiveupOpened) {
-		mMenuGiveupTimer += sys->mDeltaTime;
+		mMenuGiveupTimer += sys->getDeltaTime();
 		if (mMenuGiveupTimer >= 1.0f) {
 			mGiveupOpened = true;
 		}
@@ -436,7 +447,7 @@ bool ObjSMenuPauseDoukutu::menu()
 
 	case PAUSEMENU_YesNo:
 		if (mDisp->mPikisInDanger && mWarningTimer > 0.0f) {
-			mWarningTimer -= sys->mDeltaTime;
+			mWarningTimer -= sys->getDeltaTime();
 			if (mWarningTimer < 0.0f) {
 				ogSound->setWarning();
 			}
@@ -472,7 +483,10 @@ void ObjSMenuPauseDoukutu::in_R()
  * @note Address: 0x803231DC
  * @note Size: 0xC
  */
-void ObjSMenuPauseDoukutu::wait() { mState = MENUSTATE_Default; }
+void ObjSMenuPauseDoukutu::wait()
+{
+	mState = MENUSTATE_Default;
+}
 
 /**
  * @note Address: 0x803231E8

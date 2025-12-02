@@ -269,7 +269,7 @@ void WaitState::init(Item* item, StateArg* arg)
 void WaitState::exec(Item* item)
 {
 	if (!moviePlayer || moviePlayer->mDemoState == DEMOSTATE_Inactive) {
-		mTimer -= sys->mDeltaTime;
+		mTimer -= sys->getDeltaTime();
 	}
 
 	if (mTimer <= 0.0f) {
@@ -687,7 +687,7 @@ void Item::doAI()
 {
 	mFsm->exec(this);
 	if (mAutopluckedTimer > 0.0f) {
-		mAutopluckedTimer -= sys->mDeltaTime;
+		mAutopluckedTimer -= sys->getDeltaTime();
 		if (mAutopluckedTimer <= 0.0f) {
 			PikiMgr::mBirthMode = PikiMgr::PSM_Force;
 			Piki* piki          = pikiMgr->birth();

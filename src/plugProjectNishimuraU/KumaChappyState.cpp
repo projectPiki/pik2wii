@@ -1,6 +1,6 @@
-#include "Game/Entities/KumaChappy.h"
 #include "Game/EnemyAnimKeyEvent.h"
 #include "Game/EnemyFunc.h"
+#include "Game/Entities/KumaChappy.h"
 
 namespace Game {
 namespace KumaChappy {
@@ -30,7 +30,7 @@ void FSM::init(EnemyBase* enemy)
 void StateDead::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	enemy->deathProcedure();
-	enemy->mTargetVelocity = Vector3f(0.0f);
+	enemy->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	enemy->startMotion(KUMACHAPPYANIM_Dead, nullptr);
 }
 
@@ -58,7 +58,9 @@ void StateDead::exec(EnemyBase* enemy)
  * @note Address: 0x80296240
  * @note Size: 0x4
  */
-void StateDead::cleanup(EnemyBase* enemy) { }
+void StateDead::cleanup(EnemyBase* enemy)
+{
+}
 
 /**
  * @note Address: 0x80296244
@@ -70,7 +72,7 @@ void StateRebirth::init(EnemyBase* enemy, StateArg* stateArg)
 	chappy->mNextState = KUMACHAPPY_NULL;
 	chappy->disableEvent(0, EB_NoInterrupt);
 	chappy->mTargetCreature = nullptr;
-	chappy->mTargetVelocity = Vector3f(0.0f);
+	chappy->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	chappy->startMotion(KUMACHAPPYANIM_Rebirth, nullptr);
 }
 
@@ -98,7 +100,7 @@ void StateRebirth::exec(EnemyBase* enemy)
 			chappy->disableEvent(0, EB_NoInterrupt);
 
 		} else if (chappy->mCurAnim->mType == KEYEVENT_END) {
-			if (chappy->mHealth <= 0.0f) {
+			if (chappy->isDead()) {
 				transit(chappy, KUMACHAPPY_Dead, nullptr);
 				return;
 			}
@@ -110,14 +112,14 @@ void StateRebirth::exec(EnemyBase* enemy)
 
 			Creature* target = chappy->getSearchedTarget();
 			if (target) {
-				f32 angleDist = chappy->getCreatureViewAngle(target);
-				if (chappy->isTargetAttackable(target, chappy->getCreatureViewAngle(target), CG_GENERALPARMS(chappy).mMaxAttackRange(),
+				f32 angleDist = chappy->getAngDist(target);
+				if (chappy->isTargetAttackable(target, CG_GENERALPARMS(chappy).mMaxAttackRange(),
 				                               CG_GENERALPARMS(chappy).mMaxAttackAngle())) {
 					transit(chappy, KUMACHAPPY_Attack, nullptr);
 					return;
 				}
 
-				if (absF(angleDist) <= TORADIANS(CG_GENERALPARMS(chappy).mMaxAttackAngle())) {
+				if (isAngleWithin(angleDist, CG_GENERALPARMS(chappy).mMaxAttackAngle())) {
 					transit(chappy, KUMACHAPPY_Walk, nullptr);
 					return;
 				}
@@ -126,8 +128,8 @@ void StateRebirth::exec(EnemyBase* enemy)
 				return;
 			}
 			Vector3f targetPos = chappy->mTargetPos;
-			f32 angleDist      = chappy->getCreatureViewAngle(targetPos);
-			if (absF(angleDist) <= (PI / 4)) {
+			f32 angleDist      = chappy->getAngDist(targetPos);
+			if (isAngleWithin(angleDist, 45.0f)) {
 				transit(chappy, KUMACHAPPY_WalkPath, nullptr);
 				return;
 			}
@@ -135,404 +137,16 @@ void StateRebirth::exec(EnemyBase* enemy)
 			transit(chappy, KUMACHAPPY_TurnPath, nullptr);
 		}
 	}
-	/*
-	stwu     r1, -0x150(r1)
-	mflr     r0
-	stw      r0, 0x154(r1)
-	stfd     f31, 0x140(r1)
-	psq_st   f31, 328(r1), 0, qr0
-	stfd     f30, 0x130(r1)
-	psq_st   f30, 312(r1), 0, qr0
-	stfd     f29, 0x120(r1)
-	psq_st   f29, 296(r1), 0, qr0
-	stfd     f28, 0x110(r1)
-	psq_st   f28, 280(r1), 0, qr0
-	stfd     f27, 0x100(r1)
-	psq_st   f27, 264(r1), 0, qr0
-	stfd     f26, 0xf0(r1)
-	psq_st   f26, 248(r1), 0, qr0
-	stfd     f25, 0xe0(r1)
-	psq_st   f25, 232(r1), 0, qr0
-	stw      r31, 0xdc(r1)
-	stw      r30, 0xd8(r1)
-	stw      r29, 0xd4(r1)
-	stw      r28, 0xd0(r1)
-	lwz      r5, 0x188(r4)
-	mr       r30, r3
-	mr       r31, r4
-	lbz      r0, 0x24(r5)
-	cmplwi   r0, 0
-	beq      lbl_802967F4
-	lwz      r0, 0x1c(r5)
-	cmplwi   r0, 2
-	bne      lbl_80296380
-	lwz      r5, 0xc0(r31)
-	mr       r3, r31
-	lfs      f4, lbl_8051BB1C@sda21(r2)
-	li       r4, 0
-	lfs      f1, 0x53c(r5)
-	lfs      f2, 0x4c4(r5)
-	lfs      f3, 0x4ec(r5)
-	bl
-"flickStickPikmin__Q24Game9EnemyFuncFPQ24Game8CreatureffffP23Condition<Q24Game4Piki>"
-	lwz      r5, 0xc0(r31)
-	mr       r3, r31
-	lfs      f4, lbl_8051BB1C@sda21(r2)
-	li       r4, 0
-	lfs      f1, 0x514(r5)
-	lfs      f2, 0x4c4(r5)
-	lfs      f3, 0x4ec(r5)
-	bl
-"flickNearbyPikmin__Q24Game9EnemyFuncFPQ24Game8CreatureffffP23Condition<Q24Game4Piki>"
-	lwz      r5, 0xc0(r31)
-	mr       r3, r31
-	lfs      f4, lbl_8051BB1C@sda21(r2)
-	li       r4, 0
-	lfs      f1, 0x514(r5)
-	lfs      f2, 0x4c4(r5)
-	lfs      f3, 0x4ec(r5)
-	bl
-"flickNearbyNavi__Q24Game9EnemyFuncFPQ24Game8CreatureffffP23Condition<Q24Game4Navi>"
-	lfs      f0, lbl_8051BB18@sda21(r2)
-	stfs     f0, 0x20c(r31)
-	b        lbl_802967F4
-
-lbl_80296380:
-	cmplwi   r0, 3
-	bne      lbl_80296398
-	lwz      r0, 0x1e0(r31)
-	oris     r0, r0, 0x20
-	stw      r0, 0x1e0(r31)
-	b        lbl_802967F4
-
-lbl_80296398:
-	cmplwi   r0, 4
-	bne      lbl_802963B0
-	lwz      r0, 0x1e0(r31)
-	rlwinm   r0, r0, 0, 0xb, 9
-	stw      r0, 0x1e0(r31)
-	b        lbl_802967F4
-
-lbl_802963B0:
-	cmplwi   r0, 0x3e8
-	bne      lbl_802967F4
-	lfs      f1, 0x200(r31)
-	lfs      f0, lbl_8051BB18@sda21(r2)
-	fcmpo    cr0, f1, f0
-	cror     2, 0, 2
-	bne      lbl_802963E8
-	lwz      r12, 0(r3)
-	li       r5, 0
-	li       r6, 0
-	lwz      r12, 0x1c(r12)
-	mtctr    r12
-	bctrl
-	b        lbl_802967F4
-
-lbl_802963E8:
-	mr       r3, r31
-	li       r4, 0
-	bl       isStartFlick__Q24Game9EnemyFuncFPQ24Game9EnemyBaseb
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_80296420
-	mr       r3, r30
-	mr       r4, r31
-	lwz      r12, 0(r30)
-	li       r5, 4
-	li       r6, 0
-	lwz      r12, 0x1c(r12)
-	mtctr    r12
-	bctrl
-	b        lbl_802967F4
-
-lbl_80296420:
-	mr       r3, r31
-	bl       getSearchedTarget__Q34Game10KumaChappy3ObjFv
-	or.      r28, r3, r3
-	beq      lbl_80296724
-	mr       r4, r28
-	addi     r3, r1, 0xb0
-	lwz      r12, 0(r28)
-	lwz      r12, 8(r12)
-	mtctr    r12
-	bctrl
-	mr       r4, r31
-	lfs      f2, 0xb0(r1)
-	lwz      r12, 0(r31)
-	addi     r3, r1, 0xbc
-	lfs      f1, 0xb4(r1)
-	lfs      f0, 0xb8(r1)
-	lwz      r12, 8(r12)
-	stfs     f2, 0x98(r1)
-	stfs     f1, 0x9c(r1)
-	stfs     f0, 0xa0(r1)
-	mtctr    r12
-	bctrl
-	lfs      f5, 0xbc(r1)
-	lis      r3, atanTable___5JMath@ha
-	lfs      f3, 0xc4(r1)
-	addi     r3, r3, atanTable___5JMath@l
-	lfs      f1, 0x98(r1)
-	lfs      f0, 0xa0(r1)
-	lfs      f4, 0xc0(r1)
-	fsubs    f1, f1, f5
-	fsubs    f2, f0, f3
-	stfs     f5, 0xa4(r1)
-	stfs     f4, 0xa8(r1)
-	stfs     f3, 0xac(r1)
-	bl       "atan2___Q25JMath18TAtanTable<1024,f>CFff"
-	bl       roundAng__Ff
-	lwz      r12, 0(r31)
-	fmr      f25, f1
-	mr       r3, r31
-	lwz      r12, 0x64(r12)
-	mtctr    r12
-	bctrl
-	fmr      f2, f1
-	fmr      f1, f25
-	bl       angDist__Fff
-	mr       r4, r28
-	lwz      r5, 0xc0(r31)
-	lwz      r12, 0(r28)
-	fmr      f31, f1
-	addi     r3, r1, 0x68
-	lfs      f29, 0x58c(r5)
-	lwz      r12, 8(r12)
-	lfs      f30, 0x564(r5)
-	mtctr    r12
-	bctrl
-	mr       r4, r31
-	lfs      f2, 0x68(r1)
-	lwz      r12, 0(r31)
-	addi     r3, r1, 0x74
-	lfs      f1, 0x6c(r1)
-	lfs      f0, 0x70(r1)
-	lwz      r12, 8(r12)
-	stfs     f2, 0x50(r1)
-	stfs     f1, 0x54(r1)
-	stfs     f0, 0x58(r1)
-	mtctr    r12
-	bctrl
-	lfs      f5, 0x74(r1)
-	lis      r3, atanTable___5JMath@ha
-	lfs      f3, 0x7c(r1)
-	addi     r3, r3, atanTable___5JMath@l
-	lfs      f1, 0x50(r1)
-	lfs      f0, 0x58(r1)
-	lfs      f4, 0x78(r1)
-	fsubs    f1, f1, f5
-	fsubs    f2, f0, f3
-	stfs     f5, 0x5c(r1)
-	stfs     f4, 0x60(r1)
-	stfs     f3, 0x64(r1)
-	bl       "atan2___Q25JMath18TAtanTable<1024,f>CFff"
-	bl       roundAng__Ff
-	lwz      r12, 0(r31)
-	fmr      f25, f1
-	mr       r3, r31
-	lwz      r12, 0x64(r12)
-	mtctr    r12
-	bctrl
-	fmr      f2, f1
-	fmr      f1, f25
-	bl       angDist__Fff
-	mr       r4, r31
-	fmr      f27, f1
-	lwz      r12, 0(r31)
-	addi     r3, r1, 0x14
-	li       r29, 0
-	lwz      r12, 8(r12)
-	mtctr    r12
-	bctrl
-	mr       r4, r28
-	addi     r3, r1, 8
-	lwz      r12, 0(r28)
-	lfs      f28, 0x14(r1)
-	lwz      r12, 8(r12)
-	mtctr    r12
-	bctrl
-	mr       r4, r31
-	lfs      f0, 8(r1)
-	lwz      r12, 0(r31)
-	addi     r3, r1, 0x2c
-	fsubs    f25, f0, f28
-	lwz      r12, 8(r12)
-	mtctr    r12
-	bctrl
-	mr       r4, r28
-	addi     r3, r1, 0x20
-	lwz      r12, 0(r28)
-	lfs      f28, 0x30(r1)
-	lwz      r12, 8(r12)
-	mtctr    r12
-	bctrl
-	mr       r4, r31
-	lfs      f0, 0x24(r1)
-	lwz      r12, 0(r31)
-	addi     r3, r1, 0x44
-	fsubs    f26, f0, f28
-	lwz      r12, 8(r12)
-	mtctr    r12
-	bctrl
-	mr       r4, r28
-	addi     r3, r1, 0x38
-	lwz      r12, 0(r28)
-	lfs      f28, 0x4c(r1)
-	lwz      r12, 8(r12)
-	mtctr    r12
-	bctrl
-	fmuls    f1, f26, f26
-	lfs      f2, 0x40(r1)
-	fmuls    f0, f30, f30
-	fsubs    f2, f2, f28
-	fmadds   f1, f25, f25, f1
-	fmadds   f1, f2, f2, f1
-	fcmpo    cr0, f1, f0
-	bge      lbl_80296684
-	lfs      f0, lbl_8051BB24@sda21(r2)
-	fabs     f2, f27
-	lfs      f1, lbl_8051BB20@sda21(r2)
-	fmuls    f0, f0, f29
-	frsp     f2, f2
-	fmuls    f0, f1, f0
-	fcmpo    cr0, f2, f0
-	cror     2, 0, 2
-	bne      lbl_80296684
-	li       r29, 1
-
-lbl_80296684:
-	clrlwi.  r0, r29, 0x18
-	beq      lbl_802966B0
-	mr       r3, r30
-	mr       r4, r31
-	lwz      r12, 0(r30)
-	li       r5, 3
-	li       r6, 0
-	lwz      r12, 0x1c(r12)
-	mtctr    r12
-	bctrl
-	b        lbl_802967F4
-
-lbl_802966B0:
-	lwz      r3, 0xc0(r31)
-	fabs     f2, f31
-	lfs      f0, lbl_8051BB24@sda21(r2)
-	lfs      f3, 0x58c(r3)
-	lfs      f1, lbl_8051BB20@sda21(r2)
-	frsp     f2, f2
-	fmuls    f0, f0, f3
-	fmuls    f0, f1, f0
-	fcmpo    cr0, f2, f0
-	cror     2, 0, 2
-	bne      lbl_80296700
-	mr       r3, r30
-	mr       r4, r31
-	lwz      r12, 0(r30)
-	li       r5, 7
-	li       r6, 0
-	lwz      r12, 0x1c(r12)
-	mtctr    r12
-	bctrl
-	b        lbl_802967F4
-
-lbl_80296700:
-	mr       r3, r30
-	mr       r4, r31
-	lwz      r12, 0(r30)
-	li       r5, 5
-	li       r6, 0
-	lwz      r12, 0x1c(r12)
-	mtctr    r12
-	bctrl
-	b        lbl_802967F4
-
-lbl_80296724:
-	mr       r4, r31
-	addi     r3, r1, 0x8c
-	lwz      r12, 0(r31)
-	lfs      f25, 0x2e0(r31)
-	lwz      r12, 8(r12)
-	lfs      f26, 0x2e8(r31)
-	mtctr    r12
-	bctrl
-	lfs      f4, 0x8c(r1)
-	lis      r3, atanTable___5JMath@ha
-	lfs      f0, 0x94(r1)
-	addi     r3, r3, atanTable___5JMath@l
-	lfs      f3, 0x90(r1)
-	fsubs    f1, f25, f4
-	fsubs    f2, f26, f0
-	stfs     f4, 0x80(r1)
-	stfs     f3, 0x84(r1)
-	stfs     f0, 0x88(r1)
-	bl       "atan2___Q25JMath18TAtanTable<1024,f>CFff"
-	bl       roundAng__Ff
-	lwz      r12, 0(r31)
-	fmr      f25, f1
-	mr       r3, r31
-	lwz      r12, 0x64(r12)
-	mtctr    r12
-	bctrl
-	fmr      f2, f1
-	fmr      f1, f25
-	bl       angDist__Fff
-	fabs     f1, f1
-	lfs      f0, lbl_8051BB28@sda21(r2)
-	frsp     f1, f1
-	fcmpo    cr0, f1, f0
-	cror     2, 0, 2
-	bne      lbl_802967D4
-	mr       r3, r30
-	mr       r4, r31
-	lwz      r12, 0(r30)
-	li       r5, 8
-	li       r6, 0
-	lwz      r12, 0x1c(r12)
-	mtctr    r12
-	bctrl
-	b        lbl_802967F4
-
-lbl_802967D4:
-	mr       r3, r30
-	mr       r4, r31
-	lwz      r12, 0(r30)
-	li       r5, 6
-	li       r6, 0
-	lwz      r12, 0x1c(r12)
-	mtctr    r12
-	bctrl
-
-lbl_802967F4:
-	psq_l    f31, 328(r1), 0, qr0
-	lfd      f31, 0x140(r1)
-	psq_l    f30, 312(r1), 0, qr0
-	lfd      f30, 0x130(r1)
-	psq_l    f29, 296(r1), 0, qr0
-	lfd      f29, 0x120(r1)
-	psq_l    f28, 280(r1), 0, qr0
-	lfd      f28, 0x110(r1)
-	psq_l    f27, 264(r1), 0, qr0
-	lfd      f27, 0x100(r1)
-	psq_l    f26, 248(r1), 0, qr0
-	lfd      f26, 0xf0(r1)
-	psq_l    f25, 232(r1), 0, qr0
-	lfd      f25, 0xe0(r1)
-	lwz      r31, 0xdc(r1)
-	lwz      r30, 0xd8(r1)
-	lwz      r29, 0xd4(r1)
-	lwz      r0, 0x154(r1)
-	lwz      r28, 0xd0(r1)
-	mtlr     r0
-	addi     r1, r1, 0x150
-	blr
-	*/
 }
 
 /**
  * @note Address: 0x8029684C
  * @note Size: 0x10
  */
-void StateRebirth::cleanup(EnemyBase* enemy) { enemy->disableEvent(0, EB_NoInterrupt); }
+void StateRebirth::cleanup(EnemyBase* enemy)
+{
+	enemy->disableEvent(0, EB_NoInterrupt);
+}
 
 /**
  * @note Address: 0x8029685C
@@ -543,7 +157,7 @@ void StateLost::init(EnemyBase* enemy, StateArg* stateArg)
 	Obj* chappy             = OBJ(enemy);
 	chappy->mNextState      = KUMACHAPPY_NULL;
 	chappy->mTargetCreature = nullptr;
-	chappy->mTargetVelocity = Vector3f(0.0f);
+	chappy->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	chappy->startMotion(KUMACHAPPYANIM_Lost, nullptr);
 }
 
@@ -555,7 +169,7 @@ void StateLost::exec(EnemyBase* enemy)
 {
 	Obj* chappy = OBJ(enemy);
 	if (chappy->mCurAnim->mIsPlaying && chappy->mCurAnim->mType == KEYEVENT_END) {
-		if (chappy->mHealth <= 0.0f) {
+		if (chappy->isDead()) {
 			transit(chappy, KUMACHAPPY_Dead, nullptr);
 			return;
 		}
@@ -567,14 +181,14 @@ void StateLost::exec(EnemyBase* enemy)
 
 		Creature* target = chappy->getSearchedTarget();
 		if (target) {
-			f32 angleSep = chappy->getCreatureViewAngle(target);
+			f32 angleSep = chappy->getAngDist(target);
 			if (chappy->isTargetAttackable(target, angleSep, CG_GENERALPARMS(chappy).mMaxAttackRange(),
 			                               CG_GENERALPARMS(chappy).mMaxAttackAngle())) {
 				transit(chappy, KUMACHAPPY_Attack, nullptr);
 				return;
 			}
 
-			if (absF(angleSep) <= TORADIANS(CG_GENERALPARMS(chappy).mMaxAttackAngle())) {
+			if (isAngleWithin(angleSep, CG_GENERALPARMS(chappy).mMaxAttackAngle())) {
 				transit(chappy, KUMACHAPPY_Walk, nullptr);
 				return;
 			}
@@ -585,318 +199,23 @@ void StateLost::exec(EnemyBase* enemy)
 
 		chappy->setNearestWayPoint();
 		Vector3f targetPos = chappy->mTargetPos;
-		f32 angleSep       = chappy->getCreatureViewAngle(targetPos);
-		if (absF(angleSep) <= (PI / 4)) {
+		f32 angleSep       = chappy->getAngDist(targetPos);
+		if (isAngleWithin(angleSep, 45.0f)) {
 			transit(chappy, KUMACHAPPY_WalkPath, nullptr);
 			return;
 		}
 
 		transit(chappy, KUMACHAPPY_TurnPath, nullptr);
 	}
-	/*
-	stwu     r1, -0x110(r1)
-	mflr     r0
-	stw      r0, 0x114(r1)
-	stfd     f31, 0x100(r1)
-	psq_st   f31, 264(r1), 0, qr0
-	stfd     f30, 0xf0(r1)
-	psq_st   f30, 248(r1), 0, qr0
-	stfd     f29, 0xe0(r1)
-	psq_st   f29, 232(r1), 0, qr0
-	stfd     f28, 0xd0(r1)
-	psq_st   f28, 216(r1), 0, qr0
-	stfd     f27, 0xc0(r1)
-	psq_st   f27, 200(r1), 0, qr0
-	stfd     f26, 0xb0(r1)
-	psq_st   f26, 184(r1), 0, qr0
-	stw      r31, 0xac(r1)
-	stw      r30, 0xa8(r1)
-	stw      r29, 0xa4(r1)
-	stw      r28, 0xa0(r1)
-	lwz      r5, 0x188(r4)
-	mr       r28, r3
-	mr       r30, r4
-	lbz      r0, 0x24(r5)
-	cmplwi   r0, 0
-	beq      lbl_80296CB4
-	lwz      r0, 0x1c(r5)
-	cmplwi   r0, 0x3e8
-	bne      lbl_80296CB4
-	lfs      f1, 0x200(r30)
-	lfs      f0, lbl_8051BB18@sda21(r2)
-	fcmpo    cr0, f1, f0
-	cror     2, 0, 2
-	bne      lbl_80296948
-	lwz      r12, 0(r3)
-	li       r5, 0
-	li       r6, 0
-	lwz      r12, 0x1c(r12)
-	mtctr    r12
-	bctrl
-	b        lbl_80296CB4
-
-lbl_80296948:
-	mr       r3, r30
-	li       r4, 0
-	bl       isStartFlick__Q24Game9EnemyFuncFPQ24Game9EnemyBaseb
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_80296980
-	mr       r3, r28
-	mr       r4, r30
-	lwz      r12, 0(r28)
-	li       r5, 4
-	li       r6, 0
-	lwz      r12, 0x1c(r12)
-	mtctr    r12
-	bctrl
-	b        lbl_80296CB4
-
-lbl_80296980:
-	mr       r3, r30
-	bl       getSearchedTarget__Q34Game10KumaChappy3ObjFv
-	or.      r29, r3, r3
-	beq      lbl_80296BDC
-	mr       r4, r29
-	addi     r3, r1, 0x80
-	lwz      r12, 0(r29)
-	lwz      r12, 8(r12)
-	mtctr    r12
-	bctrl
-	mr       r4, r30
-	lfs      f2, 0x80(r1)
-	lwz      r12, 0(r30)
-	addi     r3, r1, 0x8c
-	lfs      f1, 0x84(r1)
-	lfs      f0, 0x88(r1)
-	lwz      r12, 8(r12)
-	stfs     f2, 0x68(r1)
-	stfs     f1, 0x6c(r1)
-	stfs     f0, 0x70(r1)
-	mtctr    r12
-	bctrl
-	lfs      f5, 0x8c(r1)
-	lis      r3, atanTable___5JMath@ha
-	lfs      f3, 0x94(r1)
-	addi     r3, r3, atanTable___5JMath@l
-	lfs      f1, 0x68(r1)
-	lfs      f0, 0x70(r1)
-	lfs      f4, 0x90(r1)
-	fsubs    f1, f1, f5
-	fsubs    f2, f0, f3
-	stfs     f5, 0x74(r1)
-	stfs     f4, 0x78(r1)
-	stfs     f3, 0x7c(r1)
-	bl       "atan2___Q25JMath18TAtanTable<1024,f>CFff"
-	bl       roundAng__Ff
-	lwz      r12, 0(r30)
-	fmr      f26, f1
-	mr       r3, r30
-	lwz      r12, 0x64(r12)
-	mtctr    r12
-	bctrl
-	fmr      f2, f1
-	fmr      f1, f26
-	bl       angDist__Fff
-	mr       r4, r30
-	lwz      r5, 0xc0(r30)
-	lwz      r12, 0(r30)
-	fmr      f30, f1
-	addi     r3, r1, 0x14
-	lfs      f28, 0x58c(r5)
-	lwz      r12, 8(r12)
-	li       r31, 0
-	lfs      f29, 0x564(r5)
-	mtctr    r12
-	bctrl
-	mr       r4, r29
-	addi     r3, r1, 8
-	lwz      r12, 0(r29)
-	lfs      f31, 0x14(r1)
-	lwz      r12, 8(r12)
-	mtctr    r12
-	bctrl
-	mr       r4, r30
-	lfs      f0, 8(r1)
-	lwz      r12, 0(r30)
-	addi     r3, r1, 0x2c
-	fsubs    f26, f0, f31
-	lwz      r12, 8(r12)
-	mtctr    r12
-	bctrl
-	mr       r4, r29
-	addi     r3, r1, 0x20
-	lwz      r12, 0(r29)
-	lfs      f31, 0x30(r1)
-	lwz      r12, 8(r12)
-	mtctr    r12
-	bctrl
-	mr       r4, r30
-	lfs      f0, 0x24(r1)
-	lwz      r12, 0(r30)
-	addi     r3, r1, 0x44
-	fsubs    f27, f0, f31
-	lwz      r12, 8(r12)
-	mtctr    r12
-	bctrl
-	mr       r4, r29
-	addi     r3, r1, 0x38
-	lwz      r12, 0(r29)
-	lfs      f31, 0x4c(r1)
-	lwz      r12, 8(r12)
-	mtctr    r12
-	bctrl
-	fmuls    f1, f27, f27
-	lfs      f2, 0x40(r1)
-	fmuls    f0, f29, f29
-	fsubs    f2, f2, f31
-	fmadds   f1, f26, f26, f1
-	fmadds   f1, f2, f2, f1
-	fcmpo    cr0, f1, f0
-	bge      lbl_80296B3C
-	lfs      f0, lbl_8051BB24@sda21(r2)
-	fabs     f2, f30
-	lfs      f1, lbl_8051BB20@sda21(r2)
-	fmuls    f0, f0, f28
-	frsp     f2, f2
-	fmuls    f0, f1, f0
-	fcmpo    cr0, f2, f0
-	cror     2, 0, 2
-	bne      lbl_80296B3C
-	li       r31, 1
-
-lbl_80296B3C:
-	clrlwi.  r0, r31, 0x18
-	beq      lbl_80296B68
-	mr       r3, r28
-	mr       r4, r30
-	lwz      r12, 0(r28)
-	li       r5, 3
-	li       r6, 0
-	lwz      r12, 0x1c(r12)
-	mtctr    r12
-	bctrl
-	b        lbl_80296CB4
-
-lbl_80296B68:
-	lwz      r3, 0xc0(r30)
-	fabs     f2, f30
-	lfs      f0, lbl_8051BB24@sda21(r2)
-	lfs      f3, 0x58c(r3)
-	lfs      f1, lbl_8051BB20@sda21(r2)
-	frsp     f2, f2
-	fmuls    f0, f0, f3
-	fmuls    f0, f1, f0
-	fcmpo    cr0, f2, f0
-	cror     2, 0, 2
-	bne      lbl_80296BB8
-	mr       r3, r28
-	mr       r4, r30
-	lwz      r12, 0(r28)
-	li       r5, 7
-	li       r6, 0
-	lwz      r12, 0x1c(r12)
-	mtctr    r12
-	bctrl
-	b        lbl_80296CB4
-
-lbl_80296BB8:
-	mr       r3, r28
-	mr       r4, r30
-	lwz      r12, 0(r28)
-	li       r5, 5
-	li       r6, 0
-	lwz      r12, 0x1c(r12)
-	mtctr    r12
-	bctrl
-	b        lbl_80296CB4
-
-lbl_80296BDC:
-	mr       r3, r30
-	bl       setNearestWayPoint__Q34Game10KumaChappy3ObjFv
-	mr       r4, r30
-	addi     r3, r1, 0x5c
-	lwz      r12, 0(r30)
-	lfs      f26, 0x2e0(r30)
-	lwz      r12, 8(r12)
-	lfs      f27, 0x2e8(r30)
-	mtctr    r12
-	bctrl
-	lfs      f4, 0x5c(r1)
-	lis      r3, atanTable___5JMath@ha
-	lfs      f0, 0x64(r1)
-	addi     r3, r3, atanTable___5JMath@l
-	lfs      f3, 0x60(r1)
-	fsubs    f1, f26, f4
-	fsubs    f2, f27, f0
-	stfs     f4, 0x50(r1)
-	stfs     f3, 0x54(r1)
-	stfs     f0, 0x58(r1)
-	bl       "atan2___Q25JMath18TAtanTable<1024,f>CFff"
-	bl       roundAng__Ff
-	lwz      r12, 0(r30)
-	fmr      f26, f1
-	mr       r3, r30
-	lwz      r12, 0x64(r12)
-	mtctr    r12
-	bctrl
-	fmr      f2, f1
-	fmr      f1, f26
-	bl       angDist__Fff
-	fabs     f1, f1
-	lfs      f0, lbl_8051BB28@sda21(r2)
-	frsp     f1, f1
-	fcmpo    cr0, f1, f0
-	cror     2, 0, 2
-	bne      lbl_80296C94
-	mr       r3, r28
-	mr       r4, r30
-	lwz      r12, 0(r28)
-	li       r5, 8
-	li       r6, 0
-	lwz      r12, 0x1c(r12)
-	mtctr    r12
-	bctrl
-	b        lbl_80296CB4
-
-lbl_80296C94:
-	mr       r3, r28
-	mr       r4, r30
-	lwz      r12, 0(r28)
-	li       r5, 6
-	li       r6, 0
-	lwz      r12, 0x1c(r12)
-	mtctr    r12
-	bctrl
-
-lbl_80296CB4:
-	psq_l    f31, 264(r1), 0, qr0
-	lfd      f31, 0x100(r1)
-	psq_l    f30, 248(r1), 0, qr0
-	lfd      f30, 0xf0(r1)
-	psq_l    f29, 232(r1), 0, qr0
-	lfd      f29, 0xe0(r1)
-	psq_l    f28, 216(r1), 0, qr0
-	lfd      f28, 0xd0(r1)
-	psq_l    f27, 200(r1), 0, qr0
-	lfd      f27, 0xc0(r1)
-	psq_l    f26, 184(r1), 0, qr0
-	lfd      f26, 0xb0(r1)
-	lwz      r31, 0xac(r1)
-	lwz      r30, 0xa8(r1)
-	lwz      r29, 0xa4(r1)
-	lwz      r0, 0x114(r1)
-	lwz      r28, 0xa0(r1)
-	mtlr     r0
-	addi     r1, r1, 0x110
-	blr
-	*/
 }
 
 /**
  * @note Address: 0x80296D04
  * @note Size: 0x4
  */
-void StateLost::cleanup(EnemyBase* enemy) { }
+void StateLost::cleanup(EnemyBase* enemy)
+{
+}
 
 /**
  * @note Address: 0x80296D08
@@ -904,9 +223,9 @@ void StateLost::cleanup(EnemyBase* enemy) { }
  */
 void StateAttack::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* chappy             = OBJ(enemy);
-	chappy->mNextState      = KUMACHAPPY_NULL;
-	chappy->mTargetVelocity = Vector3f(0.0f);
+	Obj* chappy        = OBJ(enemy);
+	chappy->mNextState = KUMACHAPPY_NULL;
+	chappy->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	chappy->setEmotionExcitement();
 	chappy->startMotion(KUMACHAPPYANIM_Attack, nullptr);
 }
@@ -940,12 +259,12 @@ void StateAttack::exec(EnemyBase* enemy)
 
 		} else if (chappy->mCurAnim->mType == KEYEVENT_3) {
 			EnemyFunc::swallowPikmin(chappy, CG_PROPERPARMS(chappy).mPoisonDamage(), nullptr);
-			if (chappy->mHealth <= 0.0f) {
+			if (chappy->isDead()) {
 				chappy->setAnimSpeed(60.0f);
 			}
 
 		} else if (chappy->mCurAnim->mType == KEYEVENT_END) {
-			if (chappy->mHealth <= 0.0f) {
+			if (chappy->isDead()) {
 				transit(chappy, KUMACHAPPY_Dead, nullptr);
 				return;
 			}
@@ -957,14 +276,14 @@ void StateAttack::exec(EnemyBase* enemy)
 
 			Creature* target = chappy->getSearchedTarget();
 			if (target) {
-				f32 angleSep = chappy->getCreatureViewAngle(target);
+				f32 angleSep = chappy->getAngDist(target);
 				if (chappy->isTargetAttackable(target, angleSep, CG_GENERALPARMS(chappy).mMaxAttackRange(),
 				                               CG_GENERALPARMS(chappy).mMaxAttackAngle())) {
 					transit(chappy, KUMACHAPPY_Attack, nullptr);
 					return;
 				}
 
-				if (absF(angleSep) <= TORADIANS(CG_GENERALPARMS(chappy).mMaxAttackAngle())) {
+				if (isAngleWithin(angleSep, CG_GENERALPARMS(chappy).mMaxAttackAngle())) {
 					transit(chappy, KUMACHAPPY_Walk, nullptr);
 					return;
 				}
@@ -975,8 +294,8 @@ void StateAttack::exec(EnemyBase* enemy)
 
 			chappy->setNearestWayPoint();
 			Vector3f targetPos = chappy->mTargetPos;
-			f32 angleSep       = chappy->getCreatureViewAngle(targetPos);
-			if (absF(angleSep) <= (PI / 4)) {
+			f32 angleSep       = chappy->getAngDist(targetPos);
+			if (isAngleWithin(angleSep, 45.0f)) {
 				transit(chappy, KUMACHAPPY_WalkPath, nullptr);
 				return;
 			}
@@ -1362,7 +681,7 @@ void StateFlick::init(EnemyBase* enemy, StateArg* stateArg)
 	Obj* chappy        = OBJ(enemy);
 	chappy->mNextState = KUMACHAPPY_NULL;
 	chappy->setEmotionExcitement();
-	chappy->mTargetVelocity = Vector3f(0.0f);
+	chappy->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	chappy->startMotion(KUMACHAPPYANIM_Flick, nullptr);
 	chappy->setAnimSpeed(45.0f);
 }
@@ -1385,21 +704,21 @@ void StateFlick::exec(EnemyBase* enemy)
 			chappy->mFlickTimer = 0.0f;
 
 		} else if (chappy->mCurAnim->mType == KEYEVENT_END) {
-			if (chappy->mHealth <= 0.0f) {
+			if (chappy->isDead()) {
 				transit(chappy, KUMACHAPPY_Dead, nullptr);
 				return;
 			}
 
 			Creature* target = chappy->getSearchedTarget();
 			if (target) {
-				f32 angleSep = chappy->getCreatureViewAngle(target);
+				f32 angleSep = chappy->getAngDist(target);
 				if (chappy->isTargetAttackable(target, angleSep, CG_GENERALPARMS(chappy).mMaxAttackRange(),
 				                               CG_GENERALPARMS(chappy).mMaxAttackAngle())) {
 					transit(chappy, KUMACHAPPY_Attack, nullptr);
 					return;
 				}
 
-				if (absF(angleSep) <= TORADIANS(CG_GENERALPARMS(chappy).mMaxAttackAngle())) {
+				if (isAngleWithin(angleSep, CG_GENERALPARMS(chappy).mMaxAttackAngle())) {
 					transit(chappy, KUMACHAPPY_Walk, nullptr);
 					return;
 				}
@@ -1410,8 +729,8 @@ void StateFlick::exec(EnemyBase* enemy)
 
 			chappy->setNearestWayPoint();
 			Vector3f targetPos = chappy->mTargetPos;
-			f32 angleSep       = chappy->getCreatureViewAngle(targetPos);
-			if (absF(angleSep) <= (PI / 4)) {
+			f32 angleSep       = chappy->getAngDist(targetPos);
+			if (isAngleWithin(angleSep, 45.0f)) {
 				transit(chappy, KUMACHAPPY_WalkPath, nullptr);
 				return;
 			}
@@ -1771,7 +1090,7 @@ void StateTurn::init(EnemyBase* enemy, StateArg* stateArg)
 	chappy->mTimer     = 0.0f;
 	chappy->mNextState = KUMACHAPPY_NULL;
 	chappy->setEmotionExcitement();
-	chappy->mTargetVelocity = Vector3f(0.0f);
+	chappy->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	chappy->startMotion(KUMACHAPPYANIM_Turn, nullptr);
 }
 
@@ -1782,7 +1101,7 @@ void StateTurn::init(EnemyBase* enemy, StateArg* stateArg)
 void StateTurn::exec(EnemyBase* enemy)
 {
 	Obj* chappy = OBJ(enemy);
-	if (chappy->mHealth <= 0.0f) {
+	if (chappy->isDead()) {
 		chappy->mNextState = KUMACHAPPY_Dead;
 		chappy->finishMotion();
 		chappy->setAnimSpeed(60.0f);
@@ -1793,19 +1112,19 @@ void StateTurn::exec(EnemyBase* enemy)
 	} else {
 		Creature* target = chappy->getSearchedTarget();
 		if (target) {
-			f32 angleSep = chappy->changeFaceDir2(target);
+			f32 angleSep = chappy->turnToTarget(target, CG_GENERALPARMS(chappy).mTurnSpeed(), CG_GENERALPARMS(chappy).mMaxTurnAngle());
 			if (chappy->isTargetAttackable(target, angleSep, CG_GENERALPARMS(chappy).mMaxAttackRange(),
 			                               CG_GENERALPARMS(chappy).mMaxAttackAngle())) {
 				chappy->mNextState = KUMACHAPPY_Attack;
 				chappy->finishMotion();
 				chappy->setAnimSpeed(60.0f);
 
-			} else if (chappy->isTargetWithinRange(target, angleSep, CG_GENERALPARMS(chappy).mPrivateRadius(),
-			                                       CG_GENERALPARMS(chappy).mSightRadius(), CG_GENERALPARMS(chappy).mFov(),
-			                                       chappy->getViewAngle())) {
+			} else if (chappy->isTargetOutOfRange(target, angleSep, CG_GENERALPARMS(chappy).mPrivateRadius(),
+			                                      CG_GENERALPARMS(chappy).mSightRadius(), CG_GENERALPARMS(chappy).mFov(),
+			                                      chappy->getViewAngle())) {
 				chappy->mNextState = KUMACHAPPY_Lost;
 				chappy->finishMotion();
-			} else if (absF(angleSep) <= TORADIANS(CG_GENERALPARMS(chappy).mMaxAttackAngle())) {
+			} else if (isAngleWithin(angleSep, CG_GENERALPARMS(chappy).mMaxAttackAngle())) {
 				chappy->mNextState = KUMACHAPPY_Walk;
 				chappy->finishMotion();
 			}
@@ -1813,7 +1132,7 @@ void StateTurn::exec(EnemyBase* enemy)
 			chappy->setNearestWayPoint();
 			Vector3f targetPos = chappy->mTargetPos;
 			f32 angleSep = chappy->turnToTarget(targetPos, CG_GENERALPARMS(chappy).mTurnSpeed(), CG_GENERALPARMS(chappy).mMaxTurnAngle());
-			if (absF(angleSep) <= (PI / 4)) {
+			if (isAngleWithin(angleSep, 45.0f)) {
 				chappy->mNextState = KUMACHAPPY_WalkPath;
 				chappy->finishMotion();
 			} else {
@@ -2290,9 +1609,9 @@ void StateTurn::cleanup(EnemyBase* enemy)
  */
 void StateTurnPath::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* chappy             = OBJ(enemy);
-	chappy->mNextState      = KUMACHAPPY_NULL;
-	chappy->mTargetVelocity = Vector3f(0.0f);
+	Obj* chappy        = OBJ(enemy);
+	chappy->mNextState = KUMACHAPPY_NULL;
+	chappy->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	chappy->startMotion(KUMACHAPPYANIM_Turn, nullptr);
 }
 
@@ -2304,7 +1623,7 @@ void StateTurnPath::exec(EnemyBase* enemy)
 {
 	Obj* chappy = OBJ(enemy);
 	chappy->updateHomePosition();
-	if (chappy->mHealth <= 0.0f) {
+	if (chappy->isDead()) {
 		chappy->mNextState = KUMACHAPPY_Dead;
 		chappy->finishMotion();
 		chappy->setAnimSpeed(60.0f);
@@ -2315,14 +1634,14 @@ void StateTurnPath::exec(EnemyBase* enemy)
 	} else {
 		Creature* target = chappy->getSearchedTarget();
 		if (target) {
-			f32 angleSep = chappy->changeFaceDir2(target);
+			f32 angleSep = chappy->turnToTarget(target, CG_GENERALPARMS(chappy).mTurnSpeed(), CG_GENERALPARMS(chappy).mMaxTurnAngle());
 			if (chappy->isTargetAttackable(target, angleSep, CG_GENERALPARMS(chappy).mMaxAttackRange(),
 			                               CG_GENERALPARMS(chappy).mMaxAttackAngle())) {
 				chappy->mNextState = KUMACHAPPY_Attack;
 				chappy->finishMotion();
 				chappy->setAnimSpeed(60.0f);
 
-			} else if (absF(angleSep) <= TORADIANS(CG_GENERALPARMS(chappy).mMaxAttackAngle())) {
+			} else if (isAngleWithin(angleSep, CG_GENERALPARMS(chappy).mMaxAttackAngle())) {
 				chappy->mNextState = KUMACHAPPY_Walk;
 				chappy->finishMotion();
 			} else {
@@ -2332,7 +1651,7 @@ void StateTurnPath::exec(EnemyBase* enemy)
 		} else {
 			Vector3f targetPos = chappy->mTargetPos;
 			f32 angleSep = chappy->turnToTarget(targetPos, CG_GENERALPARMS(chappy).mTurnSpeed(), CG_GENERALPARMS(chappy).mMaxTurnAngle());
-			if (absF(angleSep) <= (PI / 4)) {
+			if (isAngleWithin(angleSep, 45.0f)) {
 				chappy->mNextState = KUMACHAPPY_WalkPath;
 				chappy->finishMotion();
 			}
@@ -2686,7 +2005,10 @@ lbl_80298440:
  * @note Address: 0x80298490
  * @note Size: 0x28
  */
-void StateTurnPath::cleanup(EnemyBase* enemy) { enemy->setAnimSpeed(30.0f); }
+void StateTurnPath::cleanup(EnemyBase* enemy)
+{
+	enemy->setAnimSpeed(30.0f);
+}
 
 /**
  * @note Address: 0x802984B8
@@ -2714,7 +2036,7 @@ void StateWalk::exec(EnemyBase* enemy)
 		turnSpeed    = 0.01f;
 		maxTurnAngle = 1.0f;
 	}
-	if (chappy->mHealth <= 0.0f) {
+	if (chappy->isDead()) {
 		chappy->mNextState = KUMACHAPPY_Dead;
 		chappy->finishMotion();
 		chappy->setAnimSpeed(60.0f);
@@ -2732,12 +2054,12 @@ void StateWalk::exec(EnemyBase* enemy)
 				chappy->finishMotion();
 				chappy->setAnimSpeed(60.0f);
 
-			} else if (chappy->isTargetWithinRange(target, angleSep, CG_GENERALPARMS(chappy).mPrivateRadius(),
-			                                       CG_GENERALPARMS(chappy).mSightRadius(), CG_GENERALPARMS(chappy).mFov(),
-			                                       chappy->getViewAngle())) {
+			} else if (chappy->isTargetOutOfRange(target, angleSep, CG_GENERALPARMS(chappy).mPrivateRadius(),
+			                                      CG_GENERALPARMS(chappy).mSightRadius(), CG_GENERALPARMS(chappy).mFov(),
+			                                      chappy->getViewAngle())) {
 				chappy->mNextState = KUMACHAPPY_Lost;
 				chappy->finishMotion();
-			} else if (!(absF(angleSep) <= TORADIANS(CG_GENERALPARMS(chappy).mMaxAttackAngle()))) {
+			} else if (!(isAngleWithin(angleSep, CG_GENERALPARMS(chappy).mMaxAttackAngle()))) {
 				chappy->mNextState = KUMACHAPPY_Turn;
 				chappy->finishMotion();
 			}
@@ -2745,7 +2067,7 @@ void StateWalk::exec(EnemyBase* enemy)
 			chappy->setNearestWayPoint();
 			Vector3f targetPos = chappy->mTargetPos;
 			f32 angleSep       = chappy->turnToTarget(targetPos, turnSpeed, maxTurnAngle);
-			if (absF(angleSep) <= (PI / 4)) {
+			if (isAngleWithin(angleSep, 45.0f)) {
 				chappy->mNextState = KUMACHAPPY_WalkPath;
 				chappy->finishMotion();
 			} else {
@@ -2756,7 +2078,7 @@ void StateWalk::exec(EnemyBase* enemy)
 	}
 
 	if (chappy->isFinishMotion()) {
-		chappy->mTargetVelocity = Vector3f(0.0f);
+		chappy->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	} else {
 		f32 moveSpeed = CG_GENERALPARMS(chappy).mMoveSpeed();
 		f32 x         = sin(chappy->getFaceDir());
@@ -3297,7 +2619,7 @@ void StateWalkPath::exec(EnemyBase* enemy)
 		turnSpeed    = 0.01f;
 		maxTurnAngle = 1.0f;
 	}
-	if (chappy->mHealth <= 0.0f) {
+	if (chappy->isDead()) {
 		chappy->mNextState = KUMACHAPPY_Dead;
 		chappy->finishMotion();
 		chappy->setAnimSpeed(60.0f);
@@ -3315,7 +2637,7 @@ void StateWalkPath::exec(EnemyBase* enemy)
 				chappy->finishMotion();
 				chappy->setAnimSpeed(60.0f);
 
-			} else if (absF(angleSep) <= TORADIANS(CG_GENERALPARMS(chappy).mMaxAttackAngle())) {
+			} else if (isAngleWithin(angleSep, CG_GENERALPARMS(chappy).mMaxAttackAngle())) {
 				chappy->mNextState = KUMACHAPPY_Walk;
 				chappy->finishMotion();
 			} else {
@@ -3325,7 +2647,7 @@ void StateWalkPath::exec(EnemyBase* enemy)
 		} else {
 			Vector3f targetPos = chappy->mTargetPos;
 			f32 angleSep       = chappy->turnToTarget(targetPos, turnSpeed, maxTurnAngle);
-			if (!(absF(angleSep) <= (PI / 4))) {
+			if (!(isAngleWithin(angleSep, 45.0f))) {
 				chappy->mNextState = KUMACHAPPY_TurnPath;
 				chappy->finishMotion();
 			}
@@ -3333,17 +2655,12 @@ void StateWalkPath::exec(EnemyBase* enemy)
 	}
 
 	if (chappy->isFinishMotion()) {
-		chappy->mTargetVelocity = Vector3f(0.0f);
+		chappy->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	} else {
-		f32 moveSpeed = CG_GENERALPARMS(chappy).mMoveSpeed();
-		f32 x         = sin(chappy->getFaceDir());
-		f32 y         = chappy->getTargetVelocity().y;
-		f32 z         = cos(chappy->getFaceDir());
-
-		chappy->mTargetVelocity = Vector3f(moveSpeed * x, y, moveSpeed * z);
+		chappy->setTargetSpeed(CG_GENERALPARMS(chappy).mMoveSpeed());
 	}
 
-	chappy->mTimer += 0.5f * sys->mDeltaTime;
+	chappy->mTimer += 0.5f * sys->getDeltaTime();
 
 	if (chappy->mCurAnim->mIsPlaying && chappy->mCurAnim->mType == KEYEVENT_END) {
 		transit(chappy, chappy->mNextState, nullptr);
@@ -3743,6 +3060,9 @@ lbl_802991C8:
  * @note Address: 0x80299218
  * @note Size: 0x28
  */
-void StateWalkPath::cleanup(EnemyBase* enemy) { enemy->setAnimSpeed(30.0f); }
+void StateWalkPath::cleanup(EnemyBase* enemy)
+{
+	enemy->setAnimSpeed(30.0f);
+}
 } // namespace KumaChappy
 } // namespace Game

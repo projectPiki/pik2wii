@@ -1,9 +1,9 @@
 #ifndef _EBI_TYESNOCURSOR_H
 #define _EBI_TYESNOCURSOR_H
 
-#include "efx2d/T2DCursor.h"
-#include "ebi/E2DGraph.h"
 #include "System.h"
+#include "ebi/E2DGraph.h"
+#include "efx2d/T2DCursor.h"
 
 struct J2DPane;
 
@@ -11,7 +11,7 @@ namespace ebi {
 struct TYesNoCursor {
 	TYesNoCursor()
 	    : mCursor(&mPos)
-	    , mSpeed(5.0f * sys->mDeltaTime)
+	    , mSpeed(5.0f * sys->getDeltaTime())
 	    , mTimer(0.0f)
 	{
 		mPane1 = nullptr;

@@ -84,7 +84,7 @@ void ActBore::finish()
 int ActBore::exec()
 {
 	if (mOneshotTimer < 2.0f) {
-		mOneshotTimer += sys->mDeltaTime;
+		mOneshotTimer += sys->getDeltaTime();
 	}
 
 	P2ASSERTLINE(81, mRandBehaviorType < BORE_BehaviourCount);
@@ -97,7 +97,7 @@ int ActBore::exec()
 		startCurrAction();
 
 	} else {
-		mForceFinishTimer -= sys->mDeltaTime;
+		mForceFinishTimer -= sys->getDeltaTime();
 		if (mForceFinishTimer <= 0.0f) {
 			mActions[mRandBehaviorType]->finish();
 		}
@@ -193,7 +193,7 @@ int ActRest::exec()
 		return ACTEXEC_Success;
 	}
 
-	mParent->mTargetVelocity = Vector3f(0.0f);
+	mParent->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 
 	if (mParent->getAnimSpeed() == 0.0f) {
 		mParent->mAnimSpeed = 30.0f;
@@ -226,7 +226,7 @@ int ActRest::exec()
 		return ACTEXEC_Continue;
 	}
 
-	mTimer -= sys->mDeltaTime;
+	mTimer -= sys->getDeltaTime();
 
 	// after 4-9s (or 2-5s on repeat), piki has a 50% chance to sit "further" down (start -> sit, sit -> sleep), or get up.
 	if (!isFlag(RESTFLAG_IsIdle) && mTimer < 0.0f) {

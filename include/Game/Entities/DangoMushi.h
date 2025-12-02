@@ -1,13 +1,13 @@
 #ifndef _GAME_ENTITIES_DANGOMUSHI_H
 #define _GAME_ENTITIES_DANGOMUSHI_H
 
-#include "Game/EnemyStateMachine.h"
 #include "Game/EnemyAnimatorBase.h"
-#include "Game/WalkSmokeEffect.h"
-#include "Game/EnemyParmsBase.h"
-#include "Game/EnemyMgrBase.h"
-#include "Game/JointFuncs.h"
 #include "Game/EnemyBase.h"
+#include "Game/EnemyMgrBase.h"
+#include "Game/EnemyParmsBase.h"
+#include "Game/EnemyStateMachine.h"
+#include "Game/JointFuncs.h"
+#include "Game/WalkSmokeEffect.h"
 #include "Sys/MatBaseAnimation.h"
 #include "Sys/MatBaseAnimator.h"
 #include "efx/TDango.h"
@@ -142,8 +142,6 @@ struct Obj : public EnemyBase {
 	void createAppearSmokeEffect();
 	void effectDrawOn();
 	void effectDrawOff();
-
-	inline f32 getMoveSpeed() { return C_PROPERPARMS.mRollingMoveSpeed(); }
 
 	// _00 		= VTBL
 	// _00-_2BC	= EnemyBase

@@ -1,8 +1,8 @@
-#include "Game/Entities/Miulin.h"
 #include "Game/EnemyAnimKeyEvent.h"
 #include "Game/EnemyFunc.h"
-#include "Game/PikiMgr.h"
+#include "Game/Entities/Miulin.h"
 #include "Game/Navi.h"
+#include "Game/PikiMgr.h"
 #include "Game/rumble.h"
 
 namespace Game {
@@ -43,8 +43,8 @@ void StateWait::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	enemy->startMotion(MIULINANIM_Wait, nullptr);
 	enemy->stopMotion();
-	enemy->mTargetVelocity  = Vector3f(0.0f);
-	enemy->mCurrentVelocity = Vector3f(0.0f);
+	enemy->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
+	enemy->mCurrentVelocity.set(0.0f, 0.0f, 0.0f);
 	enemy->setEmotionCaution();
 	enemy->hardConstraintOn();
 	OBJ(enemy)->mIsSearching = false;
@@ -182,14 +182,14 @@ void StateWalk::exec(EnemyBase* enemy)
 
 	if (enemy->isFinishMotion()) {
 		enemy->setAnimSpeed(1.5f * EnemyAnimatorBase::defaultAnimSpeed);
-		enemy->mTargetVelocity = Vector3f(0.0f);
+		enemy->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	}
 
 	if (enemy->mCurAnim->mIsPlaying && enemy->mCurAnim->mType == KEYEVENT_END) {
 		transit(enemy, OBJ(enemy)->mNextState, nullptr);
 		enemy->resetAnimSpeed();
-		enemy->mTargetVelocity  = Vector3f(0.0f);
-		enemy->mCurrentVelocity = Vector3f(0.0f);
+		enemy->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
+		enemy->mCurrentVelocity.set(0.0f, 0.0f, 0.0f);
 	}
 }
 
@@ -416,8 +416,8 @@ void StateTurn::init(EnemyBase* enemy, StateArg* stateArg)
 		transit(enemy, MIULIN_Walk, nullptr);
 	} else {
 		enemy->startMotion(MIULINANIM_Turn, nullptr);
-		enemy->mTargetVelocity  = Vector3f(0.0f);
-		enemy->mCurrentVelocity = Vector3f(0.0f);
+		enemy->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
+		enemy->mCurrentVelocity.set(0.0f, 0.0f, 0.0f);
 	}
 }
 

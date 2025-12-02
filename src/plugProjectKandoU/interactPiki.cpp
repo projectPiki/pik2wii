@@ -80,8 +80,11 @@ bool InteractFue::actPiki(Game::Piki* piki)
 	}
 
 	if (piki->isZikatu()) {
-		int pikiKind = piki->getKind();
-		if (pikiKind == Purple) {
+		if (piki->getKind() == Blue && !playData->hasBootContainer(Yellow)) {
+			return false;
+		} else if (piki->getKind() == Blue && !playData->isDemoFlag(DEMO_Find_Blue_Onion)) {
+			return false;
+		} else if (piki->getKind() == Purple) {
 			if (piki->getStateID() != PIKISTATE_Holein) {
 				Vector3f pikiPos = piki->getPosition();
 				Vector3f closestCavePos;
@@ -102,7 +105,7 @@ bool InteractFue::actPiki(Game::Piki* piki)
 				piki->mFsm->transit(piki, PIKISTATE_Holein, &holeInArg);
 				return false;
 			}
-		} else if (!(moviePlayer->mDemoState != DEMOSTATE_Inactive || (u32)pikiKind - 1 > Red && pikiKind != Blue)) {
+		} else if (!(moviePlayer->mDemoState != DEMOSTATE_Inactive || (u32)piki->getKind() - 1 > Red && piki->getKind() != Blue)) {
 			piki->setZikatu(false);
 			GameStat::zikatuPikis.dec(piki->getKind());
 			if (!playData->isDemoFlag(DEMO_Meet_Red_Pikmin) && piki->getKind() == Red) {
@@ -135,7 +138,7 @@ bool InteractFue::actPiki(Game::Piki* piki)
 				playData->setBootContainer(piki->getKind());
 			}
 
-		} else if (pikiKind == Bulbmin) {
+		} else if (piki->getKind() == Bulbmin) {
 			if (gameSystem->isFlag(GAMESYS_IsGameWorldActive) && !playData->isDemoFlag(DEMO_Discover_Bulbmin)) { // broken demo likely
 				playData->setDemoFlag(DEMO_Discover_Bulbmin);
 				MoviePlayArg bulbminArg("X13_exp_leafchappy", nullptr, nullptr, 0);

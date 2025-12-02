@@ -85,7 +85,7 @@ void BigTreasureFireAttack::start(Vector3f& emitDirection, Vector3f& emitPositio
 bool BigTreasureFireAttack::update()
 {
 	if (mEmitRatio < 1.0f) {
-		mEmitRatio += 3.0f * sys->mDeltaTime;
+		mEmitRatio += 3.0f * sys->getDeltaTime();
 		if (mEmitRatio > 1.0f) {
 			mEmitRatio = 1.0f;
 		}
@@ -189,7 +189,7 @@ void BigTreasureGasAttack::start(Vector3f& emitPosition, f32 emitAngle)
 bool BigTreasureGasAttack::update()
 {
 	if (mEmitRatio < 1.0f) {
-		mEmitRatio += 0.27f * sys->mDeltaTime;
+		mEmitRatio += 0.27f * sys->getDeltaTime();
 		if (mEmitRatio > 1.0f) {
 			mEmitRatio = 1.0f;
 		}
@@ -284,9 +284,9 @@ bool BigTreasureWaterAttack::update()
 {
 	bool isHitGround = false;
 
-	mPosition.x += mVelocity.x * sys->mDeltaTime;
-	mPosition.y += mVelocity.y * sys->mDeltaTime;
-	mPosition.z += mVelocity.z * sys->mDeltaTime;
+	mPosition.x += mVelocity.x * sys->getDeltaTime();
+	mPosition.y += mVelocity.y * sys->getDeltaTime();
+	mPosition.z += mVelocity.z * sys->getDeltaTime();
 
 	mVelocity.y -= 20.0f;
 
@@ -409,7 +409,7 @@ bool BigTreasureElecAttack::update()
 		Sys::Sphere moveSphere(pos, 20.0f);
 		MoveInfo info(&moveSphere, &mVelocity, mAttackData->mElecBounceFactor);
 		info.mMovingCreature = mOwner;
-		mapMgr->traceMove(info, sys->mDeltaTime);
+		mapMgr->traceMove(info, sys->getDeltaTime());
 
 		mPosition = moveSphere.mPosition;
 		mPosition.y -= 20.0f;
@@ -1175,8 +1175,8 @@ void BigTreasureAttackMgr::update()
 	}
 
 	if (isAttacking) {
-		mAttackTimer1 += sys->mDeltaTime;
-		mAttackTimer2 += sys->mDeltaTime;
+		mAttackTimer1 += sys->getDeltaTime();
+		mAttackTimer2 += sys->getDeltaTime();
 	}
 }
 
@@ -1829,9 +1829,9 @@ void BigTreasureAttackMgr::startNewWaterList()
 		speedFactor = 1.0f;
 	}
 
-	f32 vertSpeed = (350.0f / sys->mDeltaTime) / 20.0f;
+	f32 vertSpeed = (350.0f / sys->getDeltaTime()) / 20.0f;
 
-	f32 speed = ((0.5f * speedFactor) / (vertSpeed / 20.0f)) / sys->mDeltaTime;
+	f32 speed = ((0.5f * speedFactor) / (vertSpeed / 20.0f)) / sys->getDeltaTime();
 
 	Vector3f sep  = targetPos - emitPos;
 	f32 angleDist = JMAAtan2Radian(sep.x, sep.z); // f31

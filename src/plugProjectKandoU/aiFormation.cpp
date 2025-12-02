@@ -213,8 +213,8 @@ void ActFormation::onKeyEvent(SysShape::KeyEvent const& keyEvent)
 	switch (keyEvent.mType) {
 	case KEYEVENT_2:
 		if (mIsAnimating) {
-			mParent->mVelocity       = Vector3f(0.0f);
-			mParent->mTargetVelocity = Vector3f(0.0f);
+			mParent->mVelocity.set(0.0f, 0.0f, 0.0f);
+			mParent->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 		}
 		break;
 
@@ -400,10 +400,10 @@ int PikiAI::ActFormation::exec()
 			return ACTEXEC_Continue;
 		}
 
-		mDistanceType            = 1;
-		mParent->mTargetVelocity = Vector3f(0.0f);
-		Vector3f naviPikiSep     = mParent->mNavi->getPosition() - mParent->getPosition();
-		f32 angle                = JMAAtan2Radian(naviPikiSep.x, naviPikiSep.z); // f26
+		mDistanceType = 1;
+		mParent->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
+		Vector3f naviPikiSep = mParent->mNavi->getPosition() - mParent->getPosition();
+		f32 angle            = JMAAtan2Radian(naviPikiSep.x, naviPikiSep.z); // f26
 		mParent->setMoveRotation(false);
 		mParent->mFaceDir += 0.3f * angDist(angle, mParent->mFaceDir);
 		return ACTEXEC_Continue;
@@ -425,8 +425,8 @@ int PikiAI::ActFormation::exec()
 	}
 
 	if (dist <= 7.0f || (mDistanceCounter < 6 && dist <= 15.0f)) {
-		mDistanceType            = 2;
-		mParent->mTargetVelocity = Vector3f(0.0f);
+		mDistanceType = 2;
+		mParent->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 
 		sep = mParent->mNavi->getPosition() - mParent->getPosition(); // 0x114
 
@@ -453,9 +453,9 @@ int PikiAI::ActFormation::exec()
 		f32 factor3  = (0.5f * (simSpeed / factor)) * simSpeed;
 
 		if (dist < factor3) {
-			mParent->mTargetVelocity = Vector3f(0.0f);
-			sep                      = mParent->mNavi->getPosition() - mParent->getPosition();   // 0x114
-			f32 angle                = angDist(JMAAtan2Radian(sep.x, sep.z), mParent->mFaceDir); // f26
+			mParent->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
+			sep       = mParent->mNavi->getPosition() - mParent->getPosition();   // 0x114
+			f32 angle = angDist(JMAAtan2Radian(sep.x, sep.z), mParent->mFaceDir); // f26
 			mParent->setMoveRotation(false);
 			mParent->mFaceDir += 0.3f * angle;
 		} else if (dist < factor2) {
@@ -479,7 +479,7 @@ int PikiAI::ActFormation::exec()
 			impulse.normalise();
 
 			if (newVer && cstickTest) {
-				impulse = Vector3f(0.0f);
+				impulse.set(0.0f, 0.0f, 0.0f);
 			}
 
 			f32 currSpeed = mParent->mTargetVelocity.length(); // f28
@@ -505,7 +505,7 @@ int PikiAI::ActFormation::exec()
 			impulse.normalise();
 
 			if (newVer && cstickTest) {
-				impulse = Vector3f(0.0f);
+				impulse.set(0.0f, 0.0f, 0.0f);
 			}
 
 			f32 currSpeed = mParent->mTargetVelocity.length(); // f28
@@ -520,7 +520,7 @@ int PikiAI::ActFormation::exec()
 		mLostPikiTimer   = 0.0f;
 		mHasReleasedSlot = false;
 	} else if (dist < static_cast<Game::PikiParms*>(mParent->mParms)->mPikiParms.mGrayDistance.mValue) {
-		mLostPikiTimer += sys->mDeltaTime;
+		mLostPikiTimer += sys->getDeltaTime();
 		if (!mHasReleasedSlot) {
 			if (mSlotID != -1) {
 				mCPlate->releaseSlot(mParent, mSlotID);

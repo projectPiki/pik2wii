@@ -1,14 +1,14 @@
-#include "og/newScreen/SMenu.h"
-#include "og/newScreen/ogUtil.h"
+#include "Game/CameraMgr.h"
+#include "Game/Cave/RandMapMgr.h"
+#include "Game/Navi.h"
+#include "Radar.h"
+#include "nans.h"
 #include "og/Screen/MapCounter.h"
 #include "og/Screen/anime.h"
 #include "og/Screen/ogScreen.h"
 #include "og/Sound.h"
-#include "Game/Navi.h"
-#include "Game/CameraMgr.h"
-#include "Game/Cave/RandMapMgr.h"
-#include "Radar.h"
-#include "nans.h"
+#include "og/newScreen/SMenu.h"
+#include "og/newScreen/ogUtil.h"
 
 static const u32 padding[] = { 0, 0, 0 };
 
@@ -88,7 +88,9 @@ ObjSMenuMap::ObjSMenuMap(char const* name)
  * @note Address: 0x8030F8B0
  * @note Size: 0xC4
  */
-ObjSMenuMap::~ObjSMenuMap() { }
+ObjSMenuMap::~ObjSMenuMap()
+{
+}
 
 /**
  * @note Address: N/A
@@ -1663,7 +1665,7 @@ void ObjSMenuMap::updateMap()
 	mController = getOwner()->getGamePad();
 
 	static f32 nv_frame = 0.0f;
-	nv_frame += sys->mDeltaTime;
+	nv_frame += sys->getDeltaTime();
 
 	if (nv_frame > 1.0f) {
 		nv_frame = 0.0f;
@@ -1962,13 +1964,19 @@ bool ObjSMenuMap::doStart(::Screen::StartSceneArg const* arg)
  * @note Address: 0x803129B0
  * @note Size: 0x8
  */
-bool ObjSMenuMap::doEnd(::Screen::EndSceneArg const*) { return true; }
+bool ObjSMenuMap::doEnd(::Screen::EndSceneArg const*)
+{
+	return true;
+}
 
 /**
  * @note Address: 0x803129B8
  * @note Size: 0x20
  */
-void ObjSMenuMap::doUpdateFinish() { ObjSMenuBase::doUpdateFinish(); }
+void ObjSMenuMap::doUpdateFinish()
+{
+	ObjSMenuBase::doUpdateFinish();
+}
 
 /**
  * @note Address: 0x803129D8
@@ -2004,7 +2012,10 @@ void ObjSMenuMap::in_R()
  * @note Address: 0x80312A4C
  * @note Size: 0xC
  */
-void ObjSMenuMap::wait() { mState = MENUSTATE_Default; }
+void ObjSMenuMap::wait()
+{
+	mState = MENUSTATE_Default;
+}
 
 /**
  * @note Address: 0x80312A58

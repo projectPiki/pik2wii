@@ -1,6 +1,6 @@
-#include "Game/Entities/Tobi.h"
 #include "Game/EnemyAnimKeyEvent.h"
 #include "Game/EnemyFunc.h"
+#include "Game/Entities/Tobi.h"
 
 namespace Game {
 namespace Tobi {
@@ -39,7 +39,7 @@ void StateDead::init(EnemyBase* enemy, StateArg* stateArg)
 	enemy->disableEvent(0, EB_Untargetable);
 	enemy->deathProcedure();
 	enemy->disableEvent(0, EB_Cullable);
-	enemy->mTargetVelocity = Vector3f(0.0f);
+	enemy->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	enemy->startMotion(TOBIANIM_Dead, nullptr);
 }
 
@@ -58,7 +58,9 @@ void StateDead::exec(EnemyBase* enemy)
  * @note Address: 0x80267B1C
  * @note Size: 0x4
  */
-void StateDead::cleanup(EnemyBase* enemy) { }
+void StateDead::cleanup(EnemyBase* enemy)
+{
+}
 
 /**
  * @note Address: 0x80267B20
@@ -70,7 +72,7 @@ void StatePress::init(EnemyBase* enemy, StateArg* stateArg)
 	enemy->disableEvent(0, EB_Untargetable);
 	enemy->deathProcedure();
 	enemy->disableEvent(0, EB_Cullable);
-	enemy->mTargetVelocity = Vector3f(0.0f);
+	enemy->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	enemy->startMotion(TOBIANIM_PressDead, nullptr);
 }
 
@@ -89,7 +91,9 @@ void StatePress::exec(EnemyBase* enemy)
  * @note Address: 0x80267BD4
  * @note Size: 0x4
  */
-void StatePress::cleanup(EnemyBase* enemy) { }
+void StatePress::cleanup(EnemyBase* enemy)
+{
+}
 
 /**
  * @note Address: 0x80267BD8
@@ -107,7 +111,7 @@ void StateStay::init(EnemyBase* enemy, StateArg* stateArg)
 	tobi->disableEvent(0, EB_LifegaugeVisible);
 	tobi->disableEvent(0, EB_Animating);
 	tobi->enableEvent(0, EB_ModelHidden);
-	tobi->mTargetVelocity = Vector3f(0.0f);
+	tobi->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	tobi->startMotion(TOBIANIM_Appear, nullptr);
 	tobi->stopMotion();
 }
@@ -156,7 +160,7 @@ void StateAppear::init(EnemyBase* enemy, StateArg* stateArg)
 	tobi->hardConstraintOn();
 	tobi->enableEvent(0, EB_NoInterrupt);
 	tobi->enableEvent(0, EB_LifegaugeVisible);
-	tobi->mTargetVelocity = Vector3f(0.0f);
+	tobi->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	tobi->setEmotionExcitement();
 	tobi->startMotion(TOBIANIM_Appear, nullptr);
 	tobi->createAppearEffect();
@@ -170,7 +174,7 @@ void StateAppear::exec(EnemyBase* enemy)
 {
 	Obj* tobi = OBJ(enemy);
 	if (tobi->mCurAnim->mIsPlaying && tobi->mCurAnim->mType == KEYEVENT_END) {
-		if (tobi->mHealth <= 0.0f) {
+		if (tobi->isDead()) {
 			transit(tobi, TOBI_Dead, nullptr);
 			return;
 		}
@@ -198,7 +202,7 @@ void StateDive::init(EnemyBase* enemy, StateArg* stateArg)
 	Obj* tobi = OBJ(enemy);
 	tobi->hardConstraintOn();
 	tobi->enableEvent(0, EB_BitterImmune);
-	tobi->mTargetVelocity = Vector3f(0.0f);
+	tobi->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	tobi->setEmotionCaution();
 	tobi->startMotion(TOBIANIM_Dive, nullptr);
 	tobi->createDisAppearEffect();
@@ -247,25 +251,15 @@ void StateMove::exec(EnemyBase* enemy)
 	                                                     nullptr, nullptr, nullptr);
 	if (target) {
 		tobi->mTargetCreature = target;
-		f32 angleDist         = tobi->changeFaceDir2(target);
-		f32 x, y, z;
-		f32 speed = CG_GENERALPARMS(tobi).mMoveSpeed();
-		x         = (f32)sin(tobi->getFaceDir());
-		y         = tobi->getTargetVelocity().y;
-		z         = (f32)cos(tobi->getFaceDir());
-
-		tobi->mTargetVelocity = Vector3f(speed * x, y, speed * z);
+		f32 angleDist         = tobi->turnToTarget(target, CG_GENERALPARMS(tobi).mTurnSpeed(), CG_GENERALPARMS(tobi).mMaxTurnAngle());
+		tobi->setTargetSpeed(CG_GENERALPARMS(tobi).mMoveSpeed());
 
 		if (tobi->isTargetAttackable(target, angleDist, CG_GENERALPARMS(tobi).mMaxAttackRange(), CG_GENERALPARMS(tobi).mMaxAttackAngle())) {
 			tobi->mNextState = TOBI_Attack2;
 			tobi->finishMotion();
 		} else {
-			Vector3f homePos = tobi->mHomePosition;
-			Vector3f tobiPos = tobi->getPosition();
 
-			f32 dist = tobiPos.distance(homePos);
-
-			if (dist > CG_GENERALPARMS(tobi).mTerritoryRadius()) {
+			if (tobi->distanceFromHome() > CG_GENERALPARMS(tobi).mTerritoryRadius()) {
 				tobi->mNextState = TOBI_GoHome;
 				tobi->finishMotion();
 			} else {
@@ -292,7 +286,7 @@ void StateMove::exec(EnemyBase* enemy)
 
 	tobi->setInWaterDamage();
 
-	if (tobi->mHealth <= 0.0f) {
+	if (tobi->isDead()) {
 		transit(tobi, TOBI_Dead, nullptr);
 		return;
 	}
@@ -650,7 +644,9 @@ lbl_802684C8:
  * @note Address: 0x80268518
  * @note Size: 0x4
  */
-void StateMove::cleanup(EnemyBase* enemy) { }
+void StateMove::cleanup(EnemyBase* enemy)
+{
+}
 
 /**
  * @note Address: 0x8026851C
@@ -692,7 +688,7 @@ void StateMoveSide::exec(EnemyBase* enemy)
 
 	tobi->setInWaterDamage();
 
-	if (tobi->mHealth <= 0.0f) {
+	if (tobi->isDead()) {
 		transit(tobi, TOBI_Dead, nullptr);
 		return;
 	}
@@ -706,7 +702,9 @@ void StateMoveSide::exec(EnemyBase* enemy)
  * @note Address: 0x802686A0
  * @note Size: 0x4
  */
-void StateMoveSide::cleanup(EnemyBase* enemy) { }
+void StateMoveSide::cleanup(EnemyBase* enemy)
+{
+}
 
 /**
  * @note Address: 0x802686A4
@@ -748,7 +746,7 @@ void StateMoveCentre::exec(EnemyBase* enemy)
 
 	tobi->setInWaterDamage();
 
-	if (tobi->mHealth <= 0.0f) {
+	if (tobi->isDead()) {
 		transit(tobi, TOBI_Dead, nullptr);
 		return;
 	}
@@ -762,7 +760,9 @@ void StateMoveCentre::exec(EnemyBase* enemy)
  * @note Address: 0x80268828
  * @note Size: 0x4
  */
-void StateMoveCentre::cleanup(EnemyBase* enemy) { }
+void StateMoveCentre::cleanup(EnemyBase* enemy)
+{
+}
 
 /**
  * @note Address: 0x8026882C
@@ -804,7 +804,7 @@ void StateMoveTop::exec(EnemyBase* enemy)
 
 	tobi->setInWaterDamage();
 
-	if (tobi->mHealth <= 0.0f) {
+	if (tobi->isDead()) {
 		transit(tobi, TOBI_Dead, nullptr);
 		return;
 	}
@@ -818,7 +818,9 @@ void StateMoveTop::exec(EnemyBase* enemy)
  * @note Address: 0x802689B0
  * @note Size: 0x4
  */
-void StateMoveTop::cleanup(EnemyBase* enemy) { }
+void StateMoveTop::cleanup(EnemyBase* enemy)
+{
+}
 
 /**
  * @note Address: 0x802689B4
@@ -864,7 +866,7 @@ void StateGoHome::exec(EnemyBase* enemy)
 
 	tobi->setInWaterDamage();
 
-	if (tobi->mHealth <= 0.0f) {
+	if (tobi->isDead()) {
 		transit(tobi, TOBI_Dead, nullptr);
 		return;
 	}
@@ -878,7 +880,9 @@ void StateGoHome::exec(EnemyBase* enemy)
  * @note Address: 0x80268BE4
  * @note Size: 0x4
  */
-void StateGoHome::cleanup(EnemyBase* enemy) { }
+void StateGoHome::cleanup(EnemyBase* enemy)
+{
+}
 
 /**
  * @note Address: 0x80268BE8
@@ -891,7 +895,7 @@ void StateFly::init(EnemyBase* enemy, StateArg* stateArg)
 	tobi->randomFlyingTarget();
 	tobi->enableEvent(0, EB_Invulnerable);
 	tobi->enableEvent(0, EB_Untargetable);
-	tobi->mTargetVelocity = Vector3f(0.0f);
+	tobi->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	tobi->startMotion(TOBIANIM_Fly, nullptr);
 }
 
@@ -937,8 +941,8 @@ void StateFly::cleanup(EnemyBase* enemy)
  */
 void StateAttack1::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* tobi             = OBJ(enemy);
-	tobi->mTargetVelocity = Vector3f(0.0f);
+	Obj* tobi = OBJ(enemy);
+	tobi->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	tobi->startMotion(TOBIANIM_Attack1, nullptr);
 	tobi->mNextState = TOBI_NULL;
 	tobi->createBridgeEffect();
@@ -968,7 +972,7 @@ void StateAttack1::exec(EnemyBase* enemy)
 		tobi->mNextState = TOBI_Fly;
 	}
 
-	if (tobi->mHealth <= 0.0f) {
+	if (tobi->isDead()) {
 		transit(tobi, TOBI_Dead, nullptr);
 		return;
 	}
@@ -989,7 +993,9 @@ void StateAttack1::exec(EnemyBase* enemy)
  * @note Address: 0x80268F78
  * @note Size: 0x4
  */
-void StateAttack1::cleanup(EnemyBase* enemy) { }
+void StateAttack1::cleanup(EnemyBase* enemy)
+{
+}
 
 /**
  * @note Address: 0x80268F7C
@@ -999,7 +1005,7 @@ void StateAttack2::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	Obj* tobi = OBJ(enemy);
 	tobi->disableEvent(0, EB_NoInterrupt);
-	tobi->mTargetVelocity = Vector3f(0.0f);
+	tobi->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	tobi->startMotion(TOBIANIM_Attack2, nullptr);
 }
 
@@ -1025,7 +1031,7 @@ void StateAttack2::exec(EnemyBase* enemy)
 			EnemyFunc::eatPikmin(tobi, nullptr);
 
 		} else if (tobi->mCurAnim->mType == KEYEVENT_END) {
-			if (tobi->mHealth <= 0.0f) {
+			if (tobi->isDead()) {
 				transit(tobi, TOBI_Dead, nullptr);
 				return;
 			}
@@ -1053,7 +1059,10 @@ void StateAttack2::exec(EnemyBase* enemy)
  * @note Address: 0x802691DC
  * @note Size: 0x10
  */
-void StateAttack2::cleanup(EnemyBase* enemy) { enemy->disableEvent(0, EB_NoInterrupt); }
+void StateAttack2::cleanup(EnemyBase* enemy)
+{
+	enemy->disableEvent(0, EB_NoInterrupt);
+}
 
 /**
  * @note Address: 0x802691EC
@@ -1061,7 +1070,7 @@ void StateAttack2::cleanup(EnemyBase* enemy) { enemy->disableEvent(0, EB_NoInter
  */
 void StateEat::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	enemy->mTargetVelocity = Vector3f(0.0f);
+	enemy->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	enemy->startMotion(TOBIANIM_Eat, nullptr);
 }
 
@@ -1074,7 +1083,7 @@ void StateEat::exec(EnemyBase* enemy)
 	Obj* tobi = OBJ(enemy);
 	tobi->setInWaterDamage();
 
-	if (tobi->mHealth <= 0.0f) {
+	if (tobi->isDead()) {
 		transit(tobi, TOBI_Dead, nullptr);
 		return;
 	}
@@ -1104,6 +1113,8 @@ void StateEat::exec(EnemyBase* enemy)
  * @note Address: 0x802693D0
  * @note Size: 0x4
  */
-void StateEat::cleanup(EnemyBase* enemy) { }
+void StateEat::cleanup(EnemyBase* enemy)
+{
+}
 } // namespace Tobi
 } // namespace Game

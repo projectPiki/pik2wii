@@ -50,7 +50,7 @@ bool TTestBase::doEnd(Screen::EndSceneArg const*)
 bool TTestBase::doUpdateFadein()
 {
 	// Increase the fade timer, if it goes over the max, then clamp it
-	mTimer += sys->mDeltaTime;
+	mTimer += sys->getDeltaTime();
 	if (mTimer > mTimerLength) {
 		mTimer = mTimerLength;
 	}
@@ -73,7 +73,10 @@ bool TTestBase::doUpdateFadein()
  * @note Address: 0x8034932C
  * @note Size: 0xC
  */
-void TTestBase::doUpdateFinish() { mTimer = 0.0f; }
+void TTestBase::doUpdateFinish()
+{
+	mTimer = 0.0f;
+}
 
 /**
  * @note Address: 0x80349338
@@ -82,7 +85,7 @@ void TTestBase::doUpdateFinish() { mTimer = 0.0f; }
 bool TTestBase::doUpdateFadeout()
 {
 	// Increase the fade timer, if it goes over the max, then clamp it
-	mTimer += sys->mDeltaTime;
+	mTimer += sys->getDeltaTime();
 	if (mTimer > mTimerLength) {
 		mTimer = mTimerLength;
 	}

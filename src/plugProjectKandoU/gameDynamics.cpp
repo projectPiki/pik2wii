@@ -30,7 +30,10 @@ DynamicsParms::DynamicsParms()
  * @note Address: 0x80139F94
  * @note Size: 0x74
  */
-DynamicsParms::~DynamicsParms() { mInstance = nullptr; }
+DynamicsParms::~DynamicsParms()
+{
+	mInstance = nullptr;
+}
 
 /**
  * @note Address: 0x8013A008
@@ -47,7 +50,10 @@ void DynamicsParms::globalInstance()
  * @note Address: 0x8013A050
  * @note Size: 0x54
  */
-Game::Rigid::Rigid() { mFlags.clear(); }
+Game::Rigid::Rigid()
+{
+	mFlags.clear();
+}
 
 /**
  * @note Address: 0x8013A0D8
@@ -70,13 +76,13 @@ void Game::Rigid::initPosition(Vector3f& posVec, Vector3f& quatVec)
  */
 void Game::Rigid::initPositionIndex(Vector3f& posVec, int configIdx, Vector3f& quatVec)
 {
-	RigidConfig* config      = &mConfigs[configIdx];
-	config->mPosition        = posVec;
-	config->mForce           = Vector3f(0.0f);
-	config->mVelocity        = Vector3f(0.0f);
-	config->mRotatedMomentum = Vector3f(0.0f);
-	config->mMomentum        = Vector3f(0.0f);
-	config->mTorque          = Vector3f(0.0f);
+	RigidConfig* config = &mConfigs[configIdx];
+	config->mPosition   = posVec;
+	config->mForce.set(0.0f, 0.0f, 0.0f);
+	config->mVelocity.set(0.0f, 0.0f, 0.0f);
+	config->mRotatedMomentum.set(0.0f, 0.0f, 0.0f);
+	config->mMomentum.set(0.0f, 0.0f, 0.0f);
+	config->mTorque.set(0.0f, 0.0f, 0.0f);
 	config->mPrimaryRotation.set(quatVec);
 }
 
@@ -97,8 +103,8 @@ void Game::Rigid::updateMatrix(int configIdx)
 void Game::Rigid::computeForces(int configIdx)
 {
 	RigidConfig* config = &mConfigs[configIdx];
-	config->mForce      = Vector3f(0.0f);
-	config->mTorque     = Vector3f(0.0f);
+	config->mForce.set(0.0f, 0.0f, 0.0f);
+	config->mTorque.set(0.0f, 0.0f, 0.0f);
 
 	f32 dampVal = DynamicsParms::mInstance->mRotatingMomentDamp.mValue;
 	if (dampVal > 0.0f) {

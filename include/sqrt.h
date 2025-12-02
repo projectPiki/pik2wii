@@ -47,7 +47,10 @@ inline f32 sqrtf2(f32& __sqrtf_g)
 	return __sqrtf_g;
 }
 
-inline f32 _sqrtf(f32 x) { return (x > 0.0f) ? sqrtf(x) : 0.0f; }
+inline f32 _sqrtf(f32 x)
+{
+	return (x > 0.0f) ? sqrtf(x) : 0.0f;
+}
 
 inline f32 _sqrtf2(f32 x)
 {
@@ -75,12 +78,7 @@ inline void __sqrtf(register f32 x, f32* val)
 
 inline f32 stdSqrtf(f32 x)
 {
-	if (x > 0.0f) {
-		x = sqrt(x);
-	} else {
-		x = 0.0f;
-	}
-	return x;
+	return (x > 0.0f) ? sqrt(x) : 0.0f;
 }
 
 #endif

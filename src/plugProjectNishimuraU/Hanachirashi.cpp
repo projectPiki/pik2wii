@@ -236,7 +236,7 @@ void Obj::getThrowupItemPosition(Vector3f* position)
 	if (isEvent(0, EB_Bittered)) {
 		EnemyBase::getThrowupItemPosition(position);
 	} else {
-		*position = Vector3f(mPosition.x, mPosition.y + 500.0f, mPosition.z);
+		(*position).set(mPosition.x, mPosition.y + 500.0f, mPosition.z);
 	}
 }
 
@@ -435,7 +435,7 @@ Piki* Obj::getSearchedPikmin()
 	{
 		Piki* piki = *iPiki;
 		if (piki->isAlive() && piki->isPikmin() && piki->mFloorTriangle && !piki->isStickToMouth() && piki->mSticker != this) {
-			f32 sightDiff = getCreatureViewAngle(piki);
+			f32 sightDiff = getAngDist(piki);
 			if (FABS(sightDiff) <= FOV) {
 				Vector3f pos      = getPosition();
 				Vector3f pikiPos2 = piki->getPosition();
@@ -456,19 +456,14 @@ bool Obj::isTargetLost()
 {
 	Creature* target = mTargetCreature;
 	if (target && target->isAlive() && !target->isStickToMouth() && target->mSticker != this) {
-		f32 viewAngle = C_GENERALPARMS.mViewAngle.mValue;
+		Parms* parms  = C_PARMS;
+		f32 viewAngle = parms->mGeneral.mViewAngle();
 		if (mStuckPikminCount) {
 			viewAngle = 180.0f;
 		}
 
-		f32 sightRad  = C_GENERALPARMS.mSightRadius.mValue;
-		f32 privRad   = C_GENERALPARMS.mPrivateRadius.mValue;
-		f32 sightDiff = getCreatureViewAngle(target);
-
-		bool checkDist = isTargetAttackable(target, sightDiff, privRad, sightRad);
-		if (!checkDist && !(FABS(sightDiff) <= viewAngle * DEG2RAD * PI)) {
-			return false;
-		}
+		return isTargetOutOfRange(target, getAngDist(target), parms->mGeneral.mPrivateRadius(), parms->mGeneral.mSightRadius(), 12800.0f,
+		                          viewAngle);
 	}
 
 	return true;

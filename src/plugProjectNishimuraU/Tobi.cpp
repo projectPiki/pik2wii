@@ -4,6 +4,12 @@
 #include "RevoSDK/rand.h"
 #include "efx/TUjinko.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "246-Tobi";
+}
+
 namespace Game {
 namespace Tobi {
 
@@ -86,12 +92,12 @@ void Obj::setFSM(FSM* fsm)
  */
 void Obj::getShadowParam(ShadowParam& shadowParam)
 {
-	shadowParam.mPosition                 = mModel->getJoint("kosijnt")->getWorldMatrix()->getColumn(3);
-	shadowParam.mBoundingSphere.mPosition = Vector3f(0.0f, 1.0f, 0.0f);
+	shadowParam.mPosition = mModel->getJoint("kosijnt")->getWorldMatrix()->getColumn(3);
+	shadowParam.mBoundingSphere.mPosition.set(0.0f, 1.0f, 0.0f);
 
 	if (getStateID() == TOBI_Fly) {
 		shadowParam.mPosition.y -= 9.0f;
-		shadowParam.mBoundingSphere.mRadius = C_PROPERPARMS.mFlightHeight.mValue + 50.0f;
+		shadowParam.mBoundingSphere.mRadius = C_PROPERPARMS.mFlightHeight() + 50.0f;
 	} else {
 		shadowParam.mPosition.y -= 2.5f;
 		if (isEvent(1, EB2_Earthquake)) {
@@ -236,7 +242,7 @@ void Obj::lifeIncrement()
 {
 	mInstantDamage = 0.0f;
 	disableEvent(0, EB_TakingDamage);
-	if (mHealth <= 0.0f) {
+	if (isDead()) {
 		mHealth = 1.0f;
 	}
 }
@@ -257,16 +263,17 @@ void Obj::randomFlyingTarget()
 
 	if (targetDist < speed) {
 		f32 randAngle = randWeightFloat(TAU);
-		f32 randDist  = randWeightFloat(C_GENERALPARMS.mTerritoryRadius.mValue);
+		f32 randDist  = randWeightFloat(C_GENERALPARMS.mTerritoryRadius());
 
 		targetPos = Vector3f(randDist * sinf(randAngle), 0.0f, randDist * cosf(randAngle));
 		targetPos += mHomePosition;
 	}
 
-	f32 minY          = mapMgr->getMinY(pos);
-	targetPos.y       = minY + C_PROPERPARMS.mFlightHeight.mValue;
-	mTargetPosition   = targetPos;
-	mTargetVelocity.y = (targetPos.y - pos.y) * 2.0f;
+	targetPos.y        = mapMgr->getMinY(pos) + C_PROPERPARMS.mFlightHeight();
+	mTargetPosition    = targetPos;
+	Vector3f targetVel = getTargetVelocity();
+	targetVel.y        = (targetPos.y - pos.y) * 2.0f;
+	mTargetVelocity    = targetVel;
 	/*
 	stwu     r1, -0x80(r1)
 	mflr     r0
@@ -421,7 +428,7 @@ lbl_8026A1BC:
  */
 bool Obj::isFlyingLife()
 {
-	return ((mHealth / C_GENERALPARMS.mHealth.mValue) < C_PROPERPARMS.mTakeOffHealthRatio.mValue);
+	return ((mHealth / C_GENERALPARMS.mHealth()) < C_PROPERPARMS.mTakeOffHealthRatio());
 }
 
 /**
@@ -504,7 +511,7 @@ void Obj::setNearestBridge()
 	mBridgeTargetMaxWidth = 0.0f;
 
 	if (ItemBridge::mgr) {
-		f32 radius = C_GENERALPARMS.mTerritoryRadius.mValue;
+		f32 radius = C_GENERALPARMS.mTerritoryRadius();
 		radius     = SQUARE(radius);
 		Iterator<BaseItem> iter(ItemBridge::mgr);
 		CI_LOOP(iter)
@@ -605,24 +612,14 @@ bool Obj::moveBridgeSide()
 	startPos += zVec;
 
 	if (sqrDistanceXZ(mPosition, startPos) < 250.0f) {
-		f32 moveSpeed = getMoveSpeed(0.75f);
-		f32 x         = dolsinf(getFaceDir());
-		f32 y         = getTargetVelocity().y;
-		f32 z         = dolcosf(getFaceDir());
-
-		mTargetVelocity = Vector3f(moveSpeed * x, y, moveSpeed * z);
+		setTargetSpeed(0.75f * E_GENERALPARMS.mMoveSpeed());
 
 		return true;
 
 	} else {
-		f32 val = turnToTarget2(startPos, C_GENERALPARMS.mTurnSpeed(), C_GENERALPARMS.mMaxTurnAngle());
+		f32 val = turnToTarget(startPos, C_GENERALPARMS.mTurnSpeed(), C_GENERALPARMS.mMaxTurnAngle());
 
-		f32 moveSpeed = getMoveSpeed();
-		f32 x         = dolsinf(getFaceDir());
-		f32 y         = getTargetVelocity().y;
-		f32 z         = dolcosf(getFaceDir());
-
-		mTargetVelocity = Vector3f(moveSpeed * x, y, moveSpeed * z);
+		setTargetSpeed(E_GENERALPARMS.mMoveSpeed());
 
 		return false;
 	}
@@ -822,24 +819,14 @@ bool Obj::moveBridgeCentre()
 	startPos += xVec;
 
 	if (sqrDistanceXZ(mPosition, startPos) < 250.0f) {
-		f32 moveSpeed = getMoveSpeed(0.75f);
-		f32 x         = dolsinf(getFaceDir());
-		f32 y         = getTargetVelocity().y;
-		f32 z         = dolcosf(getFaceDir());
-
-		mTargetVelocity = Vector3f(moveSpeed * x, y, moveSpeed * z);
+		setTargetSpeed(0.75f * E_GENERALPARMS.mMoveSpeed());
 
 		return true;
 
 	} else {
-		f32 val = turnToTarget2(startPos, C_GENERALPARMS.mTurnSpeed(), C_GENERALPARMS.mMaxTurnAngle());
+		f32 val = turnToTarget(startPos, C_GENERALPARMS.mTurnSpeed(), C_GENERALPARMS.mMaxTurnAngle());
 
-		f32 moveSpeed = getMoveSpeed();
-		f32 x         = dolsinf(getFaceDir());
-		f32 y         = getTargetVelocity().y;
-		f32 z         = dolcosf(getFaceDir());
-
-		mTargetVelocity = Vector3f(moveSpeed * x, y, moveSpeed * z);
+		setTargetSpeed(E_GENERALPARMS.mMoveSpeed());
 
 		return false;
 	}
@@ -865,31 +852,21 @@ bool Obj::moveBridgeTop()
 		stagePos += zVec;
 	}
 
-	f32 val = turnToTarget2(stagePos, C_GENERALPARMS.mTurnSpeed(), C_GENERALPARMS.mMaxTurnAngle());
+	f32 val = turnToTarget(stagePos, C_GENERALPARMS.mTurnSpeed(), C_GENERALPARMS.mMaxTurnAngle());
 
 	f32 dist = sqrDistanceXZ(mPosition, stagePos);
 
 	if (dist < 50.0f) {
-		mTargetVelocity = Vector3f(0.0f);
+		mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 		return true;
 
 	} else if (dist < 250.0f) {
-		f32 moveSpeed = C_GENERALPARMS.mMoveSpeed();
-		f32 x         = dolsinf(getFaceDir());
-		f32 y         = getTargetVelocity().y;
-		f32 z         = dolcosf(getFaceDir());
-
-		mTargetVelocity = Vector3f(moveSpeed * x, y, moveSpeed * z);
+		setTargetSpeed(E_GENERALPARMS.mMoveSpeed());
 
 		return true;
 
 	} else {
-		f32 moveSpeed = C_GENERALPARMS.mMoveSpeed();
-		f32 x         = dolsinf(getFaceDir());
-		f32 y         = getTargetVelocity().y;
-		f32 z         = dolcosf(getFaceDir());
-
-		mTargetVelocity = Vector3f(moveSpeed * x, y, moveSpeed * z);
+		setTargetSpeed(E_GENERALPARMS.mMoveSpeed());
 	}
 
 	return false;
@@ -1103,7 +1080,7 @@ lbl_8026B060:
  */
 void Obj::breakTargetBridge()
 {
-	InteractBreakBridge breakBridge(this, C_PROPERPARMS.mBridgeDamage.mValue);
+	InteractBreakBridge breakBridge(this, C_PROPERPARMS.mBridgeDamage());
 	mBridge->stimulate(breakBridge);
 }
 

@@ -72,7 +72,7 @@ void NormalState::init(Item* item, StateArg* stateArg)
  */
 void NormalState::exec(Item* item)
 {
-	item->mGrowTimer += sys->mDeltaTime;
+	item->mGrowTimer += sys->getDeltaTime();
 	switch (item->mGrowState) {
 	case PLANTGROW_Small:
 		if (item->mGrowTimer > item->mRandGrowTimeOffset + mgr->mParms->mPlantParms.mGrowTimeToMedium.mValue) {
@@ -586,7 +586,7 @@ void Item::updateColorMotion(f32 rate)
 {
 	switch (mColorMotionState) {
 	case PLANTCOLOR_Disappear: {
-		rate *= sys->mDeltaTime;
+		rate *= sys->getDeltaTime();
 		mColorBlendRatio += rate;
 		if (mColorBlendRatio >= 1.0f) {
 			mColorBlendRatio  = 1.0f;
@@ -596,7 +596,7 @@ void Item::updateColorMotion(f32 rate)
 	}
 
 	case PLANTCOLOR_Reappear: {
-		rate *= sys->mDeltaTime;
+		rate *= sys->getDeltaTime();
 		mColorBlendRatio -= rate;
 		if (mColorBlendRatio <= 0.0f) {
 			mColorBlendRatio  = 0.0f;
@@ -929,7 +929,7 @@ void ProcAnimator::update(f32 faceDir, f32 p2)
 	f32 factor    = 1.0f * x; // this has gotta be part of an inline to actually multiply by 1.0f
 	factor        = -factor;
 	f32 p3        = x * p2;
-	f32 frameRate = sys->mDeltaTime;
+	f32 frameRate = sys->getDeltaTime();
 	_28 += ((_24 * factor - _28 * 1.6f) + p3) * frameRate;
 	_24 += frameRate * _28;
 
@@ -2210,7 +2210,7 @@ void Plant::doAnimation()
 {
 	mFruits->update();
 	SysShape::BlendQuadraticFunc quadFunc;
-	mBlendAnimator.animate(&quadFunc, 30.0f * sys->mDeltaTime, mAnimSpeed * sys->mDeltaTime, mBlendStepTime * sys->mDeltaTime);
+	mBlendAnimator.animate(&quadFunc, 30.0f * sys->getDeltaTime(), mAnimSpeed * sys->getDeltaTime(), mBlendStepTime * sys->getDeltaTime());
 	mBlendAnimator.setModelCalc(mModel, 0);
 
 	if (mModel) {

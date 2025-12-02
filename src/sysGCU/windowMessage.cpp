@@ -1,9 +1,9 @@
-#include "P2JME/messageObj.h"
-#include "P2JME/P2JME.h"
-#include "System.h"
 #include "Game/MoviePlayer.h"
+#include "P2JME/P2JME.h"
+#include "P2JME/messageObj.h"
 #include "PSSystem/PSGame.h"
 #include "PSSystem/PSSystemIF.h"
+#include "System.h"
 #include "nans.h"
 
 static const char idk[] = "\0\0\0\0\0\0\0\0\0";
@@ -49,7 +49,7 @@ void DrawInfoMgr::update()
 {
 	FOREACH_NODE(DrawInfo, mInfoList1.mChild, node)
 	{
-		node->mTimer += sys->mDeltaTime;
+		node->mTimer += sys->getDeltaTime();
 		if (node->mTimer > node->mTimeLimit) {
 			node->mTimer = node->mTimeLimit;
 		}
@@ -187,7 +187,10 @@ TRenderingProcessor::TRenderingProcessor(JMessage::TReference* ref)
  * @note Address: N/A
  * @note Size: 0x100
  */
-void TRenderingProcessor::initDrawInfoMgr(u32 count) { mDrawInfo.init(count); }
+void TRenderingProcessor::initDrawInfoMgr(u32 count)
+{
+	mDrawInfo.init(count);
+}
 
 /**
  * @note Address: 0x8043F55C
@@ -1159,7 +1162,10 @@ void TRenderingProcessor::doDrawImage(JUTTexture* tex, f32 x0, f32 y0, f32 x, f3
  * @note Address: 0x80440008
  * @note Size: 0x40
  */
-void TRenderingProcessor::update() { mDrawInfo.update(); }
+void TRenderingProcessor::update()
+{
+	mDrawInfo.update();
+}
 
 /**
  * @note Address: 0x80440048
@@ -1186,7 +1192,10 @@ TControl::TControl()
  * @note Address: 0x8044013C
  * @note Size: 0x100
  */
-void TControl::initRenderingProcessor(u32 count) { static_cast<Window::TRenderingProcessor*>(mTextRenderProc)->initDrawInfoMgr(count); }
+void TControl::initRenderingProcessor(u32 count)
+{
+	static_cast<Window::TRenderingProcessor*>(mTextRenderProc)->initDrawInfoMgr(count);
+}
 
 /**
  * @note Address: 0x8044023C
@@ -1220,9 +1229,9 @@ bool TControl::update(Controller* control1, Controller* control2)
 				// I would imagine the second of these was supposed to be for controller 2, but very cool
 				if ((control1 && control1->getButton() & Controller::PRESS_B)
 				    || (control1 && control1->getButton() & Controller::PRESS_B)) {
-					mTimer += sys->mDeltaTime * 2.0f;
+					mTimer += sys->getDeltaTime() * 2.0f;
 				} else {
-					mTimer += sys->mDeltaTime;
+					mTimer += sys->getDeltaTime();
 				}
 			}
 		}
@@ -1234,7 +1243,10 @@ bool TControl::update(Controller* control1, Controller* control2)
  * @note Address: 0x804403C4
  * @note Size: 0x20
  */
-void TControl::reset() { P2JME::TControl::reset(); }
+void TControl::reset()
+{
+	P2JME::TControl::reset();
+}
 
 /**
  * @note Address: 0x804403E4

@@ -152,7 +152,7 @@ void MapMgr::getStartPosition(Vector3f& outPosition, int unused)
 		outPosition   = mCourseInfo->mStartPosition;
 		outPosition.y = getMinY(outPosition) + 8.5f;
 	} else {
-		outPosition = Vector3f(0.0f);
+		outPosition.set(0.0f, 0.0f, 0.0f);
 	}
 }
 

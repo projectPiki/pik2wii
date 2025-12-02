@@ -186,7 +186,7 @@ void Chappy::TUnit::startAIState_(enumAIState state)
 {
 	if (mStateID == state) {
 		if (mStateID == CHAPPYAI_Controlled) {
-			u32 length = mManager->mParams.mControlledTime.mValue / sys->mDeltaTime;
+			u32 length = mManager->mParams.mControlledTime.mValue / sys->getDeltaTime();
 			mCounter   = length;
 			mCounter2  = length;
 		} else {
@@ -202,7 +202,7 @@ void Chappy::TUnit::startAIState_(enumAIState state)
 	}
 
 	case CHAPPYAI_Controlled: {
-		u32 time = mManager->mParams.mControlledTime.mValue / sys->mDeltaTime;
+		u32 time = mManager->mParams.mControlledTime.mValue / sys->getDeltaTime();
 
 		mCounter  = time;
 		mCounter2 = time;
@@ -214,7 +214,7 @@ void Chappy::TUnit::startAIState_(enumAIState state)
 		min = mManager->mParams.mMinWaitTime.mValue;
 		max = mManager->mParams.mMaxWaitTime.mValue;
 
-		u32 time = ((max - min) * randEbisawaFloat() + min) / sys->mDeltaTime;
+		u32 time = ((max - min) * randEbisawaFloat() + min) / sys->getDeltaTime();
 
 		mCounter  = time;
 		mCounter2 = time;
@@ -234,7 +234,7 @@ void Chappy::TUnit::startAIState_(enumAIState state)
 		max = mManager->mParams.mMaxWalkTime.mValue;
 		min = mManager->mParams.mMinWalkTime.mValue;
 
-		u32 time  = ((max - min) * randEbisawaFloat() + min) / sys->mDeltaTime;
+		u32 time  = ((max - min) * randEbisawaFloat() + min) / sys->getDeltaTime();
 		mCounter  = time;
 		mCounter2 = time;
 		break;

@@ -1,14 +1,14 @@
 #ifndef _EBI_E2DCALLBACK_H
 #define _EBI_E2DCALLBACK_H
 
-#include "ebi/E2DFullFontColor.h"
 #include "JSystem/J2D/J2DGrafContext.h"
 #include "JSystem/J3D/J3DAnmBase.h"
 #include "JSystem/J3D/J3DFrameCtrl.h"
 #include "JSystem/JGeometry.h"
-#include "og/Screen/ScaleMgr.h"
 #include "P2DScreen.h"
 #include "System.h"
+#include "ebi/E2DFullFontColor.h"
+#include "og/Screen/ScaleMgr.h"
 
 namespace ebi {
 struct E2DCallBack_Base : public P2DScreen::CallBackNode {
@@ -29,7 +29,7 @@ struct E2DCallBack_Base : public P2DScreen::CallBackNode {
 		if (mIsEnabled) {
 			do_draw(gfx, graf);
 		}
-	}                                                    // _14 (weak)
+	} // _14 (weak)
 	virtual void do_update() { }                         // _1C (weak)
 	virtual void do_draw(Graphics&, J2DGrafContext&) { } // _20 (weak)
 
@@ -85,7 +85,7 @@ struct E2DCallBack_BlinkAlpha : public E2DCallBack_Base {
 		mAlpha0         = 255;
 		mAlpha1         = 85;
 		mIsEnabled      = true;
-		mSpeed          = sys->mDeltaTime * 3.33333333f;
+		mSpeed          = sys->getDeltaTime() * 3.33333333f;
 		mWeight         = 0.0f;
 		mIsTowardAlpha0 = true;
 		_29             = false;
@@ -94,7 +94,7 @@ struct E2DCallBack_BlinkAlpha : public E2DCallBack_Base {
 	inline void startToward0()
 	{
 		mIsEnabled      = true;
-		mSpeed          = sys->mDeltaTime * 1.6666666f;
+		mSpeed          = sys->getDeltaTime() * 1.6666666f;
 		mWeight         = 0.0f;
 		mIsTowardAlpha0 = true;
 		_29             = false;
@@ -155,7 +155,7 @@ struct E2DCallBack_BlinkFontColor : public E2DCallBack_Base {
 	inline void enable()
 	{
 		mIsEnabled      = true;
-		mSpeed          = sys->mDeltaTime * 3.33333333f;
+		mSpeed          = sys->getDeltaTime() * 3.33333333f;
 		mColor1Weight   = 0.0f;
 		mIsTowardColor1 = true;
 		_49             = 0;

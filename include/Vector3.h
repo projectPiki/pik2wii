@@ -151,14 +151,24 @@ struct Vector3 {
 
 	// Calculation Functions
 	inline T dot(const Vector3& other) { return this->x * other.x + this->y * other.y + this->z * other.z; }
-	inline Vector3 cross(const Vector3& other);
-	inline void cross(const Vector3& v1, const Vector3& v2);
-	inline T absX();
-	inline T absY();
-	inline T absZ();
-	inline bool isBoundedX(T bound);
-	inline bool isBoundedY(T bound);
-	inline bool isBoundedZ(T bound);
+	inline Vector3 cross(const Vector3& other)
+	{
+		Vector3 outVec;
+		outVec.x = y * other.z - z * other.y;
+		outVec.y = z * other.x - x * other.z;
+		outVec.z = x * other.y - y * other.x;
+		return outVec;
+	}
+	inline void cross(const Vector3& v1, const Vector3& v2)
+	{
+		set(v1.y * v2.z - v1.z * v2.y, v1.z * v2.x - v1.x * v2.z, v1.x * v2.y - v1.y * v2.z);
+	}
+	inline T absX() { return (T)absF(x); }
+	inline T absY() { return (T)absF(y); }
+	inline T absZ() { return (T)absF(z); }
+	inline bool isBoundedX(T bound) { return absX() < bound; }
+	inline bool isBoundedY(T bound) { return absY() < bound; }
+	inline bool isBoundedZ(T bound) { return absZ() < bound; }
 	inline void scale(T scale);
 
 	// Magnitude Functions
@@ -185,8 +195,21 @@ struct Vector3 {
 	static inline T distance(Vector3& a, Vector3& b);
 	T distance(Vector3&);
 	T distance2D(Vector3&);
-	T sqrDistance(Vector3&);
-	T sqrDistance2D(Vector3&);
+	T sqrDistance(Vector3& them)
+	{
+		T diffX = this->x - them.x;
+		T diffY = this->y - them.y;
+		T diffZ = this->z - them.z;
+
+		return SQUARE(diffX) + SQUARE(diffY) + SQUARE(diffZ);
+	}
+	T sqrDistance2D(Vector3& them)
+	{
+		T diffX = this->x - them.x;
+		T diffZ = this->z - them.z;
+
+		return SQUARE(diffX) + SQUARE(diffZ);
+	}
 	T distance(JGeometry::TVec3f&);
 
 	// Length and Normalise Functions
@@ -354,22 +377,6 @@ inline void Vector3<T>::set2D(const Vector3& other)
 }
 
 template <typename T>
-inline Vector3<T> Vector3<T>::cross(const Vector3& other)
-{
-	Vector3 outVec;
-	outVec.x = y * other.z - z * other.y;
-	outVec.y = z * other.x - x * other.z;
-	outVec.z = x * other.y - y * other.x;
-	return outVec;
-}
-
-template <typename T>
-inline void Vector3<T>::cross(const Vector3& v1, const Vector3& v2)
-{
-	set(v1.y * v2.z - v1.z * v2.y, v1.z * v2.x - v1.x * v2.z, v1.x * v2.y - v1.y * v2.z);
-}
-
-template <typename T>
 inline void Vector3<T>::setZero()
 {
 	this->x = this->y = this->z = 0;
@@ -422,42 +429,6 @@ inline void Vector3<T>::setMiddle(Vector3& a, Vector3& b)
 	x = (a.x + b.x) * 0.5f;
 	y = (a.y + b.y) * 0.5f;
 	z = (a.z + b.z) * 0.5f;
-}
-
-template <typename T>
-inline T Vector3<T>::absX()
-{
-	return (T)absF(x);
-}
-
-template <typename T>
-inline T Vector3<T>::absY()
-{
-	return (T)absF(y);
-}
-
-template <typename T>
-inline T Vector3<T>::absZ()
-{
-	return (T)absF(z);
-}
-
-template <typename T>
-inline bool Vector3<T>::isBoundedX(T bound)
-{
-	return absX() < bound;
-}
-
-template <typename T>
-inline bool Vector3<T>::isBoundedY(T bound)
-{
-	return absY() < bound;
-}
-
-template <typename T>
-inline bool Vector3<T>::isBoundedZ(T bound)
-{
-	return absZ() < bound;
 }
 
 template <typename T>
@@ -525,13 +496,8 @@ inline f32 Vector3f::lengthWeird() const
 template <>
 inline f32 Vector3f::length2D() const
 {
-	if (sqrMagnitude2D() > 0.0f) {
-		Vector3f vec = Vector3f(x, y, z);
-		f32 sqrLen   = SQUARE(vec.x) + SQUARE(z);
-		return sqrtf(sqrLen);
-	} else {
-		return 0.0f;
-	}
+	f32 sqrLen = sqrMagnitude2D();
+	return stdSqrtf(sqrLen);
 }
 
 template <>
@@ -567,11 +533,8 @@ inline f32 Vector3f::normalise2D()
 template <>
 inline f32 Vector3f::distance(Vector3f& them)
 {
-	f32 diffX = this->x - them.x;
-	f32 diffY = this->y - them.y;
-	f32 diffZ = this->z - them.z;
-
-	return Vector3f(diffX, diffY, diffZ).length();
+	f32 sqrLen = sqrDistance(them);
+	return stdSqrtf(sqrLen);
 }
 
 template <>
@@ -582,25 +545,6 @@ inline f32 Vector3f::distance2D(Vector3f& them)
 	f32 diffZ = this->z - them.z;
 
 	return Vector3f(diffX, diffY, diffZ).length2D();
-}
-
-template <>
-inline f32 Vector3f::sqrDistance(Vector3f& them)
-{
-	f32 diffX = this->x - them.x;
-	f32 diffY = this->y - them.y;
-	f32 diffZ = this->z - them.z;
-
-	return SQUARE(diffX) + SQUARE(diffY) + SQUARE(diffZ);
-}
-
-template <>
-inline f32 Vector3f::sqrDistance2D(Vector3f& them)
-{
-	f32 diffX = this->x - them.x;
-	f32 diffZ = this->z - them.z;
-
-	return SQUARE(diffX) + SQUARE(diffZ);
 }
 
 // this is wacky and shows up in efxEnemy.cpp

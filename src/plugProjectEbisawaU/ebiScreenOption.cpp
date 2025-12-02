@@ -1,17 +1,20 @@
-#include "ebi/Screen/TOption.h"
-#include "ebi/E2DGraph.h"
 #include "Game/Data.h"
-#include "og/newScreen/ogUtil.h"
 #include "P2Macros.h"
-#include "System.h"
 #include "PSSystem/PSSystemIF.h"
 #include "SoundID.h"
+#include "System.h"
+#include "ebi/E2DGraph.h"
+#include "ebi/Screen/TOption.h"
+#include "og/newScreen/ogUtil.h"
 
 /**
  * @note Address: N/A
  * @note Size: 0xE4
  */
-static void _Print(char* name, ...) { OSReport("ebiScreenOption"); }
+static void _Print(char* name, ...)
+{
+	OSReport("ebiScreenOption");
+}
 
 using namespace Game::CommonSaveData;
 
@@ -184,10 +187,10 @@ void TOption::doOpenScreen(ArgOpen*)
 {
 	JGeometry::TBox2f bounds;
 
-	mAnimOpenScreen.play(60.0f * sys->mDeltaTime, J3DAA_UNKNOWN_0, true);
+	mAnimOpenScreen.play(60.0f * sys->getDeltaTime(), J3DAA_UNKNOWN_0, true);
 	setOptionParamToScreen_();
 
-	u32 count       = (E2DFader::kFadeTime / sys->mDeltaTime);
+	u32 count       = (E2DFader::kFadeTime / sys->getDeltaTime());
 	mCounterOpen    = count;
 	mCounterOpenMax = count;
 
@@ -197,7 +200,7 @@ void TOption::doOpenScreen(ArgOpen*)
 	mOptionPanes[0]->hide();
 	bounds = *mButtonPaneList[mCurrMainSelection]->getBounds();
 
-	count                     = (0.1f / sys->mDeltaTime);
+	count                     = (0.1f / sys->getDeltaTime());
 	mWindowCursor.mCounter    = count;
 	mWindowCursor.mCounterMax = count;
 
@@ -214,7 +217,7 @@ void TOption::doOpenScreen(ArgOpen*)
  */
 void TOption::doCloseScreen(ArgClose*)
 {
-	u32 v1          = E2DFader::kFadeTime / sys->mDeltaTime;
+	u32 v1          = E2DFader::kFadeTime / sys->getDeltaTime();
 	mCounterOpen    = v1;
 	mCounterOpenMax = v1;
 	mState          = 2;
@@ -224,7 +227,10 @@ void TOption::doCloseScreen(ArgClose*)
  * @note Address: 0x803CBA3C
  * @note Size: 0x24
  */
-void TOption::doInitWaitState() { mAnimOpenScreen.stop(); }
+void TOption::doInitWaitState()
+{
+	mAnimOpenScreen.stop();
+}
 
 /**
  * @note Address: 0x803CBA60

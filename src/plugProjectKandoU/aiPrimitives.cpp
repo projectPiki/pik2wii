@@ -16,8 +16,11 @@
 #include "nans.h"
 #include "types.h"
 
-static const int unusedAiPrimArray[] = { 0, 0, 0 };
-static const char unusedAiPrimName[] = "aiPrimitives";
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "aiPrimitives";
+}
 
 namespace PikiAI {
 
@@ -48,8 +51,7 @@ void ActGotoPos::init(ActionArg* actionArg)
  */
 int ActGotoPos::exec()
 {
-	Vector3f pikiPos = mParent->getPosition();
-	Vector3f diff    = mPosition - pikiPos;
+	Vector3f diff = mPosition - mParent->getPosition();
 
 	f32 dist = diff.normalise();
 	if (dist <= mRadius) {
@@ -119,7 +121,7 @@ int ActApproachPos::exec()
 
 	// time out if we have a time limit and we've tried at least that long
 	if (mTimeOutLimit > 0.0f) {
-		mTimer += sys->mDeltaTime;
+		mTimer += sys->getDeltaTime();
 		if (mTimer >= mTimeOutLimit) {
 			return ACTEXEC_Success;
 		}
@@ -673,7 +675,7 @@ int ActGotoSlot::exec()
 		mParent->setSpeed(0.2f, dir2);
 
 		// we have 3 seconds to keep trying before we look for a new slot.
-		mRefreshSlotTimer -= sys->mDeltaTime;
+		mRefreshSlotTimer -= sys->getDeltaTime();
 		if (mRefreshSlotTimer < 0.0f) {
 			// yeah we're stuck, try a new slot
 			mSlotId = mPellet->getNearFreeStickSlot(pikiPos);
@@ -1519,7 +1521,7 @@ void ActPathMove::init(ActionArg* settings)
 	}
 
 	mContextHandle = 0;
-	mNewVelocity   = Vector3f(0.0f);
+	mNewVelocity.set(0.0f, 0.0f, 0.0f);
 
 	initPathfinding(true);
 
@@ -1532,8 +1534,8 @@ void ActPathMove::init(ActionArg* settings)
 	if (mPellet->isPellet()) {
 		Game::Pellet* pellet = mPellet;
 		mPellet->setVelocity(Vector3f::zero);
-		pellet->mRigid.mConfigs[0].mForce = Vector3f(0.0f);
-		s16 slot                          = pellet->getSpeicalSlot();
+		pellet->mRigid.mConfigs[0].mForce.set(0.0f, 0.0f, 0.0f);
+		s16 slot = pellet->getSpeicalSlot();
 		if (slot == -1) {
 			pellet->mPelletCarry->reset();
 		}
@@ -1674,8 +1676,8 @@ void ActPathMove::initPathfinding(bool resetLinkCount)
 	if (mPellet->isPellet()) {
 		Game::Pellet* pellet = mPellet;
 		mPellet->setVelocity(Vector3f::zero);
-		pellet->mRigid.mConfigs[0].mForce = Vector3f(0.0f);
-		s16 slot                          = pellet->getSpeicalSlot();
+		pellet->mRigid.mConfigs[0].mForce.set(0.0f, 0.0f, 0.0f);
+		s16 slot = pellet->getSpeicalSlot();
 		if (slot == -1) {
 			pellet->mPelletCarry->reset();
 		}
@@ -1848,7 +1850,7 @@ int ActPathMove::execPathfinding()
 		// if we've been picked up, don't move while we pathfind
 		if (pellet->isPicked()) {
 			mPellet->setVelocity(Vector3f::zero);
-			pellet->mRigid.mConfigs->mForce = Vector3f(0.0f);
+			pellet->mRigid.mConfigs->mForce.set(0.0f, 0.0f, 0.0f);
 			if ((s16)pellet->getSpeicalSlot() == -1) {
 				pellet->mPelletCarry->reset();
 			}
@@ -2171,7 +2173,7 @@ int ActPathMove::execMoveGoal()
 	f32 sqrDistXZ      = dir.x * dir.x + dir.z * dir.z;
 	f32 dist           = dir.normalise();
 	if (dist == 0.0f) {
-		dir = Vector3f(0.0f);
+		dir.set(0.0f, 0.0f, 0.0f);
 	}
 
 	// if we're within 10 units of goal (horizontally), WE CAN LET GO
@@ -2650,7 +2652,7 @@ int ActPathMove::execMoveGuru()
 	}
 
 	// is this what makes treasures go in circles??
-	mPaceAngle += PI * sys->mDeltaTime;
+	mPaceAngle += PI * sys->getDeltaTime();
 	if (mPaceAngle > TAU) {
 		mPaceAngle -= TAU;
 	}
@@ -2665,7 +2667,7 @@ int ActPathMove::execMoveGuru()
 	f32 dist  = pullDir.normalise();
 
 	if (dist == 0.0f) {
-		pullDir = Vector3f(0.0f);
+		pullDir.set(0.0f, 0.0f, 0.0f);
 	}
 
 	f32 carrySpeed = getCarrySpeed();
@@ -3632,7 +3634,7 @@ bool ActPathMove::crMove()
 	}
 
 	if (!contextCheck(mCurrGraphIdx)) {
-		mNewVelocity = Vector3f(0.0f);
+		mNewVelocity.set(0.0f, 0.0f, 0.0f);
 
 		if (mContextHandle) {
 			Game::testPathfinder->release(mContextHandle);
@@ -4732,11 +4734,11 @@ void ActStickAttack::init(ActionArg* settings)
 		}
 	}
 
-	mIsAttackReady           = false;
-	mIsAnimFinished          = false;
-	mHasAttacked             = false;
-	mIsAttackSuccessful      = false;
-	mParent->mTargetVelocity = Vector3f(0.0f);
+	mIsAttackReady      = false;
+	mIsAnimFinished     = false;
+	mHasAttacked        = false;
+	mIsAttackSuccessful = false;
+	mParent->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	if (mParent->doped()) {
 		mParent->startSound(mCreature, PSSE_PK_VC_DOPE_ATTACK, true);
 	} else {
@@ -5054,10 +5056,10 @@ int ActGather::exec()
 	Vector3f dir     = mGoalPosition - pikiPos;
 	f32 dist         = dir.normalise();
 
-	mTimer -= sys->mDeltaTime;
+	mTimer -= sys->getDeltaTime();
 
 	if (dist < mRadius || mTimer <= 0.0f) {
-		mParent->mTargetVelocity = Vector3f(0.0f);
+		mParent->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 		return ACTEXEC_Success;
 	}
 

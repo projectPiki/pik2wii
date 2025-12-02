@@ -1,6 +1,6 @@
-#include "Game/Entities/Baby.h"
 #include "Game/EnemyAnimKeyEvent.h"
 #include "Game/EnemyFunc.h"
+#include "Game/Entities/Baby.h"
 #include "efx/TBaby.h"
 
 namespace Game {
@@ -27,7 +27,7 @@ void StateDead::init(EnemyBase* enemy, StateArg* stateArg)
 	Obj* baby = OBJ(enemy);
 	baby->createHoney();
 	baby->deathProcedure();
-	baby->mTargetVelocity = Vector3f(0.0f);
+	baby->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	baby->startMotion(BABYANIM_Dead, nullptr);
 }
 
@@ -46,7 +46,9 @@ void StateDead::exec(EnemyBase* enemy)
  * @note Address: 0x8028C7F0
  * @note Size: 0x4
  */
-void StateDead::cleanup(EnemyBase* enemy) { }
+void StateDead::cleanup(EnemyBase* enemy)
+{
+}
 
 /**
  * @note Address: 0x8028C7F4
@@ -58,7 +60,7 @@ void StatePress::init(EnemyBase* enemy, StateArg* stateArg)
 	baby->createHoney();
 	baby->mHealth = 0.0f;
 	baby->deathProcedure();
-	baby->mTargetVelocity = Vector3f(0.0f);
+	baby->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	baby->startMotion(BABYANIM_DeadPress, nullptr);
 	Vector3f position = baby->getPosition();
 
@@ -83,7 +85,9 @@ void StatePress::exec(EnemyBase* enemy)
  * @note Address: 0x8028C914
  * @note Size: 0x4
  */
-void StatePress::cleanup(EnemyBase* enemy) { }
+void StatePress::cleanup(EnemyBase* enemy)
+{
+}
 
 /**
  * @note Address: 0x8028C918
@@ -125,7 +129,9 @@ void StateBorn::exec(EnemyBase* enemy)
  * @note Address: 0x8028CA30
  * @note Size: 0x4
  */
-void StateBorn::cleanup(EnemyBase* enemy) { }
+void StateBorn::cleanup(EnemyBase* enemy)
+{
+}
 
 /**
  * @note Address: 0x8028CA34
@@ -163,20 +169,10 @@ void StateMove::exec(EnemyBase* enemy)
 		f32 absDist = FABS(angleDist);
 
 		if (absDist <= limit) {
-			f32 speed    = baby->getMoveSpeed();
-			f32 sintheta = dolsinf(baby->getFaceDir());
-			f32 y        = baby->getTargetVelocity().y;
-			f32 costheta = dolcosf(baby->getFaceDir());
-
-			baby->mTargetVelocity = Vector3f(speed * sintheta, y, speed * costheta);
+			baby->setTargetSpeed(CG_GENERALPARMS(baby).mMoveSpeed());
 
 		} else {
-			f32 speed    = baby->getMoveSpeed(0.25f);
-			f32 sintheta = dolsinf(baby->getFaceDir());
-			f32 y        = baby->getTargetVelocity().y;
-			f32 costheta = dolcosf(baby->getFaceDir());
-
-			baby->mTargetVelocity = Vector3f(speed * sintheta, y, speed * costheta);
+			baby->setTargetSpeed(0.25f * CG_GENERALPARMS(baby).mMoveSpeed());
 		}
 
 		if (baby->isTargetAttackable(creature, angleDist, CG_GENERALPARMS(baby).mMaxAttackRange.mValue,
@@ -501,7 +497,9 @@ lbl_8028CE80:
  * @note Address: 0x8028CED0
  * @note Size: 0x4
  */
-void StateMove::cleanup(EnemyBase* enemy) { }
+void StateMove::cleanup(EnemyBase* enemy)
+{
+}
 
 /**
  * @note Address: 0x8028CED4
@@ -509,7 +507,7 @@ void StateMove::cleanup(EnemyBase* enemy) { }
  */
 void StateAttack::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	enemy->mTargetVelocity = Vector3f(0.0f);
+	enemy->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	enemy->setEmotionExcitement();
 	enemy->startMotion(BABYANIM_Attack, nullptr);
 }
@@ -548,6 +546,9 @@ void StateAttack::exec(EnemyBase* enemy)
  * @note Address: 0x8028D028
  * @note Size: 0x24
  */
-void StateAttack::cleanup(EnemyBase* enemy) { enemy->setEmotionCaution(); }
+void StateAttack::cleanup(EnemyBase* enemy)
+{
+	enemy->setEmotionCaution();
+}
 } // namespace Baby
 } // namespace Game

@@ -72,7 +72,7 @@ Obj::Obj()
 void Obj::doUpdate()
 {
 	mFsm->exec(this);
-	mAlertTimer += sys->mDeltaTime;
+	mAlertTimer += sys->getDeltaTime();
 
 	if (mTargetCreature && !mTargetCreature->isAlive()) {
 		mTargetCreature = nullptr;
@@ -175,8 +175,7 @@ bool Obj::isAttackStart()
 
 	if (mTargetCreature) {
 		if (FABS(getAngDist(mTargetCreature)) <= contAtkAngle) {
-			Vector3f pos;
-			getPosition2D(pos);
+			Vector3f pos(mPosition.x, 0.0f, mPosition.z);
 
 			Vector3f targetPos = Vector3f(mTargetCreature->getPosition().x, 0.0f, mTargetCreature->getPosition().z);
 			// Vector3f pos       = Vector3f(mPosition.x, 0.0f, mPosition.z);
@@ -197,8 +196,7 @@ bool Obj::isAttackStart()
 
 		if (piki->isSearchable()) {
 			if (FABS(getAngDist(piki)) <= contAtkAngle) {
-				Vector3f pos;
-				getPosition2D(pos);
+				Vector3f pos(mPosition.x, 0.0f, mPosition.z);
 
 				Vector3f targetPos = Vector3f(piki->getPosition().x, 0.0f, piki->getPosition().z);
 
@@ -607,8 +605,7 @@ bool Obj::isFindTarget()
 
 		if (piki->isSearchable() && !piki->isStickTo()) {
 			if (FABS(getAngDist(piki)) <= searchAngle) {
-				Vector3f pos;
-				getPosition2D(pos);
+				Vector3f pos(mPosition.x, 0.0f, mPosition.z);
 				Vector3f targetPos = Vector3f(piki->getPosition().x, 0.0f, piki->getPosition().z);
 
 				f32 sqrDist = sqrDistanceXZ(targetPos, pos);
@@ -717,7 +714,7 @@ void Obj::walkFunc()
 		setEmotionCaution();
 	}
 
-	setTargetVelocity(dashSpeedMultiplier);
+	setTargetSpeed(dashSpeedMultiplier);
 
 	setAnimSpeed(EnemyAnimatorBase::defaultAnimSpeed * dashAnimScale);
 
@@ -913,7 +910,7 @@ f32 Obj::turnFunc(f32 factor)
 		targetPos = mTargetCreature->getPosition();
 	}
 
-	f32 angleDist = turnToTarget2(targetPos, factor * C_GENERALPARMS.mTurnSpeed(), factor * C_GENERALPARMS.mMaxTurnAngle());
+	f32 angleDist = turnToTarget(targetPos, factor * C_GENERALPARMS.mTurnSpeed(), factor * C_GENERALPARMS.mMaxTurnAngle());
 
 	return FABS(angleDist);
 }

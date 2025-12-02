@@ -1,11 +1,11 @@
+#include "Controller.h"
+#include "PSSystem/PSSystemIF.h"
+#include "SoundID.h"
+#include "System.h"
+#include "ebi/E2DGraph.h"
 #include "ebi/Screen/TMemoryCard.h"
 #include "ebi/Screen/TResourceObserver.h"
 #include "og/newScreen/ogUtil.h"
-#include "ebi/E2DGraph.h"
-#include "System.h"
-#include "PSSystem/PSSystemIF.h"
-#include "Controller.h"
-#include "SoundID.h"
 
 namespace ebi {
 namespace Screen {
@@ -16,13 +16,19 @@ static const char className[] = "ebiScreenMemoryCard";
  * @note Address: N/A
  * @note Size: 0x4C
  */
-TResourceObserver::TResourceObserver(TMemoryCard* owner) { mOwner = owner; }
+TResourceObserver::TResourceObserver(TMemoryCard* owner)
+{
+	mOwner = owner;
+}
 
 /**
  * @note Address: 0x803C2244
  * @note Size: 0x6C
  */
-TResourceObserver::~TResourceObserver() { mOwner->destroyResource(); }
+TResourceObserver::~TResourceObserver()
+{
+	mOwner->destroyResource();
+}
 
 /**
  * @note Address: 0x803C22B0
@@ -92,7 +98,7 @@ void TMemoryCard::setArchive(JKRArchive* arc)
 	mAnim3.loadAnm("memory_card_pattern2.bck", arc, 0, 99999);
 	mAnim4.loadAnm("memory_card_yes.bck", arc, 0, 99999);
 	mAnim5.loadAnm("memory_card_no.bck", arc, 0, 99999);
-	mAnim1.play(sys->mDeltaTime * 60.0f, J3DAA_UNKNOWN_2, true);
+	mAnim1.play(sys->getDeltaTime() * 60.0f, J3DAA_UNKNOWN_2, true);
 
 	mBlinkFont1.set(mPaneMsg2, temp);
 	mBlinkFont2.set(mPaneMsg2, temp);
@@ -564,7 +570,10 @@ void TMemoryCard::close()
  * @note Address: 0x803C3B30
  * @note Size: 0x24
  */
-void TMemoryCard::killScreen() { startState(MEMCARD_Disabled); }
+void TMemoryCard::killScreen()
+{
+	startState(MEMCARD_Disabled);
+}
 
 /**
  * @note Address: 0x803C3B54
@@ -648,10 +657,10 @@ void TMemoryCard::startState(enumState state)
 		mCursor2.mCursor.create(nullptr);
 		mInputDelay    = 20;
 		mInputDelayMax = 20;
-		mAnim2.play(sys->mDeltaTime * 60.0f, J3DAA_UNKNOWN_0, true);
-		mAnim3.play(sys->mDeltaTime * 60.0f, J3DAA_UNKNOWN_0, true);
-		mAnim4.play(sys->mDeltaTime * 60.0f, J3DAA_UNKNOWN_0, true);
-		mAnim5.play(sys->mDeltaTime * 60.0f, J3DAA_UNKNOWN_0, true);
+		mAnim2.play(sys->getDeltaTime() * 60.0f, J3DAA_UNKNOWN_0, true);
+		mAnim3.play(sys->getDeltaTime() * 60.0f, J3DAA_UNKNOWN_0, true);
+		mAnim4.play(sys->getDeltaTime() * 60.0f, J3DAA_UNKNOWN_0, true);
+		mAnim5.play(sys->getDeltaTime() * 60.0f, J3DAA_UNKNOWN_0, true);
 		mScreenMain->animation();
 		break;
 
@@ -665,10 +674,10 @@ void TMemoryCard::startState(enumState state)
 		mPaneMsg3->setAlpha(255);
 		mInputDelay    = 20;
 		mInputDelayMax = 20;
-		mAnim2.play(sys->mDeltaTime * 60.0f, J3DAA_UNKNOWN_0, true);
-		mAnim3.play(sys->mDeltaTime * 60.0f, J3DAA_UNKNOWN_0, true);
-		mAnim4.play(sys->mDeltaTime * 60.0f, J3DAA_UNKNOWN_0, true);
-		mAnim5.play(sys->mDeltaTime * 60.0f, J3DAA_UNKNOWN_0, true);
+		mAnim2.play(sys->getDeltaTime() * 60.0f, J3DAA_UNKNOWN_0, true);
+		mAnim3.play(sys->getDeltaTime() * 60.0f, J3DAA_UNKNOWN_0, true);
+		mAnim4.play(sys->getDeltaTime() * 60.0f, J3DAA_UNKNOWN_0, true);
+		mAnim5.play(sys->getDeltaTime() * 60.0f, J3DAA_UNKNOWN_0, true);
 		mScreenMain->animation();
 		break;
 	case MEMCARD_Finish:

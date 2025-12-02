@@ -1,11 +1,11 @@
 #ifndef _EBI_TITLE_TOBJECTS_H
 #define _EBI_TITLE_TOBJECTS_H
 
+#include "JSystem/J3D/J3DFrameCtrl.h"
+#include "Parameters.h"
+#include "System.h"
 #include "Vector2.h"
 #include "Vector3.h"
-#include "Parameters.h"
-#include "JSystem/J3D/J3DFrameCtrl.h"
-#include "System.h"
 
 struct J3DModel;
 struct J3DModelData;
@@ -109,7 +109,7 @@ struct TMapBase : public TObjBase {
 		mAnimMtxCalcWait = nullptr;
 		mAnimWind        = nullptr;
 		mAnimMtxCalcWind = nullptr;
-		u32 count        = 0.0f / sys->mDeltaTime;
+		u32 count        = 0.0f / sys->getDeltaTime();
 		mWindTimer       = count;
 		mWindTimerMax    = count;
 	}

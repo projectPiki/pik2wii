@@ -99,7 +99,7 @@ void Obj::onKill(CreatureKillArg* killArg)
 void Obj::doUpdate()
 {
 	mFsm->exec(this);
-	mAppearTimer += sys->mDeltaTime;
+	mAppearTimer += sys->getDeltaTime();
 	if (mSquadTimer > 0.0f) {
 		mSquadTimer--;
 	}
@@ -361,7 +361,7 @@ void Obj::startWhisle()
  */
 void Obj::updateWhisle()
 {
-	mWhistleRadiusModifier += sys->mDeltaTime;
+	mWhistleRadiusModifier += sys->getDeltaTime();
 	if (mWhistleRadiusModifier > 1.0f) {
 		mWhistleRadiusModifier = 1.0f;
 	}

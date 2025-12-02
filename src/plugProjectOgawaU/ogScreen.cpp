@@ -1,10 +1,10 @@
-#include "og/Screen/AlphaMgr.h"
 #include "og/Screen/ogScreen.h"
+#include "P2DScreen.h"
+#include "System.h"
+#include "og/Screen/AlphaMgr.h"
 #include "og/Screen/ArrowAlphaBlink.h"
 #include "og/Screen/PictureTreeColor.h"
-#include "P2DScreen.h"
 #include "trig.h"
-#include "System.h"
 
 namespace og {
 namespace Screen {
@@ -25,7 +25,10 @@ void _Print(char* format, ...)
  * @note Address: 0x80301EB8
  * @note Size: 0x8
  */
-void ArrowAlphaBlink::setSpeed(f32 speed) { mSpeed = speed; }
+void ArrowAlphaBlink::setSpeed(f32 speed)
+{
+	mSpeed = speed;
+}
 
 /**
  * @note Address: 0x80301EC0
@@ -33,7 +36,7 @@ void ArrowAlphaBlink::setSpeed(f32 speed) { mSpeed = speed; }
  */
 f32 ArrowAlphaBlink::calc()
 {
-	mTimer += 30.0f * (mSpeed * sys->mDeltaTime);
+	mTimer += 30.0f * (mSpeed * sys->getDeltaTime());
 	if (mTimer > TAU) {
 		mTimer = mTimer - TAU;
 	}
@@ -388,7 +391,7 @@ void AlphaMgr::in(f32 end)
 
 	mCurrAlpha = 0.0f;
 	mState     = ALPHAMGR_Fadein;
-	mGrowRate  = (1.0f - mCurrAlpha) / (end / sys->mDeltaTime);
+	mGrowRate  = (1.0f - mCurrAlpha) / (end / sys->getDeltaTime());
 }
 
 /**
@@ -411,7 +414,7 @@ void AlphaMgr::out(f32 end)
 	}
 
 	mState    = ALPHAMGR_Fadeout;
-	mGrowRate = -mCurrAlpha / (end / sys->mDeltaTime);
+	mGrowRate = -mCurrAlpha / (end / sys->getDeltaTime());
 }
 
 /**
@@ -422,7 +425,7 @@ void AlphaMgr::blink(f32 end)
 {
 	if ((mState == ALPHAMGR_Disabled) || (mState == ALPHAMGR_Blinking)) {
 		mState        = ALPHAMGR_Blinking;
-		f32 frametime = sys->mDeltaTime;
+		f32 frametime = sys->getDeltaTime();
 		if (mGrowRate > 0.0f) {
 			mGrowRate = frametime / end;
 			return;
@@ -457,7 +460,7 @@ u8 AlphaMgr::calc()
 			// looks like inlined AlphaMgr::blink
 			if ((mState == ALPHAMGR_Disabled) || (mState == ALPHAMGR_Blinking)) {
 				mState = ALPHAMGR_Blinking;
-				f32 dt = sys->mDeltaTime;
+				f32 dt = sys->getDeltaTime();
 				if (mGrowRate > 0.0f) {
 					mGrowRate = dt / endAlpha;
 				} else {
@@ -515,7 +518,10 @@ void setAlphaScreen(J2DPane* pane)
  * @note Address: 0x803034fc
  * @note Size: 0x10
  */
-u64 J2DPane::getTagName() const { return mTag; }
+u64 J2DPane::getTagName() const
+{
+	return mTag;
+}
 
 // NOTE: fabricated to generate the P2DScreen::Node vtable and Mgr_tuning dtor
 // probably were used in stripped/inlined functions

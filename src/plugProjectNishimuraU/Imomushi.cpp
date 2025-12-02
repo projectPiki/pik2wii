@@ -791,7 +791,7 @@ void Obj::moveStickSphere()
 	vel *= C_PROPERPARMS.mSeedCirculationSpeed();
 	mTargetVelocity = vel;
 
-	doSimulationStick(sys->mDeltaTime);
+	doSimulationStick(sys->getDeltaTime());
 	mPosition += mCurrentVelocity;
 	startStick(sticker, part);
 }

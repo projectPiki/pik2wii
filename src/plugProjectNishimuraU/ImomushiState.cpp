@@ -1,8 +1,8 @@
-#include "types.h"
-#include "Game/Entities/Imomushi.h"
 #include "Game/EnemyAnimKeyEvent.h"
 #include "Game/EnemyFunc.h"
+#include "Game/Entities/Imomushi.h"
 #include "Game/MapMgr.h"
+#include "types.h"
 namespace Game {
 namespace Imomushi {
 
@@ -63,7 +63,9 @@ void StateDead::exec(EnemyBase* enemy)
  * @note Address: 0x802BA640
  * @note Size: 0x4
  */
-void StateDead::cleanup(EnemyBase* enemy) { }
+void StateDead::cleanup(EnemyBase* enemy)
+{
+}
 
 /**
  * @note Address: 0x802BA644
@@ -74,7 +76,7 @@ void StateFallDive::init(EnemyBase* enemy, StateArg* stateArg)
 	Obj* imomushi             = OBJ(enemy);
 	imomushi->mNextState      = IMOMUSHI_NULL;
 	imomushi->mTargetCreature = nullptr;
-	imomushi->mTargetVelocity = Vector3f(0.0f);
+	imomushi->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	imomushi->startMotion(IMOMUSHIANIM_FallDive, nullptr);
 }
 
@@ -104,7 +106,9 @@ void StateFallDive::exec(EnemyBase* enemy)
  * @note Address: 0x802BA7D0
  * @note Size: 0x4
  */
-void StateFallDive::cleanup(EnemyBase* enemy) { }
+void StateFallDive::cleanup(EnemyBase* enemy)
+{
+}
 
 /**
  * @note Address: 0x802BA7D4
@@ -115,7 +119,7 @@ void StateFallMove::init(EnemyBase* enemy, StateArg* stateArg)
 	Obj* imomushi             = OBJ(enemy);
 	imomushi->mNextState      = IMOMUSHI_NULL;
 	imomushi->mTargetCreature = nullptr;
-	imomushi->mTargetVelocity = Vector3f(0.0f);
+	imomushi->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	imomushi->startMotion(IMOMUSHIANIM_FallMove, nullptr);
 }
 
@@ -147,7 +151,9 @@ void StateFallMove::exec(EnemyBase* enemy)
  * @note Address: 0x802BA998
  * @note Size: 0x4
  */
-void StateFallMove::cleanup(EnemyBase* enemy) { }
+void StateFallMove::cleanup(EnemyBase* enemy)
+{
+}
 
 /**
  * @note Address: 0x802BA99C
@@ -165,8 +171,8 @@ void StateStay::init(EnemyBase* enemy, StateArg* stateArg)
 	imomushi->hardConstraintOn();
 	imomushi->disableEvent(0, EB_Animating);
 	imomushi->enableEvent(0, EB_ModelHidden);
-	imomushi->mTargetVelocity = Vector3f(0.0f);
-	imomushi->mStateTimer     = 0.0f;
+	imomushi->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
+	imomushi->mStateTimer = 0.0f;
 	imomushi->startMotion(IMOMUSHIANIM_Appear, nullptr);
 	imomushi->stopMotion();
 }
@@ -178,7 +184,7 @@ void StateStay::init(EnemyBase* enemy, StateArg* stateArg)
 void StateStay::exec(EnemyBase* enemy)
 {
 	Obj* imomushi = OBJ(enemy);
-	imomushi->mStateTimer += sys->mDeltaTime;
+	imomushi->mStateTimer += sys->getDeltaTime();
 	if ((imomushi->mStateTimer > 6.0f) && !(EnemyFunc::isTherePikmin(imomushi, CG_GENERALPARMS(imomushi).mPrivateRadius.mValue, nullptr))) {
 		if (imomushi->mTargetCreature = imomushi->getRandFruitsPlant()) {
 			transit(imomushi, IMOMUSHI_Appear, nullptr);
@@ -214,7 +220,7 @@ void StateAppear::init(EnemyBase* enemy, StateArg* stateArg)
 	imomushi->hardConstraintOn();
 	imomushi->enableEvent(0, EB_NoInterrupt);
 	imomushi->enableEvent(0, EB_LifegaugeVisible);
-	imomushi->mTargetVelocity = Vector3f(0.0f);
+	imomushi->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	imomushi->setEmotionExcitement();
 	imomushi->startMotion(IMOMUSHIANIM_Appear, nullptr);
 	imomushi->createAppearEffect();
@@ -259,7 +265,7 @@ void StateDive::init(EnemyBase* enemy, StateArg* stateArg)
 	imomushi->hardConstraintOn();
 	imomushi->enableEvent(0, EB_BitterImmune);
 	imomushi->mTargetCreature = nullptr;
-	imomushi->mTargetVelocity = Vector3f(0.0f);
+	imomushi->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	imomushi->setEmotionCaution();
 	imomushi->startMotion(IMOMUSHIANIM_Dive, nullptr);
 	imomushi->createDisAppearEffect();
@@ -317,7 +323,7 @@ void StateMove::exec(EnemyBase* enemy)
 	creature = imomushi->mTargetCreature;
 	if (creature) {
 		if (imomushi->isFinishMotion()) {
-			imomushi->mTargetVelocity = Vector3f(0.0f);
+			imomushi->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 
 		} else {
 			Vector3f pos         = imomushi->getPosition();
@@ -394,7 +400,7 @@ void StateGoHome::exec(EnemyBase* enemy)
 	}
 
 	if (imomushi->isFinishMotion()) {
-		imomushi->mTargetVelocity = Vector3f(0.0f);
+		imomushi->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 
 	} else {
 		Vector3f pos     = imomushi->getPosition() - imomushi->mHomePosition;
@@ -435,7 +441,7 @@ void StateClimb::init(EnemyBase* enemy, StateArg* stateArg)
 	Vector3f pos         = imomushi->getPosition();
 	imomushi->setStickDiff(pos.x, pos.z);
 	imomushi->startClimbPlant(static_cast<CollPart*>(imomushi->mTargetCreature->mCollTree->mPart->mChild));
-	imomushi->mTargetVelocity = Vector3f(0.0f);
+	imomushi->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	imomushi->startMotion(IMOMUSHIANIM_Climb, nullptr);
 
 	const f32 faceDir = imomushi->getFaceDir();
@@ -513,7 +519,7 @@ void StateAttack::init(EnemyBase* enemy, StateArg* stateArg)
 	CollPart* collpart    = target->mCollTree->getCollPart('tops');
 	imomushi->endStick();
 	imomushi->startStick(target, collpart);
-	imomushi->mTargetVelocity = Vector3f(0.0f);
+	imomushi->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	imomushi->startMotion(IMOMUSHIANIM_Eat, nullptr);
 }
 
@@ -546,7 +552,7 @@ void StateAttack::exec(EnemyBase* enemy)
 			}
 		}
 	}
-	imomushi->mStateTimer += sys->mDeltaTime;
+	imomushi->mStateTimer += sys->getDeltaTime();
 	if (imomushi->mCurAnim->mIsPlaying) {
 		if (((u32)imomushi->mCurAnim->mType == KEYEVENT_2)) {
 			imomushi->eatTsuyukusa();
@@ -579,7 +585,7 @@ void StateWait::init(EnemyBase* enemy, StateArg* stateArg)
 	CollPart* collpart   = target->mCollTree->getCollPart('tops');
 	imomushi->endStick();
 	imomushi->startStick(target, collpart);
-	imomushi->mTargetVelocity = Vector3f(0.0f);
+	imomushi->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	imomushi->startMotion(IMOMUSHIANIM_Climb, nullptr);
 }
 
@@ -641,7 +647,7 @@ void StateZukanStay::init(EnemyBase* enemy, StateArg* stateArg)
 	imomushi->resetZukanStateTimer();
 	imomushi->enableEvent(0, EB_BitterImmune);
 	imomushi->hardConstraintOn();
-	imomushi->mTargetVelocity = Vector3f(0.0f);
+	imomushi->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	imomushi->startMotion(IMOMUSHIANIM_Appear, nullptr);
 	imomushi->stopMotion();
 }
@@ -653,7 +659,7 @@ void StateZukanStay::init(EnemyBase* enemy, StateArg* stateArg)
 void StateZukanStay::exec(EnemyBase* enemy)
 {
 	Obj* imomushi = OBJ(enemy);
-	imomushi->mStateTimer += sys->mDeltaTime;
+	imomushi->mStateTimer += sys->getDeltaTime();
 	if (imomushi->mStateTimer > 5.0f) {
 		transit(imomushi, IMOMUSHI_ZukanAppear, nullptr);
 	}
@@ -678,7 +684,7 @@ void StateZukanAppear::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	Obj* imomushi = OBJ(enemy);
 	imomushi->enableEvent(0, EB_NoInterrupt);
-	imomushi->mTargetVelocity = Vector3f(0.0f);
+	imomushi->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	imomushi->startMotion(IMOMUSHIANIM_Appear, nullptr);
 	imomushi->createAppearEffect();
 }

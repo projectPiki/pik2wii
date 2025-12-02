@@ -37,7 +37,7 @@ void StateDead::init(EnemyBase* enemy, StateArg* stateArg)
 	Obj* sarai = OBJ(enemy);
 	sarai->deathProcedure();
 	sarai->disableEvent(0, EB_Cullable);
-	sarai->mTargetVelocity = Vector3f(0.0f);
+	sarai->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	sarai->disableEvent(0, EB_Untargetable);
 	sarai->flickStickTarget();
 	sarai->startMotion(SARAIANIM_Dead, nullptr);
@@ -68,9 +68,9 @@ void StateDead::cleanup(EnemyBase* enemy)
  */
 void StateFall::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* sarai             = OBJ(enemy);
-	sarai->mGeneralTimer   = 0.0f;
-	sarai->mTargetVelocity = Vector3f(0.0f);
+	Obj* sarai           = OBJ(enemy);
+	sarai->mGeneralTimer = 0.0f;
+	sarai->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	sarai->disableEvent(0, EB_Untargetable);
 	sarai->setEmotionExcitement();
 	sarai->startMotion(SARAIANIM_Fall, nullptr);
@@ -101,7 +101,7 @@ void StateFall::exec(EnemyBase* enemy)
 		sarai->mRotation.y = sarai->mFaceDir;
 	}
 
-	sarai->mGeneralTimer += sys->mDeltaTime;
+	sarai->mGeneralTimer += sys->getDeltaTime();
 
 	if (sarai->mCurAnim->mIsPlaying) {
 		if (sarai->mCurAnim->mType == KEYEVENT_2) {
@@ -132,9 +132,9 @@ void StateFall::cleanup(EnemyBase* enemy)
  */
 void StateDamage::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* sarai             = OBJ(enemy);
-	sarai->mGeneralTimer   = 0.0f;
-	sarai->mTargetVelocity = Vector3f(0.0f);
+	Obj* sarai           = OBJ(enemy);
+	sarai->mGeneralTimer = 0.0f;
+	sarai->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	sarai->disableEvent(0, EB_Untargetable);
 	sarai->setEmotionExcitement();
 	sarai->startMotion(SARAIANIM_Damage, nullptr);
@@ -152,7 +152,7 @@ void StateDamage::exec(EnemyBase* enemy)
 		sarai->finishMotion();
 	}
 
-	sarai->mGeneralTimer += sys->mDeltaTime;
+	sarai->mGeneralTimer += sys->getDeltaTime();
 
 	if (sarai->mCurAnim->mIsPlaying && sarai->mCurAnim->mType == KEYEVENT_END) {
 		if (sarai->mHealth <= 0.0f) {
@@ -280,9 +280,9 @@ void StateFlick::cleanup(EnemyBase* enemy)
  */
 void StateWait::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* sarai             = OBJ(enemy);
-	sarai->mGeneralTimer   = 0.0f;
-	sarai->mTargetVelocity = Vector3f(0.0f);
+	Obj* sarai           = OBJ(enemy);
+	sarai->mGeneralTimer = 0.0f;
+	sarai->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	sarai->mTargetCreature = nullptr;
 	sarai->enableEvent(0, EB_Untargetable);
 
@@ -315,7 +315,7 @@ void StateWait::exec(EnemyBase* enemy)
 		}
 	}
 
-	sarai->mGeneralTimer += sys->mDeltaTime;
+	sarai->mGeneralTimer += sys->getDeltaTime();
 
 	if (sarai->mCurAnim->mIsPlaying && sarai->mCurAnim->mType == KEYEVENT_END) {
 		if (target) {
@@ -365,7 +365,7 @@ void StateMove::exec(EnemyBase* enemy)
 	FakePiki* target = sarai->getAttackableTarget();
 
 	if (target || sarai->mGeneralTimer > 10.0f || sqrDistanceXZ(pos, targetPos) < 625.0f) {
-		sarai->mTargetVelocity = Vector3f(0.0f);
+		sarai->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 		sarai->finishMotion();
 	} else {
 		EnemyFunc::walkToTarget(sarai, targetPos, CG_PROPERPARMS(sarai).mNormalMovementSpeed.mValue,
@@ -380,7 +380,7 @@ void StateMove::exec(EnemyBase* enemy)
 		}
 	}
 
-	sarai->mGeneralTimer += sys->mDeltaTime;
+	sarai->mGeneralTimer += sys->getDeltaTime();
 
 	if (sarai->mCurAnim->mIsPlaying && sarai->mCurAnim->mType == KEYEVENT_END) {
 		if (target) {
@@ -410,7 +410,7 @@ void StateAttack::init(EnemyBase* enemy, StateArg* stateArg)
 	Obj* sarai           = OBJ(enemy);
 	sarai->mGeneralTimer = 0.0f;
 	sarai->disableEvent(0, EB_Cullable);
-	sarai->mTargetVelocity = Vector3f(0.0f);
+	sarai->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	sarai->enableEvent(0, EB_NoInterrupt);
 	sarai->enableEvent(0, EB_Untargetable);
 	sarai->setEmotionExcitement();
@@ -429,7 +429,7 @@ void StateAttack::exec(EnemyBase* enemy)
 		f32 frame = sarai->getMotionFrame();
 		if (frame <= 10.0f) {
 			sarai->setHeightVelocity();
-			sarai->changeFaceDir2(target);
+			sarai->turnToTarget(target, CG_GENERALPARMS(sarai).mTurnSpeed(), CG_GENERALPARMS(sarai).mMaxTurnAngle());
 		} else if (frame <= 30.0f) {
 			if (sarai->mFloorTriangle) {
 				sarai->mGeneralTimer = 30.0f;
@@ -440,7 +440,7 @@ void StateAttack::exec(EnemyBase* enemy)
 				f32 saraiHeight  = sarai->getPosition().y;          // f29
 
 				Vector3f vel = sarai->getVelocity(); // 0x80
-				f32 factor   = ((targetHeight - saraiHeight) / sys->mDeltaTime) * CG_PROPERPARMS(sarai).mHuntDescentFactor();
+				f32 factor   = ((targetHeight - saraiHeight) / sys->getDeltaTime()) * CG_PROPERPARMS(sarai).mHuntDescentFactor();
 
 				f32 vertSpeed;
 				if (factor < -2500.0f) {
@@ -455,7 +455,7 @@ void StateAttack::exec(EnemyBase* enemy)
 				if (frame > 16.0f) {
 					sarai->catchTarget();
 				}
-				sarai->changeFaceDir2(target);
+				sarai->turnToTarget(target, CG_GENERALPARMS(sarai).mTurnSpeed(), CG_GENERALPARMS(sarai).mMaxTurnAngle());
 			}
 		} else {
 			sarai->setHeightVelocity();
@@ -478,7 +478,7 @@ void StateAttack::exec(EnemyBase* enemy)
 				dir *= 25.0f;
 				sep -= dir;
 				sep.y = 0.0f;
-				sep *= (0.06666667f / sys->mDeltaTime);
+				sep *= (0.06666667f / sys->getDeltaTime());
 				sarai->setVelocity(sep);
 				sarai->mTargetVelocity = sep;
 			}
@@ -1081,7 +1081,7 @@ void StateCatchFly::exec(EnemyBase* enemy)
 	Vector3f targetPos = Vector3f(sarai->mTargetPos);
 
 	if (sarai->mGeneralTimer > 10.0f || sqrDistanceXZ(pos, targetPos) < 625.0f) {
-		sarai->mTargetVelocity = Vector3f(0.0f);
+		sarai->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 		sarai->finishMotion();
 	} else {
 		EnemyFunc::walkToTarget(sarai, targetPos, CG_PROPERPARMS(sarai).mGrabMovementSpeed.mValue, CG_GENERALPARMS(sarai).mTurnSpeed.mValue,
@@ -1101,7 +1101,7 @@ void StateCatchFly::exec(EnemyBase* enemy)
 		}
 	}
 
-	sarai->mGeneralTimer += sys->mDeltaTime;
+	sarai->mGeneralTimer += sys->getDeltaTime();
 
 	if (sarai->mCurAnim->mIsPlaying && sarai->mCurAnim->mType == KEYEVENT_END) {
 		transit(sarai, SARAI_FallMeck, nullptr);
@@ -1126,7 +1126,7 @@ void StateFallMeck::init(EnemyBase* enemy, StateArg* stateArg)
 	enemy->disableEvent(0, EB_NoInterrupt);
 	enemy->enableEvent(0, EB_Untargetable);
 	enemy->mTargetCreature = nullptr;
-	enemy->mTargetVelocity = Vector3f(0.0f);
+	enemy->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	enemy->setEmotionExcitement();
 	enemy->startMotion(SARAIANIM_FallMeck, nullptr);
 }

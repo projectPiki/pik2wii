@@ -403,6 +403,35 @@ void EnemyMgrBase::loadStoneSetting(const char* filename)
  * @note Address: 0x8012FB54
  * @note Size: 0x90
  */
+void EnemyMgrBase::setupObjects(const char* filename)
+{
+	for (int i = 0; i < mObjLimit; i++) {
+		SysShape::Model* model = createModel();
+		mAnimMgr->mModel       = model;
+
+		getEnemy(i)->setCreatureID(i);
+		getEnemy(i)->mMgr   = this;
+		getEnemy(i)->mModel = model;
+		getEnemy(i)->setAnimMgr(mAnimMgr);
+		getEnemy(i)->initMouthSlots();
+		getEnemy(i)->initWalkSmokeEffect();
+		getEnemy(i)->mEnemyStoneObj = new EnemyStone::Obj(getEnemy(i), &mStoneInfo);
+	}
+
+	if (filename) {
+		mCollPartFactory = CollPartFactory::load(gParmArc, (char*)filename);
+		for (int i = 0; i < mObjLimit; i++) {
+			getEnemy(i)->mCollTree = new CollTree();
+			getEnemy(i)->mCollTree->createFromFactory(getEnemy(i)->mModel, mCollPartFactory, nullptr);
+			getEnemy(i)->mCollTree->attachModel(getEnemy(i)->mModel);
+		}
+	}
+}
+
+/**
+ * @note Address: 0x8012FB54
+ * @note Size: 0x90
+ */
 bool EnemyMgrBase::setupParms(const char* filename)
 {
 	bool result = mParms->loadSettingFile(gParmArc, (char*)filename);
@@ -441,26 +470,7 @@ void EnemyMgrBase::initObjects()
 		char file[250];
 		sprintf(file, "%s/enemyColl.txt", collisionName);
 
-		for (int i = 0; i < mObjLimit; i++) {
-			SysShape::Model* model = createModel();
-			mAnimMgr->mModel       = model;
-
-			getEnemy(i)->setCreatureID(i);
-			getEnemy(i)->mMgr   = this;
-			getEnemy(i)->mModel = model;
-			getEnemy(i)->setAnimMgr(mAnimMgr);
-			getEnemy(i)->initMouthSlots();
-			getEnemy(i)->initWalkSmokeEffect();
-			getEnemy(i)->mEnemyStoneObj = new EnemyStone::Obj(getEnemy(i), &mStoneInfo);
-		}
-
-		mCollPartFactory = CollPartFactory::load(gParmArc, file);
-
-		for (int i = 0; i < mObjLimit; i++) {
-			getEnemy(i)->mCollTree = new CollTree();
-			getEnemy(i)->mCollTree->createFromFactory(getEnemy(i)->mModel, mCollPartFactory, nullptr);
-			getEnemy(i)->mCollTree->attachModel(getEnemy(i)->mModel);
-		}
+		setupObjects(file);
 	}
 }
 

@@ -43,7 +43,6 @@ struct IKSystemParms {
 		mTraceHeightOffset          = -1.5f;
 	}
 
-	inline f32 getViewAngle() const { return mEnragedAngle; } // this is a guess, don't at me
 	inline f32 getMaxTurnAngle() const { return mMaxTurnAngle; }
 
 	int mLegCount;                   // _00, number of legs in the IK system

@@ -1,10 +1,10 @@
-#include "Game/Entities/Kurage.h"
+#include "Game/CameraMgr.h"
 #include "Game/EnemyAnimKeyEvent.h"
 #include "Game/EnemyFunc.h"
-#include "Game/CameraMgr.h"
+#include "Game/Entities/Kurage.h"
 #include "Game/rumble.h"
-#include "efx/TNewkurage.h"
 #include "PS.h"
+#include "efx/TNewkurage.h"
 #include "nans.h"
 
 namespace Game {
@@ -39,7 +39,7 @@ void StateDead::init(EnemyBase* enemy, StateArg* stateArg)
 	Obj* kurage = OBJ(enemy);
 	kurage->disableEvent(0, EB_Cullable);
 	kurage->disableEvent(0, EB_DamageAnimEnabled);
-	kurage->mTargetVelocity = Vector3f(0.0f);
+	kurage->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 
 	if (kurage->isFlying()) {
 		kurage->startMotion(KURAGEANIM_DeadFly, nullptr);
@@ -90,7 +90,9 @@ void StateDead::exec(EnemyBase* enemy)
  * @note Address: 0x802ABBD8
  * @note Size: 0x4
  */
-void StateDead::cleanup(EnemyBase* enemy) { }
+void StateDead::cleanup(EnemyBase* enemy)
+{
+}
 
 /**
  * @note Address: 0x802ABBDC
@@ -102,7 +104,7 @@ void StateWait::init(EnemyBase* enemy, StateArg* stateArg)
 	kurage->mNextState  = KURAGE_NULL;
 	kurage->mStateTimer = 0.0f;
 	kurage->enableEvent(0, EB_Untargetable);
-	kurage->mTargetVelocity = Vector3f(0.0f);
+	kurage->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	kurage->mMovePitchTimer = 3.5f;
 	kurage->startMotion(KURAGEANIM_Move, nullptr);
 }
@@ -139,7 +141,7 @@ void StateWait::exec(EnemyBase* enemy)
 		return;
 	}
 
-	kurage->mStateTimer += sys->mDeltaTime;
+	kurage->mStateTimer += sys->getDeltaTime();
 
 	if (kurage->mCurAnim->mIsPlaying && (u32)kurage->mCurAnim->mType == KEYEVENT_END) {
 		transit(kurage, kurage->mNextState, nullptr);
@@ -150,7 +152,9 @@ void StateWait::exec(EnemyBase* enemy)
  * @note Address: 0x802ABDAC
  * @note Size: 0x4
  */
-void StateWait::cleanup(EnemyBase* enemy) { }
+void StateWait::cleanup(EnemyBase* enemy)
+{
+}
 
 /**
  * @note Address: 0x802ABDB0
@@ -163,7 +167,7 @@ void StateMove::init(EnemyBase* enemy, StateArg* stateArg)
 	kurage->mStateTimer = 0.0f;
 	kurage->setRandTarget();
 	kurage->enableEvent(0, EB_Untargetable);
-	kurage->mTargetVelocity = Vector3f(0.0f);
+	kurage->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	kurage->mMovePitchTimer = 3.5f;
 	kurage->startMotion(KURAGEANIM_Move, nullptr);
 }
@@ -210,10 +214,10 @@ void StateMove::exec(EnemyBase* enemy)
 	}
 
 	if (kurage->isFinishMotion()) {
-		kurage->mTargetVelocity = Vector3f(0.0f);
+		kurage->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	}
 
-	kurage->mStateTimer += sys->mDeltaTime;
+	kurage->mStateTimer += sys->getDeltaTime();
 
 	if (kurage->mCurAnim->mIsPlaying && (u32)kurage->mCurAnim->mType == KEYEVENT_END) {
 		transit(kurage, kurage->mNextState, nullptr);
@@ -224,7 +228,9 @@ void StateMove::exec(EnemyBase* enemy)
  * @note Address: 0x802AC02C
  * @note Size: 0x4
  */
-void StateMove::cleanup(EnemyBase* enemy) { }
+void StateMove::cleanup(EnemyBase* enemy)
+{
+}
 
 /**
  * @note Address: 0x802AC030
@@ -236,7 +242,7 @@ void StateChase::init(EnemyBase* enemy, StateArg* stateArg)
 	kurage->enableEvent(0, EB_Untargetable);
 	kurage->mNextState = KURAGE_NULL;
 	kurage->setEmotionExcitement();
-	kurage->mTargetVelocity = Vector3f(0.0f);
+	kurage->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	kurage->mMovePitchTimer = 3.5f;
 	kurage->startMotion(KURAGEANIM_Move, nullptr);
 }
@@ -274,7 +280,7 @@ void StateChase::exec(EnemyBase* enemy)
 	}
 
 	if (kurage->isFinishMotion()) {
-		kurage->mTargetVelocity = Vector3f(0.0f);
+		kurage->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	}
 
 	if (kurage->mCurAnim->mIsPlaying && (u32)kurage->mCurAnim->mType == KEYEVENT_END) {
@@ -286,7 +292,10 @@ void StateChase::exec(EnemyBase* enemy)
  * @note Address: 0x802AC1F8
  * @note Size: 0x24
  */
-void StateChase::cleanup(EnemyBase* enemy) { enemy->setEmotionCaution(); }
+void StateChase::cleanup(EnemyBase* enemy)
+{
+	enemy->setEmotionCaution();
+}
 
 /**
  * @note Address: 0x802AC21C
@@ -301,7 +310,7 @@ void StateAttack::init(EnemyBase* enemy, StateArg* stateArg)
 	kurage->mSuckedPiki = 0;
 	kurage->mIsSucking  = false;
 	kurage->disableEvent(0, EB_Cullable);
-	kurage->mTargetVelocity = Vector3f(0.0f);
+	kurage->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	kurage->setEmotionExcitement();
 	kurage->startMotion(KURAGEANIM_Attack, nullptr);
 }
@@ -331,7 +340,7 @@ void StateAttack::exec(EnemyBase* enemy)
 		kurage->updateSuckEffect(suckPos);
 	}
 
-	kurage->mStateTimer += sys->mDeltaTime;
+	kurage->mStateTimer += sys->getDeltaTime();
 
 	if (kurage->mCurAnim->mIsPlaying) {
 		if ((u32)kurage->mCurAnim->mType == KEYEVENT_2) {
@@ -383,7 +392,7 @@ void StateFall::init(EnemyBase* enemy, StateArg* stateArg)
 	kurage->mNextState  = KURAGE_NULL;
 	kurage->mStateTimer = 0.0f;
 	kurage->enableEvent(0, EB_Untargetable);
-	kurage->mTargetVelocity = Vector3f(0.0f);
+	kurage->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	kurage->setEmotionExcitement();
 	kurage->startMotion(KURAGEANIM_Fall, nullptr);
 }
@@ -410,7 +419,7 @@ void StateFall::exec(EnemyBase* enemy)
 		}
 	}
 
-	kurage->mStateTimer += sys->mDeltaTime;
+	kurage->mStateTimer += sys->getDeltaTime();
 
 	if (kurage->mCurAnim->mIsPlaying && (u32)kurage->mCurAnim->mType == KEYEVENT_END) {
 		if (kurage->mHealth <= 0.0f) {
@@ -425,7 +434,10 @@ void StateFall::exec(EnemyBase* enemy)
  * @note Address: 0x802AC700
  * @note Size: 0x24
  */
-void StateFall::cleanup(EnemyBase* enemy) { enemy->setEmotionCaution(); }
+void StateFall::cleanup(EnemyBase* enemy)
+{
+	enemy->setEmotionCaution();
+}
 
 /**
  * @note Address: 0x802AC724
@@ -436,7 +448,7 @@ void StateLand::init(EnemyBase* enemy, StateArg* stateArg)
 	Obj* kurage         = OBJ(enemy);
 	kurage->mStateTimer = 0.0f;
 	kurage->disableEvent(0, EB_Untargetable);
-	kurage->mTargetVelocity = Vector3f(0.0f);
+	kurage->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	kurage->setEmotionExcitement();
 	kurage->startMotion(KURAGEANIM_Land, nullptr);
 	kurage->createDownEffect();
@@ -466,7 +478,10 @@ void StateLand::exec(EnemyBase* enemy)
  * @note Address: 0x802AC864
  * @note Size: 0x24
  */
-void StateLand::cleanup(EnemyBase* enemy) { enemy->setEmotionCaution(); }
+void StateLand::cleanup(EnemyBase* enemy)
+{
+	enemy->setEmotionCaution();
+}
 
 /**
  * @note Address: 0x802AC888
@@ -478,7 +493,7 @@ void StateTakeOff::init(EnemyBase* enemy, StateArg* stateArg)
 	kurage->mNextState  = KURAGE_NULL;
 	kurage->mStateTimer = 0.0f;
 	kurage->disableEvent(0, EB_Untargetable);
-	kurage->mTargetVelocity = Vector3f(0.0f);
+	kurage->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	kurage->setEmotionExcitement();
 	kurage->startMotion(KURAGEANIM_TakeOff, nullptr);
 }
@@ -512,7 +527,10 @@ void StateTakeOff::exec(EnemyBase* enemy)
  * @note Address: 0x802AC9E0
  * @note Size: 0x24
  */
-void StateTakeOff::cleanup(EnemyBase* enemy) { enemy->setEmotionCaution(); }
+void StateTakeOff::cleanup(EnemyBase* enemy)
+{
+	enemy->setEmotionCaution();
+}
 
 /**
  * @note Address: 0x802ACA04
@@ -523,7 +541,7 @@ void StateGround::init(EnemyBase* enemy, StateArg* stateArg)
 	Obj* kurage         = OBJ(enemy);
 	kurage->mStateTimer = 0.0f;
 	kurage->disableEvent(0, EB_Untargetable);
-	kurage->mTargetVelocity = Vector3f(0.0f);
+	kurage->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	kurage->setEmotionExcitement();
 	kurage->startMotion(KURAGEANIM_Wait, nullptr);
 }
@@ -539,7 +557,7 @@ void StateGround::exec(EnemyBase* enemy)
 		kurage->finishMotion();
 	}
 
-	kurage->mStateTimer += sys->mDeltaTime;
+	kurage->mStateTimer += sys->getDeltaTime();
 
 	if (kurage->mCurAnim->mIsPlaying && (u32)kurage->mCurAnim->mType == KEYEVENT_END) {
 		if (kurage->mHealth <= 0.0f) {
@@ -556,7 +574,10 @@ void StateGround::exec(EnemyBase* enemy)
  * @note Address: 0x802ACB78
  * @note Size: 0x24
  */
-void StateGround::cleanup(EnemyBase* enemy) { enemy->setEmotionCaution(); }
+void StateGround::cleanup(EnemyBase* enemy)
+{
+	enemy->setEmotionCaution();
+}
 
 /**
  * @note Address: 0x802ACB9C
@@ -566,8 +587,8 @@ void StateFlyFlick::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	Obj* kurage = OBJ(enemy);
 	kurage->enableEvent(0, EB_Untargetable);
-	kurage->mNextState      = KURAGE_NULL;
-	kurage->mTargetVelocity = Vector3f(0.0f);
+	kurage->mNextState = KURAGE_NULL;
+	kurage->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	kurage->setEmotionExcitement();
 	kurage->startMotion(KURAGEANIM_FlickFly, nullptr);
 
@@ -613,7 +634,10 @@ void StateFlyFlick::exec(EnemyBase* enemy)
  * @note Address: 0x802ACDF8
  * @note Size: 0x24
  */
-void StateFlyFlick::cleanup(EnemyBase* enemy) { enemy->setEmotionCaution(); }
+void StateFlyFlick::cleanup(EnemyBase* enemy)
+{
+	enemy->setEmotionCaution();
+}
 
 /**
  * @note Address: 0x802ACE1C
@@ -624,7 +648,7 @@ void StateGroundFlick::init(EnemyBase* enemy, StateArg* stateArg)
 	Obj* kurage         = OBJ(enemy);
 	kurage->mStateTimer = 0.0f;
 	kurage->disableEvent(0, EB_Untargetable);
-	kurage->mTargetVelocity = Vector3f(0.0f);
+	kurage->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	kurage->setEmotionExcitement();
 	kurage->startMotion(KURAGEANIM_FlickGround, nullptr);
 
@@ -674,7 +698,10 @@ void StateGroundFlick::exec(EnemyBase* enemy)
  * @note Address: 0x802AD044
  * @note Size: 0x24
  */
-void StateGroundFlick::cleanup(EnemyBase* enemy) { enemy->setEmotionCaution(); }
+void StateGroundFlick::cleanup(EnemyBase* enemy)
+{
+	enemy->setEmotionCaution();
+}
 
 } // namespace Kurage
 } // namespace Game

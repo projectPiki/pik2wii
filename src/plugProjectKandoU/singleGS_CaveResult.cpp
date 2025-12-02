@@ -1,20 +1,20 @@
+#include "Controller.h"
 #include "Game/BirthMgr.h"
 #include "Game/DeathMgr.h"
+#include "Game/Entities/PelletCarcass.h"
+#include "Game/Entities/PelletItem.h"
+#include "Game/Entities/PelletOtakara.h"
 #include "Game/GameSystem.h"
 #include "Game/MapMgr.h"
 #include "Game/ResultTexMgr.h"
+#include "Game/SingleGame.h"
 #include "Game/generalEnemyMgr.h"
-#include "Game/Entities/PelletItem.h"
-#include "Game/Entities/PelletOtakara.h"
-#include "Game/Entities/PelletCarcass.h"
 #include "P2Macros.h"
 #include "PSM/Global.h"
 #include "Screen/Game2DMgr.h"
 #include "System.h"
 #include "TParticle2dMgr.h"
-#include "Game/SingleGame.h"
 #include "kh/khCaveResult.h"
-#include "Controller.h"
 #include "nans.h"
 
 namespace Game {
@@ -315,7 +315,7 @@ void CaveResultState::exec(SingleGameSection* section)
 		}
 		return;
 	case 2:
-		mStartTimer -= sys->mDeltaTime;
+		mStartTimer -= sys->getDeltaTime();
 		if (mStartTimer < 0.0f) {
 			mStatus = 3;
 		}
@@ -332,7 +332,7 @@ void CaveResultState::exec(SingleGameSection* section)
 		break;
 
 	case 4:
-		mStartTimer -= sys->mDeltaTime;
+		mStartTimer -= sys->getDeltaTime();
 		if (mStartTimer < 0.0f) {
 			LoadArg arg(mGameState, false, false, false);
 			section->loadMainMapSituation();

@@ -86,7 +86,10 @@ void SnakeJointMgr::returnModify(f32 p1)
  * @note Address: 0x802D179C
  * @note Size: 0xC
  */
-void SnakeJointMgr::finishModify() { mState = SNAKEJOINT_Finish; }
+void SnakeJointMgr::finishModify()
+{
+	mState = SNAKEJOINT_Finish;
+}
 
 /**
  * @note Address: 0x802D17A8
@@ -99,7 +102,7 @@ void SnakeJointMgr::doAnimation()
 		return;
 	}
 
-	_28 -= 30.0f * sys->mDeltaTime;
+	_28 -= 30.0f * sys->getDeltaTime();
 	if (_28 < 0.0f) {
 		_28 = 0.0f;
 	}
@@ -118,7 +121,10 @@ void SnakeJointMgr::doAnimation()
  * @note Address: 0x802D1828
  * @note Size: 0xC
  */
-void SnakeJointMgr::finishAnimation() { sSnakeJointMgr = nullptr; }
+void SnakeJointMgr::finishAnimation()
+{
+	sSnakeJointMgr = nullptr;
+}
 
 /**
  * @note Address: 0x802D1834

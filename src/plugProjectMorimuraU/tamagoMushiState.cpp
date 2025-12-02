@@ -71,8 +71,8 @@ void StateWalk::exec(EnemyBase* enemy)
 	}
 
 	if (mitite->isReachToGoal(10.0f) || mWalkTimer > mWalkMaxTime) {
-		mitite->mTargetVelocity  = Vector3f(0.0f);
-		mitite->mCurrentVelocity = Vector3f(0.0f);
+		mitite->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
+		mitite->mCurrentVelocity.set(0.0f, 0.0f, 0.0f);
 		mitite->finishMotion();
 	}
 
@@ -99,8 +99,8 @@ StateTurn::StateTurn(int stateID)
 void StateTurn::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	enemy->startMotion(TAMAGOANIM_Wait, nullptr);
-	enemy->mTargetVelocity  = Vector3f(0.0f);
-	enemy->mCurrentVelocity = Vector3f(0.0f);
+	enemy->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
+	enemy->mCurrentVelocity.set(0.0f, 0.0f, 0.0f);
 }
 
 /**
@@ -222,8 +222,8 @@ void StateHide::init(EnemyBase* enemy, StateArg* stateArg)
 {
 
 	enemy->startMotion(TAMAGOANIM_Dive, nullptr);
-	enemy->mTargetVelocity  = Vector3f(0.0f);
-	enemy->mCurrentVelocity = Vector3f(0.0f);
+	enemy->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
+	enemy->mCurrentVelocity.set(0.0f, 0.0f, 0.0f);
 	enemy->hardConstraintOn();
 	enemy->setEmotionCaution();
 
@@ -259,8 +259,8 @@ StateDead::StateDead(int stateID)
 void StateDead::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	enemy->startMotion(TAMAGOANIM_Dead, nullptr);
-	enemy->mTargetVelocity  = Vector3f(0.0f);
-	enemy->mCurrentVelocity = Vector3f(0.0f);
+	enemy->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
+	enemy->mCurrentVelocity.set(0.0f, 0.0f, 0.0f);
 	enemy->enableEvent(0, EB_LeaveCarcass);
 	enemy->deathProcedure();
 	PSStartEnemyFatalHitSE(enemy, 0.0f);

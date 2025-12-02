@@ -1,8 +1,8 @@
-#include "Game/Entities/UmiMushi.h"
+#include "Game/CameraMgr.h"
 #include "Game/EnemyAnimKeyEvent.h"
 #include "Game/EnemyFunc.h"
+#include "Game/Entities/UmiMushi.h"
 #include "Game/Navi.h"
-#include "Game/CameraMgr.h"
 #include "Game/rumble.h"
 #include "PSM/EnemyBoss.h"
 #include "PSSystem/PSMainSide_ObjSound.h"
@@ -140,7 +140,7 @@ void StateWalk::exec(EnemyBase* enemy)
 
 	if (enemy->mHealth <= 0.0f) {
 		enemy->finishMotion();
-		enemy->mTargetVelocity = Vector3f(0.0f);
+		enemy->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 		OBJ(enemy)->mNextState = UMIMUSHI_Dead;
 
 	} else if (OBJ(enemy)->mNextState < 0) {
@@ -151,7 +151,7 @@ void StateWalk::exec(EnemyBase* enemy)
 			// if Toady Bloyster, check if we're waiting
 			// if we're waiting, keep waiting til we've waited max time
 		} else if (mBlindWaitTimer > 0) {
-			enemy->mTargetVelocity = Vector3f(0.0f);
+			enemy->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 			mBlindWaitTimer++;
 
 			// if we've waited max time, reset timers
@@ -174,23 +174,23 @@ void StateWalk::exec(EnemyBase* enemy)
 
 		if (EnemyFunc::isStartFlick(enemy, false)) {
 			enemy->finishMotion();
-			enemy->mTargetVelocity = Vector3f(0.0f);
+			enemy->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 			OBJ(enemy)->mNextState = UMIMUSHI_Flick;
 
 		} else if (OBJ(enemy)->isAttackStart()) {
 			enemy->finishMotion();
-			enemy->mTargetVelocity = Vector3f(0.0f);
+			enemy->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 			OBJ(enemy)->mNextState = UMIMUSHI_Attack;
 
 		} else if (OBJ(enemy)->isChangeNavi()) {
-			enemy->mTargetVelocity  = Vector3f(0.0f);
-			enemy->mCurrentVelocity = Vector3f(0.0f);
+			enemy->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
+			enemy->mCurrentVelocity.set(0.0f, 0.0f, 0.0f);
 			transit(enemy, UMIMUSHI_Find, nullptr);
 		}
 	}
 
 	if (enemy->mCurAnim->mIsPlaying && enemy->mCurAnim->mType == KEYEVENT_END) {
-		enemy->mCurrentVelocity = Vector3f(0.0f);
+		enemy->mCurrentVelocity.set(0.0f, 0.0f, 0.0f);
 		transit(enemy, OBJ(enemy)->mNextState, nullptr);
 		if (OBJ(enemy)->mNextState == UMIMUSHI_Flick) {
 			OBJ(enemy)->mNextState = UMIMUSHI_Walk;
@@ -282,7 +282,7 @@ void StateSearch::exec(EnemyBase* enemy)
 {
 	if (enemy->mHealth <= 0.0f) {
 		enemy->finishMotion();
-		enemy->mTargetVelocity = Vector3f(0.0f);
+		enemy->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 		OBJ(enemy)->mNextState = UMIMUSHI_Dead;
 
 	} else if (OBJ(enemy)->mNextState < 0) {
@@ -302,28 +302,28 @@ void StateSearch::exec(EnemyBase* enemy)
 
 		if (EnemyFunc::isStartFlick(enemy, false)) {
 			enemy->finishMotion();
-			enemy->mTargetVelocity = Vector3f(0.0f);
+			enemy->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 			OBJ(enemy)->mNextState = UMIMUSHI_Flick;
 
 		} else if (OBJ(enemy)->isChangeNavi()) {
 			enemy->finishMotion();
-			enemy->mTargetVelocity = Vector3f(0.0f);
+			enemy->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 			OBJ(enemy)->mNextState = UMIMUSHI_Find;
 
 		} else if (OBJ(enemy)->isAttackStart()) {
 			enemy->finishMotion();
-			enemy->mTargetVelocity = Vector3f(0.0f);
+			enemy->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 			OBJ(enemy)->mNextState = UMIMUSHI_Attack;
 
 		} else if (check && OBJ(enemy)->isNeedTurn()) {
 			enemy->finishMotion();
-			enemy->mTargetVelocity = Vector3f(0.0f);
+			enemy->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 			OBJ(enemy)->mNextState = UMIMUSHI_Turn;
 		}
 	}
 
 	if (enemy->mCurAnim->mIsPlaying && enemy->mCurAnim->mType == KEYEVENT_END) {
-		enemy->mCurrentVelocity = Vector3f(0.0f);
+		enemy->mCurrentVelocity.set(0.0f, 0.0f, 0.0f);
 		transit(enemy, OBJ(enemy)->mNextState, nullptr);
 		if (OBJ(enemy)->mNextState == UMIMUSHI_Flick) {
 			OBJ(enemy)->mNextState = UMIMUSHI_Search;
@@ -634,8 +634,8 @@ StateDead::StateDead(int stateID)
 void StateDead::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	enemy->startMotion(UMIANIM_Dead, nullptr);
-	enemy->mCurrentVelocity = Vector3f(0.0f);
-	enemy->mTargetVelocity  = Vector3f(0.0f);
+	enemy->mCurrentVelocity.set(0.0f, 0.0f, 0.0f);
+	enemy->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	enemy->deathProcedure();
 	OBJ(enemy)->fadeAllEffect();
 	OBJ(enemy)->bubbleEffect();
@@ -689,8 +689,8 @@ StateLost::StateLost(int stateID)
 void StateLost::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	enemy->startMotion(UMIANIM_OutView, nullptr);
-	enemy->mCurrentVelocity = Vector3f(0.0f);
-	enemy->mTargetVelocity  = Vector3f(0.0f);
+	enemy->mCurrentVelocity.set(0.0f, 0.0f, 0.0f);
+	enemy->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 }
 
 /**

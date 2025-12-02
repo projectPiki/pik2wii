@@ -279,7 +279,7 @@ bool Kogane::Obj::koganeScaleUp()
 {
 	bool check = false;
 	if (mScaleTimer < C_PROPERPARMS.mScale.mValue) {
-		mScaleTimer += sys->mDeltaTime * 10.0f;
+		mScaleTimer += sys->getDeltaTime() * 10.0f;
 
 		if (mScaleTimer >= C_PROPERPARMS.mScale()) {
 			check       = true;
@@ -302,7 +302,7 @@ bool Kogane::Obj::koganeScaleDown()
 {
 	bool check = false;
 	if (mScaleTimer > 0.0001f) {
-		mScaleTimer += -(sys->mDeltaTime * 10.0f);
+		mScaleTimer += -(sys->getDeltaTime() * 10.0f);
 
 		if (mScaleTimer <= 0.0001f) {
 			mScaleTimer = 0.0001f;

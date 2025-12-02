@@ -1,6 +1,6 @@
-#include "Game/Entities/Mar.h"
 #include "Game/EnemyAnimKeyEvent.h"
 #include "Game/EnemyFunc.h"
+#include "Game/Entities/Mar.h"
 #include "Game/MapMgr.h"
 
 namespace Game {
@@ -38,7 +38,7 @@ void StateDead::init(EnemyBase* enemy, StateArg* stateArg)
 	Obj* mar = OBJ(enemy);
 	mar->disableEvent(0, EB_Cullable);
 	mar->disableEvent(0, EB_DamageAnimEnabled);
-	mar->mTargetVelocity = Vector3f(0.0f);
+	mar->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	mar->deathProcedure();
 
 	if (mar->isFlying()) {
@@ -73,7 +73,9 @@ void StateDead::exec(EnemyBase* enemy)
  * @note Address: 0x80282B74
  * @note Size: 0x4
  */
-void StateDead::cleanup(EnemyBase* enemy) { }
+void StateDead::cleanup(EnemyBase* enemy)
+{
+}
 
 /**
  * @note Address: 0x80282B78
@@ -81,9 +83,9 @@ void StateDead::cleanup(EnemyBase* enemy) { }
  */
 void StateWait::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* mar             = OBJ(enemy);
-	mar->mGeneralTimer   = 0.0f;
-	mar->mTargetVelocity = Vector3f(0.0f);
+	Obj* mar           = OBJ(enemy);
+	mar->mGeneralTimer = 0.0f;
+	mar->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	mar->mTargetCreature = nullptr;
 	mar->enableEvent(0, EB_Untargetable);
 	mar->startMotion(MARANIM_WaitFly, nullptr);
@@ -118,7 +120,7 @@ void StateWait::exec(EnemyBase* enemy)
 		return;
 	}
 
-	mar->mGeneralTimer += sys->mDeltaTime;
+	mar->mGeneralTimer += sys->getDeltaTime();
 
 	if (mar->mCurAnim->mIsPlaying && mar->mCurAnim->mType == KEYEVENT_END) {
 		transit(mar, MAR_Wait, nullptr);
@@ -129,7 +131,9 @@ void StateWait::exec(EnemyBase* enemy)
  * @note Address: 0x80282D04
  * @note Size: 0x4
  */
-void StateWait::cleanup(EnemyBase* enemy) { }
+void StateWait::cleanup(EnemyBase* enemy)
+{
+}
 
 /**
  * @note Address: 0x80282D08
@@ -163,14 +167,14 @@ void StateMove::exec(EnemyBase* enemy)
 		mar->mTargetCreature = target;
 		transit(mar, MAR_Chase, nullptr);
 	} else if (sqrDist < 10000.0f || mar->mGeneralTimer > 7.5f) {
-		mar->mTargetVelocity = Vector3f(0.0f);
+		mar->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 		mar->finishMotion();
 	} else {
 		EnemyFunc::walkToTarget(mar, targetPos, CG_GENERALPARMS(mar).mMoveSpeed.mValue, CG_GENERALPARMS(mar).mTurnSpeed.mValue,
 		                        CG_GENERALPARMS(mar).mMaxTurnAngle.mValue);
 	}
 
-	mar->mGeneralTimer += sys->mDeltaTime;
+	mar->mGeneralTimer += sys->getDeltaTime();
 
 	StateID nextState = mar->getFlyingNextState();
 
@@ -306,7 +310,9 @@ lbl_80282ED4:
  * @note Address: 0x80282EF4
  * @note Size: 0x4
  */
-void StateMove::cleanup(EnemyBase* enemy) { }
+void StateMove::cleanup(EnemyBase* enemy)
+{
+}
 
 /**
  * @note Address: 0x80282EF8
@@ -349,7 +355,7 @@ void StateChase::exec(EnemyBase* enemy)
 
 				mar->mTargetVelocity = Vector3f(x, y, z);
 			} else {
-				mar->mTargetVelocity = Vector3f(0.0f);
+				mar->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 			}
 
 			if (sqrDistanceXZ(marPos, homePos) > SQUARE(CG_GENERALPARMS(mar).mTerritoryRadius())) {
@@ -367,7 +373,7 @@ void StateChase::exec(EnemyBase* enemy)
 		Creature* attackTarget = mar->isAttackable();
 		if (attackTarget) {
 			mar->mTargetCreature = attackTarget;
-			mar->mTargetVelocity = Vector3f(0.0f);
+			mar->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 			mar->finishMotion();
 		}
 	}
@@ -760,7 +766,10 @@ lbl_802833EC:
  * @note Address: 0x80283458
  * @note Size: 0x24
  */
-void StateChase::cleanup(EnemyBase* enemy) { enemy->setEmotionCaution(); }
+void StateChase::cleanup(EnemyBase* enemy)
+{
+	enemy->setEmotionCaution();
+}
 
 /**
  * @note Address: 0x8028347C
@@ -830,7 +839,10 @@ void StateChaseInside::exec(EnemyBase* enemy)
  * @note Address: 0x8028391C
  * @note Size: 0x24
  */
-void StateChaseInside::cleanup(EnemyBase* enemy) { enemy->setEmotionCaution(); }
+void StateChaseInside::cleanup(EnemyBase* enemy)
+{
+	enemy->setEmotionCaution();
+}
 
 /**
  * @note Address: 0x80283940
@@ -842,7 +854,7 @@ void StateAttack::init(EnemyBase* enemy, StateArg* stateArg)
 	mar->disableEvent(0, EB_Cullable);
 	mar->mTargetCreature = nullptr;
 	mar->enableEvent(0, EB_Untargetable);
-	mar->mTargetVelocity = Vector3f(0.0f);
+	mar->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	mar->setEmotionExcitement();
 	mar->startMotion(MARANIM_Attack, nullptr);
 	mar->mIsWindAttackActive = false;
@@ -901,7 +913,7 @@ void StateFall::init(EnemyBase* enemy, StateArg* stateArg)
 	mar->mGeneralTimer   = 0.0f;
 	mar->mTargetCreature = nullptr;
 	mar->enableEvent(0, EB_Untargetable);
-	mar->mTargetVelocity = Vector3f(0.0f);
+	mar->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	mar->setEmotionExcitement();
 	mar->startMotion(MARANIM_Fall, nullptr);
 }
@@ -933,7 +945,7 @@ void StateFall::exec(EnemyBase* enemy)
 		mar->disableEvent(0, EB_Untargetable);
 	}
 
-	mar->mGeneralTimer += sys->mDeltaTime;
+	mar->mGeneralTimer += sys->getDeltaTime();
 
 	if (mar->mHealth <= 0.0f) {
 		transit(mar, MAR_Dead, nullptr);
@@ -966,7 +978,7 @@ void StateLand::init(EnemyBase* enemy, StateArg* stateArg)
 	mar->mGeneralTimer   = 0.0f;
 	mar->mTargetCreature = nullptr;
 	mar->disableEvent(0, EB_Untargetable);
-	mar->mTargetVelocity = Vector3f(0.0f);
+	mar->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	mar->setEmotionExcitement();
 	mar->startMotion(MARANIM_Land, nullptr);
 	mar->createDownEffect();
@@ -992,7 +1004,10 @@ void StateLand::exec(EnemyBase* enemy)
  * @note Address: 0x80283E30
  * @note Size: 0x24
  */
-void StateLand::cleanup(EnemyBase* enemy) { enemy->setEmotionCaution(); }
+void StateLand::cleanup(EnemyBase* enemy)
+{
+	enemy->setEmotionCaution();
+}
 
 /**
  * @note Address: 0x80283E54
@@ -1004,7 +1019,7 @@ void StateGround::init(EnemyBase* enemy, StateArg* stateArg)
 	mar->mGeneralTimer   = 0.0f;
 	mar->mTargetCreature = nullptr;
 	mar->disableEvent(0, EB_Untargetable);
-	mar->mTargetVelocity = Vector3f(0.0f);
+	mar->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	mar->setEmotionExcitement();
 	mar->startMotion(MARANIM_WaitGround, nullptr);
 }
@@ -1020,7 +1035,7 @@ void StateGround::exec(EnemyBase* enemy)
 		mar->finishMotion();
 	}
 
-	mar->mGeneralTimer += sys->mDeltaTime;
+	mar->mGeneralTimer += sys->getDeltaTime();
 
 	if (mar->mHealth <= 0.0f) {
 		transit(mar, MAR_Dead, nullptr);
@@ -1040,7 +1055,10 @@ void StateGround::exec(EnemyBase* enemy)
  * @note Address: 0x80283FD0
  * @note Size: 0x24
  */
-void StateGround::cleanup(EnemyBase* enemy) { enemy->setEmotionCaution(); }
+void StateGround::cleanup(EnemyBase* enemy)
+{
+	enemy->setEmotionCaution();
+}
 
 /**
  * @note Address: 0x80283FF4
@@ -1050,7 +1068,7 @@ void StateTakeOff::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	enemy->mTargetCreature = nullptr;
 	enemy->disableEvent(0, EB_Untargetable);
-	enemy->mTargetVelocity = Vector3f(0.0f);
+	enemy->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	enemy->setEmotionExcitement();
 	enemy->startMotion(MARANIM_TakeOff, nullptr);
 }
@@ -1100,7 +1118,7 @@ void StateFlyFlick::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	enemy->mTargetCreature = nullptr;
 	enemy->enableEvent(0, EB_Untargetable);
-	enemy->mTargetVelocity = Vector3f(0.0f);
+	enemy->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	enemy->setEmotionExcitement();
 	enemy->startMotion(MARANIM_FlickFly, nullptr);
 }
@@ -1135,7 +1153,10 @@ void StateFlyFlick::exec(EnemyBase* enemy)
  * @note Address: 0x802842C4
  * @note Size: 0x24
  */
-void StateFlyFlick::cleanup(EnemyBase* enemy) { enemy->setEmotionCaution(); }
+void StateFlyFlick::cleanup(EnemyBase* enemy)
+{
+	enemy->setEmotionCaution();
+}
 
 /**
  * @note Address: 0x802842E8
@@ -1145,7 +1166,7 @@ void StateGroundFlick::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	enemy->mTargetCreature = nullptr;
 	enemy->disableEvent(0, EB_Untargetable);
-	enemy->mTargetVelocity = Vector3f(0.0f);
+	enemy->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	enemy->setEmotionExcitement();
 	enemy->startMotion(MARANIM_FlickGround, nullptr);
 }
@@ -1181,6 +1202,9 @@ void StateGroundFlick::exec(EnemyBase* enemy)
  * @note Address: 0x8028444C
  * @note Size: 0x24
  */
-void StateGroundFlick::cleanup(EnemyBase* enemy) { enemy->setEmotionCaution(); }
+void StateGroundFlick::cleanup(EnemyBase* enemy)
+{
+	enemy->setEmotionCaution();
+}
 } // namespace Mar
 } // namespace Game

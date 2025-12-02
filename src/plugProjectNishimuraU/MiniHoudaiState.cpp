@@ -1,8 +1,8 @@
-#include "Game/Entities/MiniHoudai.h"
-#include "Game/EnemyAnimKeyEvent.h"
 #include "Game/CameraMgr.h"
-#include "Game/rumble.h"
+#include "Game/EnemyAnimKeyEvent.h"
 #include "Game/EnemyFunc.h"
+#include "Game/Entities/MiniHoudai.h"
+#include "Game/rumble.h"
 #include "nans.h"
 
 namespace Game {
@@ -39,7 +39,7 @@ void StateDead::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	Obj* mini = OBJ(enemy);
 	mini->deathProcedure();
-	mini->mTargetVelocity = Vector3f(0.0f);
+	mini->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	mini->startMotion(MINIHOUDAIANIM_Dead, nullptr);
 	mini->createDeadLightEffect();
 }
@@ -74,7 +74,9 @@ void StateDead::exec(EnemyBase* enemy)
  * @note Address: 0x802E8488
  * @note Size: 0x4
  */
-void StateDead::cleanup(EnemyBase* enemy) { }
+void StateDead::cleanup(EnemyBase* enemy)
+{
+}
 
 /**
  * @note Address: 0x802E848C
@@ -86,7 +88,7 @@ void StateRebirth::init(EnemyBase* enemy, StateArg* stateArg)
 	mini->mNextState = MINIHOUDAI_NULL;
 	mini->disableEvent(0, EB_NoInterrupt);
 	mini->mTargetCreature = nullptr;
-	mini->mTargetVelocity = Vector3f(0.0f);
+	mini->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	mini->startMotion(MINIHOUDAIANIM_Rebirth, nullptr);
 }
 
@@ -131,9 +133,8 @@ void StateRebirth::exec(EnemyBase* enemy)
 
 			Creature* target = mini->getSearchedTarget();
 			if (target) {
-				f32 angleSep  = mini->getCreatureViewAngle(target);
-				f32 maxAttack = CG_GENERALPARMS(mini).mMaxAttackAngle();
-				if (absF(angleSep) <= TORADIANS(maxAttack)) {
+				f32 angleSep = mini->getAngDist(target);
+				if (isAngleWithin(angleSep, CG_GENERALPARMS(mini).mMaxAttackAngle())) {
 					transit(mini, MINIHOUDAI_Walk, nullptr);
 					return;
 				}
@@ -143,8 +144,8 @@ void StateRebirth::exec(EnemyBase* enemy)
 			}
 
 			Vector3f targetPos = mini->mWalkTargetPosition;
-			f32 angleSep       = mini->getCreatureViewAngle(targetPos);
-			if (absF(angleSep) <= QUARTER_PI) {
+			f32 angleSep       = mini->getAngDist(targetPos);
+			if (isAngleWithin(angleSep, 45.0f)) {
 				transit(mini, MINIHOUDAI_WalkPath, nullptr);
 			} else {
 				transit(mini, MINIHOUDAI_TurnPath, nullptr);
@@ -157,7 +158,10 @@ void StateRebirth::exec(EnemyBase* enemy)
  * @note Address: 0x802E888C
  * @note Size: 0x10
  */
-void StateRebirth::cleanup(EnemyBase* enemy) { enemy->disableEvent(0, EB_NoInterrupt); }
+void StateRebirth::cleanup(EnemyBase* enemy)
+{
+	enemy->disableEvent(0, EB_NoInterrupt);
+}
 
 /**
  * @note Address: 0x802E889C
@@ -168,7 +172,7 @@ void StateLost::init(EnemyBase* enemy, StateArg* stateArg)
 	Obj* mini             = OBJ(enemy);
 	mini->mNextState      = MINIHOUDAI_NULL;
 	mini->mTargetCreature = nullptr;
-	mini->mTargetVelocity = Vector3f(0.0f);
+	mini->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	mini->startMotion(MINIHOUDAIANIM_Search, nullptr);
 }
 
@@ -195,9 +199,9 @@ void StateLost::exec(EnemyBase* enemy)
 
 		f32 homeDist = sqrDistanceXZ(miniPos, homePos);
 		if (homeDist > SQUARE(CG_GENERALPARMS(mini).mTerritoryRadius())) {
-			f32 angleSep = mini->getCreatureViewAngle(homePos);
+			f32 angleSep = mini->getAngDist(homePos);
 
-			if (absF(angleSep) <= QUARTER_PI) {
+			if (isAngleWithin(angleSep, 45.0f)) {
 				transit(mini, MINIHOUDAI_WalkHome, nullptr);
 				return;
 			} else {
@@ -213,9 +217,9 @@ void StateLost::exec(EnemyBase* enemy)
 
 		Creature* target = mini->getSearchedTarget();
 		if (target) {
-			f32 angleSep  = mini->getCreatureViewAngle(target);
+			f32 angleSep  = mini->getAngDist(target);
 			f32 maxAttack = CG_GENERALPARMS(mini).mMaxAttackAngle();
-			if (absF(angleSep) <= TORADIANS(maxAttack)) {
+			if (isAngleWithin(angleSep, CG_GENERALPARMS(mini).mMaxAttackAngle())) {
 				transit(mini, MINIHOUDAI_Walk, nullptr);
 				return;
 			}
@@ -226,8 +230,8 @@ void StateLost::exec(EnemyBase* enemy)
 
 		if (homeDist < SQUARE(CG_GENERALPARMS(mini).mHomeRadius())) {
 			Vector3f pathPos = mini->mWalkTargetPosition;
-			f32 angleSep     = mini->getCreatureViewAngle(pathPos);
-			if (absF(angleSep) <= QUARTER_PI) {
+			f32 angleSep     = mini->getAngDist(pathPos);
+			if (isAngleWithin(angleSep, 45.0f)) {
 				transit(mini, MINIHOUDAI_WalkPath, nullptr);
 				return;
 			} else {
@@ -236,8 +240,8 @@ void StateLost::exec(EnemyBase* enemy)
 			}
 		}
 
-		f32 angleSep = mini->getCreatureViewAngle(homePos);
-		if (absF(angleSep) <= QUARTER_PI) {
+		f32 angleSep = mini->getAngDist(homePos);
+		if (isAngleWithin(angleSep, 45.0f)) {
 			transit(mini, MINIHOUDAI_WalkHome, nullptr);
 			return;
 		} else {
@@ -251,7 +255,9 @@ void StateLost::exec(EnemyBase* enemy)
  * @note Address: 0x802E8DF4
  * @note Size: 0x4
  */
-void StateLost::cleanup(EnemyBase* enemy) { }
+void StateLost::cleanup(EnemyBase* enemy)
+{
+}
 
 /**
  * @note Address: 0x802E8DF8
@@ -263,7 +269,7 @@ void StateAttack::init(EnemyBase* enemy, StateArg* stateArg)
 	mini->mNextState        = MINIHOUDAI_NULL;
 	mini->mAttackWaitTimer  = 0.0f;
 	mini->mHealthGaugeTimer = 0.0f;
-	mini->mTargetVelocity   = Vector3f(0.0f);
+	mini->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	mini->setEmotionExcitement();
 	mini->startMotion(MINIHOUDAIANIM_Attack, nullptr);
 }
@@ -291,7 +297,7 @@ void StateAttack::exec(EnemyBase* enemy)
 		mini->setShotGunTargetPosition();
 	}
 
-	mini->mAttackWaitTimer += sys->mDeltaTime;
+	mini->mAttackWaitTimer += sys->getDeltaTime();
 
 	if (mini->mHealth <= 0.0f) {
 		if (mini->isStopMotion()) {
@@ -341,8 +347,8 @@ void StateAttack::exec(EnemyBase* enemy)
 			Vector3f homePos = mini->mHomePosition;
 			f32 dist         = sqrDistanceXZ(miniPos, homePos);
 			if (dist > SQUARE(CG_GENERALPARMS(mini).mTerritoryRadius())) {
-				f32 angleSep = mini->getCreatureViewAngle(homePos);
-				if (absF(angleSep) <= (QUARTER_PI)) {
+				f32 angleSep = mini->getAngDist(homePos);
+				if (isAngleWithin(angleSep, 45.0f)) {
 					transit(mini, MINIHOUDAI_WalkHome, nullptr);
 					return;
 				}
@@ -358,9 +364,8 @@ void StateAttack::exec(EnemyBase* enemy)
 
 			Creature* target = mini->getSearchedTarget();
 			if (target) {
-				f32 angleSep  = mini->getCreatureViewAngle(target);
-				f32 maxAttack = CG_GENERALPARMS(mini).mMaxAttackAngle();
-				if (absF(angleSep) <= TORADIANS(maxAttack)) {
+				f32 angleSep = mini->getAngDist(target);
+				if (isAngleWithin(angleSep, CG_GENERALPARMS(mini).mMaxAttackAngle())) {
 					transit(mini, MINIHOUDAI_Walk, nullptr);
 					return;
 				}
@@ -371,9 +376,9 @@ void StateAttack::exec(EnemyBase* enemy)
 
 			if (dist < SQUARE(CG_GENERALPARMS(mini).mHomeRadius())) {
 				Vector3f targetPos = mini->mWalkTargetPosition;
-				f32 angleSep       = mini->getCreatureViewAngle(targetPos);
+				f32 angleSep       = mini->getAngDist(targetPos);
 
-				if (absF(angleSep) <= QUARTER_PI) {
+				if (isAngleWithin(angleSep, 45.0f)) {
 					transit(mini, MINIHOUDAI_WalkPath, nullptr);
 					return;
 				}
@@ -381,8 +386,8 @@ void StateAttack::exec(EnemyBase* enemy)
 				return;
 			}
 
-			f32 angleSep = mini->getCreatureViewAngle(homePos);
-			if (absF(angleSep) <= QUARTER_PI) {
+			f32 angleSep = mini->getAngDist(homePos);
+			if (isAngleWithin(angleSep, 45.0f)) {
 				transit(mini, MINIHOUDAI_WalkHome, nullptr);
 				return;
 			}
@@ -396,7 +401,10 @@ void StateAttack::exec(EnemyBase* enemy)
  * @note Address: 0x802E9524
  * @note Size: 0x24
  */
-void StateAttack::cleanup(EnemyBase* enemy) { enemy->setEmotionCaution(); }
+void StateAttack::cleanup(EnemyBase* enemy)
+{
+	enemy->setEmotionCaution();
+}
 
 /**
  * @note Address: 0x802E9548
@@ -407,7 +415,7 @@ void StateFlick::init(EnemyBase* enemy, StateArg* stateArg)
 	Obj* mini               = OBJ(enemy);
 	mini->mNextState        = MINIHOUDAI_NULL;
 	mini->mHealthGaugeTimer = 0.0f;
-	mini->mTargetVelocity   = Vector3f(0.0f);
+	mini->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	mini->setEmotionExcitement();
 	mini->startMotion(MINIHOUDAIANIM_Flick, nullptr);
 	mini->setAnimSpeed(45.0f);
@@ -440,8 +448,8 @@ void StateFlick::exec(EnemyBase* enemy)
 			Vector3f homePos = mini->mHomePosition;
 			f32 dist         = sqrDistanceXZ(miniPos, homePos);
 			if (dist > SQUARE(CG_GENERALPARMS(mini).mTerritoryRadius())) {
-				f32 angleSep = mini->getCreatureViewAngle(homePos);
-				if (absF(angleSep) <= (QUARTER_PI)) {
+				f32 angleSep = mini->getAngDist(homePos);
+				if (isAngleWithin(angleSep, 45.0f)) {
 					transit(mini, MINIHOUDAI_WalkHome, nullptr);
 					return;
 				}
@@ -457,9 +465,8 @@ void StateFlick::exec(EnemyBase* enemy)
 
 			Creature* target = mini->getSearchedTarget();
 			if (target) {
-				f32 angleSep  = mini->getCreatureViewAngle(target);
-				f32 maxAttack = CG_GENERALPARMS(mini).mMaxAttackAngle();
-				if (absF(angleSep) <= TORADIANS(maxAttack)) {
+				f32 angleSep = mini->getAngDist(target);
+				if (isAngleWithin(angleSep, CG_GENERALPARMS(mini).mMaxAttackAngle())) {
 					transit(mini, MINIHOUDAI_Walk, nullptr);
 					return;
 				}
@@ -470,9 +477,9 @@ void StateFlick::exec(EnemyBase* enemy)
 
 			if (dist < SQUARE(CG_GENERALPARMS(mini).mHomeRadius())) {
 				Vector3f targetPos = mini->mWalkTargetPosition;
-				f32 angleSep       = mini->getCreatureViewAngle(targetPos);
+				f32 angleSep       = mini->getAngDist(targetPos);
 
-				if (absF(angleSep) <= QUARTER_PI) {
+				if (isAngleWithin(angleSep, 45.0f)) {
 					transit(mini, MINIHOUDAI_WalkPath, nullptr);
 					return;
 				}
@@ -480,8 +487,8 @@ void StateFlick::exec(EnemyBase* enemy)
 				return;
 			}
 
-			f32 angleSep = mini->getCreatureViewAngle(homePos);
-			if (absF(angleSep) <= QUARTER_PI) {
+			f32 angleSep = mini->getAngDist(homePos);
+			if (isAngleWithin(angleSep, 45.0f)) {
 				transit(mini, MINIHOUDAI_WalkHome, nullptr);
 				return;
 			}
@@ -507,10 +514,10 @@ void StateFlick::cleanup(EnemyBase* enemy)
  */
 void StateTurn::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* mini             = OBJ(enemy);
-	mini->mUpdateTimer    = 0.0f;
-	mini->mNextState      = MINIHOUDAI_NULL;
-	mini->mTargetVelocity = Vector3f(0.0f);
+	Obj* mini          = OBJ(enemy);
+	mini->mUpdateTimer = 0.0f;
+	mini->mNextState   = MINIHOUDAI_NULL;
+	mini->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	mini->setEmotionExcitement();
 	mini->startMotion(MINIHOUDAIANIM_Turn, nullptr);
 }
@@ -537,13 +544,13 @@ void StateTurn::exec(EnemyBase* enemy)
 		if (target) {
 			mini->mHealthGaugeTimer = 0.0f;
 			f32 angleSep            = mini->turnToTarget(target, CG_GENERALPARMS(mini).mTurnSpeed(), CG_GENERALPARMS(mini).mMaxTurnAngle());
-			if (mini->isTargetWithinRange(target, angleSep, CG_GENERALPARMS(mini).mPrivateRadius(), CG_GENERALPARMS(mini).mSightRadius(),
-			                              CG_GENERALPARMS(mini).mFov(), mini->getViewAngle())) {
+			if (mini->isTargetOutOfRange(target, angleSep, CG_GENERALPARMS(mini).mPrivateRadius(), CG_GENERALPARMS(mini).mSightRadius(),
+			                             CG_GENERALPARMS(mini).mFov(), mini->getViewAngle())) {
 				mini->mNextState = MINIHOUDAI_Lost;
 				mini->finishMotion();
 			} else {
 				f32 maxAttack = CG_GENERALPARMS(mini).mMaxAttackAngle();
-				if (absF(angleSep) <= TORADIANS(maxAttack)) {
+				if (isAngleWithin(angleSep, CG_GENERALPARMS(mini).mMaxAttackAngle())) {
 					mini->mNextState = MINIHOUDAI_Walk;
 					mini->finishMotion();
 				}
@@ -556,7 +563,7 @@ void StateTurn::exec(EnemyBase* enemy)
 				Vector3f targetPos = mini->mWalkTargetPosition;
 				f32 angleSep = mini->turnToTarget(targetPos, CG_GENERALPARMS(mini).mTurnSpeed(), CG_GENERALPARMS(mini).mMaxTurnAngle());
 
-				if (absF(angleSep) <= QUARTER_PI) {
+				if (isAngleWithin(angleSep, 45.0f)) {
 					mini->mNextState = MINIHOUDAI_WalkPath;
 					mini->finishMotion();
 				} else {
@@ -565,7 +572,7 @@ void StateTurn::exec(EnemyBase* enemy)
 				}
 			} else {
 				f32 angleSep = mini->turnToTarget(homePos, CG_GENERALPARMS(mini).mTurnSpeed(), CG_GENERALPARMS(mini).mMaxTurnAngle());
-				if (absF(angleSep) <= QUARTER_PI) {
+				if (isAngleWithin(angleSep, 45.0f)) {
 					mini->mNextState = MINIHOUDAI_WalkHome;
 					mini->finishMotion();
 				} else {
@@ -1052,7 +1059,10 @@ lbl_802EA1DC:
  * @note Address: 0x802EA238
  * @note Size: 0x24
  */
-void StateTurn::cleanup(EnemyBase* enemy) { enemy->setEmotionCaution(); }
+void StateTurn::cleanup(EnemyBase* enemy)
+{
+	enemy->setEmotionCaution();
+}
 
 /**
  * @note Address: 0x802EA25C
@@ -1060,9 +1070,9 @@ void StateTurn::cleanup(EnemyBase* enemy) { enemy->setEmotionCaution(); }
  */
 void StateTurnHome::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* mini             = OBJ(enemy);
-	mini->mNextState      = MINIHOUDAI_NULL;
-	mini->mTargetVelocity = Vector3f(0.0f);
+	Obj* mini        = OBJ(enemy);
+	mini->mNextState = MINIHOUDAI_NULL;
+	mini->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	mini->startMotion(MINIHOUDAIANIM_Turn, nullptr);
 }
 
@@ -1089,13 +1099,13 @@ void StateTurnHome::exec(EnemyBase* enemy)
 		Creature* target = mini->getSearchedTarget();
 		if (target) {
 			f32 angleSep = mini->turnToTarget(homePos, CG_GENERALPARMS(mini).mTurnSpeed(), CG_GENERALPARMS(mini).mMaxTurnAngle());
-			if (absF(angleSep) <= QUARTER_PI) {
+			if (isAngleWithin(angleSep, 45.0f)) {
 				mini->mNextState = MINIHOUDAI_WalkHome;
 				mini->finishMotion();
 			}
 		} else {
 			f32 angleSep = mini->turnToTarget(homePos, CG_GENERALPARMS(mini).mTurnSpeed(), CG_GENERALPARMS(mini).mMaxTurnAngle());
-			if (absF(angleSep) <= QUARTER_PI) {
+			if (isAngleWithin(angleSep, 45.0f)) {
 				mini->mNextState = MINIHOUDAI_WalkHome;
 				mini->finishMotion();
 			}
@@ -1111,7 +1121,9 @@ void StateTurnHome::exec(EnemyBase* enemy)
  * @note Address: 0x802EA608
  * @note Size: 0x4
  */
-void StateTurnHome::cleanup(EnemyBase* enemy) { }
+void StateTurnHome::cleanup(EnemyBase* enemy)
+{
+}
 
 /**
  * @note Address: 0x802EA60C
@@ -1119,9 +1131,9 @@ void StateTurnHome::cleanup(EnemyBase* enemy) { }
  */
 void StateTurnPath::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* mini             = OBJ(enemy);
-	mini->mNextState      = MINIHOUDAI_NULL;
-	mini->mTargetVelocity = Vector3f(0.0f);
+	Obj* mini        = OBJ(enemy);
+	mini->mNextState = MINIHOUDAI_NULL;
+	mini->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	mini->startMotion(MINIHOUDAIANIM_Turn, nullptr);
 }
 
@@ -1147,7 +1159,7 @@ void StateTurnPath::exec(EnemyBase* enemy)
 		if (target) {
 			f32 angleSep  = mini->turnToTarget(target, CG_GENERALPARMS(mini).mTurnSpeed(), CG_GENERALPARMS(mini).mMaxTurnAngle());
 			f32 maxAttack = CG_GENERALPARMS(mini).mMaxAttackAngle();
-			if (absF(angleSep) <= TORADIANS(maxAttack)) {
+			if (isAngleWithin(angleSep, CG_GENERALPARMS(mini).mMaxAttackAngle())) {
 				mini->mNextState = MINIHOUDAI_Walk;
 				mini->finishMotion();
 			} else {
@@ -1157,7 +1169,7 @@ void StateTurnPath::exec(EnemyBase* enemy)
 		} else {
 			Vector3f targetPos = mini->mWalkTargetPosition;
 			f32 angleSep       = mini->turnToTarget(targetPos, CG_GENERALPARMS(mini).mTurnSpeed(), CG_GENERALPARMS(mini).mMaxTurnAngle());
-			if (absF(angleSep) <= QUARTER_PI) {
+			if (isAngleWithin(angleSep, 45.0f)) {
 				mini->mNextState = MINIHOUDAI_WalkPath;
 				mini->finishMotion();
 			}
@@ -1173,7 +1185,9 @@ void StateTurnPath::exec(EnemyBase* enemy)
  * @note Address: 0x802EA9E0
  * @note Size: 0x4
  */
-void StateTurnPath::cleanup(EnemyBase* enemy) { }
+void StateTurnPath::cleanup(EnemyBase* enemy)
+{
+}
 
 /**
  * @note Address: 0x802EA9E4
@@ -1222,13 +1236,13 @@ void StateWalk::exec(EnemyBase* enemy)
 			if (target) {
 				mini->mHealthGaugeTimer = 0.0f;
 				f32 angleSep            = mini->turnToTarget(target, turnSpeed, maxTurnAngle);
-				if (mini->isTargetWithinRange(target, angleSep, CG_GENERALPARMS(mini).mPrivateRadius(),
-				                              CG_GENERALPARMS(mini).mSightRadius(), CG_GENERALPARMS(mini).mFov(), mini->getViewAngle())) {
+				if (mini->isTargetOutOfRange(target, angleSep, CG_GENERALPARMS(mini).mPrivateRadius(), CG_GENERALPARMS(mini).mSightRadius(),
+				                             CG_GENERALPARMS(mini).mFov(), mini->getViewAngle())) {
 					mini->mNextState = MINIHOUDAI_Lost;
 					mini->finishMotion();
 				} else {
 					f32 maxAttack = CG_GENERALPARMS(mini).mMaxAttackAngle();
-					if (!(absF(angleSep) <= TORADIANS(maxAttack))) {
+					if (!(isAngleWithin(angleSep, CG_GENERALPARMS(mini).mMaxAttackAngle()))) {
 						mini->mNextState = MINIHOUDAI_Turn;
 						mini->finishMotion();
 					}
@@ -1237,7 +1251,7 @@ void StateWalk::exec(EnemyBase* enemy)
 				Vector3f targetPos = mini->mWalkTargetPosition;
 				f32 angleSep       = mini->turnToTarget(targetPos, turnSpeed, maxTurnAngle);
 
-				if (absF(angleSep) <= QUARTER_PI) {
+				if (isAngleWithin(angleSep, 45.0f)) {
 					mini->mNextState = MINIHOUDAI_WalkPath;
 					mini->finishMotion();
 				} else {
@@ -1246,7 +1260,7 @@ void StateWalk::exec(EnemyBase* enemy)
 				}
 			} else {
 				f32 angleSep = mini->turnToTarget(homePos, turnSpeed, maxTurnAngle);
-				if (absF(angleSep) <= QUARTER_PI) {
+				if (isAngleWithin(angleSep, 45.0f)) {
 					mini->mNextState = MINIHOUDAI_WalkHome;
 					mini->finishMotion();
 				} else {
@@ -1258,12 +1272,12 @@ void StateWalk::exec(EnemyBase* enemy)
 	}
 
 	if (mini->isFinishMotion()) {
-		mini->mTargetVelocity = Vector3f(0.0f);
+		mini->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	} else if (mini->getEnemyTypeID() == EnemyTypeID::EnemyID_MiniHoudai) {
-		mini->setTargetVelocity();
+		mini->setTargetVelocity(CG_GENERALPARMS(mini).mMoveSpeed());
 
 	} else {
-		mini->mTargetVelocity = Vector3f(0.0f);
+		mini->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	}
 
 	if (mini->mCurAnim->mIsPlaying) {
@@ -1836,7 +1850,10 @@ lbl_802EB1A4:
  * @note Address: 0x802EB208
  * @note Size: 0x24
  */
-void StateWalk::cleanup(EnemyBase* enemy) { enemy->setEmotionCaution(); }
+void StateWalk::cleanup(EnemyBase* enemy)
+{
+	enemy->setEmotionCaution();
+}
 
 /**
  * @note Address: 0x802EB22C
@@ -1874,8 +1891,7 @@ void StateWalkHome::exec(EnemyBase* enemy)
 		Vector3f homePos = mini->mHomePosition;
 		f32 dist         = sqrDistanceXZ(miniPos, homePos);
 
-		f32 angleSep  = mini->turnToTarget2(homePos, turnSpeed, maxTurnAngle);
-		f32 maxAttack = CG_GENERALPARMS(mini).mMaxAttackAngle();
+		f32 angleSep = mini->turnToTarget(homePos, turnSpeed, maxTurnAngle);
 		if (dist < SQUARE(CG_GENERALPARMS(mini).mHomeRadius())) {
 			if (mini->isAttackableTarget()) {
 				mini->mNextState = MINIHOUDAI_Attack;
@@ -1883,9 +1899,8 @@ void StateWalkHome::exec(EnemyBase* enemy)
 			} else {
 				Creature* target = mini->getSearchedTarget();
 				if (target) {
-					f32 angleSep  = mini->getCreatureViewAngle(target);
-					f32 maxAttack = CG_GENERALPARMS(mini).mMaxAttackAngle();
-					if (absF(angleSep) <= TORADIANS(maxAttack)) {
+					f32 angleSep = mini->getAngDist(target);
+					if (isAngleWithin(angleSep, CG_GENERALPARMS(mini).mMaxAttackAngle())) {
 						mini->mNextState = MINIHOUDAI_Walk;
 						mini->finishMotion();
 					} else {
@@ -1894,8 +1909,8 @@ void StateWalkHome::exec(EnemyBase* enemy)
 					}
 				} else {
 					Vector3f targetPos = mini->mWalkTargetPosition;
-					f32 angleSep       = mini->getCreatureViewAngle(targetPos);
-					if (absF(angleSep) <= QUARTER_PI) {
+					f32 angleSep       = mini->getAngDist(targetPos);
+					if (isAngleWithin(angleSep, 45.0f)) {
 						mini->mNextState = MINIHOUDAI_WalkPath;
 						mini->finishMotion();
 					} else {
@@ -1908,7 +1923,7 @@ void StateWalkHome::exec(EnemyBase* enemy)
 			if (mini->isAttackableTarget()) {
 				mini->mNextState = MINIHOUDAI_Attack;
 				mini->finishMotion();
-			} else if (!(absF(angleSep) <= QUARTER_PI)) {
+			} else if (!(isAngleWithin(angleSep, 45.0f))) {
 				mini->mNextState = MINIHOUDAI_TurnHome;
 				mini->finishMotion();
 			}
@@ -1916,12 +1931,12 @@ void StateWalkHome::exec(EnemyBase* enemy)
 	}
 
 	if (mini->isFinishMotion()) {
-		mini->mTargetVelocity = Vector3f(0.0f);
+		mini->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	} else if (mini->getEnemyTypeID() == EnemyTypeID::EnemyID_MiniHoudai) {
-		mini->setTargetVelocity();
+		mini->setTargetVelocity(CG_GENERALPARMS(mini).mMoveSpeed());
 
 	} else {
-		mini->mTargetVelocity = Vector3f(0.0f);
+		mini->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	}
 
 	sys->updateTimer(mini->mUpdateTimer, 1.0f); // dumb way to get an fmadd with 1.0f as the multiplier
@@ -1943,7 +1958,9 @@ void StateWalkHome::exec(EnemyBase* enemy)
  * @note Address: 0x802EB7D8
  * @note Size: 0x4
  */
-void StateWalkHome::cleanup(EnemyBase* enemy) { }
+void StateWalkHome::cleanup(EnemyBase* enemy)
+{
+}
 
 /**
  * @note Address: 0x802EB7DC
@@ -1985,7 +2002,7 @@ void StateWalkPath::exec(EnemyBase* enemy)
 		if (target) {
 			f32 angleSep  = mini->turnToTarget(target, turnSpeed, maxTurnAngle);
 			f32 maxAttack = CG_GENERALPARMS(mini).mMaxAttackAngle();
-			if (absF(angleSep) <= TORADIANS(maxAttack)) {
+			if (isAngleWithin(angleSep, CG_GENERALPARMS(mini).mMaxAttackAngle())) {
 				mini->mNextState = MINIHOUDAI_Walk;
 				mini->finishMotion();
 			} else {
@@ -1995,7 +2012,7 @@ void StateWalkPath::exec(EnemyBase* enemy)
 		} else {
 			Vector3f targetPos = mini->mWalkTargetPosition;
 			f32 angleSep       = mini->turnToTarget(targetPos, turnSpeed, maxTurnAngle);
-			if (!(absF(angleSep) <= QUARTER_PI)) {
+			if (!(isAngleWithin(angleSep, 45.0f))) {
 				mini->mNextState = MINIHOUDAI_TurnPath;
 				mini->finishMotion();
 			}
@@ -2003,15 +2020,15 @@ void StateWalkPath::exec(EnemyBase* enemy)
 	}
 
 	if (mini->isFinishMotion()) {
-		mini->mTargetVelocity = Vector3f(0.0f);
+		mini->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	} else if (mini->getEnemyTypeID() == EnemyTypeID::EnemyID_MiniHoudai) {
-		mini->setTargetVelocity();
+		mini->setTargetVelocity(CG_GENERALPARMS(mini).mMoveSpeed());
 
 	} else {
-		mini->mTargetVelocity = Vector3f(0.0f);
+		mini->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	}
 
-	mini->mUpdateTimer += 0.5f * sys->mDeltaTime;
+	mini->mUpdateTimer += 0.5f * sys->getDeltaTime();
 
 	if (mini->mCurAnim->mIsPlaying) {
 		if (mini->mCurAnim->mType == KEYEVENT_LOOP_START) {
@@ -2030,7 +2047,9 @@ void StateWalkPath::exec(EnemyBase* enemy)
  * @note Address: 0x802EBCB4
  * @note Size: 0x4
  */
-void StateWalkPath::cleanup(EnemyBase* enemy) { }
+void StateWalkPath::cleanup(EnemyBase* enemy)
+{
+}
 
 } // namespace MiniHoudai
 } // namespace Game

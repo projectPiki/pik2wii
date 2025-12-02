@@ -376,7 +376,7 @@ void AppearState::init(EnemyBase* enemy, StateArg* arg)
  */
 void AppearState::update(EnemyBase* enemy)
 {
-	enemy->mStunAnimTimer += 2.0f * sys->mDeltaTime;
+	enemy->mStunAnimTimer += 2.0f * sys->getDeltaTime();
 	if (enemy->mStunAnimTimer > 1.0f) {
 		transit(enemy, EBS_Living, nullptr);
 		return;
@@ -513,7 +513,7 @@ void LivingState::update(EnemyBase* enemy)
 		}
 
 		if (enemy->mExistDuration > 0.0f) {
-			enemy->mExistTimer += sys->mDeltaTime;
+			enemy->mExistTimer += sys->getDeltaTime();
 
 			if (enemy->mExistTimer > enemy->mExistDuration) {
 				enemy->addDamage(enemy->mMaxHealth, 1.0f);
@@ -605,12 +605,12 @@ void FitState::cleanup(EnemyBase* enemy)
  */
 void FitState::updateAlways(EnemyBase* enemy)
 {
-	enemy->mStunAnimTimer += sys->mDeltaTime;
-	if (enemy->mStunAnimTimer > enemy->getParms().mPurplePikiStunDuration.mValue || enemy->isEvent(0, EB_BitterQueued) || enemy->isDead()) {
+	enemy->mStunAnimTimer += sys->getDeltaTime();
+	if (enemy->mStunAnimTimer > EG_GENERALPARMS(enemy).mPurplePikiStunDuration() || enemy->isEvent(0, EB_BitterQueued) || enemy->isDead()) {
 		enemy->mStunAnimTimer = 0.0f;
 		transit(enemy, EBS_Living, nullptr);
 	} else {
-		f32 sinStun = 4.0f * sinf((PI * enemy->mStunAnimTimer) / enemy->getParms().mPurplePikiStunDuration.mValue);
+		f32 sinStun = 4.0f * sinf((PI * enemy->mStunAnimTimer) / EG_GENERALPARMS(enemy).mPurplePikiStunDuration());
 		if (sinStun > 1.0f) {
 			sinStun = 1.0f;
 		}
@@ -751,7 +751,7 @@ void StoneState::cleanup(EnemyBase* enemy)
 void StoneState::updateAlways(EnemyBase* enemy)
 {
 	enemy->mEnemyStoneObj->update();
-	enemy->mBitterTimer += sys->mDeltaTime;
+	enemy->mBitterTimer += sys->getDeltaTime();
 
 	if (enemy->mEnemyStoneObj->isFlag(EnemyStone::STONE_HasViewedDemo)) {
 		if (!enemy->mFloorTriangle) {
@@ -1905,10 +1905,10 @@ void EnemyBase::doSimulationGround(f32 frameRate)
 	velocity.y        = mCurrentVelocity.y;
 
 	Vector3f accel   = velocity - mCurrentVelocity;
-	accel            = accel * getAccelerationScale(frameRate);
+	accel            = accel * (frameRate / E_PARMS->mCreatureProps.mProps.mAccel());
 	mCurrentVelocity = mCurrentVelocity + accel;
 
-	if (isEarthQuakeOrDropping()) {
+	if (isFalling()) {
 		mCurrentVelocity.y = -((3.0f * (frameRate * _aiConstants->mGravity.mData)) - mCurrentVelocity.y);
 		return;
 	}
@@ -1922,9 +1922,10 @@ void EnemyBase::doSimulationGround(f32 frameRate)
  */
 void EnemyBase::doSimulationFlying(f32 frameRate)
 {
-	Vector3f accel   = mTargetVelocity - mCurrentVelocity;
-	accel            = accel * getAccelerationScale(frameRate);
-	mCurrentVelocity = mCurrentVelocity + accel;
+	Vector3f accel;
+	accel            = (mTargetVelocity - mCurrentVelocity) * (frameRate / E_PARMS->mCreatureProps.mProps.mAccel());
+	accel            = mCurrentVelocity + accel;
+	mCurrentVelocity = accel;
 }
 
 /**
@@ -1933,9 +1934,10 @@ void EnemyBase::doSimulationFlying(f32 frameRate)
  */
 void EnemyBase::doSimulationStick(f32 frameRate)
 {
-	Vector3f accel   = mTargetVelocity - mCurrentVelocity;
-	accel            = accel * getAccelerationScale(frameRate);
-	mCurrentVelocity = mCurrentVelocity + accel;
+	Vector3f accel;
+	accel            = (mTargetVelocity - mCurrentVelocity) * (frameRate / E_PARMS->mCreatureProps.mProps.mAccel());
+	accel            = mCurrentVelocity + accel;
+	mCurrentVelocity = accel;
 }
 
 /**
@@ -2112,7 +2114,7 @@ void EnemyBase::collisionMapAndPlat(f32 frameRate)
 		collSphere.mPosition = pos;
 		collSphere.mRadius   = yOffsetFromMap;
 
-		f32 bounceAmount = isEarthQuakeOrDropping() ? 0.0f : static_cast<CreatureProperty*>(mParms)->mProps.mWallReflection.mValue;
+		f32 bounceAmount = isFalling() ? 0.0f : static_cast<CreatureProperty*>(mParms)->mProps.mWallReflection.mValue;
 
 		mAcceleration.y = 0.0f;
 
@@ -2531,7 +2533,7 @@ void EnemyBase::scaleDamageAnim()
 
 	if (mDamageAnimTimer == 0.0f) {
 		if (isEvent(0, EB_TakingDamage)) {
-			mDamageAnimTimer += sys->mDeltaTime;
+			mDamageAnimTimer += sys->getDeltaTime();
 		}
 
 		return;
@@ -2548,9 +2550,9 @@ void EnemyBase::scaleDamageAnim()
 	}
 
 	if (isEvent(0, EB_EatingWhitePikmin)) {
-		mDamageAnimTimer += 0.5f * sys->mDeltaTime;
+		mDamageAnimTimer += 0.5f * sys->getDeltaTime();
 	} else {
-		mDamageAnimTimer += sys->mDeltaTime;
+		mDamageAnimTimer += sys->getDeltaTime();
 	}
 
 	if (isEvent(0, EB_Bittered)) {
@@ -3422,7 +3424,7 @@ bool EnemyBase::eatWhitePikminCallBack(Creature* creature, f32 damage)
 	if (!(isEvent(0, EB_EatingWhitePikmin))) {
 		enableEvent(0, EB_EatingWhitePikmin);
 
-		mDamageAnimTimer = sys->mDeltaTime;
+		mDamageAnimTimer = sys->getDeltaTime();
 
 		for (int i = 0; i < mEnemyStoneObj->mInfo->mLength; i++) {
 			EnemyStone::DrawInfo drawInfo(false);
@@ -3492,8 +3494,8 @@ void EnemyBase::hardConstraintOn()
 void EnemyBase::hardConstraintOff()
 {
 	disableEvent(0, EB_HardConstrained);
-	mMass         = mFriction;
-	mAcceleration = Vector3f(0.0f);
+	mMass = mFriction;
+	mAcceleration.set(0.0f, 0.0f, 0.0f);
 }
 
 /**
@@ -3533,8 +3535,8 @@ void EnemyBase::endMovie()
  */
 void EnemyBase::doStartEarthquakeState(f32 yVelocityScale)
 {
-	mTargetVelocity  = Vector3f(0.0f);
-	mCurrentVelocity = Vector3f(0.0f);
+	mTargetVelocity.set(0.0f, 0.0f, 0.0f);
+	mCurrentVelocity.set(0.0f, 0.0f, 0.0f);
 
 	mCurrentVelocity.y = yVelocityScale * 200.0f + randFloat() * 100.0f;
 };

@@ -1,15 +1,18 @@
-#include "og/newScreen/CourseName.h"
+#include "JSystem/J2D/J2DMaterial.h"
 #include "P2DScreen.h"
+#include "System.h"
 #include "og/Screen/anime.h"
 #include "og/Screen/ogScreen.h"
-#include "JSystem/J2D/J2DMaterial.h"
-#include "System.h"
+#include "og/newScreen/CourseName.h"
 
 /**
  * @note Address: N/A
  * @note Size: 0xE4
  */
-static void _Print(char* format, ...) { OSReport(format, __FILE__); }
+static void _Print(char* format, ...)
+{
+	OSReport(format, __FILE__);
+}
 
 namespace og {
 namespace newScreen {
@@ -40,7 +43,9 @@ ObjCourseName::ObjCourseName(char const* name)
  * @note Address: 0x803174C4
  * @note Size: 0xAC
  */
-ObjCourseName::~ObjCourseName() { }
+ObjCourseName::~ObjCourseName()
+{
+}
 
 /**
  * @note Address: 0x80317570
@@ -103,7 +108,7 @@ bool ObjCourseName::commonUpdate()
 	mScreen->update();
 
 	if (mState != 0) {
-		mTimer -= sys->mDeltaTime;
+		mTimer -= sys->getDeltaTime();
 		if (mTimer < 0.0f) {
 			check = true;
 		}
@@ -125,7 +130,10 @@ bool ObjCourseName::commonUpdate()
  * @note Address: 0x803178A4
  * @note Size: 0xF0
  */
-bool ObjCourseName::doUpdate() { return commonUpdate(); }
+bool ObjCourseName::doUpdate()
+{
+	return commonUpdate();
+}
 
 /**
  * @note Address: 0x80317994
@@ -182,19 +190,26 @@ bool ObjCourseName::doEnd(::Screen::EndSceneArg const*)
  * @note Address: 0x80317B28
  * @note Size: 0x4
  */
-void ObjCourseName::doUpdateFadeinFinish() { }
+void ObjCourseName::doUpdateFadeinFinish()
+{
+}
 
 /**
  * @note Address: 0x80317B2C
  * @note Size: 0xC
  */
-void ObjCourseName::doUpdateFinish() { mFadeLevel = 0.0f; }
+void ObjCourseName::doUpdateFinish()
+{
+	mFadeLevel = 0.0f;
+}
 
 /**
  * @note Address: 0x80317B38
  * @note Size: 0x4
  */
-void ObjCourseName::doUpdateFadeoutFinish() { }
+void ObjCourseName::doUpdateFadeoutFinish()
+{
+}
 
 /**
  * @note Address: 0x80317B3C
@@ -203,7 +218,7 @@ void ObjCourseName::doUpdateFadeoutFinish() { }
 bool ObjCourseName::doUpdateFadein()
 {
 	bool check = false;
-	mFadeLevel += sys->mDeltaTime;
+	mFadeLevel += sys->getDeltaTime();
 	if (mFadeLevel > msVal.mFadeinTime) {
 		mFadeLevel = msVal.mFadeinTime;
 		check      = true;
@@ -220,7 +235,7 @@ bool ObjCourseName::doUpdateFadein()
 bool ObjCourseName::doUpdateFadeout()
 {
 	bool check = false;
-	mFadeLevel += sys->mDeltaTime;
+	mFadeLevel += sys->getDeltaTime();
 	if (mFadeLevel > msVal.mFadeoutTime) {
 		mFadeLevel = msVal.mFadeoutTime;
 		if (!mDoEnd) {
@@ -240,7 +255,7 @@ void ObjCourseName::drawBG(Graphics& gfx)
 {
 	J2DPerspGraph* graf = &gfx.mPerspGraph;
 	if (mDoEnd) {
-		mBackgroundAlpha += sys->mDeltaTime;
+		mBackgroundAlpha += sys->getDeltaTime();
 		f32 temp = 1.0f - mBackgroundAlpha / msVal.mBgAlphaFadeTime;
 		if (temp > 0.0f) {
 			mColor.a = temp * 255.0f;

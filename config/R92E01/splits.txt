@@ -3545,6 +3545,8 @@ plugProjectKandoU/cellMgrParms.cpp:
 
 plugProjectKandoU/cellIterator.cpp:
 	.text       start:0x802B27CC end:0x802B2E80
+	.rodata     start:0x8054CC30 end:0x8054CC70
+	.sdata2     start:0x80670AE0 end:0x80670AE8
 
 plugProjectKandoU/vsGS_VSGame.cpp:
 	.text       start:0x802B2E80 end:0x802B2FBC

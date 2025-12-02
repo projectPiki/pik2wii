@@ -933,9 +933,9 @@ bool Piki::invokeAI()
  */
 bool Piki::setActTransportArg(PikiAI::ActTransportArg& actTransportArg)
 {
-	actTransportArg.mGoal          = nullptr;
-	actTransportArg.mUnusedPos     = Vector3f(0.0f); // unused
-	actTransportArg.mUnusedSlotVal = -1;             // unused
+	actTransportArg.mGoal = nullptr;
+	actTransportArg.mUnusedPos.set(0.0f, 0.0f, 0.0f); // unused
+	actTransportArg.mUnusedSlotVal = -1;              // unused
 	return true;
 }
 

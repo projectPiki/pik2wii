@@ -1,13 +1,13 @@
 #ifndef _GAME_CPLATE_H
 #define _GAME_CPLATE_H
 
+#include "BaseParm.h"
 #include "Container.h"
 #include "Game/Creature.h"
 #include "Game/Piki.h"
 #include "Game/SlotChangeListener.h"
-#include "SysShape/KeyEvent.h"
 #include "Parameters.h"
-#include "BaseParm.h"
+#include "SysShape/KeyEvent.h"
 #include "types.h"
 
 namespace Game {
@@ -17,10 +17,10 @@ struct CPlate : public Container<Creature> {
 	struct Slot {
 		Slot()
 		{
-			mCreature         = nullptr;
-			mListener         = nullptr;
-			mRelativePosition = Vector3f(0.0f);
-			mPosition         = Vector3f(0.0f);
+			mCreature = nullptr;
+			mListener = nullptr;
+			mRelativePosition.set(0.0f, 0.0f, 0.0f);
+			mPosition.set(0.0f, 0.0f, 0.0f);
 		}
 
 		Vector3f mRelativePosition;    // _00

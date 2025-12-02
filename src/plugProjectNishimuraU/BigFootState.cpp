@@ -1,7 +1,7 @@
-#include "Game/Entities/BigFoot.h"
+#include "Game/CameraMgr.h"
 #include "Game/EnemyAnimKeyEvent.h"
 #include "Game/EnemyFunc.h"
-#include "Game/CameraMgr.h"
+#include "Game/Entities/BigFoot.h"
 #include "Game/rumble.h"
 #include "nans.h"
 
@@ -69,7 +69,9 @@ void StateDead::exec(EnemyBase* enemy)
  * @note Address: 0x802C666C
  * @note Size: 0x4
  */
-void StateDead::cleanup(EnemyBase* enemy) { }
+void StateDead::cleanup(EnemyBase* enemy)
+{
+}
 
 /**
  * @note Address: 0x802C6670
@@ -84,7 +86,7 @@ void StateStay::init(EnemyBase* enemy, StateArg* stateArg)
 	bigfoot->enableEvent(0, EB_ModelHidden);
 	bigfoot->mTargetCreature = nullptr;
 
-	bigfoot->mTargetVelocity = Vector3f(0.0f);
+	bigfoot->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	bigfoot->startMotion(BIGFOOTANIM_Landing, nullptr);
 	bigfoot->stopMotion();
 }
@@ -115,7 +117,9 @@ void StateStay::exec(EnemyBase* enemy)
  * @note Address: 0x802C67AC
  * @note Size: 0x4
  */
-void StateStay::cleanup(EnemyBase* enemy) { }
+void StateStay::cleanup(EnemyBase* enemy)
+{
+}
 
 /**
  * @note Address: 0x802C67B0
@@ -135,7 +139,7 @@ void StateLand::init(EnemyBase* enemy, StateArg* stateArg)
 	bigfoot->setEmotionExcitement();
 	bigfoot->mTargetCreature = nullptr;
 
-	bigfoot->mTargetVelocity = Vector3f(0.0f);
+	bigfoot->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	bigfoot->startMotion(BIGFOOTANIM_Landing, nullptr);
 
 	shadowMgr->addJointShadow(bigfoot);
@@ -201,7 +205,7 @@ void StateWait::init(EnemyBase* enemy, StateArg* stateArg)
 	bigfoot->resetFlickWalkTimeMax();
 	bigfoot->setIKParameter();
 	bigfoot->mTargetCreature = nullptr;
-	bigfoot->mTargetVelocity = Vector3f(0.0f);
+	bigfoot->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	bigfoot->startMotion(BIGFOOTANIM_Wait, nullptr);
 }
 
@@ -212,7 +216,7 @@ void StateWait::init(EnemyBase* enemy, StateArg* stateArg)
 void StateWait::exec(EnemyBase* enemy)
 {
 	Obj* bigfoot = OBJ(enemy);
-	bigfoot->mStateTimer += sys->mDeltaTime;
+	bigfoot->mStateTimer += sys->getDeltaTime();
 
 	if (bigfoot->mHealth <= 0.0f) {
 		bigfoot->mNextState = BIGFOOT_Dead;
@@ -234,7 +238,9 @@ void StateWait::exec(EnemyBase* enemy)
  * @note Address: 0x802C6B9C
  * @note Size: 0x4
  */
-void StateWait::cleanup(EnemyBase* enemy) { }
+void StateWait::cleanup(EnemyBase* enemy)
+{
+}
 
 /**
  * @note Address: 0x802C6BA0
@@ -246,7 +252,7 @@ void StateFlick::init(EnemyBase* enemy, StateArg* stateArg)
 	bigfoot->mNextState      = BIGFOOT_NULL;
 	bigfoot->mStateTimer     = 0.0f;
 	bigfoot->mTargetCreature = nullptr;
-	bigfoot->mTargetVelocity = Vector3f(0.0f);
+	bigfoot->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 
 	bigfoot->startMotion(BIGFOOTANIM_Flick, nullptr);
 	bigfoot->startBlendMotion();
@@ -299,7 +305,7 @@ void StateWalk::init(EnemyBase* enemy, StateArg* stateArg)
 	bigfoot->mNextState      = BIGFOOT_NULL;
 	bigfoot->mStateTimer     = 0.0f;
 	bigfoot->mTargetCreature = nullptr;
-	bigfoot->mTargetVelocity = Vector3f(0.0f);
+	bigfoot->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	bigfoot->startIKMotion();
 	bigfoot->getTargetPosition();
 
@@ -316,7 +322,7 @@ void StateWalk::exec(EnemyBase* enemy)
 {
 	Obj* bigfoot = OBJ(enemy);
 	bigfoot->getTargetPosition();
-	bigfoot->mStateTimer += sys->mDeltaTime;
+	bigfoot->mStateTimer += sys->getDeltaTime();
 	if (bigfoot->mHealth <= 0.0f) {
 		transit(bigfoot, BIGFOOT_Dead, nullptr);
 	} else {

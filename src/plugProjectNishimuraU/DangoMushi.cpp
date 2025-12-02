@@ -106,7 +106,7 @@ void Obj::doUpdateCommon()
 void Obj::doAnimationUpdateAnimator()
 {
 	SysShape::BlendLinearFun func;
-	f32 delta = sys->mDeltaTime;
+	f32 delta = sys->getDeltaTime();
 	f32 speed = EnemyAnimatorBase::defaultAnimSpeed * delta;
 	static_cast<EnemyBlendAnimatorBase*>(mAnimator)->animate(&func, delta * 60.0f, speed, speed);
 	static_cast<EnemyBlendAnimatorBase*>(mAnimator)->mAnimator.setModelCalc(mModel, 0);
@@ -357,7 +357,7 @@ void Obj::getCommonEffectPos(Vector3f& vec)
 bool Obj::addShadowScale()
 {
 	if (mShadowScale < 1.0f) {
-		mShadowScale += 0.6f * sys->mDeltaTime;
+		mShadowScale += 0.6f * sys->getDeltaTime();
 		if (mShadowScale >= 1.0f) {
 			mShadowScale = 1.0f;
 			return true;
@@ -421,26 +421,20 @@ void Obj::rollingMove()
 		targetPos = mPosition + mTargetVelocity;
 	}
 
-	turnToTarget2(targetPos, C_PROPERPARMS.mRollingTurnAccel(), C_PROPERPARMS.mRollingTurnSpeed());
-
-	f32 moveSpeed = getMoveSpeed();
-	f32 x         = dolsinf(getFaceDir());
-	f32 y         = getTargetVelocity().y;
-	f32 z         = dolcosf(getFaceDir());
-
-	mTargetVelocity = Vector3f(moveSpeed * x, y, moveSpeed * z);
+	turnToTarget(targetPos, C_PROPERPARMS.mRollingTurnAccel(), C_PROPERPARMS.mRollingTurnSpeed());
+	setTargetSpeed(C_PROPERPARMS.mRollingMoveSpeed());
 
 	if (mWallTriangle) {
 		Vector3f vel(mCurrentVelocity);
 		vel.y = 0.0f;
 
 		if (vel.length() < 100.0f) {
-			mStateTimer += 5.0f * sys->mDeltaTime;
+			mStateTimer += 5.0f * sys->getDeltaTime();
 		} else {
-			mStateTimer += 3.0f * sys->mDeltaTime;
+			mStateTimer += 3.0f * sys->getDeltaTime();
 		}
 	} else {
-		mStateTimer += sys->mDeltaTime;
+		mStateTimer += sys->getDeltaTime();
 	}
 	/*
 	stwu     r1, -0x80(r1)
@@ -905,7 +899,7 @@ void Obj::updateMapCollisionSize()
 	if (mIsBall) {
 		f32 heightOff = C_GENERALPARMS.mHeightOffsetFromFloor();
 		if (heightOff > 60.0f) {
-			C_GENERALPARMS.mHeightOffsetFromFloor() = -((250.0f * sys->mDeltaTime) - heightOff);
+			C_GENERALPARMS.mHeightOffsetFromFloor() = -((250.0f * sys->getDeltaTime()) - heightOff);
 			heightOff                               = C_GENERALPARMS.mHeightOffsetFromFloor();
 			if (heightOff < 60.0f) {
 				C_GENERALPARMS.mHeightOffsetFromFloor() = 60.0f;
@@ -914,7 +908,7 @@ void Obj::updateMapCollisionSize()
 	} else {
 		f32 heightOff = C_GENERALPARMS.mHeightOffsetFromFloor();
 		if (heightOff < 120.0f) {
-			C_GENERALPARMS.mHeightOffsetFromFloor() = ((250.0f * sys->mDeltaTime) + heightOff);
+			C_GENERALPARMS.mHeightOffsetFromFloor() = ((250.0f * sys->getDeltaTime()) + heightOff);
 			heightOff                               = C_GENERALPARMS.mHeightOffsetFromFloor();
 			if (heightOff > 120.0f) {
 				C_GENERALPARMS.mHeightOffsetFromFloor() = 120.0f;

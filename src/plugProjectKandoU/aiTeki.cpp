@@ -184,10 +184,10 @@ void ActTeki::test_0()
 
 		f32 distance = destPos.distance(sourcePos);
 
-		mParentFollowTimer -= sys->mDeltaTime;
+		mParentFollowTimer -= sys->getDeltaTime();
 
 		// We've reached the parent, so stop moving and wait for them to move again.
-		mParent->mTargetVelocity = Vector3f(0.0f);
+		mParent->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 
 		// If we've gone out of reach of follow distance, or the follow timer has fallen below 0, we need to find a new target.
 		if (mParentFollowTimer <= 0.0f || distance > FOLLOW_DISTANCE) {

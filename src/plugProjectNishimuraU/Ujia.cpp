@@ -4,6 +4,12 @@
 #include "RevoSDK/rand.h"
 #include "efx/TUjinko.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "246-Ujia";
+}
+
 namespace Game {
 namespace Ujia {
 
@@ -87,7 +93,7 @@ void Obj::getShadowParam(ShadowParam& shadowParam)
 {
 	shadowParam.mPosition = mModel->getJoint("kosijnt")->getWorldMatrix()->getColumn(3);
 	shadowParam.mPosition.y -= 2.5f;
-	shadowParam.mBoundingSphere.mPosition = Vector3f(0.0f, 1.0f, 0.0f);
+	shadowParam.mBoundingSphere.mPosition.set(0.0f, 1.0f, 0.0f);
 	if (isEvent(1, EB2_Earthquake)) {
 		shadowParam.mBoundingSphere.mRadius = 50.0f;
 	} else {
@@ -138,7 +144,7 @@ void Obj::lifeIncrement()
 {
 	mInstantDamage = 0.0f;
 	disableEvent(0, EB_TakingDamage);
-	if (mHealth <= 0.0f) {
+	if (isDead()) {
 		mHealth = 1.0f;
 	}
 }
@@ -231,7 +237,7 @@ void Obj::setNearestBridge()
 		{
 			ItemBridge::Item* bridge = static_cast<ItemBridge::Item*>(*iter);
 			Vector3f startPos        = bridge->getStartPos();
-			f32 newRad               = sqrDistanceXZ(mPosition, startPos);
+			f32 newRad               = mPosition.sqrDistance2D(startPos);
 			if (newRad < radius) {
 				mBridge = bridge;
 				radius  = newRad;
@@ -325,24 +331,13 @@ bool Obj::moveBridgeSide()
 	startPos += zVec;
 
 	if (sqrDistanceXZ(mPosition, startPos) < 250.0f) {
-		f32 moveSpeed = getMoveSpeed(0.75f);
-		f32 x         = dolsinf(getFaceDir());
-		f32 y         = getTargetVelocity().y;
-		f32 z         = dolcosf(getFaceDir());
-
-		mTargetVelocity = Vector3f(moveSpeed * x, y, moveSpeed * z);
+		setTargetSpeed(0.75f * E_GENERALPARMS.mMoveSpeed());
 
 		return true;
 
 	} else {
-		f32 val = turnToTarget2(startPos, C_GENERALPARMS.mTurnSpeed(), C_GENERALPARMS.mMaxTurnAngle());
-
-		f32 moveSpeed = getMoveSpeed();
-		f32 x         = dolsinf(getFaceDir());
-		f32 y         = getTargetVelocity().y;
-		f32 z         = dolcosf(getFaceDir());
-
-		mTargetVelocity = Vector3f(moveSpeed * x, y, moveSpeed * z);
+		f32 val = turnToTarget(startPos, C_GENERALPARMS.mTurnSpeed(), C_GENERALPARMS.mMaxTurnAngle());
+		setTargetSpeed(E_GENERALPARMS.mMoveSpeed());
 
 		return false;
 	}
@@ -542,24 +537,14 @@ bool Obj::moveBridgeCentre()
 	startPos += xVec;
 
 	if (sqrDistanceXZ(mPosition, startPos) < 250.0f) {
-		f32 moveSpeed = getMoveSpeed(0.75f);
-		f32 x         = dolsinf(getFaceDir());
-		f32 y         = getTargetVelocity().y;
-		f32 z         = dolcosf(getFaceDir());
-
-		mTargetVelocity = Vector3f(moveSpeed * x, y, moveSpeed * z);
+		setTargetSpeed(0.75f * E_GENERALPARMS.mMoveSpeed());
 
 		return true;
 
 	} else {
-		f32 val = turnToTarget2(startPos, C_GENERALPARMS.mTurnSpeed(), C_GENERALPARMS.mMaxTurnAngle());
+		f32 val = turnToTarget(startPos, C_GENERALPARMS.mTurnSpeed(), C_GENERALPARMS.mMaxTurnAngle());
 
-		f32 moveSpeed = getMoveSpeed();
-		f32 x         = dolsinf(getFaceDir());
-		f32 y         = getTargetVelocity().y;
-		f32 z         = dolcosf(getFaceDir());
-
-		mTargetVelocity = Vector3f(moveSpeed * x, y, moveSpeed * z);
+		setTargetSpeed(E_GENERALPARMS.mMoveSpeed());
 
 		return false;
 	}
@@ -757,31 +742,21 @@ bool Obj::moveBridgeTop()
 		stagePos += zVec;
 	}
 
-	f32 val = turnToTarget2(stagePos, C_GENERALPARMS.mTurnSpeed(), C_GENERALPARMS.mMaxTurnAngle());
+	f32 val = turnToTarget(stagePos, C_GENERALPARMS.mTurnSpeed(), C_GENERALPARMS.mMaxTurnAngle());
 
 	f32 dist = sqrDistanceXZ(mPosition, stagePos);
 
 	if (dist < 50.0f) {
-		mTargetVelocity = Vector3f(0.0f);
+		mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 		return true;
 
 	} else if (dist < 250.0f) {
-		f32 moveSpeed = C_GENERALPARMS.mMoveSpeed();
-		f32 x         = dolsinf(getFaceDir());
-		f32 y         = getTargetVelocity().y;
-		f32 z         = dolcosf(getFaceDir());
-
-		mTargetVelocity = Vector3f(moveSpeed * x, y, moveSpeed * z);
+		setTargetSpeed(E_GENERALPARMS.mMoveSpeed());
 
 		return true;
 
 	} else {
-		f32 moveSpeed = C_GENERALPARMS.mMoveSpeed();
-		f32 x         = dolsinf(getFaceDir());
-		f32 y         = getTargetVelocity().y;
-		f32 z         = dolcosf(getFaceDir());
-
-		mTargetVelocity = Vector3f(moveSpeed * x, y, moveSpeed * z);
+		setTargetSpeed(E_GENERALPARMS.mMoveSpeed());
 	}
 
 	return false;

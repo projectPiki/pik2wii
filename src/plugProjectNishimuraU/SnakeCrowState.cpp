@@ -41,7 +41,7 @@ void StateDead::init(EnemyBase* enemy, StateArg* stateArg)
 	Obj* snagret = OBJ(enemy);
 	snagret->deathProcedure();
 	snagret->disableEvent(0, EB_Cullable);
-	snagret->mTargetVelocity = Vector3f(0.0f);
+	snagret->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	snagret->setEmotionCaution();
 	snagret->startMotion(SNAKECROWANIM_Dead, nullptr);
 	snagret->createDeadStartEffect();
@@ -114,7 +114,7 @@ void StateStay::init(EnemyBase* enemy, StateArg* stateArg)
 	snagret->enableEvent(0, EB_ModelHidden);
 	snagret->disableEvent(0, EB_LifegaugeVisible);
 
-	snagret->mTargetVelocity = Vector3f(0.0f);
+	snagret->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	snagret->startMotion(SNAKECROWANIM_Appear1, nullptr);
 	snagret->stopMotion();
 
@@ -189,7 +189,7 @@ void StateStay::exec(EnemyBase* enemy)
 		}
 	}
 
-	snagret->mStateTimer += sys->mDeltaTime;
+	snagret->mStateTimer += sys->getDeltaTime();
 	if (target) {
 		snagret->mTargetCreature = target;
 		snagret->appearNearByTarget(target);
@@ -228,7 +228,7 @@ void StateAppear1::init(EnemyBase* enemy, StateArg* stateArg)
 	Obj* snagret = OBJ(enemy);
 	snagret->enableEvent(0, EB_NoInterrupt);
 	snagret->disableEvent(0, EB_Cullable);
-	snagret->mTargetVelocity = Vector3f(0.0f);
+	snagret->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	snagret->setEmotionExcitement();
 	snagret->startMotion(SNAKECROWANIM_Appear1, nullptr);
 	snagret->createAppearEffect(0);
@@ -253,7 +253,7 @@ void StateAppear1::exec(EnemyBase* enemy)
 
 		} else if ((u32)snagret->mCurAnim->mType == KEYEVENT_END) {
 			snagret->setAttackPosition();
-			if (snagret->mHealth <= 0.0f) {
+			if (snagret->isDead()) {
 				transit(snagret, SNAKECROW_Dead, nullptr);
 				return;
 			}
@@ -296,7 +296,7 @@ void StateAppear2::init(EnemyBase* enemy, StateArg* stateArg)
 	Obj* snagret = OBJ(enemy);
 	snagret->enableEvent(0, EB_NoInterrupt);
 	snagret->disableEvent(0, EB_Cullable);
-	snagret->mTargetVelocity = Vector3f(0.0f);
+	snagret->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	snagret->setEmotionExcitement();
 	snagret->startMotion(SNAKECROWANIM_Appear2, nullptr);
 	snagret->createAppearEffect(1);
@@ -334,7 +334,7 @@ void StateAppear2::exec(EnemyBase* enemy)
 
 		} else if ((u32)snagret->mCurAnim->mType == KEYEVENT_END) {
 			snagret->setAttackPosition();
-			if (snagret->mHealth <= 0.0f) {
+			if (snagret->isDead()) {
 				transit(snagret, SNAKECROW_Dead, nullptr);
 				return;
 			}
@@ -381,7 +381,7 @@ void StateDisappear::init(EnemyBase* enemy, StateArg* stateArg)
 	diveFx.create(&fxArg);
 
 	enemy->disableEvent(0, EB_Cullable);
-	enemy->mTargetVelocity = Vector3f(0.0f);
+	enemy->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	enemy->setEmotionCaution();
 	enemy->startMotion(SNAKECROWANIM_Dive, nullptr);
 	cameraMgr->startVibration(VIBTYPE_LightFastShort, position, CAMNAVI_Both);
@@ -445,7 +445,7 @@ void StateWait::init(EnemyBase* enemy, StateArg* stateArg)
 	Obj* snagret             = OBJ(enemy);
 	snagret->mStateTimer     = 0.0f;
 	snagret->mTargetCreature = nullptr;
-	snagret->mTargetVelocity = Vector3f(0.0f);
+	snagret->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	snagret->startMotion(SNAKECROWANIM_Wait, nullptr);
 }
 
@@ -461,9 +461,9 @@ void StateWait::exec(EnemyBase* enemy)
 	if (previousTarget) {
 		if (previousTarget->isAlive() && !previousTarget->isStickToMouth() && previousTarget->mSticker != snagret) {
 			// this inline needs fixing
-			if (snagret->isTargetWithinRange(previousTarget, snagret->getCreatureViewAngle(previousTarget),
-			                                 CG_GENERALPARMS(snagret).mPrivateRadius(), CG_GENERALPARMS(snagret).mSightRadius(),
-			                                 CG_GENERALPARMS(snagret).mFov(), CG_GENERALPARMS(snagret).mViewAngle())) {
+			if (snagret->isTargetOutOfRange(previousTarget, snagret->getAngDist(previousTarget), CG_GENERALPARMS(snagret).mPrivateRadius(),
+			                                CG_GENERALPARMS(snagret).mSightRadius(), CG_GENERALPARMS(snagret).mFov(),
+			                                CG_GENERALPARMS(snagret).mViewAngle())) {
 				target = nullptr;
 			} else {
 				target = EnemyFunc::getNearestPikminOrNavi(snagret, CG_GENERALPARMS(snagret).mViewAngle(),
@@ -483,17 +483,8 @@ void StateWait::exec(EnemyBase* enemy)
 	if (target) {
 		snagret->mStateTimer = 0.0f;
 
-		// this is probably one of the turnToTarget inlines but currently they don't generate the right stack >:(
-		f32 angleDist, angle, turnSpeed, maxTurnAngle;
-		maxTurnAngle = CG_GENERALPARMS(snagret).mMaxTurnAngle();
-		turnSpeed    = CG_GENERALPARMS(snagret).mTurnSpeed();
-
-		angleDist = snagret->getCreatureViewAngle(target);
-		angle     = clamp(angleDist * turnSpeed, PI * (DEG2RAD * maxTurnAngle));
-
-		snagret->updateFaceDir(roundAng(angle + snagret->getFaceDir()));
-
-		if (absF(angleDist) <= SIN_2_5) {
+		f32 angle = snagret->turnToTarget(target, CG_GENERALPARMS(snagret).mTurnSpeed(), CG_GENERALPARMS(snagret).mMaxTurnAngle());
+		if (isAngleWithin(angle, 25.0f)) {
 			snagret->finishRotateEffect();
 
 		} else {
@@ -502,19 +493,19 @@ void StateWait::exec(EnemyBase* enemy)
 		}
 
 	} else {
-		snagret->mStateTimer += sys->mDeltaTime;
+		snagret->mStateTimer += sys->getDeltaTime();
 	}
 
 	if (!snagret->isFinishMotion()) {
-		if (snagret->mHealth <= 0.0f || snagret->mStateTimer > CG_PROPERPARMS(snagret).mWaitTime()
-		    || EnemyFunc::isStartFlick(snagret, false) || snagret->getAttackPiki(5) != nullptr || snagret->getAttackNavi(5)) {
+		if (snagret->isDead() || snagret->mStateTimer > CG_PROPERPARMS(snagret).mWaitTime() || EnemyFunc::isStartFlick(snagret, false)
+		    || snagret->getAttackPiki(5) != nullptr || snagret->getAttackNavi(5)) {
 			snagret->finishMotion();
 		}
 	}
 
 	if (snagret->mCurAnim->mIsPlaying) {
 		if (snagret->mCurAnim->mType == KEYEVENT_END) {
-			if (snagret->mHealth <= 0.0f) {
+			if (snagret->isDead()) {
 				transit(snagret, SNAKECROW_Dead, nullptr);
 				return;
 			}
@@ -1033,7 +1024,7 @@ void StateAttack::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	Obj* snagret = OBJ(enemy);
 	snagret->disableEvent(0, EB_Cullable);
-	snagret->mTargetVelocity = Vector3f(0.0f);
+	snagret->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	snagret->startMotion(snagret->mAttackAnimIdx + SNAKECROWANIM_AttackOffset, nullptr);
 }
 
@@ -1044,11 +1035,11 @@ void StateAttack::init(EnemyBase* enemy, StateArg* stateArg)
 void StateAttack::exec(EnemyBase* enemy)
 {
 	Obj* snagret = OBJ(enemy);
-	if (!snagret->isFinishMotion()) {
+	if (!enemy->isFinishMotion()) {
 		snagret->setAttackPosition();
 	}
 
-	if (snagret->mHealth <= 0.0f) {
+	if (snagret->isDead()) {
 		snagret->finishMotion();
 	}
 
@@ -1070,7 +1061,7 @@ void StateAttack::exec(EnemyBase* enemy)
 
 				if (navi) {
 					Parms* parms = CG_PARMS(snagret);
-					InteractAttack attack(snagret, parms->mGeneral.mAttackDamage.mValue, nullptr);
+					InteractAttack attack(snagret, parms->mGeneral.mAttackDamage(), nullptr);
 					navi->stimulate(attack);
 				}
 
@@ -1097,7 +1088,7 @@ void StateAttack::exec(EnemyBase* enemy)
 			}
 
 		} else if ((u32)snagret->mCurAnim->mType == KEYEVENT_END) {
-			if (snagret->mHealth <= 0.0f) {
+			if (snagret->isDead()) {
 				transit(snagret, SNAKECROW_Dead, nullptr);
 				return;
 			}
@@ -1136,7 +1127,7 @@ void StateAttack::cleanup(EnemyBase* enemy)
  */
 void StateEat::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	enemy->mTargetVelocity = Vector3f(0.0f);
+	enemy->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	enemy->startMotion(SNAKECROWANIM_Eat, nullptr);
 }
 
@@ -1153,7 +1144,7 @@ void StateEat::exec(EnemyBase* enemy)
 			EnemyFunc::swallowPikmin(snagret, parms->mProperParms.mPoisonDamage.mValue, nullptr);
 
 		} else if ((u32)snagret->mCurAnim->mType == KEYEVENT_END) {
-			if (snagret->mHealth <= 0.0f) {
+			if (snagret->isDead()) {
 				transit(snagret, SNAKECROW_Dead, nullptr);
 				return;
 			}
@@ -1190,9 +1181,9 @@ void StateEat::cleanup(EnemyBase* enemy)
  */
 void StateStruggle::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* snagret             = OBJ(enemy);
-	snagret->mStateTimer     = 0.0f;
-	snagret->mTargetVelocity = Vector3f(0.0f);
+	Obj* snagret         = OBJ(enemy);
+	snagret->mStateTimer = 0.0f;
+	snagret->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	snagret->startMotion(SNAKECROWANIM_Struggle, nullptr);
 }
 
@@ -1207,9 +1198,9 @@ void StateStruggle::exec(EnemyBase* enemy)
 		snagret->finishMotion();
 	}
 
-	snagret->mStateTimer += sys->mDeltaTime;
+	snagret->mStateTimer += sys->getDeltaTime();
 	if (snagret->mCurAnim->mIsPlaying && (u32)snagret->mCurAnim->mType == KEYEVENT_END) {
-		if (snagret->mHealth <= 0.0f) {
+		if (snagret->isDead()) {
 			transit(snagret, SNAKECROW_Dead, nullptr);
 			return;
 		}

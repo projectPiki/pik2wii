@@ -1,10 +1,10 @@
-#include "og/newScreen/Vs.h"
-#include "og/newScreen/Challenge.h"
-#include "efx2d/Arg.h"
-#include "efx2d/T2DSprayset.h"
-#include "efx2d/T2DSensor.h"
-#include "og/Sound.h"
 #include "System.h"
+#include "efx2d/Arg.h"
+#include "efx2d/T2DSensor.h"
+#include "efx2d/T2DSprayset.h"
+#include "og/Sound.h"
+#include "og/newScreen/Challenge.h"
+#include "og/newScreen/Vs.h"
 #include "trig.h"
 
 namespace og {
@@ -58,7 +58,9 @@ ObjVs::ObjVs(char const* name)
  * @note Address: 0x80325B9C
  * @note Size: 0xAC
  */
-ObjVs::~ObjVs() { }
+ObjVs::~ObjVs()
+{
+}
 
 /**
  * @note Address: 0x80325C48
@@ -792,7 +794,7 @@ void ObjVs::setOnOffBdama(bool doEfx)
 		mPane_windama2P[i]->updateScale(scale4);
 
 		if (mDisp->mFlags[0] && mDisp->mMarbleCountP1 == i && mBedamaGetTimer > 0.0f) {
-			mBedamaGetTimer -= sys->mDeltaTime;
+			mBedamaGetTimer -= sys->getDeltaTime();
 			if (mBedamaGetTimer <= 0.0f) {
 				mPane_windama1P[i]->show();
 				if (!mFirstBedamaGetP1) {
@@ -807,7 +809,7 @@ void ObjVs::setOnOffBdama(bool doEfx)
 		}
 
 		if (mDisp->mFlags[1] && mDisp->mMarbleCountP2 == i && mBedamaGetTimer > 0.0f) {
-			mBedamaGetTimer -= sys->mDeltaTime;
+			mBedamaGetTimer -= sys->getDeltaTime();
 			if (mBedamaGetTimer <= 0.0f) {
 				mPane_windama2P[i]->show();
 				if (!mFirstBedamaGetP2) {
@@ -864,7 +866,7 @@ void ObjVs::setOnOffBdama(bool doEfx)
 	}
 
 	if (mHasAllBedamaP1 && mBedamaGetTimer > 0.0f) {
-		mBedamaGetTimer -= sys->mDeltaTime;
+		mBedamaGetTimer -= sys->getDeltaTime();
 		if (mBedamaGetTimer <= 0.0f && doEfx) {
 			ogSound->setBdamaGet();
 			f32 scale = 0.6f;
@@ -877,7 +879,7 @@ void ObjVs::setOnOffBdama(bool doEfx)
 	}
 
 	if (mHasAllBedamaP2 && mBedamaGetTimer > 0.0f) {
-		mBedamaGetTimer -= sys->mDeltaTime;
+		mBedamaGetTimer -= sys->getDeltaTime();
 		if (mBedamaGetTimer <= 0.0f && doEfx) {
 			ogSound->setBdamaGet();
 			for (int i = 0; i < 4; i++) {
@@ -965,7 +967,7 @@ void ObjVs::ScreenSet::update(og::Screen::DataNavi& data)
 void ObjVs::checkObake()
 {
 	if (mObakeEnabledP1) {
-		mAlphaObakeP1 += sys->mDeltaTime;
+		mAlphaObakeP1 += sys->getDeltaTime();
 		if (mAlphaObakeP1 > 1.0f)
 			mAlphaObakeP1 = 1.0f;
 
@@ -973,7 +975,7 @@ void ObjVs::checkObake()
 			mObakeEnabledP1 = false;
 		}
 	} else {
-		mAlphaObakeP1 -= sys->mDeltaTime;
+		mAlphaObakeP1 -= sys->getDeltaTime();
 		if (mAlphaObakeP1 < 0.0f)
 			mAlphaObakeP1 = 0.0f;
 
@@ -983,7 +985,7 @@ void ObjVs::checkObake()
 	}
 
 	if (mObakeEnabledP2) {
-		mAlphaObakeP2 += sys->mDeltaTime;
+		mAlphaObakeP2 += sys->getDeltaTime();
 		if (mAlphaObakeP2 > 1.0f)
 			mAlphaObakeP2 = 1.0f;
 
@@ -991,7 +993,7 @@ void ObjVs::checkObake()
 			mObakeEnabledP2 = false;
 		}
 	} else {
-		mAlphaObakeP2 -= sys->mDeltaTime;
+		mAlphaObakeP2 -= sys->getDeltaTime();
 		if (mAlphaObakeP2 < 0.0f)
 			mAlphaObakeP2 = 0.0f;
 
@@ -1031,7 +1033,7 @@ void ObjVs::checkObake()
 	mPaneObake1P->setAlpha(mAlphaObakeP1 * 255.0f * mod1);
 	mPaneObake2P->setAlpha(mAlphaObakeP2 * 255.0f * mod2);
 
-	mObakeMovePos += sys->mDeltaTime * TAU;
+	mObakeMovePos += sys->getDeltaTime() * TAU;
 	if (mObakeMovePos > TAU) {
 		mObakeMovePos -= TAU;
 	}
@@ -1464,7 +1466,7 @@ void ObjVs::doUpdateCommon()
 		break;
 	case 1:
 		if (mFinishTimer > 0.0f) {
-			mFinishTimer -= sys->mDeltaTime;
+			mFinishTimer -= sys->getDeltaTime();
 		} else {
 			mDoneState = 2;
 		}
@@ -1729,19 +1731,26 @@ bool ObjVs::doEnd(::Screen::EndSceneArg const*)
  * @note Address: 0x80327AD8
  * @note Size: 0x4
  */
-void ObjVs::doUpdateFadeinFinish() { }
+void ObjVs::doUpdateFadeinFinish()
+{
+}
 
 /**
  * @note Address: 0x80327ADC
  * @note Size: 0xC
  */
-void ObjVs::doUpdateFinish() { mFadeLevel = 0.0f; }
+void ObjVs::doUpdateFinish()
+{
+	mFadeLevel = 0.0f;
+}
 
 /**
  * @note Address: 0x80327AE8
  * @note Size: 0x4
  */
-void ObjVs::doUpdateFadeoutFinish() { }
+void ObjVs::doUpdateFadeoutFinish()
+{
+}
 
 /**
  * @note Address: 0x80327AEC
@@ -1750,7 +1759,7 @@ void ObjVs::doUpdateFadeoutFinish() { }
 bool ObjVs::doUpdateFadein()
 {
 	bool check = false;
-	mFadeLevel += sys->mDeltaTime;
+	mFadeLevel += sys->getDeltaTime();
 
 	if (mFadeLevel > msVal.mFadeInRate) {
 		mFadeLevel = msVal.mFadeInRate;
@@ -1768,7 +1777,7 @@ bool ObjVs::doUpdateFadein()
 bool ObjVs::doUpdateFadeout()
 {
 	bool check = false;
-	mFadeLevel += sys->mDeltaTime;
+	mFadeLevel += sys->getDeltaTime();
 	if (mFadeLevel > msVal.mFadeOutRate) {
 		mFadeLevel = msVal.mFadeOutRate;
 		check      = true;

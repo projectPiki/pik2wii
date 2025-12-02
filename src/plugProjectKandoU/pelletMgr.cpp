@@ -168,10 +168,10 @@ u8 Pellet::getWallTimer()
  */
 PelletViewArg::PelletViewArg()
 {
-	mScale     = Vector3f(1.0f);
-	mEnemy     = nullptr;
-	mMatrix    = nullptr;
-	mPosition  = Vector3f(0.0f);
+	mScale  = Vector3f(1.0f);
+	mEnemy  = nullptr;
+	mMatrix = nullptr;
+	mPosition.set(0.0f, 0.0f, 0.0f);
 	mEnemyName = 0;
 }
 
@@ -499,7 +499,7 @@ bool Pellet::stimulate(Interaction& interaction)
 bool InteractMattuan::actPellet(Pellet* pellet)
 {
 	if (pellet->getKind() == PelletType::Upgrade) {
-		pellet->startDiscoverDisable(mWaitTimer / sys->mDeltaTime);
+		pellet->startDiscoverDisable(mWaitTimer / sys->getDeltaTime());
 	} else {
 		pellet->clearDiscoverDisable();
 	}
@@ -765,9 +765,9 @@ void Pellet::onKill(CreatureKillArg* killArg)
 	mBaseTrMatrix.makeSRT(scale, rotation, translation);
 
 	if (mModel) {
-		mLodSphere.mPosition = Vector3f(0.0f);
-		mLodSphere.mRadius   = FLOAT_DIST_MAX;
-		mScale               = Vector3f(1.0f);
+		mLodSphere.mPosition.set(0.0f, 0.0f, 0.0f);
+		mLodSphere.mRadius = FLOAT_DIST_MAX;
+		mScale             = Vector3f(1.0f);
 		PSMTXCopy(mBaseTrMatrix.mMatrix.mtxView, mModel->mJ3dModel->mPosMtx);
 		mScale.set(mModel->mJ3dModel->mModelScale);
 		mModel->clearAnimatorAll();
@@ -2047,16 +2047,16 @@ void Pellet::update()
 	mIsDynamic = check;
 
 	if ((PelletMgr::disableDynamics != 0) || (!mIsDynamic)) {
-		f32 frametime = sys->mDeltaTime;
+		f32 frametime = sys->getDeltaTime();
 		Sys::Sphere moveSphere;
 		moveSphere.mPosition = mPelletPosition;
 		if (mPickFlags & 1) {
 			moveSphere.mPosition.y -= 4.0f;
 		}
-		Vector3f* velocityPtr               = &mRigid.mConfigs[0].mVelocity;
-		moveSphere.mRadius                  = 0.5f * mConfig->mParams.mHeight.mData;
-		mRigid.mConfigs[0].mMomentum        = Vector3f(0.0f);
-		mRigid.mConfigs[0].mRotatedMomentum = Vector3f(0.0f);
+		Vector3f* velocityPtr = &mRigid.mConfigs[0].mVelocity;
+		moveSphere.mRadius    = 0.5f * mConfig->mParams.mHeight.mData;
+		mRigid.mConfigs[0].mMomentum.set(0.0f, 0.0f, 0.0f);
+		mRigid.mConfigs[0].mRotatedMomentum.set(0.0f, 0.0f, 0.0f);
 
 		if (((mIsAlwaysCarried == 0) && !(mPickFlags & 1)) || (mFloorTriangle == nullptr)) {
 			velocityPtr->y = -((frametime * _aiConstants->mGravity.mData) - velocityPtr->y);
@@ -2067,7 +2067,7 @@ void Pellet::update()
 			moveVel += mAcceleration;
 		}
 
-		mAcceleration = Vector3f(0.0f);
+		mAcceleration.set(0.0f, 0.0f, 0.0f);
 
 		MoveInfo info(&moveSphere, &moveVel, 0.5f);
 		info.mMovingCreature = this;
@@ -2108,7 +2108,7 @@ void Pellet::update()
 				/////// this bit is full of regswaps
 				Vector3f currVel = *velocityPtr;
 				f32 dotVelocity  = currVel.dot(info.mFloorNormal);
-				Vector3f impulse(0.0f, -(_aiConstants->mGravity.mData * sys->mDeltaTime), 0.0f);
+				Vector3f impulse(0.0f, -(_aiConstants->mGravity.mData * sys->getDeltaTime()), 0.0f);
 				f32 dotImpulse = impulse.dot(info.mFloorNormal);
 
 				Vector3f res = info.mFloorNormal * dotVelocity;
@@ -2154,7 +2154,7 @@ void Pellet::update()
 				f32 anotherMag      = anotherVec.length();
 
 				if ((anotherMag < 100.0f) && (mIsAlwaysCarried == 0)) {
-					f32 time = sys->mDeltaTime;
+					f32 time = sys->getDeltaTime();
 
 					Sys::Sphere ball3;
 					ball3.mPosition = mRigid.mConfigs[0].mPosition;
@@ -2180,7 +2180,7 @@ void Pellet::update()
 		}
 
 		Vector3f someVec = mRigid.mConfigs[0].mPosition;
-		f32 halfFrame    = sys->mDeltaTime / 2;
+		f32 halfFrame    = sys->getDeltaTime() / 2;
 
 		if (someCheck) {
 			if (isCollisionFlick() && !(mPickFlags & 1) && (mIsAlwaysCarried == 0)) {
@@ -2191,7 +2191,7 @@ void Pellet::update()
 				simulate(halfFrame);
 			}
 		}
-		f32 frametimeagain = sys->mDeltaTime;
+		f32 frametimeagain = sys->getDeltaTime();
 		f32 frames         = 1.0f / frametimeagain;
 		Sys::Sphere ball4;
 		ball4.mPosition = someVec;
@@ -2242,7 +2242,7 @@ void Pellet::update()
 			mRigid.mConfigs[0].mVelocity *= anotherVelMag;
 		}
 
-		mAcceleration = Vector3f(0.0f);
+		mAcceleration.set(0.0f, 0.0f, 0.0f);
 	}
 
 	do_update();
@@ -3680,7 +3680,7 @@ void Pellet::onKeyEvent(SysShape::KeyEvent const& keyEvent)
 	if ((keyEvent.mType == KEYEVENT_END) && (mCarryAnim.isFlag(SysShape::Animator::AnimFinishMotion))) {
 		mCarryAnim.startAnim(0, this);
 		if (mPickFlags & 1) {
-			mAnimSpeed = 30.0f * sys->mDeltaTime;
+			mAnimSpeed = 30.0f * sys->getDeltaTime();
 			return;
 		}
 		mAnimSpeed = 0.0f;
@@ -4143,7 +4143,7 @@ void Pellet::calcStickSlotGlobal(s16 slot, Vector3f& stickPosition)
 {
 	Vector3f pos; // sp14
 	if (slot == 9999) {
-		pos = Vector3f(0.0f);
+		pos.set(0.0f, 0.0f, 0.0f);
 	} else {
 		bool validSlot = (slot >= 0) && (slot < mSlotCount);
 		P2ASSERTLINE(4016, validSlot);
@@ -4359,7 +4359,7 @@ void Pellet::startPick()
 		if (mCarryAnim.mAnimMgr) {
 			if (!(mCarryAnim.isFlag(SysShape::Animator::AnimFinishMotion))) {
 				mCarryAnim.startAnim(0, this);
-				mAnimSpeed = 30.0f * sys->mDeltaTime;
+				mAnimSpeed = 30.0f * sys->getDeltaTime();
 			}
 		} else if (mPelletView) {
 			mPelletView->view_start_carrymotion();
@@ -4539,7 +4539,7 @@ void Pellet::onStartCapture()
 {
 	Vector3f captureVec;
 	mCaptureMatrix->getTranslation(captureVec);
-	mRigid.mConfigs[0].mVelocity = Vector3f(0.0f);
+	mRigid.mConfigs[0].mVelocity.set(0.0f, 0.0f, 0.0f);
 	mRigid.mConfigs[0].mPosition = captureVec;
 	mLodSphere.mPosition         = captureVec;
 	mPelletPosition              = captureVec;

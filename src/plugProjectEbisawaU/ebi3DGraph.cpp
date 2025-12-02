@@ -21,7 +21,7 @@ void E3DAnimRes::load(J3DModelData* modelData, JKRArchive* archive, char* resour
 	mLoopStart = mStartFrame;
 	mLoopEnd   = mStopFrame;
 
-	mTimeScale = sys->mDeltaTime * 60.0f * 0.5f;
+	mTimeScale = sys->getDeltaTime() * 60.0f * 0.5f;
 	mMode      = 0;
 }
 

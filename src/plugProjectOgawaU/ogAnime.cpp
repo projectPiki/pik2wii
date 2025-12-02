@@ -1,12 +1,12 @@
-#include "types.h"
-#include "og/Screen/anime.h"
-#include "JSystem/J2D/J2DPane.h"
 #include "JSystem/J2D/J2DAnm.h"
 #include "JSystem/J2D/J2DAnmLoader.h"
-#include "JSystem/JUtility/JUTException.h"
+#include "JSystem/J2D/J2DPane.h"
 #include "JSystem/JKernel/JKRArchive.h"
-#include "og/Screen/ogScreen.h"
+#include "JSystem/JUtility/JUTException.h"
 #include "System.h"
+#include "og/Screen/anime.h"
+#include "og/Screen/ogScreen.h"
+#include "types.h"
 
 namespace og {
 namespace Screen {
@@ -29,7 +29,7 @@ AnimBaseBase::AnimBaseBase()
 	mMinFrame       = 0.0f;
 	mArea           = 1.0f;
 	mLength         = mArea - mMinFrame;
-	mDeltaTime      = sys->mDeltaTime / SINGLE_FRAME_LENGTH;
+	mDeltaTime      = sys->getDeltaTime() / SINGLE_FRAME_LENGTH;
 	mAnm            = nullptr;
 	mResourcePath   = nullptr;
 	mIsInStartDelay = false;
@@ -156,7 +156,7 @@ bool AnimBaseBase::updateSub()
 bool AnimBaseBase::update()
 {
 	if (mIsInStartDelay) {
-		mTimer -= sys->mDeltaTime;
+		mTimer -= sys->getDeltaTime();
 		if (mTimer <= 0.0f) {
 			mIsInStartDelay = false;
 			mTimer          = 0.0f;

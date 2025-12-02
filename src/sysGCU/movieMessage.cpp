@@ -1,12 +1,12 @@
-#include "nans.h"
-#include "P2JME/Movie.h"
-#include "P2JME/P2JME.h"
-#include "JSystem/J2D/J2DAnmLoader.h"
-#include "PSSystem/PSSystemIF.h"
-#include "trig.h"
+#include "Game/GameSystem.h"
 #include "Game/MoviePlayer.h"
 #include "Game/gamePlayData.h"
-#include "Game/GameSystem.h"
+#include "JSystem/J2D/J2DAnmLoader.h"
+#include "P2JME/Movie.h"
+#include "P2JME/P2JME.h"
+#include "PSSystem/PSSystemIF.h"
+#include "nans.h"
+#include "trig.h"
 
 static const int unusedArray[] = { 0, 0, 0 };
 static const char name[]       = "movieMessage";
@@ -31,7 +31,10 @@ WindowPane::WindowPane()
  * @note Address: 0x80434F5C
  * @note Size: 0x20
  */
-void WindowPane::doInit() { mInitialPosition = Vector3f(mPane->mOffset.x, mPane->mOffset.y, 0.0f); }
+void WindowPane::doInit()
+{
+	mInitialPosition = Vector3f(mPane->mOffset.x, mPane->mOffset.y, 0.0f);
+}
 
 /**
  * @note Address: 0x80434F7C
@@ -45,7 +48,7 @@ void WindowPane::update()
 		mPane->hide();
 		break;
 	case WINDOWPANE_Appear:
-		mTimer += sys->mDeltaTime;
+		mTimer += sys->getDeltaTime();
 		if (mTimer > mMaxTime) {
 			mTimer = mMaxTime;
 			if (mCurrPosition.length() < 10.0f) {
@@ -55,7 +58,7 @@ void WindowPane::update()
 		mCurrAngle = (mTimer / mMaxTime) * 180.0f + 90.0f;
 		break;
 	case WINDOWPANE_Finish:
-		mTimer += sys->mDeltaTime;
+		mTimer += sys->getDeltaTime();
 		if (mTimer > mMaxTime) {
 			mState = WINDOWPANE_4;
 			mTimer = mMaxTime;
@@ -80,8 +83,8 @@ void WindowPane::moveWindow(bool flag)
 	Vector3f offset = Vector3f(sinf(angleRadians) * 500.0f + startPosition.x, cosf(angleRadians) * 500.0f + startPosition.y, 0.0f);
 
 	if (flag) {
-		mNewPosition  = offset;
-		mCurrPosition = Vector3f(0.0f);
+		mNewPosition = offset;
+		mCurrPosition.set(0.0f, 0.0f, 0.0f);
 	} else {
 		Vector3f diff = offset - mNewPosition;
 		diff *= 0.2f;
@@ -162,20 +165,20 @@ void AbtnPane::update()
 	alpha     = (1.0f - alpha) * 0.5f;
 	switch (mState) {
 	case 0:
-		mAppearAlpha += -(sys->mDeltaTime * 2.0f);
+		mAppearAlpha += -(sys->getDeltaTime() * 2.0f);
 		if (mAppearAlpha < 0.0f) {
 			mAppearAlpha = 0.0f;
 		}
 		break;
 	case 1:
-		mAppearAlpha += sys->mDeltaTime * 2.0f;
+		mAppearAlpha += sys->getDeltaTime() * 2.0f;
 		if (mAppearAlpha > 1.0f) {
 			mAppearAlpha = 1.0f;
 		}
 		break;
 	}
 
-	mAnimAlpha += sys->mDeltaTime;
+	mAnimAlpha += sys->getDeltaTime();
 	if (mAnimAlpha > 1.0f) {
 		mAnimAlpha = 0.0f;
 	}
@@ -1696,7 +1699,10 @@ lbl_80436728:
  * @note Address: 0x80436754
  * @note Size: 0x24
  */
-void MessageWindowScreen::open(f32 duration) { mWindowPane->open(duration); }
+void MessageWindowScreen::open(f32 duration)
+{
+	mWindowPane->open(duration);
+}
 
 /**
  * @note Address: 0x80436778

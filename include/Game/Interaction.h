@@ -493,6 +493,7 @@ struct InteractAttack : public Interaction {
 	    : Interaction(parent)
 	    , mDamage(damage)
 	    , mCollPart(collpart)
+	    , _10(0)
 	{
 	}
 
@@ -505,6 +506,7 @@ struct InteractAttack : public Interaction {
 	// _04 = Creature*
 	f32 mDamage;         // _08
 	CollPart* mCollPart; // _0C
+	u8 _10;              // _10, new
 };
 
 struct InteractHipdrop : public InteractAttack {
@@ -530,8 +532,8 @@ struct InteractSwallow : public InteractAttack {
 	virtual bool actPiki(Piki*);       // _0C
 
 	// _00     = VTBL
-	// _00-_10 = InteractAttack
-	int mIsStabbed; // _10, used for burrownit, plays extra stab sound/anim
+	// _00-_14 = InteractAttack
+	int mIsStabbed; // _14, used for burrownit, plays extra stab sound/anim
 };
 
 struct InteractSarai : public InteractSwallow {

@@ -125,9 +125,9 @@ void Obj::onInit(CreatureInitArg* initArg)
 	mPauseTimer        = 0.0f;
 	mDoPauseAnim       = true;
 	mCurrRotation.set(1.0f, 0.0f, 0.0f, 0.0f);
-	mDestRotation            = mCurrRotation;
-	mSlerpTime               = 0.0f;
-	mHideAnimPosition        = Vector3f(0.0f);
+	mDestRotation = mCurrRotation;
+	mSlerpTime    = 0.0f;
+	mHideAnimPosition.set(0.0f, 0.0f, 0.0f);
 	mCarryAngleSpeed         = 0.0f;
 	mDoScaleDownMouth        = false;
 	mIsOutsideHouse          = false;
@@ -365,7 +365,7 @@ void Obj::collisionCallback(CollEvent& event)
 	// If we've hit the house, stop moving
 	if (event.mCollidingCreature->isTeki()
 	    && static_cast<EnemyBase*>(event.mCollidingCreature)->getEnemyTypeID() == EnemyTypeID::EnemyID_PanHouse) {
-		mAcceleration = Vector3f(0.0f);
+		mAcceleration.set(0.0f, 0.0f, 0.0f);
 	}
 
 	EnemyBase::collisionCallback(event);
@@ -735,7 +735,7 @@ void Obj::walkFunc()
 			mReturnTimer             = 0;
 		}
 
-		turnToTarget2(mGoalPosition, turningSpeed, maxTurnAngle);
+		turnToTarget(mGoalPosition, turningSpeed, maxTurnAngle);
 
 		f32 prevFaceDir = mFaceDir;
 
@@ -766,8 +766,8 @@ void Obj::walkFunc()
 		// mPauseSpeedModifier is 0.15f by default, so this doesn't run
 		// but if modifier is meant to make speed 0... make speed HARD 0.
 		if (mDoPauseAnim && C_PARMS->mPauseSpeedModifier == 0.0f) {
-			mTargetVelocity  = Vector3f(0.0f);
-			mCurrentVelocity = Vector3f(0.0f);
+			mTargetVelocity.set(0.0f, 0.0f, 0.0f);
+			mCurrentVelocity.set(0.0f, 0.0f, 0.0f);
 		}
 
 		return;

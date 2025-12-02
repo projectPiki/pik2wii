@@ -1,14 +1,14 @@
-#include "og/newScreen/Ground.h"
-#include "og/newScreen/Cave.h"
-#include "og/newScreen/ogUtil.h"
-#include "og/Screen/SunMeter.h"
+#include "System.h"
+#include "nans.h"
+#include "og/Screen/BloGroup.h"
 #include "og/Screen/DopingScreen.h"
 #include "og/Screen/NaviLifeGauge.h"
 #include "og/Screen/PikminCounter.h"
-#include "og/Screen/BloGroup.h"
+#include "og/Screen/SunMeter.h"
+#include "og/newScreen/Cave.h"
+#include "og/newScreen/Ground.h"
+#include "og/newScreen/ogUtil.h"
 #include "trig.h"
-#include "System.h"
-#include "nans.h"
 
 namespace og {
 namespace newScreen {
@@ -42,7 +42,9 @@ ObjGround::ObjGround(char const* name)
  * @note Address: 0x8030DF4C
  * @note Size: 0xAC
  */
-ObjGround::~ObjGround() { }
+ObjGround::~ObjGround()
+{
+}
 
 /**
  * @note Address: 0x8030DFF8
@@ -213,7 +215,7 @@ bool ObjGround::doEnd(::Screen::EndSceneArg const*)
 bool ObjGround::doUpdateFadein()
 {
 	bool check = false;
-	mFadeLevel += sys->mDeltaTime;
+	mFadeLevel += sys->getDeltaTime();
 	if (mFadeLevel > msVal.mFadeinTime) {
 		mFadeLevel = msVal.mFadeinTime;
 		check      = true;
@@ -228,13 +230,18 @@ bool ObjGround::doUpdateFadein()
  * @note Address: 0x8030E844
  * @note Size: 0x4
  */
-void ObjGround::doUpdateFadeinFinish() { }
+void ObjGround::doUpdateFadeinFinish()
+{
+}
 
 /**
  * @note Address: 0x8030E848
  * @note Size: 0xC
  */
-void ObjGround::doUpdateFinish() { mFadeLevel = 0.0f; }
+void ObjGround::doUpdateFinish()
+{
+	mFadeLevel = 0.0f;
+}
 
 /**
  * @note Address: 0x8030E854
@@ -243,7 +250,7 @@ void ObjGround::doUpdateFinish() { mFadeLevel = 0.0f; }
 bool ObjGround::doUpdateFadeout()
 {
 	bool check = false;
-	mFadeLevel += sys->mDeltaTime;
+	mFadeLevel += sys->getDeltaTime();
 	if (mFadeLevel > msVal.mFadeoutTime) {
 		mFadeLevel = msVal.mFadeoutTime;
 		check      = true;
@@ -258,7 +265,9 @@ bool ObjGround::doUpdateFadeout()
  * @note Address: 0x8030E8D0
  * @note Size: 0x4
  */
-void ObjGround::doUpdateFadeoutFinish() { }
+void ObjGround::doUpdateFadeoutFinish()
+{
+}
 
 ObjGround::StaticValues ObjGround::msVal;
 

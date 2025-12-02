@@ -1,14 +1,14 @@
+#include "JSystem/J3D/J3DAnmLoader.h"
 #include "JSystem/JKernel/JKRDvdRipper.h"
 #include "P2Macros.h"
+#include "SysShape/AnimInfo.h"
 #include "SysShape/AnimMgr.h"
 #include "SysShape/Animator.h"
-#include "SysShape/AnimInfo.h"
 #include "SysShape/Joint.h"
 #include "SysShape/KeyEvent.h"
 #include "SysShape/Model.h"
-#include "SysShape/MtxObject.h"
 #include "SysShape/MotionListener.h"
-#include "JSystem/J3D/J3DAnmLoader.h"
+#include "SysShape/MtxObject.h"
 #include "nans.h"
 
 static const u32 padding[]    = { 0, 0, 0 };
@@ -58,7 +58,7 @@ void Animator::startAnim(int animID, MotionListener* listener)
 		mListener = nullptr;
 	}
 
-	mFlags = 0;
+	mFlags.clear();
 }
 
 /**
@@ -67,10 +67,10 @@ void Animator::startAnim(int animID, MotionListener* listener)
  */
 void Animator::startExAnim(AnimInfo* info)
 {
-	mAnimInfo   = info;
-	mTimer      = 0.0f;
-	mListener   = nullptr;
-	mFlags      = 0;
+	mAnimInfo = info;
+	mTimer    = 0.0f;
+	mListener = nullptr;
+	mFlags.clear();
 	mCurAnimKey = nullptr;
 	setFlag(Unk80);
 	JUT_ASSERTLINE(252, verbose == 0, "OKOK\n");
@@ -80,7 +80,10 @@ void Animator::startExAnim(AnimInfo* info)
  * @note Address: 0x80428DB8
  * @note Size: 0x8
  */
-bool Animator::assertValid(Model* model) { return true; }
+bool Animator::assertValid(Model* model)
+{
+	return true;
+}
 
 /**
  * @note Address: 0x80428DC0
@@ -90,7 +93,7 @@ void Animator::setCurrFrame(f32 timer)
 {
 	mTimer      = timer;
 	mCurAnimKey = mAnimInfo->getLowestAnimKey(timer);
-	mFlags      = 0;
+	mFlags.clear();
 }
 
 /**
@@ -216,7 +219,7 @@ void BlendAnimator::setAnimMgr(AnimMgr* mgr)
 		mAnimators[i].mTimer      = 0.0f;
 		mAnimators[i].mCurAnimKey = mAnimators[i].mAnimInfo->getLowestAnimKey(0.0f);
 		mAnimators[i].mListener   = nullptr;
-		mAnimators[i].mFlags      = 0;
+		mAnimators[i].mFlags.clear();
 	}
 
 	AnimInfo* info = mgr->getAnimByID(0);
@@ -332,7 +335,10 @@ void Joint::init(u16 index, Model* model, J3DJoint* j3dJoint)
  * @note Address: 0x804298A0
  * @note Size: 0x20
  */
-Matrixf* Joint::getWorldMatrix() { return mModel->getJ3DModel()->mMtxBuffer->getWorldMatrix(mJointIndex); }
+Matrixf* Joint::getWorldMatrix()
+{
+	return mModel->getJ3DModel()->mMtxBuffer->getWorldMatrix(mJointIndex);
+}
 
 /**
  * @note Address: N/A
@@ -436,7 +442,10 @@ KeyEvent* AnimInfo::getAnimKeyByType(u32 type)
  * @note Address: 0x8042997C
  * @note Size: 0x20
  */
-void AnimInfo::read(Stream& input) { readEditor(input); }
+void AnimInfo::read(Stream& input)
+{
+	readEditor(input);
+}
 
 /**
  * @note Address: 0x8042999C

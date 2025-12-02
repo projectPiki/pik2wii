@@ -1,5 +1,5 @@
-#include "Game/Entities/Tyre.h"
 #include "Game/EnemyAnimKeyEvent.h"
+#include "Game/Entities/Tyre.h"
 
 namespace Game {
 namespace Tyre {
@@ -73,7 +73,10 @@ void Tyre::StateMove::exec(EnemyBase* enemy)
  * @note Address: 0x803ABA64
  * @note Size: 0x24
  */
-void Tyre::StateMove::cleanup(EnemyBase* enemy) { OBJ(enemy)->fadeSmokeEffect(); }
+void Tyre::StateMove::cleanup(EnemyBase* enemy)
+{
+	OBJ(enemy)->fadeSmokeEffect();
+}
 
 /**
  * @note Address: 0x803ABA88
@@ -129,9 +132,9 @@ void Tyre::StateFreeze::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	Obj* tyre = OBJ(enemy);
 	tyre->stopMotion();
-	mFrozenTimer           = 0;
-	tyre->mCurrentVelocity = Vector3f(0.0f);
-	tyre->mTargetVelocity  = Vector3f(0.0f);
+	mFrozenTimer = 0;
+	tyre->mCurrentVelocity.set(0.0f, 0.0f, 0.0f);
+	tyre->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	tyre->enableEvent(0, EB_Constrained);
 	tyre->collisionStOn();
 }
@@ -142,9 +145,9 @@ void Tyre::StateFreeze::init(EnemyBase* enemy, StateArg* stateArg)
  */
 void Tyre::StateFreeze::exec(EnemyBase* enemy)
 {
-	Obj* tyre              = OBJ(enemy);
-	tyre->mCurrentVelocity = Vector3f(0.0f);
-	tyre->mTargetVelocity  = Vector3f(0.0f);
+	Obj* tyre = OBJ(enemy);
+	tyre->mCurrentVelocity.set(0.0f, 0.0f, 0.0f);
+	tyre->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	mFrozenTimer++;
 	if ((tyre->mHealth <= 0.0f) && tyre->isEvent(0, EB_Invulnerable)) {
 		transit(tyre, TYRE_Dead, nullptr);

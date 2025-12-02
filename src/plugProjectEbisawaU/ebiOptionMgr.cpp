@@ -1,19 +1,22 @@
-#include "PowerPC_EABI_Support/Runtime/runtime.h"
-#include "ebi/Option.h"
-#include "ebi/Save.h"
-#include "ebi/E2DCallBack.h"
 #include "Graphics.h"
 #include "P2Macros.h"
 #include "PSSystem/PSSystemIF.h"
+#include "PowerPC_EABI_Support/Runtime/runtime.h"
 #include "Screen/Game2DMgr.h"
 #include "SoundID.h"
 #include "System.h"
+#include "ebi/E2DCallBack.h"
+#include "ebi/Option.h"
+#include "ebi/Save.h"
 
 /**
  * @note Address: N/A
  * @note Size: 0xE4
  */
-static void _Print(char* name, ...) { OSReport("ebiOptionMgr"); }
+static void _Print(char* name, ...)
+{
+	OSReport("ebiOptionMgr");
+}
 
 namespace ebi {
 namespace Option {
@@ -38,25 +41,35 @@ void FSMStateMachine::init(TMgr*)
  * @note Address: 0x803CEBD0
  * @note Size: 0x2C
  */
-void FSMState::init(TMgr* obj, Game::StateArg* arg) { do_init(obj, arg); }
+void FSMState::init(TMgr* obj, Game::StateArg* arg)
+{
+	do_init(obj, arg);
+}
 
 /**
  * @note Address: 0x803CEBFC
  * @note Size: 0x4
  */
-void FSMState::do_init(TMgr*, Game::StateArg* arg) { }
+void FSMState::do_init(TMgr*, Game::StateArg* arg)
+{
+}
 
 /**
  * @note Address: 0x803CEC00
  * @note Size: 0x2C
  */
-void FSMState::exec(TMgr* obj) { do_exec(obj); }
+void FSMState::exec(TMgr* obj)
+{
+	do_exec(obj);
+}
 
 /**
  * @note Address: 0x803CEC2C
  * @note Size: 0x4
  */
-void FSMState::do_exec(TMgr*) { }
+void FSMState::do_exec(TMgr*)
+{
+}
 
 /**
  * @note Address: 0x803CEC30
@@ -84,7 +97,10 @@ void FSMState_ScreenOpen::do_exec(TMgr* obj)
  * @note Address: 0x803CED14
  * @note Size: 0xC
  */
-void FSMState_ScreenWait::do_init(TMgr* obj, Game::StateArg* arg) { obj->mOptionScreen.mEnabled = 1; }
+void FSMState_ScreenWait::do_init(TMgr* obj, Game::StateArg* arg)
+{
+	obj->mOptionScreen.mEnabled = 1;
+}
 
 /**
  * @note Address: 0x803CED20
@@ -145,7 +161,7 @@ void FSMState_ScreenClose::do_exec(TMgr* obj)
  */
 void FSMState_WaitCloseForNoCard::do_init(TMgr* obj, Game::StateArg* arg)
 {
-	u32 inverseDeltaTime = 1.0f / sys->mDeltaTime;
+	u32 inverseDeltaTime = 1.0f / sys->getDeltaTime();
 	mWaitTimer           = inverseDeltaTime;
 	mWaitTimerMax        = inverseDeltaTime;
 }
@@ -199,7 +215,10 @@ void FSMState_WorldMapInfoWindow::do_exec(TMgr* obj)
  * @note Address: 0x803CF10C
  * @note Size: 0xC
  */
-void FSMState_LoadOption::do_init(TMgr* obj, Game::StateArg* arg) { mStatus = 0; }
+void FSMState_LoadOption::do_init(TMgr* obj, Game::StateArg* arg)
+{
+	mStatus = 0;
+}
 
 /**
  * @note Address: 0x803CF118
@@ -311,7 +330,10 @@ void TMgr::setController(Controller* controller)
  * @note Address: 0x803D0194
  * @note Size: 0x3C
  */
-void TMgr::start() { mStateMachine.transit(this, LoadOption, nullptr); }
+void TMgr::start()
+{
+	mStateMachine.transit(this, LoadOption, nullptr);
+}
 
 /**
  * @note Address: N/A
@@ -329,7 +351,10 @@ void TMgr::forceQuit()
  * @note Address: 0x803D01D0
  * @note Size: 0x28
  */
-bool TMgr::isFinish() { return u8(getStateID() == 0); }
+bool TMgr::isFinish()
+{
+	return u8(getStateID() == 0);
+}
 
 /**
  * @note Address: 0x803D01F8

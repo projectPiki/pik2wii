@@ -747,7 +747,7 @@ void Onyon::updateSpot()
 		case SPOTSTATE_Opened:
 			break;
 		case SPOTSTATE_Closing:
-			mSpotGrowTimer = (sys->mDeltaTime * 0.7f + mSpotGrowTimer);
+			mSpotGrowTimer = (sys->getDeltaTime() * 0.7f + mSpotGrowTimer);
 			if (mSpotGrowTimer >= 1.0f) {
 				mSpotGrowTimer = 1.0f;
 				mSpotState     = SPOTSTATE_Opened;
@@ -760,7 +760,7 @@ void Onyon::updateSpot()
 			break;
 
 		case SPOTSTATE_Opening:
-			mSpotGrowTimer = -(sys->mDeltaTime * 0.7f - mSpotGrowTimer);
+			mSpotGrowTimer = -(sys->getDeltaTime() * 0.7f - mSpotGrowTimer);
 			if (mSpotGrowTimer <= 0.0f) {
 				mSpotGrowTimer = 0.0f;
 				mSpotState     = SPOTSTATE_Closed;
@@ -834,7 +834,7 @@ void Onyon::doAI()
 			mAnimSpeed = 30.0f;
 		}
 		if (mSuckState == SUCKSTATE_IdleOpen) {
-			mSuckTimer += sys->mDeltaTime;
+			mSuckTimer += sys->getDeltaTime();
 			// stay open for 3 seconds without interruption
 			if (mSuckTimer > 3.0f) {
 				mAnimator.setFrameByKeyType(1);
@@ -905,7 +905,7 @@ void Onyon::do_doAnimation()
 	if (mOnyonType == ONYON_TYPE_SHIP) {
 		if (mPropera != 0.0f) {
 			f32& speed = getPMotionSpeed(2);
-			speed += mPropera * sys->mDeltaTime;
+			speed += mPropera * sys->getDeltaTime();
 			if (speed < 30.0f) {
 				speed    = 30.0f;
 				mPropera = 0.0f;
@@ -1300,7 +1300,7 @@ void Onyon::makeTrMatrix()
 				mIsReleasingPikis = 0;
 			}
 		} else {
-			mReleasePikisTimer -= sys->mDeltaTime;
+			mReleasePikisTimer -= sys->getDeltaTime();
 		}
 	}
 }
@@ -1805,7 +1805,7 @@ SysShape::Animator& Onyon::getPAnimator(int i)
  */
 void Onyon::update_pmotions()
 {
-	f32 time = sys->mDeltaTime;
+	f32 time = sys->getDeltaTime();
 	if (mOnyonType == ONYON_TYPE_SHIP) {
 		for (int i = 0; i < mPMotionCount; i++) {
 			char* names[3] = { "pmotion1", "pmotion2", "pmotion3" };

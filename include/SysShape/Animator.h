@@ -33,11 +33,10 @@ struct Animator : public BaseAnimator {
 
 	Animator()
 	{
-		mFlags    = 0;
 		mAnimInfo = nullptr;
 		mListener = nullptr;
-		mFlags    = 0;
-		mAnimMgr  = nullptr;
+		mFlags.clear();
+		mAnimMgr = nullptr;
 	}
 
 	virtual J3DMtxCalc* getCalc() // _08 (weak)
@@ -53,9 +52,9 @@ struct Animator : public BaseAnimator {
 	void setFrameByKeyType(u32);
 	void setLastFrame();
 
-	inline void setFlag(u8 flag) { mFlags |= flag; }
-	inline void resetFlag(u8 flag) { mFlags &= ~flag; }
-	inline bool isFlag(u8 flag) const { return mFlags & flag; }
+	inline void setFlag(u8 flag) { mFlags.typeView |= flag; }
+	inline void resetFlag(u8 flag) { mFlags.typeView &= ~flag; }
+	inline bool isFlag(u8 flag) const { return mFlags.typeView & flag; }
 
 	inline int getAnimIndex()
 	{
@@ -90,7 +89,7 @@ struct Animator : public BaseAnimator {
 	AnimInfo* mAnimInfo;       // _0C
 	AnimMgr* mAnimMgr;         // _10
 	KeyEvent* mCurAnimKey;     // _14
-	u8 mFlags;                 // _18
+	BitFlag<u8> mFlags;        // _18
 
 	static bool verbose;
 };

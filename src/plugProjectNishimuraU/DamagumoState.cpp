@@ -85,7 +85,7 @@ void StateStay::init(EnemyBase* enemy, StateArg* stateArg)
 	damagumo->enableEvent(0, EB_ModelHidden);
 	damagumo->mTargetCreature = nullptr;
 
-	damagumo->mTargetVelocity = Vector3f(0.0f);
+	damagumo->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	damagumo->startMotion(DAMAGUMOANIM_Landing, nullptr);
 	damagumo->stopMotion();
 }
@@ -138,7 +138,7 @@ void StateLand::init(EnemyBase* enemy, StateArg* stateArg)
 	damagumo->setEmotionExcitement();
 	damagumo->mTargetCreature = nullptr;
 
-	damagumo->mTargetVelocity = Vector3f(0.0f);
+	damagumo->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	damagumo->startMotion(DAMAGUMOANIM_Landing, nullptr);
 
 	shadowMgr->addJointShadow(damagumo);
@@ -215,7 +215,7 @@ void StateWait::init(EnemyBase* enemy, StateArg* stateArg)
 	damagumo->mStateTimer     = 0.0f;
 	damagumo->mStateDuration  = 1.75f + randWeightFloat(1.75f);
 	damagumo->mTargetCreature = nullptr;
-	damagumo->mTargetVelocity = Vector3f(0.0f);
+	damagumo->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	damagumo->startMotion(DAMAGUMOANIM_Wait, nullptr);
 }
 
@@ -226,7 +226,7 @@ void StateWait::init(EnemyBase* enemy, StateArg* stateArg)
 void StateWait::exec(EnemyBase* enemy)
 {
 	Obj* damagumo = OBJ(enemy);
-	damagumo->mStateTimer += sys->mDeltaTime;
+	damagumo->mStateTimer += sys->getDeltaTime();
 
 	if (damagumo->mHealth <= 0.0f) {
 		damagumo->mNextState = DAMAGUMO_Dead;
@@ -262,7 +262,7 @@ void StateFlick::init(EnemyBase* enemy, StateArg* stateArg)
 	damagumo->mNextState      = DAMAGUMO_NULL;
 	damagumo->mStateTimer     = 0.0f;
 	damagumo->mTargetCreature = nullptr;
-	damagumo->mTargetVelocity = Vector3f(0.0f);
+	damagumo->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 
 	damagumo->startMotion(DAMAGUMOANIM_Flick, nullptr);
 	damagumo->startBlendMotion();
@@ -313,7 +313,7 @@ void StateWalk::init(EnemyBase* enemy, StateArg* stateArg)
 	damagumo->mStateTimer     = 0.0f;
 	damagumo->mStateDuration  = 3.25f + randWeightFloat(3.25f);
 	damagumo->mTargetCreature = nullptr;
-	damagumo->mTargetVelocity = Vector3f(0.0f);
+	damagumo->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	damagumo->startIKMotion();
 	damagumo->getTargetPosition();
 }
@@ -326,7 +326,7 @@ void StateWalk::exec(EnemyBase* enemy)
 {
 	Obj* damagumo = OBJ(enemy);
 	damagumo->getTargetPosition();
-	damagumo->mStateTimer += sys->mDeltaTime;
+	damagumo->mStateTimer += sys->getDeltaTime();
 
 	if (EnemyFunc::isStartFlick(damagumo, false)) {
 		damagumo->mNextState = DAMAGUMO_Flick;

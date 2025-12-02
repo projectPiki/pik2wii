@@ -38,7 +38,7 @@ void StateDead::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	enemy->deathProcedure();
 	enemy->disableEvent(0, EB_Cullable);
-	enemy->mTargetVelocity = Vector3f(0.0f);
+	enemy->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	enemy->startMotion(ELECBUGANIM_Dead, nullptr);
 }
 
@@ -70,7 +70,7 @@ void StateWait::init(EnemyBase* enemy, StateArg* stateArg)
 	Obj* bug         = OBJ(enemy);
 	bug->mStateTimer = 0.0f;
 	bug->enableEvent(0, EB_Cullable);
-	bug->mTargetVelocity = Vector3f(0.0f);
+	bug->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	bug->startMotion(ELECBUGANIM_Wait, nullptr);
 }
 
@@ -81,13 +81,13 @@ void StateWait::init(EnemyBase* enemy, StateArg* stateArg)
 void StateWait::exec(EnemyBase* enemy)
 {
 	Obj* bug = OBJ(enemy);
-	if (bug->mStateTimer > CG_PROPERPARMS(bug).mWaitTime) {
+	if (bug->mStateTimer > CG_PROPERPARMS(bug).mWaitTime()) {
 		bug->finishMotion();
 	}
 	if (bug->mCurAnim->mIsPlaying && enemy->mCurAnim->mType == KEYEVENT_END) {
 		transit(bug, ELECBUG_Turn, nullptr);
 	}
-	bug->mStateTimer += sys->mDeltaTime;
+	bug->mStateTimer += sys->getDeltaTime();
 }
 
 /**
@@ -107,7 +107,7 @@ void StateTurn::init(EnemyBase* enemy, StateArg* stateArg)
 	Obj* bug = OBJ(enemy);
 	bug->setTargetPosition();
 	bug->enableEvent(0, EB_Cullable);
-	bug->mTargetVelocity = Vector3f(0.0f);
+	bug->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	bug->startMotion(ELECBUGANIM_Move, nullptr);
 }
 
@@ -119,15 +119,10 @@ void StateTurn::exec(EnemyBase* enemy)
 {
 	Obj* bug           = OBJ(enemy);
 	Vector3f targetPos = bug->mTargetPosition;
-	Vector2f XZ;
-	XZ.x = targetPos.x;
-	XZ.y = targetPos.z;
-
 	// f32 dist = bug->changeFaceDir(targetPos);
 
 	f32 dist = bug->turnToTarget(targetPos, CG_GENERALPARMS(bug).mTurnSpeed(), CG_GENERALPARMS(bug).mMaxTurnAngle());
-	f64 abs  = fabs(dist);
-	if ((f32)(abs) <= PI / 6.0f) {
+	if (isAngleWithin(dist, 30.0f)) {
 		bug->finishMotion();
 	}
 
@@ -172,9 +167,9 @@ void StateMove::exec(EnemyBase* enemy)
 	Vector3f targetPos = Vector3f(bug->mTargetPosition);
 
 	Vector3f currentPos = bug->getPosition();
-	if (outsideRadius(25.0f, currentPos, targetPos)) {
-		EnemyParmsBase::Parms& general = CG_GENERALPARMS(bug);
-		EnemyFunc::walkToTarget(bug, targetPos, general.mMoveSpeed, general.mTurnSpeed, general.mMaxTurnAngle);
+	if (sqrDistanceXZ(currentPos, targetPos) > 525.0f) {
+		EnemyFunc::walkToTarget(bug, targetPos, CG_GENERALPARMS(bug).mMoveSpeed(), CG_GENERALPARMS(bug).mTurnSpeed(),
+		                        CG_GENERALPARMS(bug).mMaxTurnAngle());
 
 	} else {
 		bug->finishMotion();
@@ -211,7 +206,7 @@ void StateCharge::init(EnemyBase* enemy, StateArg* stateArg)
 	bug->resetPartnerPtr();
 	bug->startChargeEffect();
 	bug->enableEvent(0, EB_Cullable);
-	bug->mTargetVelocity = Vector3f(0.0f);
+	bug->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	bug->setEmotionExcitement();
 	bug->startMotion(ELECBUGANIM_Charge, nullptr);
 }
@@ -256,7 +251,7 @@ void StateCharge::exec(EnemyBase* enemy)
 		Vector3f partnerPos = partner->getPosition();
 		Vector3f pos        = bugPos - partnerPos;
 		pos += bugPos;
-		bug->turnToTarget2(pos, 0.15f, CG_GENERALPARMS(bug).mMaxTurnAngle());
+		bug->turnToTarget(pos, 0.15f, CG_GENERALPARMS(bug).mMaxTurnAngle());
 	}
 	if (bug->mStateTimer > 3.0f) {
 		if (bug->getPartner()) {
@@ -266,7 +261,7 @@ void StateCharge::exec(EnemyBase* enemy)
 			transit(bug, ELECBUG_Turn, nullptr);
 		}
 	}
-	bug->mStateTimer += sys->mDeltaTime;
+	bug->mStateTimer += sys->getDeltaTime();
 }
 
 /**
@@ -294,7 +289,7 @@ void StateDischarge::init(EnemyBase* enemy, StateArg* stateArg)
 	Obj* bug         = OBJ(enemy);
 	bug->mStateTimer = 0.0f;
 	bug->disableEvent(0, EB_Cullable);
-	bug->mTargetVelocity = Vector3f(0.0f);
+	bug->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	bug->setEmotionExcitement();
 	bug->startMotion(ELECBUGANIM_Discharge, nullptr);
 }
@@ -327,7 +322,7 @@ void StateDischarge::exec(EnemyBase* enemy)
 		}
 	}
 
-	bug->mStateTimer += sys->mDeltaTime;
+	bug->mStateTimer += sys->getDeltaTime();
 }
 
 /**
@@ -352,7 +347,7 @@ void StateChildCharge::init(EnemyBase* enemy, StateArg* stateArg)
 	bug->mStateTimer = 0.0f;
 	bug->startChargeEffect();
 	bug->disableEvent(0, EB_Cullable);
-	bug->mTargetVelocity = Vector3f(0.0f);
+	bug->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	bug->setEmotionExcitement();
 	bug->startMotion(ELECBUGANIM_Charge, nullptr);
 }
@@ -370,7 +365,7 @@ void StateChildCharge::exec(EnemyBase* enemy)
 		Vector3f partnerPos = partner->getPosition();
 		Vector3f pos        = bugPos - partnerPos;
 		pos += bugPos;
-		bug->turnToTarget2(pos, 0.15f, CG_GENERALPARMS(bug).mMaxTurnAngle());
+		bug->turnToTarget(pos, 0.15f, CG_GENERALPARMS(bug).mMaxTurnAngle());
 	}
 	if (bug->mStateTimer > 1.0f) {
 		if (partner) {
@@ -380,7 +375,7 @@ void StateChildCharge::exec(EnemyBase* enemy)
 			transit(bug, ELECBUG_Turn, nullptr);
 		}
 	}
-	bug->mStateTimer += sys->mDeltaTime;
+	bug->mStateTimer += sys->getDeltaTime();
 }
 
 /**
@@ -403,7 +398,7 @@ void StateChildDischarge::init(EnemyBase* enemy, StateArg* stateArg)
 	Obj* bug         = OBJ(enemy);
 	bug->mStateTimer = 0.0f;
 	bug->disableEvent(0, EB_Cullable);
-	bug->mTargetVelocity = Vector3f(0.0f);
+	bug->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	bug->setEmotionExcitement();
 	bug->startMotion(ELECBUGANIM_Discharge, nullptr);
 }
@@ -428,7 +423,7 @@ void StateChildDischarge::exec(EnemyBase* enemy)
 		transit(bug, ELECBUG_Wait, nullptr);
 	}
 
-	bug->mStateTimer += sys->mDeltaTime;
+	bug->mStateTimer += sys->getDeltaTime();
 }
 
 /**
@@ -454,7 +449,7 @@ void StateReverse::init(EnemyBase* enemy, StateArg* stateArg)
 	bug->finishPartnerAndEffect();
 	bug->enableEvent(0, EB_Cullable);
 	bug->disableEvent(0, EB_Invulnerable);
-	bug->mTargetVelocity = Vector3f(0.0f);
+	bug->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	bug->startMotion(ELECBUGANIM_Turn, nullptr);
 }
 
@@ -465,16 +460,16 @@ void StateReverse::init(EnemyBase* enemy, StateArg* stateArg)
 void StateReverse::exec(EnemyBase* enemy)
 {
 	Obj* bug = OBJ(enemy);
-	if (bug->mStateTimer > CG_PROPERPARMS(bug).mFlipTime.mValue) {
+	if (bug->mStateTimer > CG_PROPERPARMS(bug).mFlipTime()) {
 		bug->finishMotion();
 	}
 
-	if (bug->mHealth <= 0.0f) {
+	if (bug->isDead()) {
 		transit(bug, ELECBUG_Dead, nullptr);
 		return;
 	}
 
-	bug->mStateTimer += sys->mDeltaTime;
+	bug->mStateTimer += sys->getDeltaTime();
 
 	if (bug->mCurAnim->mIsPlaying && bug->mCurAnim->mType == KEYEVENT_END) {
 		transit(bug, ELECBUG_Return, nullptr);
@@ -498,7 +493,7 @@ void StateReturn::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	Obj* bug = OBJ(enemy); // nothing even uses the obj cast here but it's necessary for codegen, smh.
 	bug->enableEvent(0, EB_Cullable);
-	bug->mTargetVelocity = Vector3f(0.0f);
+	bug->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	bug->startMotion(ELECBUGANIM_Recover, nullptr);
 }
 

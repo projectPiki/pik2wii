@@ -9,7 +9,10 @@ namespace MaroFrog {
  * @note Address: 0x802617E0
  * @note Size: 0x98
  */
-Obj::Obj() { createEffect(); }
+Obj::Obj()
+{
+	createEffect();
+}
 
 /**
  * @note Address: 0x80261878
@@ -23,20 +26,8 @@ void Obj::attackNaviPosition()
 	{
 		Navi* navi = (*iter);
 		if (navi->isAlive()) {
-			f32 attackDist, attackAngle;
-			attackAngle = static_cast<EnemyParmsBase*>(mParms)->mGeneral.mMaxAttackAngle();
-			attackDist  = static_cast<EnemyParmsBase*>(mParms)->mGeneral.mMaxAttackRange();
-
-			f32 angledist = getCreatureViewAngle(navi);
-
-			bool check   = false;
-			Vector3f sep = getTargetSeparation(navi);
-			if ((sep.sqrMagnitude() < SQUARE(attackDist)) && FABS(angledist) <= TORADIANS(attackAngle)) {
-				check = true;
-			}
-
-			if (check) {
-				mTargetPosition = Vector3f(navi->getPosition());
+			if (isTargetAttackable(navi, E_GENERALPARMS.mMaxAttackRange(), E_GENERALPARMS.mMaxAttackAngle())) {
+				mTargetPosition.set(navi->getPosition());
 			}
 		}
 	}
@@ -46,7 +37,10 @@ void Obj::attackNaviPosition()
  * @note Address: 0x80261CD4
  * @note Size: 0xB0
  */
-void Obj::createEffect() { mEfxPota = new efx::TFrogPota; }
+void Obj::createEffect()
+{
+	mEfxPota = new efx::TFrogPota;
+}
 
 } // namespace MaroFrog
 } // namespace Game

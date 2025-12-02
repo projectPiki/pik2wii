@@ -2,15 +2,15 @@
 #define _GAME_ENEMYMGRBASE_H
 
 #include "Container.h"
+#include "Game/EnemyBase.h"
 #include "Game/EnemyPelletInfo.h"
 #include "Game/EnemyStone.h"
-#include "Game/pelletMgr.h"
 #include "Game/enemyInfo.h"
 #include "Game/gameGenerator.h"
+#include "Game/pelletMgr.h"
 #include "GenericObjectMgr.h"
-#include "SysShape/AnimMgr.h"
-#include "Game/EnemyBase.h"
 #include "JSystem/J3D/J3DModelLoader.h"
+#include "SysShape/AnimMgr.h"
 #include "Vector3.h"
 
 struct CollPartFactory;
@@ -142,6 +142,7 @@ struct EnemyMgrBase : public IEnemyMgrBase {
 	void init(EnemyParmsBase*);
 	bool isValidEnemyTypeID();
 	void loadStoneSetting(const char*);
+	void setupObjects(const char*);
 	bool setupParms(const char*);
 	void doAnimationAlwaysMovieActor();
 	void doEntryAlwaysMovieActor();

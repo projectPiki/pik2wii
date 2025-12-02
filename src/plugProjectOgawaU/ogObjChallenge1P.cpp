@@ -1,9 +1,9 @@
-#include "og/newScreen/Challenge.h"
-#include "og/Screen/NaviLifeGauge.h"
-#include "og/Screen/PikminCounter.h"
-#include "trig.h"
 #include "System.h"
 #include "nans.h"
+#include "og/Screen/NaviLifeGauge.h"
+#include "og/Screen/PikminCounter.h"
+#include "og/newScreen/Challenge.h"
+#include "trig.h"
 
 namespace og {
 namespace newScreen {
@@ -30,7 +30,9 @@ ObjChallenge1P::ObjChallenge1P(const char* name)
  * @note Address: 0x80327DBC
  * @note Size: 0x68
  */
-ObjChallenge1P::~ObjChallenge1P() { }
+ObjChallenge1P::~ObjChallenge1P()
+{
+}
 
 /**
  * @note Address: 0x80327E24
@@ -186,7 +188,7 @@ void ObjChallenge1P::doDraw(Graphics& gfx)
 bool ObjChallenge1P::doUpdateFadein()
 {
 	bool check = false;
-	mFadeLevel += sys->mDeltaTime;
+	mFadeLevel += sys->getDeltaTime();
 
 	if (mFadeLevel > ObjChallengeBase::msBaseVal.mFadeinTime) {
 		mFadeLevel = ObjChallengeBase::msBaseVal.mFadeinTime;
@@ -201,13 +203,18 @@ bool ObjChallenge1P::doUpdateFadein()
  * @note Address: 0x803288C8
  * @note Size: 0x4
  */
-void ObjChallenge1P::doUpdateFadeinFinish() { }
+void ObjChallenge1P::doUpdateFadeinFinish()
+{
+}
 
 /**
  * @note Address: 0x803288CC
  * @note Size: 0xC
  */
-void ObjChallenge1P::doUpdateFinish() { mFadeLevel = 0.0f; }
+void ObjChallenge1P::doUpdateFinish()
+{
+	mFadeLevel = 0.0f;
+}
 
 /**
  * @note Address: 0x803288D8
@@ -216,7 +223,7 @@ void ObjChallenge1P::doUpdateFinish() { mFadeLevel = 0.0f; }
 bool ObjChallenge1P::doUpdateFadeout()
 {
 	bool check = false;
-	mFadeLevel += sys->mDeltaTime;
+	mFadeLevel += sys->getDeltaTime();
 	if (mFadeLevel > ObjChallengeBase::msBaseVal.mFadeoutTime) {
 		mFadeLevel = ObjChallengeBase::msBaseVal.mFadeoutTime;
 		check      = true;
@@ -230,7 +237,9 @@ bool ObjChallenge1P::doUpdateFadeout()
  * @note Address: 0x80328B08
  * @note Size: 0x4
  */
-void ObjChallenge1P::doUpdateFadeoutFinish() { }
+void ObjChallenge1P::doUpdateFadeoutFinish()
+{
+}
 
 /**
  * @note Address: 0x80328B0C

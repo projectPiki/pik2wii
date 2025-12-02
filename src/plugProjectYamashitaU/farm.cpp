@@ -1,6 +1,7 @@
 #include "Graphics.h"
-#include "Game/Farm.h"
+
 #include "Game/Creature.h"
+#include "Game/Farm.h"
 #include "Game/FieldVtxColorMgr.h"
 #include "Game/Interaction.h"
 #include "JSystem/J3D/J3DModel.h"
@@ -44,7 +45,9 @@ void Plant::sendInteraction()
  * @note Address: N/A
  * @note Size: 0x4
  */
-void Plant::doDebugDraw(Graphics& gfx) { }
+void Plant::doDebugDraw(Graphics& gfx)
+{
+}
 
 /**
  * @note Address: N/A
@@ -113,7 +116,7 @@ void Farm::loadResource(u32 modelType, void* mdlData)
 	sys->heapStatusStart("mdlData", nullptr);
 	mModelData = J3DModelLoaderDataBase::load(mdlData, J3DMLF_Material_PE_FogOff);
 	sys->heapStatusEnd("mdlData");
-	mPosition = Vector3f(0.0f);
+	mPosition.set(0.0f, 0.0f, 0.0f);
 
 	Vector3f* vtxPos = (Vector3f*)mModelData->getVtxPosArray();
 	for (u16 i = 0; (u32)i < mModelData->getVertexData()->getVtxNum(); i++) {
@@ -143,31 +146,45 @@ void Farm::loadResource(u32 modelType, void* mdlData)
  * @note Address: 0x801237E4
  * @note Size: 0x4
  */
-void Farm::update() { }
+void Farm::update()
+{
+}
 
 /**
  * @note Address: 0x801237E8
  * @note Size: 0x34
  */
-void Farm::doAnimation() { mModel->mJ3dModel->calc(); }
+void Farm::doAnimation()
+{
+	mModel->mJ3dModel->calc();
+}
 
 /**
  * @note Address: 0x8012381C
  * @note Size: 0x34
  */
-void Farm::doEntry() { mModel->mJ3dModel->entry(); }
+void Farm::doEntry()
+{
+	mModel->mJ3dModel->entry();
+}
 
 /**
  * @note Address: 0x80123850
  * @note Size: 0x24
  */
-void Farm::doSetView(u32 viewNumber) { mModel->setCurrentViewNo(viewNumber); }
+void Farm::doSetView(u32 viewNumber)
+{
+	mModel->setCurrentViewNo(viewNumber);
+}
 
 /**
  * @note Address: 0x80123874
  * @note Size: 0x24
  */
-void Farm::doViewCalc() { mModel->viewCalc(); }
+void Farm::doViewCalc()
+{
+	mModel->viewCalc();
+}
 
 /**
  * @note Address: 0x80123898
@@ -256,9 +273,14 @@ void Farm::doDebugDraw(Graphics& gfx)
 {
 	gfx.initPrimDraw(gfx.mCurrentViewport->getMatrix(false));
 
-	FOREACH_NODE(Obstacle, mObstacleRootNode.mChild, obstacle) { obstacle->doDebugDraw(gfx); }
+	FOREACH_NODE(Obstacle, mObstacleRootNode.mChild, obstacle)
+	{
+		obstacle->doDebugDraw(gfx);
+	}
 
-	FOREACH_NODE(Obstacle, mObstacleRootNode.mChild, obstacle2) { }
+	FOREACH_NODE(Obstacle, mObstacleRootNode.mChild, obstacle2)
+	{
+	}
 }
 
 /**
@@ -293,19 +315,25 @@ void Farm::initAllObjectNodes()
  * @note Address: 0x80123EDC
  * @note Size: 0x60
  */
-Plant::~Plant() { }
+Plant::~Plant()
+{
+}
 
 /**
  * @note Address: 0x80123F3C
  * @note Size: 0x60
  */
-Obstacle::~Obstacle() { }
+Obstacle::~Obstacle()
+{
+}
 
 /**
  * @note Address: 0x80123F9C
  * @note Size: 0x7C
  */
-Farm::~Farm() { }
+Farm::~Farm()
+{
+}
 
 } // namespace Farm
 } // namespace Game

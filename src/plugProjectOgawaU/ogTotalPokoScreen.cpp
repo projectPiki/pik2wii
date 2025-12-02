@@ -1,9 +1,9 @@
-#include "og/newScreen/ogUtil.h"
+#include "System.h"
+#include "og/Screen/TotalPokoScreen.h"
 #include "og/Screen/callbackNodes.h"
 #include "og/Screen/ogScreen.h"
-#include "og/Screen/TotalPokoScreen.h"
 #include "og/Sound.h"
-#include "System.h"
+#include "og/newScreen/ogUtil.h"
 #include "trig.h"
 
 namespace og {
@@ -85,7 +85,10 @@ void TotalPokoScreen::closeTotalPoko()
  * @note Address: 0x8032C570
  * @note Size: 0x10
  */
-void TotalPokoScreen::hideTotalPoko() { mPane->hide(); }
+void TotalPokoScreen::hideTotalPoko()
+{
+	mPane->hide();
+}
 
 /**
  * @note Address: 0x8032C580
@@ -114,7 +117,7 @@ void TotalPokoScreen::update()
 	P2DScreen::Mgr::update();
 
 	if (mIsOpen) {
-		mTimer -= sys->mDeltaTime;
+		mTimer -= sys->getDeltaTime();
 
 		if (mCurrPos.y < mStandardPos.y) {
 			mCurrPos.y += 20.0f;

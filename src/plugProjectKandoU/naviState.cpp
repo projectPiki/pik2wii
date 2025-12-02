@@ -338,7 +338,7 @@ void NaviStuckState::exec(Navi* navi)
 		}
 	}
 
-	mIdleTimer -= sys->mDeltaTime;
+	mIdleTimer -= sys->getDeltaTime();
 	if (mIdleTimer < 0.0f) {
 		mPrevStickDirection = Vector3f(stickVals.x, 0.0f, stickVals.z);
 		mWiggleCounter      = 0;
@@ -684,7 +684,7 @@ void NaviWalkState::initAI_wait(Navi* navi)
 void NaviWalkState::execAI_wait(Navi* navi)
 {
 	blendVelocity(navi, Vector3f::zero);
-	mIdleTimer -= sys->mDeltaTime;
+	mIdleTimer -= sys->getDeltaTime();
 
 	if (mIdleTimer <= 0.0f) {
 		initAI_animation(navi);
@@ -1248,7 +1248,7 @@ void NaviChangeState::exec(Navi* navi)
 	if (navi->isMovieActor()) {
 		transit(navi, NSID_Walk, nullptr);
 	}
-	navi->mTargetVelocity = Vector3f(0.0f);
+	navi->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 
 	if (mIsFinished == true) {
 		transit(navi, NSID_Walk, nullptr);
@@ -1429,7 +1429,7 @@ void NaviFollowState::exec(Navi* navi)
 
 		} else {
 			// try and do lil idle goof
-			navi->mTargetVelocity = Vector3f(0.0f);
+			navi->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 			if (!navi->assertMotion(mAnimID)) {
 				// if goof fails or we're done goofing, go back to normal follow
 				mFollowState = FOLLOW_Normal;
@@ -2358,12 +2358,12 @@ void NaviNukuAdjustState::exec(Navi* navi)
 		navi->mFaceDir  = roundAng(navi->mFaceDir + angleOffset);
 
 		f32 speed = 100.0f;
-		if (speed * sys->mDeltaTime > normalisedDistance) {
-			speed = 0.5f / sys->mDeltaTime;
+		if (speed * sys->getDeltaTime() > normalisedDistance) {
+			speed = 0.5f / sys->getDeltaTime();
 		}
 
-		navi->mVelocity       = targetToNavi * speed;
-		navi->mTargetVelocity = Vector3f(0.0f);
+		navi->mVelocity = targetToNavi * speed;
+		navi->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 		navi->mTargetVelocity = targetToNavi * speed;
 	}
 
@@ -2978,11 +2978,11 @@ void NaviNukuAdjustState::cleanup(Navi* navi)
 void NaviDopeState::init(Navi* navi, StateArg* stateArg)
 {
 	P2ASSERTLINE(3006, stateArg);
-	mDopeType         = static_cast<NaviDopeArg*>(stateArg)->mType;
-	Vector3f naviPos  = navi->getPosition(); // f31, f30, f29
-	Vector3f squadPos = Vector3f(0.0f);      // f28, f27, f26
-	_14               = 0;
-	int pikis         = 0;
+	mDopeType        = static_cast<NaviDopeArg*>(stateArg)->mType;
+	Vector3f naviPos = navi->getPosition(); // f31, f30, f29
+	Vector3f squadPos(0.0f, 0.0f, 0.0f);    // f28, f27, f26
+	_14       = 0;
+	int pikis = 0;
 	Iterator<Creature> iterator(navi->mCPlateMgr);
 	CI_LOOP(iterator)
 	{
@@ -3533,7 +3533,7 @@ void NaviClimbState::prepare(Navi* navi)
 void NaviClimbState::exec(Navi* navi)
 {
 	navi->mVelocity = _10 * 100.0f * navi->mController1->mMStick.mYPos;
-	navi->move(sys->mDeltaTime);
+	navi->move(sys->getDeltaTime());
 	if (navi->mController1->getButton() & Controller::PRESS_B) {
 		transit(navi, NSID_Walk, nullptr);
 	}
@@ -3809,7 +3809,7 @@ void NaviKokeDamageState::exec(Navi* navi)
 		navi->mTargetVelocity = 0.0f;
 		navi->mVelocity       = 0.0f;
 		if (mState == 1) {
-			mTimer -= sys->mDeltaTime;
+			mTimer -= sys->getDeltaTime();
 			if (mTimer <= 0.0f) {
 				navi->startMotion(IPikiAnims::GETUP, IPikiAnims::GETUP, navi, nullptr);
 				mState = 2;
@@ -4968,7 +4968,7 @@ void NaviThrowWaitState::exec(Navi* navi)
 
 	if (!mHeldPiki) {
 		if (mNextPiki) {
-			mNextPikiTimeLimit -= sys->mDeltaTime;
+			mNextPikiTimeLimit -= sys->getDeltaTime();
 			if (mNextPikiTimeLimit < 0.0f) {
 				transit(navi, NSID_Walk, nullptr);
 				return;
@@ -5134,13 +5134,13 @@ void NaviThrowWaitState::exec(Navi* navi)
 		return;
 	}
 
-	navi->mHoldPikiTimer += sys->mDeltaTime;
+	navi->mHoldPikiTimer += sys->getDeltaTime();
 
 	if (navi->mHoldPikiTimer > CG_NAVIPARMS(navi).mTimeLimitForThrowing()) {
 		navi->mHoldPikiTimer = CG_NAVIPARMS(navi).mTimeLimitForThrowing();
 	}
 	if (mInitialSortDelayTimer > 0.0f) {
-		mInitialSortDelayTimer -= sys->mDeltaTime;
+		mInitialSortDelayTimer -= sys->getDeltaTime();
 		if (mInitialSortDelayTimer <= 0.0f) {
 			sortPikis(navi);
 		}
@@ -6391,8 +6391,8 @@ bool NaviDemo_UfoState::execSuck(Navi* navi)
 	navi->setPosition(setPos, false);
 	navi->mScale = -(_20 * 0.75f - 1.0f) * _1C;
 
-	_20 += (_30 * sys->mDeltaTime) / _18;
-	_30 += sys->mDeltaTime * 720.0f;
+	_20 += (_30 * sys->getDeltaTime()) / _18;
+	_30 += sys->getDeltaTime() * 720.0f;
 	return _20 >= 1.0f;
 	/*
 	stwu     r1, -0x30(r1)
@@ -6769,7 +6769,7 @@ void NaviPressedState::exec(Navi* navi)
 	Vector3f pos = navi->getPosition();
 	rot.x        = 0.0f;
 
-	mTimer -= sys->mDeltaTime;
+	mTimer -= sys->getDeltaTime();
 	switch (_20) {
 	case 0:
 		pos.y += 2.0f;

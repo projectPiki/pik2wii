@@ -35,8 +35,8 @@ void ActEnter::init(ActionArg* arg)
 	P2ASSERTLINE(119, isOnyonCheck);
 
 	mParent->startMotion(Game::IPikiAnims::WALK, Game::IPikiAnims::WALK, nullptr, nullptr);
-	mParent->mTargetVelocity = Vector3f(0.0f);
-	mOnyon                   = static_cast<Game::Onyon*>(cropArg->mCreature);
+	mParent->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
+	mOnyon = static_cast<Game::Onyon*>(cropArg->mCreature);
 
 	// pikis entering the ship
 	if (mOnyon->mOnyonType == ONYON_TYPE_SHIP) {
@@ -330,7 +330,7 @@ int ActEnter::execSuck()
 	mParent->setPosition(newPos, false);
 
 	mParent->mScale = Vector3f(mBaseScale);
-	mTimer += sys->mDeltaTime * 110.0f;
+	mTimer += sys->getDeltaTime() * 110.0f;
 	if (mTimer >= 0.0f) {
 		mInsideOnyon = 1;
 		mSuckPos     = newPos;
@@ -370,10 +370,10 @@ void ActExit::init(ActionArg* arg)
 	P2ASSERTLINE(517, cropArg->mCreature->mObjectTypeID == OBJTYPE_Onyon);
 
 	mParent->startMotion(Game::IPikiAnims::WALK, Game::IPikiAnims::WALK, nullptr, nullptr);
-	mParent->mTargetVelocity = Vector3f(0.0f);
-	int randFoot             = 3.0f * randFloat();
-	mCreature                = cropArg->mCreature;
-	mOnyonLeg                = static_cast<Game::Onyon*>(cropArg->mCreature)->getLegPart(randFoot);
+	mParent->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
+	int randFoot = 3.0f * randFloat();
+	mCreature    = cropArg->mCreature;
+	mOnyonLeg    = static_cast<Game::Onyon*>(cropArg->mCreature)->getLegPart(randFoot);
 
 	ClimbActionArg climbArg(mOnyonLeg, PIKI_EXITONYON_SPEED, false);
 	mParent->setPosition(mOnyonLeg->mPosition, false);

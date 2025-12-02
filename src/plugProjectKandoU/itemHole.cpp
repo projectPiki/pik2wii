@@ -1,18 +1,21 @@
+#include "Game/Entities/ItemHole.h"
 #include "Game/AILOD.h"
 #include "Game/BaseItem.h"
-#include "Game/GameSystem.h"
 #include "Game/Entities/ItemBarrel.h"
+#include "Game/GameSystem.h"
 #include "Game/MapMgr.h"
 #include "Game/MoviePlayer.h"
 #include "Game/PlatInstance.h"
-#include "Game/pelletMgr.h"
 #include "Game/itemMgr.h"
+#include "Game/pelletMgr.h"
 #include "Iterator.h"
 #include "JSystem/J3D/J3DModel.h"
 #include "JSystem/JKernel/JKRArchive.h"
-#include "Platform.h"
 #include "PS.h"
+#include "PSSystem/PSSystemIF.h"
+#include "Platform.h"
 #include "Radar.h"
+#include "SoundID.h"
 #include "SysShape/Joint.h"
 #include "SysShape/Model.h"
 #include "System.h"
@@ -21,12 +24,9 @@
 #include "efx/WarpZone.h"
 #include "id32.h"
 #include "mapCode.h"
+#include "nans.h"
 #include "sysMath.h"
 #include "types.h"
-#include "nans.h"
-#include "Game/Entities/ItemHole.h"
-#include "SoundID.h"
-#include "PSSystem/PSSystemIF.h"
 
 namespace Game {
 namespace ItemHole {
@@ -62,13 +62,17 @@ void NormalState::init(Game::CFSMItem* item, Game::StateArg* arg)
  * @note Address: 0x801D18A8
  * @note Size: 0x4
  */
-void NormalState::exec(Game::CFSMItem*) { }
+void NormalState::exec(Game::CFSMItem*)
+{
+}
 
 /**
  * @note Address: 0x801D18AC
  * @note Size: 0x4
  */
-void NormalState::cleanup(Game::CFSMItem*) { }
+void NormalState::cleanup(Game::CFSMItem*)
+{
+}
 
 /**
  * @note Address: 0x801D18B0
@@ -87,7 +91,7 @@ void AppearState::init(Game::CFSMItem* item, Game::StateArg* arg)
  */
 void AppearState::exec(Game::CFSMItem* item)
 {
-	mAppearTimer += sys->mDeltaTime;
+	mAppearTimer += sys->getDeltaTime();
 	f32 buriedFrac = 1.0f - (mAppearTimer * 0.8333333f);
 	if (buriedFrac <= 0.0f) {
 		buriedFrac = 0.0f;
@@ -103,7 +107,9 @@ void AppearState::exec(Game::CFSMItem* item)
  * @note Address: 0x801D1A54
  * @note Size: 0x4
  */
-void AppearState::cleanup(Game::CFSMItem*) { }
+void AppearState::cleanup(Game::CFSMItem*)
+{
+}
 
 /**
  * @note Address: 0x801D1A58
@@ -120,13 +126,18 @@ void CloseState::init(Game::CFSMItem* item, Game::StateArg* arg)
  * @note Size: 0x14
  * exec__Q34Game8ItemHole10CloseStateFPQ24Game8CFSMItem
  */
-void CloseState::exec(Game::CFSMItem* item) { item->mLod.resetFlag(AILOD_IsVisibleBoth); }
+void CloseState::exec(Game::CFSMItem* item)
+{
+	item->mLod.resetFlag(AILOD_IsVisibleBoth);
+}
 
 /**
  * @note Address: 0x801D1AA8
  * @note Size: 0x4
  */
-void CloseState::cleanup(Game::CFSMItem*) { }
+void CloseState::cleanup(Game::CFSMItem*)
+{
+}
 
 /**
  * @note Address: 0x801D1AAC
@@ -216,7 +227,10 @@ void Item::onInit(Game::CreatureInitArg* arg)
  * @note Address: 0x801D1F50
  * @note Size: 0x50
  */
-void Item::changeMaterial() { mModel->jointVisible(false, mModel->getJoint("flag")->mJointIndex); }
+void Item::changeMaterial()
+{
+	mModel->jointVisible(false, mModel->getJoint("flag")->mJointIndex);
+}
 
 /**
  * @note Address: 0x801D1FA0
@@ -305,7 +319,10 @@ void Item::makeTrMatrix()
  * @note Address: 0x801D24F8
  * @note Size: 0x30
  */
-bool Item::canRide() { return static_cast<State*>(getCurrState())->canRide(); }
+bool Item::canRide()
+{
+	return static_cast<State*>(getCurrState())->canRide();
+}
 
 /**
  * @note Address: 0x801D2530
@@ -321,7 +338,10 @@ void Item::do_setLODParm(Game::AILODParm& parm)
  * @note Address: 0x801D2544
  * @note Size: 0x8
  */
-bool Item::sound_culling() { return false; }
+bool Item::sound_culling()
+{
+	return false;
+}
 
 /**
  * @note Address: 0x801D254C
@@ -371,7 +391,10 @@ void Item::doDirectDraw(Graphics& gfx)
  * @note Address: 0x801D26EC
  * @note Size: 0x58
  */
-CItemFSM* Item::createFSM() { return new FSM(); }
+CItemFSM* Item::createFSM()
+{
+	return new FSM();
+}
 
 /**
  * @note Address: 0x801D2744

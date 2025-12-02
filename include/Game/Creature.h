@@ -312,131 +312,6 @@ struct Creature : public CellObject {
 	virtual u16 getObjType() { return mObjectTypeID; }                                   // _28 (weak)
 	virtual bool collisionUpdatable() { return mUpdateContext.updatable(); }             // _14 (weak)
 
-	/**
-	 * Calculates the distance between the current creature and the specified creature.
-	 * The result is stored in the provided distanceResult vector.
-	 *
-	 * @param creature The creature to calculate the distance to.
-	 * @param distanceResult The vector to store the distance result in.
-	 */
-	inline void getDistanceTo(Creature* creature, Vector2f& distanceResult)
-	{
-		distanceResult.x = getPosition().x - creature->getPosition().x;
-		distanceResult.y = getPosition().z - creature->getPosition().z;
-	}
-
-	/**
-	 * Checks if a creature is within a specified range relative to this creature object.
-	 *
-	 * @param c The creature to check.
-	 * @param range The range around this creature to check within.
-	 * @return True if the creature is within the range, false otherwise.
-	 */
-	inline bool isCreatureWithinRange(Creature* c, f32 range)
-	{
-		// subtly wrong - see EnemyBase::isFinishableWaitingBirthTypeDrop
-		f32 x = getPosition().x - c->getPosition().x;
-		f32 z = getPosition().z - c->getPosition().z;
-
-		return SQUARE(x) + SQUARE(z) < SQUARE(range);
-	}
-
-	/**
-	 * @brief Calculates the distance between the current creature and the target creature.
-	 *
-	 * @param target The target creature.
-	 * @return The distance between the current creature and the target creature.
-	 */
-	inline f32 getDistanceTo(Creature* target)
-	{
-		Vector3f sep   = getPosition() - target->getPosition();
-		Vector2f sep2D = Vector2f(sep.x, sep.z);
-		return sep2D.length();
-	}
-
-	inline bool isCreatureFlag(u32 flag) const { return mFlags.typeView & flag; }
-
-	/**
-	 * Calculates the angular distance between this creature and another creature.
-	 *
-	 * @param other The other creature.
-	 * @return The angular distance between the two creatures.
-	 */
-	inline f32 getAngDist(Creature* other)
-	{
-		Vector3f otherPos = other->getPosition();
-		Vector3f pos      = getPosition();
-
-		f32 angBetween = _angXZ(otherPos.x, otherPos.z, pos.x, pos.z);
-		return angDist(angBetween, getFaceDir());
-	}
-
-	/**
-	 * Calculates the angular distance between the current object's facing direction and a target position.
-	 *
-	 * @param targetPos The target position to calculate the angular distance to.
-	 * @return The angular distance between the current object's facing direction and the target position.
-	 */
-	inline f32 getAngDist(Vector3f& targetPos)
-	{
-		Vector3f pos   = getPosition();
-		f32 angBetween = angXZ(targetPos.x, targetPos.z, pos);
-		return angDist(angBetween, getFaceDir());
-	}
-
-	/**
-	 * Calculates the angular distance between the current object's facing direction and a target position.
-	 *
-	 * @param targetPos The target position to calculate the angular distance to.
-	 * @return The angular distance between the current object's facing direction and the target position.
-	 */
-	inline f32 getAngDist2(Vector3f& targetPos)
-	{
-		Vector3f pos   = getPosition();
-		f32 angBetween = _angXZ(targetPos.x, targetPos.z, pos.x, pos.z);
-		return angDist(angBetween, getFaceDir());
-	}
-
-	/**
-	 * @brief Calculates the separation vector between the current creature and a target creature.
-	 *
-	 * @param target The target creature.
-	 * @return The separation vector as a Vector3f object.
-	 */
-	inline Vector3f getTargetSeparation(Creature* target)
-	{
-		f32 x, y, z;
-		x = target->getPosition().x - getPosition().x;
-		y = target->getPosition().y - getPosition().y;
-		z = target->getPosition().z - getPosition().z;
-		return Vector3f(x, y, z);
-	}
-
-	inline f32 getSquarePositionTo(Vector3f& pos)
-	{
-		f32 z       = getPosition().z;
-		f32 x       = getPosition().x;
-		f32 targetZ = pos.z;
-		f32 targetX = pos.x;
-		f32 diffZ   = targetZ - z;
-		f32 diffX   = targetX - x;
-		return SQUARE(diffX) + SQUARE(diffZ);
-	}
-
-	inline f32 getPositionTo(Vector3f& pos)
-	{
-		Vector3f sep = pos - Vector3f(getPosition().x, 0.0f, getPosition().z);
-		// f32 z = getPosition().z;
-		// f32 x = getPosition().x;
-		// f32 targetZ = pos.z;
-		// f32 targetX = pos.x;
-		// f32 diffZ = targetZ - z;
-		// f32 diffX = targetX - x;
-		f32 sqrDist = SQUARE(sep.x) + SQUARE(sep.z);
-		return sqrtf(sqrDist);
-		// return sqrDist;
-	}
-
 	void applyAirDrag(f32 drag, f32 horizontalDrag, f32 verticalDrag);
 	f32 calcSphereDistance(Creature* other);
 	int checkHell(Creature::CheckHellArg& hellArg);
@@ -470,6 +345,99 @@ struct Creature : public CellObject {
 
 	// unused/inlined
 	bool isStickLeader();
+
+	///////////////////////////////////////////////////
+	//////// FABRICATED INLINES THAT SEEM REAL ////////
+	///////////////////////////////////////////////////
+
+	inline f32 getAngDist(Creature* other)
+	{
+		Vector3f otherPos;
+		otherPos = other->getPosition();
+
+		Vector3f pos;
+		pos = getPosition();
+
+		f32 x          = otherPos.x - pos.x;
+		f32 z          = otherPos.z - pos.z;
+		f32 angBetween = angXZ(x, z);
+		return angDist(angBetween, getFaceDir());
+	}
+
+	inline f32 getAngDist(Vector3f& targetPos)
+	{
+		Vector3f pos;
+		pos = getPosition();
+
+		f32 x          = targetPos.x - pos.x;
+		f32 z          = targetPos.z - pos.z;
+		f32 angBetween = angXZ(x, z);
+		return angDist(angBetween, getFaceDir());
+	}
+
+	inline f32 getSqrTargetSeparation(Creature* target)
+	{
+		f32 x = target->getPosition().x - getPosition().x;
+		f32 y = target->getPosition().y - getPosition().y;
+		f32 z = target->getPosition().z - getPosition().z;
+		return x * x + y * y + z * z;
+	}
+
+	//////////////////////////////////////////////////////
+	/////// UNCONFIRMED INLINES THAT MIGHT BE FAKE ///////
+	///////         (to confirm or remove)         ///////
+	//////////////////////////////////////////////////////
+
+	inline void getDistanceTo(Creature* creature, Vector2f& distanceResult)
+	{
+		distanceResult.x = getPosition().x - creature->getPosition().x;
+		distanceResult.y = getPosition().z - creature->getPosition().z;
+	}
+
+	inline bool isCreatureWithinRange(Creature* c, f32 range)
+	{
+		// subtly wrong - see EnemyBase::isFinishableWaitingBirthTypeDrop
+		f32 x = getPosition().x - c->getPosition().x;
+		f32 z = getPosition().z - c->getPosition().z;
+
+		return SQUARE(x) + SQUARE(z) < SQUARE(range);
+	}
+
+	inline f32 getDistanceTo(Creature* target)
+	{
+		Vector3f sep   = getPosition() - target->getPosition();
+		Vector2f sep2D = Vector2f(sep.x, sep.z);
+		return sep2D.length();
+	}
+
+	inline bool isCreatureFlag(u32 flag) const { return mFlags.typeView & flag; }
+
+	inline Vector3f getTargetSeparation(Creature* target)
+	{
+		f32 x, y, z;
+		x = target->getPosition().x - getPosition().x;
+		y = target->getPosition().y - getPosition().y;
+		z = target->getPosition().z - getPosition().z;
+		return Vector3f(x, y, z);
+	}
+
+	inline f32 getSquarePositionTo(Vector3f& pos)
+	{
+		f32 z       = getPosition().z;
+		f32 x       = getPosition().x;
+		f32 targetZ = pos.z;
+		f32 targetX = pos.x;
+		f32 diffZ   = targetZ - z;
+		f32 diffX   = targetX - x;
+		return SQUARE(diffX) + SQUARE(diffZ);
+	}
+
+	inline f32 getPositionTo(Vector3f& pos)
+	{
+		Vector3f sep = pos - Vector3f(getPosition().x, 0.0f, getPosition().z);
+		f32 sqrDist  = SQUARE(sep.x) + SQUARE(sep.z);
+		return sqrtf(sqrDist);
+	}
 
 	static bool usePacketCulling;
 	static Creature* currOp;

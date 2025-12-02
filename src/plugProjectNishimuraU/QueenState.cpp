@@ -1,7 +1,7 @@
-#include "Game/Entities/Queen.h"
+#include "Game/CameraMgr.h"
 #include "Game/EnemyAnimKeyEvent.h"
 #include "Game/EnemyFunc.h"
-#include "Game/CameraMgr.h"
+#include "Game/Entities/Queen.h"
 #include "Game/rumble.h"
 #include "nans.h"
 
@@ -31,7 +31,7 @@ void StateDead::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	Obj* queen = OBJ(enemy);
 	queen->createDeadEffect();
-	queen->mTargetVelocity = Vector3f(0.0f);
+	queen->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	queen->deathProcedure();
 	queen->startMotion(QUEENANIM_Dead, nullptr);
 }
@@ -59,7 +59,9 @@ void StateDead::exec(EnemyBase* enemy)
  * @note Address: 0x80287EF8
  * @note Size: 0x4
  */
-void StateDead::cleanup(EnemyBase* enemy) { }
+void StateDead::cleanup(EnemyBase* enemy)
+{
+}
 
 /**
  * @note Address: 0x80287EFC
@@ -73,7 +75,7 @@ void StateSleep::init(EnemyBase* enemy, StateArg* stateArg)
 	queen->mWaitTimer       = 0.0f;
 	queen->mPrevHitNum      = queen->mFlickTimer;
 	queen->hardConstraintOn();
-	queen->mTargetVelocity = Vector3f(0.0f);
+	queen->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	queen->startMotion(QUEENANIM_Sleep, nullptr);
 }
 
@@ -137,7 +139,7 @@ void StateWait::init(EnemyBase* enemy, StateArg* stateArg)
 	queen->mWaitTimer       = 0.0f;
 	queen->mPrevHitNum      = queen->mFlickTimer;
 	queen->hardConstraintOn();
-	queen->mTargetVelocity = Vector3f(0.0f);
+	queen->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	queen->startMotion(QUEENANIM_Wait, nullptr);
 }
 
@@ -173,7 +175,7 @@ void StateWait::exec(EnemyBase* enemy)
 		queen->finishMotion();
 	}
 
-	queen->mWaitTimer += sys->mDeltaTime;
+	queen->mWaitTimer += sys->getDeltaTime();
 
 	if ((queen->mCurAnim->mIsPlaying != 0) && ((u32)queen->mCurAnim->mType == KEYEVENT_END)) {
 		transit(queen, queen->mNextState, nullptr);
@@ -184,7 +186,10 @@ void StateWait::exec(EnemyBase* enemy)
  * @note Address: 0x802882AC
  * @note Size: 0x24
  */
-void StateWait::cleanup(EnemyBase* enemy) { enemy->hardConstraintOff(); }
+void StateWait::cleanup(EnemyBase* enemy)
+{
+	enemy->hardConstraintOff();
+}
 
 /**
  * @note Address: 0x802882D0
@@ -198,7 +203,7 @@ void StateDamage::init(EnemyBase* enemy, StateArg* stateArg)
 	queen->mWaitTimer       = 0.0f;
 	queen->startDamageEffect();
 	queen->hardConstraintOn();
-	queen->mTargetVelocity = Vector3f(0.0f);
+	queen->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	queen->setEmotionExcitement();
 	queen->startMotion(QUEENANIM_Damage, nullptr);
 }
@@ -260,7 +265,7 @@ void StateFlick::init(EnemyBase* enemy, StateArg* stateArg)
 	queen->mWaitTimer       = 0.0f;
 	queen->createFlickEffect();
 	queen->hardConstraintOn();
-	queen->mTargetVelocity = Vector3f(0.0f);
+	queen->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	queen->setEmotionExcitement();
 	queen->startMotion(QUEENANIM_Flick, nullptr);
 	queen->startBossChargeBGM();
@@ -304,10 +309,10 @@ void StateFlick::cleanup(EnemyBase* enemy)
  */
 void StateRolling::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* queen             = OBJ(enemy);
-	queen->mNextState      = QUEEN_NULL;
-	queen->mIsRolling      = false;
-	queen->mTargetVelocity = Vector3f(0.0f);
+	Obj* queen        = OBJ(enemy);
+	queen->mNextState = QUEEN_NULL;
+	queen->mIsRolling = false;
+	queen->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	queen->setEmotionExcitement();
 	RollingStateArg* arg = static_cast<RollingStateArg*>(stateArg);
 	if (arg) {
@@ -342,7 +347,7 @@ void StateRolling::exec(EnemyBase* enemy)
 		f32 dotProd       = sep.dot(dir);
 
 		if (dotProd > CG_GENERALPARMS(queen).mTerritoryRadius()) {
-			queen->mTargetVelocity = Vector3f(0.0f);
+			queen->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 		} else { // mismatch lives here
 			f32 increasedRad = 10.0f + CG_GENERALPARMS(queen).mTerritoryRadius();
 			dir *= increasedRad;
@@ -359,19 +364,19 @@ void StateRolling::exec(EnemyBase* enemy)
 
 		queen->flickPikmin(FLICK_BACKWARD_ANGLE);
 		queen->rollingAttack();
-		queen->mWaitTimer += sys->mDeltaTime;
+		queen->mWaitTimer += sys->getDeltaTime();
 
 		Vector3f camPos = queen->getPosition();
 		cameraMgr->startVibration(VIBTYPE_MidFastShort, camPos, CAMNAVI_Both);
 
 	} else {
-		queen->mTargetVelocity = Vector3f(0.0f);
+		queen->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	}
 
 	if (queen->mHealth <= 0.0f) {
-		queen->mNextState      = QUEEN_Dead;
-		queen->mIsRolling      = false;
-		queen->mTargetVelocity = Vector3f(0.0f);
+		queen->mNextState = QUEEN_Dead;
+		queen->mIsRolling = false;
+		queen->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 
 		queen->finishMotion();
 		queen->finishBossAttackLoopBGM();
@@ -889,7 +894,7 @@ void StateBorn::init(EnemyBase* enemy, StateArg* stateArg)
 	queen->mIsAttackLoopBGM = false;
 	queen->mWaitTimer       = 0.0f;
 	queen->hardConstraintOn();
-	queen->mTargetVelocity = Vector3f(0.0f);
+	queen->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	queen->startMotion(QUEENANIM_Born, nullptr);
 	queen->setEmotionExcitement();
 }

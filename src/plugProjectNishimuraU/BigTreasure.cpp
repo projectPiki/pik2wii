@@ -148,8 +148,8 @@ void Obj::doUpdateCommon()
 void Obj::doAnimationUpdateAnimator()
 {
 	SysShape::BlendLinearFun linearBlend;
-	f32 animTime = EnemyAnimatorBase::defaultAnimSpeed * sys->mDeltaTime;
-	static_cast<ProperAnimator*>(mAnimator)->animate(&linearBlend, 60.0f * sys->mDeltaTime, animTime, animTime);
+	f32 animTime = EnemyAnimatorBase::defaultAnimSpeed * sys->getDeltaTime();
+	static_cast<ProperAnimator*>(mAnimator)->animate(&linearBlend, 60.0f * sys->getDeltaTime(), animTime, animTime);
 	static_cast<ProperAnimator*>(mAnimator)->mAnimator.setModelCalc(mModel, 0);
 }
 
@@ -356,8 +356,8 @@ void Obj::resetAttackLimitTimer()
 bool Obj::isAttackLimitTime()
 {
 	bool check         = false;
-	f32 incTime        = sys->mDeltaTime;
-	f32 extendedTime   = 3.0f * sys->mDeltaTime;
+	f32 incTime        = sys->getDeltaTime();
+	f32 extendedTime   = 3.0f * sys->getDeltaTime();
 	f32 treasureFactor = 2.0f * (f32)getCapturedTreasureNum() + 4.0f;
 
 	Sys::Sphere sphere(mPosition, 300.0f);
@@ -2150,7 +2150,7 @@ void Obj::effectDrawOff()
  */
 void Obj::subShadowScale()
 {
-	mShadowScale -= sys->mDeltaTime;
+	mShadowScale -= sys->getDeltaTime();
 	if (mShadowScale < 0.00001f) {
 		mShadowScale = 0.00001f;
 	}

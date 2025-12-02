@@ -1,8 +1,8 @@
-#include "Game/seaMgr.h"
-#include "Game/MapMgr.h"
-#include "Game/routeMgr.h"
 #include "Game/GameSystem.h"
+#include "Game/MapMgr.h"
 #include "Game/Navi.h"
+#include "Game/routeMgr.h"
+#include "Game/seaMgr.h"
 #include "JSystem/J3D/J3DModelLoader.h"
 #include "JSystem/J3D/J3DTexMtx.h"
 #include "System.h"
@@ -70,8 +70,8 @@ bool AABBWaterBox::update()
 {
 	switch (mState) {
 	case WaterBox_Lowering:
-		mLoweredAmount = -(mLowerTimer * sys->mDeltaTime - mLoweredAmount);
-		mLowerTimer += sys->mDeltaTime * 5.0f;
+		mLoweredAmount = -(mLowerTimer * sys->getDeltaTime() - mLoweredAmount);
+		mLowerTimer += sys->getDeltaTime() * 5.0f;
 		mWaterHeight = mWaterTop + mLoweredAmount;
 
 		if (mLoweredAmount <= mLoweringGoalDiff) {
@@ -443,7 +443,9 @@ void AABBWaterBox::globalise(Game::AABBWaterBox* other, Matrixf& globalMatrix)
  * @note Address: 0x801AF34C
  * @note Size: 0x4
  */
-void AABBWaterBox::directDraw(Graphics&) { }
+void AABBWaterBox::directDraw(Graphics&)
+{
+}
 
 /**
  * __ct__Q24Game6SeaMgrFv

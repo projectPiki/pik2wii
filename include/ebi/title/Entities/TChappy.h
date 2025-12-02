@@ -1,12 +1,12 @@
 #ifndef _EBI_TITLE_ENTITIES_TCHAPPY_H
 #define _EBI_TITLE_ENTITIES_TCHAPPY_H
 
-#include "CNode.h"
-#include "Vector2.h"
-#include "JSystem/JKernel/JKRArchive.h"
-#include "ebi/E3DGraph.h"
 #include "BaseParm.h"
+#include "CNode.h"
+#include "JSystem/JKernel/JKRArchive.h"
 #include "Parameters.h"
+#include "Vector2.h"
+#include "ebi/E3DGraph.h"
 #include "ebi/title/TObjects.h"
 
 struct Controller;
@@ -121,7 +121,7 @@ struct TUnit : public TObjBase {
 		mTargetPos   = Vector2f(0.0f);
 		mTargetAngle = Vector2f(1.0f, 0.0f);
 
-		u32 time  = 0.0f / sys->mDeltaTime;
+		u32 time  = 0.0f / sys->getDeltaTime();
 		mCounter  = time;
 		mCounter2 = time;
 

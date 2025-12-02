@@ -1,7 +1,7 @@
-#include "Game/P2JST/ObjectActor.h"
-#include "Game/GameSystem.h"
 #include "Game/CameraMgr.h"
+#include "Game/GameSystem.h"
 #include "Game/MoviePlayer.h"
+#include "Game/P2JST/ObjectActor.h"
 #include "System.h"
 #include "nans.h"
 
@@ -36,7 +36,9 @@ void ObjectSpecialActor::reset()
  * @note Address: 0x804374B4
  * @note Size: 0x4
  */
-void ObjectSpecialActor::stop() { }
+void ObjectSpecialActor::stop()
+{
+}
 
 /**
  * @note Address: 0x804374B8
@@ -45,7 +47,7 @@ void ObjectSpecialActor::stop() { }
 void ObjectSpecialActor::update()
 {
 	if (mTimer > 0.0f) {
-		mTimer -= sys->mDeltaTime;
+		mTimer -= sys->getDeltaTime();
 		if (mTimer <= 0.0f) {
 			mIsFinished = true;
 		}
@@ -126,7 +128,9 @@ void ObjectSpecialActor::JSGSetAnimation(u32 commandID)
  * @note Address: 0x80437790
  * @note Size: 0x4
  */
-void ObjectSpecialActor::parseUserData_(u32, const void*) { }
+void ObjectSpecialActor::parseUserData_(u32, const void*)
+{
+}
 
 } // namespace P2JST
 } // namespace Game

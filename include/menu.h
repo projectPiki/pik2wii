@@ -1,9 +1,11 @@
 #ifndef _MENU_
 #define _MENU_
 
-#include "types.h"
-#include "JSystem/JSupport/JSUList.h"
 #include "IDelegate.h"
+#include "JSystem/JSupport/JSUList.h"
+#include "JSystem/JUtility/JUTFont.h"
+#include "JSystem/JUtility/JUTGamePad.h"
+#include "types.h"
 
 struct Menu {
 	enum State {

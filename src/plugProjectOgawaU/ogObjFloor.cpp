@@ -495,7 +495,7 @@ bool newScreen::ObjFloor::commonUpdate()
 			u8 alphaCalc = mButtonAlpha->calc();
 			mButtonPane->setAlpha(alphaCalc);
 			if (mButtonAlphaTimer > 0.0f) {
-				mButtonAlphaTimer -= sys->mDeltaTime / 0.5f;
+				mButtonAlphaTimer -= sys->getDeltaTime() / 0.5f;
 				if (mButtonAlphaTimer < 0.0f) {
 					mButtonAlphaTimer = 0.0f;
 				}
@@ -549,7 +549,7 @@ bool newScreen::ObjFloor::commonUpdate()
 	mSublevelMsg->update();
 
 	if (mDoFadeout) {
-		mTimer -= sys->mDeltaTime;
+		mTimer -= sys->getDeltaTime();
 		if (mTimer < 0.0f)
 			ret = true;
 	} else {
@@ -663,7 +663,7 @@ void ObjFloor::doUpdateFadeoutFinish()
 bool newScreen::ObjFloor::doUpdateFadein()
 {
 	bool result = false;
-	mFadeLevel += sys->mDeltaTime;
+	mFadeLevel += sys->getDeltaTime();
 	if (mFadeLevel > msVal.mFadeinTime) {
 		mFadeLevel = msVal.mFadeinTime;
 		result     = true;
@@ -680,7 +680,7 @@ bool newScreen::ObjFloor::doUpdateFadein()
 bool newScreen::ObjFloor::doUpdateFadeout()
 {
 	bool check = false;
-	mFadeLevel += sys->mDeltaTime;
+	mFadeLevel += sys->getDeltaTime();
 
 	if (mFadeLevel > msVal.mFadeoutTime) {
 		mFadeLevel = msVal.mFadeoutTime;
@@ -701,7 +701,7 @@ void ObjFloor::drawBG(Graphics& gfx)
 {
 	J2DPerspGraph* graf = &gfx.mPerspGraph;
 	if (mDoEnd) {
-		mBackgroundAlpha += sys->mDeltaTime;
+		mBackgroundAlpha += sys->getDeltaTime();
 		f32 temp = 1.0f - mBackgroundAlpha / msVal.mMaxAlpha;
 		if (temp > 0.0f) {
 			mColor.a = temp * 255.0f;

@@ -378,7 +378,7 @@ void Matrix3f::calcEigenMatrix(Matrix3f& diagMtx, Matrix3f& eigenMtx)
 Quat::Quat()
 {
 	w = 0.0f;
-	v = Vector3f(0.0f);
+	v.set(0.0f, 0.0f, 0.0f);
 }
 
 /**

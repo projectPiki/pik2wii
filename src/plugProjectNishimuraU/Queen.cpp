@@ -469,7 +469,7 @@ int Obj::getBabyChappyCount()
 void Obj::updateCreateBaby()
 {
 	if (mCanCreateLarva) {
-		mBirthTimer += sys->mDeltaTime;
+		mBirthTimer += sys->getDeltaTime();
 		int babyCount = getBabyChappyCount();
 		if (babyCount >= C_PROPERPARMS.mMaxBirths.mValue) {
 			mIsRoomForLarva = false;

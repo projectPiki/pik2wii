@@ -1,21 +1,24 @@
-#include "og\newScreen\KanteiDemo.h"
-#include "og/Screen/ogScreen.h"
-#include "Morimura/mrUtil.h"
-#include "og/Screen/StickAnimMgr.h"
-#include "efx2d/Arg.h"
-#include "og/Sound.h"
-#include "System.h"
 #include "Game/GameConfig.h"
+#include "Morimura/mrUtil.h"
 #include "P2JME/P2JME.h"
-#include "TParticle2dMgr.h"
-#include "PSSystem/PSGame.h"
 #include "PSM/Scene.h"
+#include "PSSystem/PSGame.h"
+#include "System.h"
+#include "TParticle2dMgr.h"
+#include "efx2d/Arg.h"
+#include "og/Screen/StickAnimMgr.h"
+#include "og/Screen/ogScreen.h"
+#include "og/Sound.h"
+#include "og\newScreen\KanteiDemo.h"
 
 /**
  * @note Address: N/A
  * @note Size: 0xE4
  */
-static void _Print(char* format, ...) { OSReport(format, __FILE__); }
+static void _Print(char* format, ...)
+{
+	OSReport(format, __FILE__);
+}
 
 namespace og {
 namespace newScreen {
@@ -75,7 +78,9 @@ ObjKantei::ObjKantei(char const* name)
  * @note Address: 0x80318364
  * @note Size: 0xAC
  */
-ObjKantei::~ObjKantei() { }
+ObjKantei::~ObjKantei()
+{
+}
 
 /**
  * @note Address: N/A
@@ -234,7 +239,7 @@ void ObjKantei::scaleAnimItemName()
 		switch (mNameState) {
 		case KanteiName_StartDelay:
 			if (mNameTimer > 0.0f) {
-				mNameTimer -= sys->mDeltaTime;
+				mNameTimer -= sys->getDeltaTime();
 				if (mNameTimer < 0.0f) {
 					mNameState = KanteiName_Growing;
 				}
@@ -261,7 +266,7 @@ void ObjKantei::scaleAnimItemName()
 
 		case KanteiName_VisibleDelay:
 			if (mNameWaitTimer > 0.0f) {
-				mNameWaitTimer -= sys->mDeltaTime;
+				mNameWaitTimer -= sys->getDeltaTime();
 				if (mIsPelletNameNotAppeared && mNameWaitTimer < 0.0f) {
 					mNameState = KanteiName_Shrinking;
 				}
@@ -296,7 +301,7 @@ void ObjKantei::commonUpdate()
 	scaleAnimItemName();
 	if (mDoShipSpeech) {
 		if (mCommonTimer > 0.0f) {
-			mCommonTimer -= sys->mDeltaTime;
+			mCommonTimer -= sys->getDeltaTime();
 			if (mCommonTimer <= 0.0f) {
 				mCommonTimer = 0.1f;
 				mShipSpeechTimer--;
@@ -331,7 +336,7 @@ bool ObjKantei::doUpdate()
 		break;
 
 	case Kantei_PokoAppearDelay:
-		mStartTimer += sys->mDeltaTime;
+		mStartTimer += sys->getDeltaTime();
 		if (mStartTimer >= msVal.mNameAppearDelay || pad->getButtonDown() & Controller::PRESS_A
 		    || (mDisp->mSecondaryController && mDisp->mSecondaryController->getButtonDown() & Controller::PRESS_A)) {
 			mState              = Kantei_SetPokoValue;
@@ -348,7 +353,7 @@ bool ObjKantei::doUpdate()
 		break;
 
 	case Kantei_WaitAppearPokos:
-		mStartTimer += sys->mDeltaTime;
+		mStartTimer += sys->getDeltaTime();
 		if (mStartTimer >= msVal.mPriceAppearDelay) {
 			mState                 = Kantei_AppearTotalPokos;
 			mStartTimer            = 0.0f;
@@ -368,7 +373,7 @@ bool ObjKantei::doUpdate()
 
 	case Kantei_Idle:
 		if (mIdleStateTimer > 0.0f) {
-			mIdleStateTimer -= sys->mDeltaTime;
+			mIdleStateTimer -= sys->getDeltaTime();
 		} else if (pad && pad->getButtonDown() & Controller::PRESS_A
 		           || (mDisp->mSecondaryController && mDisp->mSecondaryController->getButtonDown() & Controller::PRESS_A)) {
 			mShipMessageBoxID = mDisp->mPelletMessageID;
@@ -501,7 +506,9 @@ bool ObjKantei::doEnd(::Screen::EndSceneArg const*)
  * @note Address: 0x803197BC
  * @note Size: 0x4
  */
-void ObjKantei::doUpdateFadeinFinish() { }
+void ObjKantei::doUpdateFadeinFinish()
+{
+}
 
 /**
  * @note Address: 0x803197C0
@@ -519,7 +526,9 @@ void ObjKantei::doUpdateFinish()
  * @note Address: 0x80319800
  * @note Size: 0x4
  */
-void ObjKantei::doUpdateFadeoutFinish() { }
+void ObjKantei::doUpdateFadeoutFinish()
+{
+}
 
 /**
  * @note Address: 0x80319804
@@ -528,7 +537,7 @@ void ObjKantei::doUpdateFadeoutFinish() { }
 bool ObjKantei::doUpdateFadein()
 {
 	bool ret = false;
-	mFadeLevel += sys->mDeltaTime;
+	mFadeLevel += sys->getDeltaTime();
 	if (mFadeLevel > 0.3f) {
 		mFadeLevel = 0.3f;
 		ret        = true;
@@ -546,7 +555,7 @@ bool ObjKantei::doUpdateFadein()
 bool ObjKantei::doUpdateFadeout()
 {
 	bool ret = false;
-	mFadeLevel += sys->mDeltaTime;
+	mFadeLevel += sys->getDeltaTime();
 	if (mFadeLevel > 0.2f) {
 		mFadeLevel = 0.2f;
 		ret        = true;

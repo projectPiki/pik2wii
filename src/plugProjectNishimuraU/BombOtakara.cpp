@@ -1,6 +1,6 @@
-#include "types.h"
 #include "Game/Entities/BombOtakara.h"
 #include "Game/Entities/Bomb.h"
+#include "types.h"
 
 namespace Game {
 namespace BombOtakara {
@@ -8,7 +8,9 @@ namespace BombOtakara {
  * @note Address: 0x802F9624
  * @note Size: 0x90
  */
-Obj::Obj() { }
+Obj::Obj()
+{
+}
 
 /**
  * @note Address: 0x802F96B4
@@ -64,7 +66,10 @@ bool Obj::damageCallBack(Creature* creature, f32 damage, CollPart* collpart)
  * @note Address: 0x802F990C
  * @note Size: 0x2C
  */
-bool Obj::hipdropCallBack(Creature* creature, f32 damage, CollPart* collpart) { return damageCallBack(creature, damage, collpart); }
+bool Obj::hipdropCallBack(Creature* creature, f32 damage, CollPart* collpart)
+{
+	return damageCallBack(creature, damage, collpart);
+}
 
 /**
  * @note Address: 0x802F9938
@@ -83,7 +88,10 @@ bool Obj::earthquakeCallBack(Creature* creature, f32 p1)
  * @note Address: 0x802F99B4
  * @note Size: 0x30
  */
-bool Obj::bombCallBack(Creature* creature, Vector3f& vec, f32 damage) { return damageCallBack(creature, damage, nullptr); }
+bool Obj::bombCallBack(Creature* creature, Vector3f& vec, f32 damage)
+{
+	return damageCallBack(creature, damage, nullptr);
+}
 
 /**
  * @note Address: 0x802F99E4
@@ -97,7 +105,7 @@ void Obj::startEscapeSE()
 		return;
 	}
 
-	mEscapeSfxTimer += sys->mDeltaTime;
+	mEscapeSfxTimer += sys->getDeltaTime();
 }
 } // namespace BombOtakara
 } // namespace Game

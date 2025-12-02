@@ -1,12 +1,12 @@
-#include "og/newScreen/FinalMsg.h"
-#include "og/newScreen/SMenu.h"
-#include "og/Screen/ogScreen.h"
+#include "Controller.h"
+#include "Screen/Game2DMgr.h"
+#include "System.h"
 #include "og/Screen/MenuMgr.h"
 #include "og/Screen/callbackNodes.h"
-#include "Screen/Game2DMgr.h"
+#include "og/Screen/ogScreen.h"
 #include "og/Sound.h"
-#include "System.h"
-#include "Controller.h"
+#include "og/newScreen/FinalMsg.h"
+#include "og/newScreen/SMenu.h"
 #include "trig.h"
 
 namespace og {
@@ -35,7 +35,9 @@ ObjFinalMsg::ObjFinalMsg(const char* name)
  * @note Address: 0x80324FAC
  * @note Size: 0xAC
  */
-ObjFinalMsg::~ObjFinalMsg() { }
+ObjFinalMsg::~ObjFinalMsg()
+{
+}
 
 /**
  * @note Address: 0x80325058
@@ -185,7 +187,10 @@ bool ObjFinalMsg::doStart(::Screen::StartSceneArg const*)
  * @note Address: 0x8032567C
  * @note Size: 0x8
  */
-bool ObjFinalMsg::doEnd(::Screen::EndSceneArg const*) { return true; }
+bool ObjFinalMsg::doEnd(::Screen::EndSceneArg const*)
+{
+	return true;
+}
 
 /**
  * @note Address: 0x80325684
@@ -195,7 +200,7 @@ bool ObjFinalMsg::doUpdateFadein()
 {
 	bool check = false;
 	commonUpdate();
-	mFadeLevel += sys->mDeltaTime;
+	mFadeLevel += sys->getDeltaTime();
 	if (mFadeLevel > ObjSMenuBase::msBaseVal.mFadeInOutTime) {
 		check = true;
 	}
@@ -231,7 +236,7 @@ bool ObjFinalMsg::doUpdateFadeout()
 {
 	bool check = false;
 	commonUpdate();
-	mFadeLevel += sys->mDeltaTime;
+	mFadeLevel += sys->getDeltaTime();
 	if (mFadeLevel > ObjSMenuBase::msBaseVal.mFadeInOutTime) {
 		check = true;
 	}
@@ -243,7 +248,10 @@ bool ObjFinalMsg::doUpdateFadeout()
  * @note Address: 0x80325860
  * @note Size: 0x34
  */
-void ObjFinalMsg::doUpdateFadeoutFinish() { getOwner()->endScene(nullptr); }
+void ObjFinalMsg::doUpdateFadeoutFinish()
+{
+	getOwner()->endScene(nullptr);
+}
 
 /**
  * @note Address: 0x80325894

@@ -151,7 +151,7 @@ Uja::Uja()
     : TFlock()
     , mUpdateContext()
 {
-	(Vector3f)(*this)    = Vector3f(0.0f);
+	set(0.0f, 0.0f, 0.0f);
 	mVelocity            = 0.0f;
 	mFlockMgr            = nullptr;
 	mBufferSlotCount     = 4;
@@ -168,9 +168,9 @@ void Uja::init(Mgr* mgr, Vector3f& pos)
 {
 	// this is wrong but it's a placeholder for floats
 	mMotionAnimationFactor = TAU * randFloat();
-	mPreviousAlignmentDir  = Vector3f(0.0f);
-	mPreviousMoveDir       = Vector3f(0.0f);
-	mPreviousClosestUjaDir = Vector3f(0.0f);
+	mPreviousAlignmentDir.set(0.0f, 0.0f, 0.0f);
+	mPreviousMoveDir.set(0.0f, 0.0f, 0.0f);
+	mPreviousClosestUjaDir.set(0.0f, 0.0f, 0.0f);
 
 	mState = STATE_Appear;
 
@@ -265,7 +265,7 @@ void Uja::makeMatrix()
 void Uja::updateScale(f32 scale)
 {
 	f32 factor = 4.0f * (PI * (scale / 20.0f));
-	mMotionAnimationFactor += (sys->mDeltaTime * factor) * mFlockMgr->mUjaParms->mMotionSpeed();
+	mMotionAnimationFactor += (sys->getDeltaTime() * factor) * mFlockMgr->mUjaParms->mMotionSpeed();
 
 	if (mMotionAnimationFactor > TAU) {
 		mMotionAnimationFactor -= TAU;
@@ -286,7 +286,7 @@ void Uja::update(BoidParms& parms)
 		return;
 	}
 
-	f32 frameLength = sys->mDeltaTime;
+	f32 frameLength = sys->getDeltaTime();
 	if (mState == STATE_FallOffWorld) {
 		if (mPitch < HALF_PI) {
 			mPitch += 4.0f * (HALF_PI * frameLength);
@@ -338,8 +338,8 @@ void Uja::update(BoidParms& parms)
 		alignmentThreshold = scale + scale; // f28
 
 		int visibleUjaCount = 0; // r28
-		alignmentVec        = Vector3f(0.0f);
-		seperationVec       = Vector3f(0.0f);
+		alignmentVec.set(0.0f, 0.0f, 0.0f);
+		seperationVec.set(0.0f, 0.0f, 0.0f);
 
 		f32 distanceThreshold = scale + parms.mDistance(); // f14
 
@@ -547,7 +547,7 @@ void Uja::update(BoidParms& parms)
 	}
 
 	if (mState == 2) {
-		mVelocity.y = -(sys->mDeltaTime * 560.0f - mVelocity.y);
+		mVelocity.y = -(sys->getDeltaTime() * 560.0f - mVelocity.y);
 		f32 minY    = mFlockMgr->mBoundSphere.mPosition.y;
 		if (this->y <= minY) {
 			this->y = minY;
@@ -2057,7 +2057,7 @@ void UjaMgr::test_createUjas()
 			uja->mFlockMgr    = this;
 			*((Vector3f*)uja) = dir;
 
-			uja->mVelocity = Vector3f(0.0f);
+			uja->mVelocity.set(0.0f, 0.0f, 0.0f);
 
 			uja->mFaceDirection = TAU * randFloat();
 			uja->mPitch         = 0.0f;
@@ -2067,9 +2067,9 @@ void UjaMgr::test_createUjas()
 			uja->mScale = Vector3f(1.0f);
 
 			uja->mMotionAnimationFactor = TAU * randFloat();
-			uja->mPreviousAlignmentDir  = Vector3f(0.0f);
-			uja->mPreviousMoveDir       = Vector3f(0.0f);
-			uja->mPreviousClosestUjaDir = Vector3f(0.0f);
+			uja->mPreviousAlignmentDir.set(0.0f, 0.0f, 0.0f);
+			uja->mPreviousMoveDir.set(0.0f, 0.0f, 0.0f);
+			uja->mPreviousClosestUjaDir.set(0.0f, 0.0f, 0.0f);
 
 			uja->mHealth = mUjaParms->mLife();
 
@@ -2119,8 +2119,8 @@ void UjaMgr::do_update()
 	int ujaCount       = 0; // r31
 	int movingUjaCount = 0; // r30
 
-	mFlockCentre     = Vector3f(0.0f);
-	mAverageVelocity = Vector3f(0.0f);
+	mFlockCentre.set(0.0f, 0.0f, 0.0f);
+	mAverageVelocity.set(0.0f, 0.0f, 0.0f);
 
 	for (int i = 0; i < getMaxObjects(); i++) {
 		if (!isFlagAlive(i)) {
@@ -2342,7 +2342,7 @@ void Item::doAI()
 	updateCollTree();
 
 	if (_1E8 < 1.0f) {
-		mBoidTimer1 -= sys->mDeltaTime;
+		mBoidTimer1 -= sys->getDeltaTime();
 		if (mBoidTimer1 <= 0.0f) {
 			_1E0        = _1E4;
 			f32 randVal = 0.5f + 0.2f * randFloat();
@@ -2353,7 +2353,7 @@ void Item::doAI()
 			_1E8 = 1.0f - (mBoidTimer1 / mBoidTimer2);
 		}
 	} else {
-		mBoidTimer1 -= sys->mDeltaTime;
+		mBoidTimer1 -= sys->getDeltaTime();
 		if (mBoidTimer1 <= 0.0f) {
 			_1E4        = (f32)mBoidCount * randFloat();
 			f32 randVal = 0.5f + 0.2f * randFloat();
@@ -2526,7 +2526,7 @@ void WaitState::init(Item* item, StateArg* stateArg)
  */
 void WaitState::exec(Item* item)
 {
-	mTimer -= sys->mDeltaTime;
+	mTimer -= sys->getDeltaTime();
 	if (mTimer < 0.0f) {
 		transit(item, UJAMUSHI_Active, nullptr);
 	}
@@ -2582,7 +2582,7 @@ void DigState::init(Item* item, StateArg* stateArg)
  */
 void DigState::exec(Item* item)
 {
-	mTimer -= sys->mDeltaTime;
+	mTimer -= sys->getDeltaTime();
 	if (mTimer < 0.0f) {
 		transit(item, UJAMUSHI_Wait, nullptr);
 	}

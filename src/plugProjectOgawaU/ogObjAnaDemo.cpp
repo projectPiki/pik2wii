@@ -1,10 +1,10 @@
-#include "og/newScreen/TitleMsg.h"
-#include "og/newScreen/ogUtil.h"
-#include "og/newScreen/AnaDemo.h"
+#include "Controller.h"
+#include "System.h"
 #include "og/Screen/ogScreen.h"
 #include "og/Sound.h"
-#include "System.h"
-#include "Controller.h"
+#include "og/newScreen/AnaDemo.h"
+#include "og/newScreen/TitleMsg.h"
+#include "og/newScreen/ogUtil.h"
 
 namespace og {
 namespace newScreen {
@@ -145,7 +145,9 @@ ObjAnaDemo::ObjAnaDemo(const char* name)
  * @note Address: 0x8031CED8
  * @note Size: 0xAC
  */
-ObjAnaDemo::~ObjAnaDemo() { }
+ObjAnaDemo::~ObjAnaDemo()
+{
+}
 
 /**
  * @note Address: N/A
@@ -452,7 +454,7 @@ bool ObjAnaDemo::doUpdate()
 
 	case ANADEMOSTATE_Enter:
 		if (mTimer2 > 0.0f) {
-			mTimer2 -= sys->mDeltaTime;
+			mTimer2 -= sys->getDeltaTime();
 			if (mTimer2 < 0.0f) {
 				if (mAnaTypeSub == ANADEMOSUB_PikiInDanger) {
 					ogSound->setWarning();
@@ -463,7 +465,7 @@ bool ObjAnaDemo::doUpdate()
 		}
 
 		if (mTimer1 > 0.0f) {
-			mTimer1 -= sys->mDeltaTime;
+			mTimer1 -= sys->getDeltaTime();
 			if (mTimer1 < 0.0f) {
 				if (mMenuMgr)
 					mMenuMgr->startCursor(0.0f);
@@ -597,11 +599,11 @@ bool ObjAnaDemo::doUpdate()
 			}
 
 		} else if (mTimer4 > 0.0f) {
-			mTimer4 -= sys->mDeltaTime;
+			mTimer4 -= sys->getDeltaTime();
 
 		} else {
 			mPaneError->setAlpha(mAlpha * mTimer3);
-			mTimer3 += sys->mDeltaTime * 30.0f * 0.1f;
+			mTimer3 += sys->getDeltaTime() * 30.0f * 0.1f;
 			if (mTimer3 > 1.0f) {
 				mTimer3 = 1.0f;
 			}
@@ -609,7 +611,7 @@ bool ObjAnaDemo::doUpdate()
 		break;
 
 	case ANADEMOSTATE_Exit:
-		mCloseTimer += sys->mDeltaTime;
+		mCloseTimer += sys->getDeltaTime();
 		mSwingMovePosition = og::Screen::calcSmooth0to1(mCloseTimer, msVal.mMoveFinishRatio) * -800.0f;
 		if (mCloseTimer >= msVal.mMoveFinishRatio) {
 			ret                = true;
@@ -673,19 +675,27 @@ bool ObjAnaDemo::doStart(::Screen::StartSceneArg const*)
  * @note Address: 0x8031E818
  * @note Size: 0x8
  */
-bool ObjAnaDemo::doEnd(::Screen::EndSceneArg const*) { return true; }
+bool ObjAnaDemo::doEnd(::Screen::EndSceneArg const*)
+{
+	return true;
+}
 
 /**
  * @note Address: 0x8031E820
  * @note Size: 0x4
  */
-void ObjAnaDemo::doUpdateFadeinFinish() { }
+void ObjAnaDemo::doUpdateFadeinFinish()
+{
+}
 
 /**
  * @note Address: 0x8031E824
  * @note Size: 0xC
  */
-void ObjAnaDemo::doUpdateFinish() { mCloseTimer = 0.0f; }
+void ObjAnaDemo::doUpdateFinish()
+{
+	mCloseTimer = 0.0f;
+}
 
 /**
  * @note Address: 0x8031E830
@@ -711,7 +721,7 @@ bool ObjAnaDemo::doUpdateFadein()
 {
 	bool ret = false;
 	commonUpdate();
-	mCloseTimer += sys->mDeltaTime;
+	mCloseTimer += sys->getDeltaTime();
 
 	mSwingMovePosition = 800.0f * (1.0f - og::Screen::calcSmooth0to1(mCloseTimer, msVal.mMoveFinishRatio));
 

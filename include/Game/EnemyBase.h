@@ -133,7 +133,7 @@ struct EnemyBase : public Creature, public SysShape::MotionListener, virtual pub
 	// these are up here so they can be used in virtuals.
 	inline void enableEvent(int i, u32 flag) { mEvents.mFlags[i].typeView |= flag; }
 	inline void disableEvent(int i, u32 flag) { mEvents.mFlags[i].typeView &= ~flag; }
-	inline bool isEvent(int i, u32 flag) { return mEvents.mFlags[i].typeView & flag; }
+	inline bool isEvent(u32 i, u32 flag) { return mEvents.mFlags[i].typeView & flag; }
 
 	// vtable 1 (Creature)
 	virtual Vector3f getPosition() // _08 (weak)
@@ -427,6 +427,32 @@ struct EnemyBase : public Creature, public SysShape::MotionListener, virtual pub
 	bool becomeCarcass();
 	void updateEffects();
 
+	///////////////////////////////////////////////////
+	//////// FABRICATED INLINES THAT SEEM REAL ////////
+	///////////////////////////////////////////////////
+
+	inline int getStickCount() { return mStuckPikminCount; }
+
+	inline void setCreatureID(u8 idx) { mCreatureID = idx; }
+
+	inline bool isDead() { return mHealth <= 0.0f; }
+	inline bool isAlertLife() { return bool(mHealth < E_GENERALPARMS.mLifeBeforeAlert()); }
+	inline bool isFiniteLifetime() { return mExistDuration != 0.0f; }
+
+	inline Vector3f getTargetVelocity() { return mTargetVelocity; }
+
+	inline void setTargetVelocity(const Vector3f& ref) { mTargetVelocity = ref; }
+
+	inline void setTargetSpeed(f32 speed)
+	{
+		Vector3f vel;
+		vel.x = speed * dolsinf(getFaceDir());
+		vel.y = getTargetVelocity().y;
+		vel.z = speed * dolcosf(getFaceDir());
+
+		mTargetVelocity.set(vel);
+	}
+
 	inline void doKillEffects()
 	{
 		InteractMattuan interactMatt(this, 2.5f);
@@ -435,331 +461,103 @@ struct EnemyBase : public Creature, public SysShape::MotionListener, virtual pub
 		mHeldPellet = nullptr;
 	}
 
-	inline void setCreatureID(u8 idx) { mCreatureID = idx; }
-
-	inline bool isDead() { return mHealth <= 0.0f; }
-
-	inline bool isEarthQuakeOrDropping() { return isEvent(1, EB2_Earthquake) || isEvent(1, EB2_Dropping); }
-
-	inline f32 getAccelerationScale(f32 maxAccel)
+	inline f32 distanceFromHome()
 	{
-		return maxAccel / static_cast<EnemyParmsBase*>(mParms)->mCreatureProps.mProps.mAccel.mValue;
+		Vector3f homePos = mHomePosition;
+		Vector3f pos     = getPosition();
+		return pos.distance(homePos);
 	}
 
-	inline void setScale(f32 scale)
-	{
-		mScaleModifier = scale;
-		mScale         = Vector3f(scale);
-	}
+	inline void forceMovePosition(Vector3f offset) { mPosition += offset; }
 
-	inline void getDistance2D(Vector3f& point, Vector2f& sep)
-	{
-		sep.x = mPosition.x - point.x;
-		sep.y = mPosition.z - point.z;
-	}
-
-	inline f32 getCreatureViewAngle(Creature* target)
-	{
-		Vector3f targetPosition = target->getPosition();
-		Vector3f myPosition     = getPosition();
-
-		f32 x = targetPosition.x - myPosition.x;
-		f32 z = targetPosition.z - myPosition.z;
-
-		return angDist(angXZ(x, z), getFaceDir());
-	}
-
-	inline f32 getCreatureViewAngle(Vector3f& targetPos)
-	{
-		Vector3f pos = getPosition();
-
-		f32 x = targetPos.x - pos.x;
-		f32 z = targetPos.z - pos.z;
-
-		return angDist(angXZ(x, z), getFaceDir());
-	}
-
-	// this seems necessary and correct based on BombSarai::Obj::throwBomb
 	inline void updateFaceDir(f32 angle)
 	{
 		mFaceDir    = angle;
 		mRotation.y = mFaceDir;
 	}
 
-	inline f32 turnToTarget(Vector3f& targetPos, f32 turnSpeed, f32 maxTurnAngle)
-	{
-		f32 angleDist = getAngDist(targetPos);
-		f32 angle     = clamp(angleDist * turnSpeed, PI * (DEG2RAD * maxTurnAngle));
-		updateFaceDir(roundAng(angle + getFaceDir()));
-
-		return angleDist;
-	}
-
-	inline f32 turnToTarget2(Vector3f& targetPos, f32 turnSpeed, f32 maxTurnAngle)
-	{
-		f32 angleDist = getAngDist2(targetPos);
-		f32 angle     = clamp(angleDist * turnSpeed, PI * (DEG2RAD * maxTurnAngle));
-		updateFaceDir(roundAng(angle + getFaceDir()));
-
-		return angleDist;
-	}
-
 	inline f32 turnToTarget(Creature* target, f32 turnSpeed, f32 maxTurnAngle)
 	{
 		f32 angleDist = getAngDist(target);
-		f32 angle     = clamp(angleDist * turnSpeed, PI * (DEG2RAD * maxTurnAngle));
-
-		updateFaceDir(roundAng(angle + getFaceDir()));
+		f32 angle     = clamp(angleDist * turnSpeed, TORADIANS(maxTurnAngle));
+		f32 a         = roundAng(angle + getFaceDir());
+		updateFaceDir(a);
 
 		return angleDist;
 	}
 
-	inline f32 turnToTarget(Vector3f& targetPos)
+	inline bool turnToTarget(Creature* target, f32 turnSpeed, f32 maxTurnAngle, f32 endAngle)
 	{
-		EnemyParmsBase* parms = static_cast<EnemyParmsBase*>(mParms);
-		f32 maxTurnAngle      = parms->mGeneral.mMaxTurnAngle.mValue;
-		f32 turnSpeed         = parms->mGeneral.mTurnSpeed.mValue;
+		f32 angleDist = turnToTarget(target, turnSpeed, maxTurnAngle);
+		return isAngleWithin(angleDist, endAngle);
+	}
 
+	inline f32 turnToTarget(Vector3f& targetPos, f32 turnSpeed, f32 maxTurnAngle)
+	{
 		f32 angleDist = getAngDist(targetPos);
-		f32 angle     = clamp(angleDist * turnSpeed, PI * (DEG2RAD * maxTurnAngle));
-
-		updateFaceDir(roundAng(angle + getFaceDir()));
-
-		return angleDist;
-	}
-
-	inline f32 turnToTarget(Creature* creature)
-	{
-		EnemyParmsBase* parms = static_cast<EnemyParmsBase*>(mParms);
-		f32 maxTurnAngle      = parms->mGeneral.mMaxTurnAngle.mValue;
-		f32 turnSpeed         = parms->mGeneral.mTurnSpeed.mValue;
-
-		f32 angleDist = getAngDist(creature);
-		f32 angle     = clamp(angleDist * turnSpeed, PI * (DEG2RAD * maxTurnAngle));
-
-		updateFaceDir(roundAng(angle + getFaceDir()));
+		f32 angle     = clamp(angleDist * turnSpeed, TORADIANS(maxTurnAngle));
+		f32 a         = roundAng(angle + getFaceDir());
+		updateFaceDir(a);
 
 		return angleDist;
 	}
 
-	inline f32 turnToTarget3(Creature* creature)
+	inline bool turnToTarget(Vector3f& targetPos, f32 turnSpeed, f32 maxTurnAngle, f32 endAngle)
 	{
-		EnemyParmsBase* parms = static_cast<EnemyParmsBase*>(mParms);
-		f32 maxTurnAngle      = parms->mGeneral.mMaxTurnAngle.mValue;
-		f32 turnSpeed         = parms->mGeneral.mTurnSpeed.mValue;
-
-		f32 angleDist = getCreatureViewAngle(creature);
-		f32 angle     = clamp(angleDist * turnSpeed, PI * (DEG2RAD * maxTurnAngle));
-
-		updateFaceDir(roundAng(angle + getFaceDir()));
-
-		return angleDist;
+		f32 angleDist = turnToTarget(targetPos, turnSpeed, maxTurnAngle);
+		return isAngleWithin(angleDist, endAngle);
 	}
 
 	inline bool isTargetAttackable(Creature* target, f32 angleDiff, f32 attackDist, f32 attackAngle)
 	{
 		bool result = false;
-		Vector3f sep;
-		sep.x = target->getPosition().x - getPosition().x;
-		sep.y = target->getPosition().y - getPosition().y;
-		sep.z = target->getPosition().z - getPosition().z;
-		if ((sep.sqrMagnitude() < SQUARE(attackDist)) && (FABS(angleDiff) <= TORADIANS(attackAngle))) {
+		if (isRadiusWithin(getSqrTargetSeparation(target), attackDist) && (isAngleWithin(angleDiff, attackAngle))) {
 			result = true;
 		}
 		return result;
 	}
 
-	/**
-	 * Checks if a target is within the range of the enemy.
-	 *
-	 * @param target The target creature to check.
-	 * @param pAngle The angle between the enemy and the target.
-	 * @param pPrivateRadius The private radius of the enemy.
-	 * @param pSightRadius The sight radius of the enemy.
-	 * @param pFov The field of view of the enemy.
-	 * @param pViewAngle The view angle of the enemy.
-	 * @return True if the target is within range, false otherwise.
-	 */
-	inline bool isTargetWithinRange(Creature* target, f32 pAngle, f32 pPrivateRadius, f32 pSightRadius, f32 pFov, f32 pViewAngle)
+	inline bool isTargetAttackable(Creature* target, f32 attackDist, f32 attackAngle)
+	{
+		f32 angleDiff = getAngDist(target);
+		bool result   = false;
+		return (isRadiusWithin(getSqrTargetSeparation(target), attackDist) && (isAngleWithin(angleDiff, attackAngle)));
+		{
+			result = true;
+		}
+		return result;
+	}
+
+	inline bool isTargetOutOfRange(Creature* target, f32 pAngle, f32 pPrivateRadius, f32 pSightRadius, f32 pFov, f32 pViewAngle)
 	{
 		// Calculate the separation between us and target
-		Vector3f sep;
-		sep.x = target->getPosition().x - getPosition().x;
-		sep.y = target->getPosition().y - getPosition().y;
-		sep.z = target->getPosition().z - getPosition().z;
+		f32 x, y, z;
+		x = target->getPosition().x - getPosition().x;
+		y = target->getPosition().y - getPosition().y;
+		z = target->getPosition().z - getPosition().z;
 
 		// Calculate the squared distance between us and target
 		f32 privateRadius = SQUARE(pPrivateRadius);
 		f32 sightRadius   = SQUARE(pSightRadius);
-		f32 distance      = sep.sqrMagnitude2D();
+		f32 distance      = x * x + z * z;
 
 		// Check if the target is outside the private and sight radius and within the field of view
-		return (distance > privateRadius && (distance > sightRadius && absF(sep.y) < pFov))
+		return (distance > privateRadius && (distance > sightRadius && absF(y) < pFov))
 		    // Check if the angle to the target is within the field of view
-		    || (FABS(pAngle) <= TORADIANS(pViewAngle)) == false;
+		    || !isAngleWithin(pAngle, pViewAngle);
 	}
-
-	inline f32 changeFaceDir2(Creature* target)
-	{
-		f32 rotSpeed;
-		f32 rotAccel;
-
-		EnemyParmsBase* parms = static_cast<EnemyParmsBase*>(mParms);
-		rotSpeed              = parms->mGeneral.mMaxTurnAngle();
-		rotAccel              = parms->mGeneral.mTurnSpeed();
-
-		Vector3f targetPos = target->getPosition();
-		Vector3f pos       = getPosition();
-
-		f32 angleDist   = angDist(_angXZ(targetPos.x, targetPos.z, pos.x, pos.z), getFaceDir());
-		f32 approxSpeed = clamp(angleDist * rotAccel, PI * (DEG2RAD * rotSpeed));
-
-		updateFaceDir(roundAng(approxSpeed + getFaceDir()));
-		return angleDist;
-	}
-
-	inline f32 changeFaceDir(Vector3f& XYZ)
-	{
-		f32 rotAccel;
-		f32 rotSpeed;
-
-		f32 x;
-		f32 z;
-
-		EnemyParmsBase* parms = static_cast<EnemyParmsBase*>(mParms);
-		rotSpeed              = parms->mGeneral.mMaxTurnAngle();
-		rotAccel              = parms->mGeneral.mTurnSpeed();
-
-		Vector3f pos = getPosition();
-		x            = XYZ.x;
-		z            = XYZ.z;
-
-		f32 angleDist   = angDist(_angXZ(x, z, pos.x, pos.z), getFaceDir());
-		f32 approxSpeed = clamp(angleDist * rotAccel, PI * (DEG2RAD * rotSpeed));
-
-		updateFaceDir(roundAng(approxSpeed + getFaceDir()));
-		return angleDist;
-	}
-
-	inline f32 changeFaceDir(Vector2f& XZ)
-	{
-		f32 approxSpeed;
-		f32 rotSpeed;
-		f32 rotAccel;
-		f32 x;
-		f32 z;
-
-		EnemyParmsBase* parms = static_cast<EnemyParmsBase*>(mParms);
-		rotSpeed              = parms->mGeneral.mMaxTurnAngle.mValue;
-		rotAccel              = parms->mGeneral.mTurnSpeed.mValue;
-
-		Vector3f pos = getPosition();
-		x            = XZ.x;
-		z            = XZ.y;
-
-		f32 angleDist = angDist(_angXZ(x, z, pos.x, pos.z), getFaceDir());
-
-		approxSpeed = clamp(angleDist * rotAccel, PI * (DEG2RAD * rotSpeed));
-
-		mFaceDir    = roundAng(approxSpeed + getFaceDir());
-		mRotation.y = mFaceDir;
-		return angleDist;
-	}
-
-	inline f32 changeFaceDir(Creature* target)
-	{
-		f32 approxSpeed;
-		f32 rotSpeed;
-		f32 rotAccel;
-
-		EnemyParmsBase* parms = static_cast<EnemyParmsBase*>(mParms);
-		rotSpeed              = parms->mGeneral.mMaxTurnAngle.mValue;
-		rotAccel              = parms->mGeneral.mTurnSpeed.mValue;
-
-		Vector3f targetPos = target->getPosition();
-		Vector3f pos       = getPosition();
-
-		f32 angleDist = angDist(angXZ(targetPos, pos), getFaceDir());
-
-		approxSpeed = clamp(angleDist * rotAccel, PI * (DEG2RAD * rotSpeed));
-
-		mFaceDir    = roundAng(approxSpeed + getFaceDir());
-		mRotation.y = mFaceDir;
-		return angleDist;
-	}
-
-	inline void getPosition2D(Vector3f& pos) { pos = Vector3f(mPosition.x, 0.0f, mPosition.z); }
-
-	inline Vector3f getEBPosition2D() { return Vector3f(mPosition.x, 0.0f, mPosition.z); }
-
-	inline void forceMovePosition(Vector3f offset) { mPosition += offset; }
-
-	inline f32 getDamageAnimFrac(f32 scale) { return (mDamageAnimTimer / scale); }
-
-	inline f32 getSqrHomeRadius() const
-	{
-		f32 homeRad = static_cast<EnemyParmsBase*>(mParms)->mGeneral.mHomeRadius.mValue;
-		return homeRad * homeRad;
-	}
-
-	inline efx::Arg createFXArg() { return efx::Arg(mPosition); }
-
-	inline EnemyParmsBase::Parms& getParms() { return static_cast<EnemyParmsBase*>(mParms)->mGeneral; }
-
-	inline bool isWithinHomeRadius() { return sqrDistanceXZ(mPosition, mHomePosition) < getSqrHomeRadius(); }
-
-	inline f32 getSubmergedDepth() const { return *mWaterBox->getSeaHeightPtr() - mPosition.y; }
-
-	inline Vector3f getTargetVelocity() { return mTargetVelocity; }
-	inline void setTargetVelocity(const Vector3f& ref) { mTargetVelocity = ref; }
-
-	inline f32 getMoveSpeed() { return static_cast<EnemyParmsBase*>(mParms)->mGeneral.mMoveSpeed(); }
-	inline f32 getMoveSpeed(f32 speedFactor) { return speedFactor * static_cast<EnemyParmsBase*>(mParms)->mGeneral.mMoveSpeed(); }
 
 	inline f32 getScaleMod() const { return mScaleModifier; }
-
-	inline void setTargetVelocity(f32 speedFactor)
+	inline void setScale(f32 scale)
 	{
-		f32 x, y, z;
-		f32 speed = speedFactor * static_cast<EnemyParmsBase*>(mParms)->mGeneral.mMoveSpeed();
-		x         = dolsinf(getFaceDir());
-		y         = getTargetVelocity().y;
-		z         = dolcosf(getFaceDir());
-
-		mTargetVelocity = Vector3f(speed * x, y, speed * z);
+		mScaleModifier = scale;
+		mScale.set(scale, scale, scale);
 	}
+	inline void setCollScale(f32 scale) { mCollTree->mPart->setScale(scale); }
 
-	inline void setTargetVelocity()
-	{
-		f32 x, y, z;
-		f32 speed = static_cast<EnemyParmsBase*>(mParms)->mGeneral.mMoveSpeed();
-		x         = dolsinf(getFaceDir());
-		y         = getTargetVelocity().y;
-		z         = dolcosf(getFaceDir());
+	inline bool isFalling() { return isEvent(1, EB2_Earthquake) || isEvent(1, EB2_Dropping); }
+	inline bool isConstrained() { return (isEvent(0, EB_Constrained) || isEvent(0, EB_HardConstrained)); }
 
-		mTargetVelocity = Vector3f(speed * x, y, speed * z);
-	}
-
-	inline f32 getSquareDistanceTo2D(Creature* target, Vector3f& position)
-	{
-		f32 z       = position.z;
-		f32 x       = position.x;
-		f32 targetZ = target->getPosition().z;
-		f32 targetX = target->getPosition().x;
-		f32 diffZ   = targetZ - z;
-		f32 diffX   = targetX - x;
-		return SQUARE(diffX) + SQUARE(diffZ);
-	}
-
-	inline bool isAlertLife() { return bool(mHealth < static_cast<EnemyParmsBase*>(mParms)->mGeneral.mLifeBeforeAlert); }
-
-	inline bool isLongLegs()
-	{
-		return getEnemyTypeID() == EnemyTypeID::EnemyID_Damagumo || getEnemyTypeID() == EnemyTypeID::EnemyID_BigFoot
-		    || getEnemyTypeID() == EnemyTypeID::EnemyID_Houdai;
-	}
-
-#pragma region Events
 	inline void resetEvents()
 	{
 		mEvents.mFlags[0].clear();
@@ -780,9 +578,24 @@ struct EnemyBase : public Creature, public SysShape::MotionListener, virtual pub
 		mEventBuffer.mFlags[1].typeView = mEvents.mFlags[1].typeView;
 	}
 
-#pragma endregion
+	//////////////////////////////////////////////////////
+	/////// UNCONFIRMED INLINES THAT MIGHT BE FAKE ///////
+	//////////////////////////////////////////////////////
 
-	inline bool isConstrained() { return (isEvent(0, EB_Constrained) || isEvent(0, EB_HardConstrained)); }
+	inline f32 getDamageAnimFrac(f32 scale) { return (mDamageAnimTimer / scale); }
+
+	inline EnemyParmsBase::Parms& getParms() { return static_cast<EnemyParmsBase*>(mParms)->mGeneral; }
+
+	inline f32 getSquareDistanceTo2D(Creature* target, Vector3f& position)
+	{
+		f32 z       = position.z;
+		f32 x       = position.x;
+		f32 targetZ = target->getPosition().z;
+		f32 targetX = target->getPosition().x;
+		f32 diffZ   = targetZ - z;
+		f32 diffX   = targetX - x;
+		return SQUARE(diffX) + SQUARE(diffZ);
+	}
 
 	// Creature: _000 - _178
 	// MotionListener: _178 - _17C

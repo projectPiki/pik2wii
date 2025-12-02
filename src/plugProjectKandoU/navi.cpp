@@ -1,34 +1,34 @@
 #include "Game/Navi.h"
-#include "Game/NaviState.h"
+#include "CollInfo.h"
+#include "Game/AIConstants.h"
+#include "Game/CPlate.h"
+#include "Game/CameraMgr.h"
+#include "Game/Entities/ItemBigFountain.h"
+#include "Game/Entities/ItemCave.h"
+#include "Game/Entities/ItemHole.h"
+#include "Game/Entities/ItemOnyon.h"
+#include "Game/Entities/ItemPikihead.h"
+#include "Game/Footmark.h"
+#include "Game/MapMgr.h"
+#include "Game/MoviePlayer.h"
 #include "Game/NaviParms.h"
+#include "Game/NaviState.h"
+#include "Game/PikiMgr.h"
 #include "Game/PikiState.h"
 #include "Game/StateMachine.h"
-#include "Game/CPlate.h"
-#include "Game/Footmark.h"
-#include "Game/MoviePlayer.h"
-#include "Game/PikiMgr.h"
-#include "Game/Entities/ItemPikihead.h"
-#include "Game/Entities/ItemBigFountain.h"
-#include "Game/Entities/ItemHole.h"
-#include "Game/Entities/ItemCave.h"
-#include "Game/Entities/ItemOnyon.h"
-#include "Game/MapMgr.h"
-#include "Game/CameraMgr.h"
 #include "Game/Stickers.h"
 #include "Game/rumble.h"
-#include "Game/AIConstants.h"
+#include "Iterator.h"
 #include "JSystem/J3D/J3DJoint.h"
-#include "PSSystem/PSSystemIF.h"
 #include "P2Macros.h"
 #include "PSM/Navi.h"
-#include "SysShape/Model.h"
-#include "CollInfo.h"
-#include "Iterator.h"
+#include "PSSystem/PSSystemIF.h"
 #include "PikiAI.h"
+#include "PowerPC_EABI_Support/MSL_C/MSL_Common/arith.h"
 #include "Radar.h"
+#include "SysShape/Model.h"
 #include "nans.h"
 #include "utilityU.h"
-#include "PowerPC_EABI_Support/MSL_C/MSL_Common/arith.h"
 
 static const u32 fillerbytes[3] = { 0, 0, 0 };
 int numSearch;
@@ -1066,25 +1066,37 @@ int Navi::getStateID()
  * @note Address: 0x80141460
  * @note Size: 0x44
  */
-void Navi::transit(int next, StateArg* arg) { mFsm->transit(this, next, arg); }
+void Navi::transit(int next, StateArg* arg)
+{
+	mFsm->transit(this, next, arg);
+}
 
 /**
  * @note Address: 0x801414A4
  * @note Size: 0xC
  */
-OlimarData* Navi::getOlimarData() { return playData->mOlimarData; }
+OlimarData* Navi::getOlimarData()
+{
+	return playData->mOlimarData;
+}
 
 /**
  * @note Address: 0x801414B0
  * @note Size: 0x14
  */
-JAInter::Object* Navi::getJAIObject() { return mSoundObj; }
+JAInter::Object* Navi::getJAIObject()
+{
+	return mSoundObj;
+}
 
 /**
  * @note Address: 0x801414C4
  * @note Size: 0x8
  */
-PSM::Creature* Navi::getPSCreature() { return mSoundObj; }
+PSM::Creature* Navi::getPSCreature()
+{
+	return mSoundObj;
+}
 
 /**
  * @note Address: 0x801414CC
@@ -1259,19 +1271,27 @@ void Navi::platCallback(PlatEvent& plat)
  * @note Address: 0x80141738
  * @note Size: 0x4
  */
-void Navi::viewEntryShape(Matrixf&, Vector3f&) { }
+void Navi::viewEntryShape(Matrixf&, Vector3f&)
+{
+}
 
 /**
  * @note Address: 0x8014173C
  * @note Size: 0x8
  */
-SysShape::Model* Navi::viewGetShape() { return mModel; }
+SysShape::Model* Navi::viewGetShape()
+{
+	return mModel;
+}
 
 /**
  * @note Address: 0x80141744
  * @note Size: 0x1C
  */
-f32 Navi::viewGetBaseScale() { return mNaviIndex == NAVIID_Olimar ? OLIMAR_SCALE : LOUIE_SCALE; }
+f32 Navi::viewGetBaseScale()
+{
+	return mNaviIndex == NAVIID_Olimar ? OLIMAR_SCALE : LOUIE_SCALE;
+}
 
 /**
  * @note Address: 0x80141760
@@ -1342,7 +1362,7 @@ void Navi::doEntry()
 void Navi::doAnimation()
 {
 	if (isMovieMotion()) {
-		f32 time = sys->mDeltaTime;
+		f32 time = sys->getDeltaTime();
 		updateCell();
 
 		AILODParm parm;
@@ -1368,7 +1388,7 @@ void Navi::doAnimation()
 		if (mapMgr) {
 			FakePiki::doAnimation();
 		} else {
-			f32 time = sys->mDeltaTime;
+			f32 time = sys->getDeltaTime();
 			updateCell();
 			if (!gameSystem->mIsFrozen) {
 				mAnimator.mSelfAnimator.animate(mAnimSpeed * time);
@@ -1787,9 +1807,9 @@ void Navi::updateCursor()
 void Navi::doSimulation(f32 timeStep)
 {
 	if (moviePlayer->isFlag(MVP_IsActive)) {
-		mVelocity       = Vector3f(0.0f);
-		mTargetVelocity = Vector3f(0.0f);
-		mAcceleration   = Vector3f(0.0f);
+		mVelocity.set(0.0f, 0.0f, 0.0f);
+		mTargetVelocity.set(0.0f, 0.0f, 0.0f);
+		mAcceleration.set(0.0f, 0.0f, 0.0f);
 	}
 
 	FakePiki::doSimulation(timeStep);
@@ -1829,13 +1849,19 @@ void Navi::doViewCalc()
  * @note Address: 0x80141FE8
  * @note Size: 0x14
  */
-void Navi::setLifeMax() { mHealth = naviMgr->mNaviParms->mNaviParms.mMaxHealth; }
+void Navi::setLifeMax()
+{
+	mHealth = naviMgr->mNaviParms->mNaviParms.mMaxHealth;
+}
 
 /**
  * @note Address: 0x80141FFC
  * @note Size: 0x18
  */
-f32 Navi::getLifeRatio() { return mHealth / naviMgr->mNaviParms->mNaviParms.mMaxHealth.mValue; }
+f32 Navi::getLifeRatio()
+{
+	return mHealth / naviMgr->mNaviParms->mNaviParms.mMaxHealth.mValue;
+}
 
 /**
  * @note Address: 0x80142014
@@ -1933,7 +1959,9 @@ void Navi::update()
  * @note Address: 0x8014237C
  * @note Size: 0x4
  */
-void Navi::do_updateLookCreature() { }
+void Navi::do_updateLookCreature()
+{
+}
 
 /**
  * @note Address: 0x80142380
@@ -2444,7 +2472,10 @@ void Navi::set_movie_draw(bool on)
  * @note Address: 0x80142CD4
  * @note Size: 0x50
  */
-bool Navi::isWalking() { return mTargetVelocity.qLength() > 10.0f; }
+bool Navi::isWalking()
+{
+	return mTargetVelocity.qLength() > 10.0f;
+}
 
 /**
  * @note Address: 0x80142D24
@@ -2719,13 +2750,18 @@ Onyon* Navi::checkOnyon()
  * @note Address: 0x80143AEC
  * @note Size: 0x8
  */
-f32 Navi::getMapCollisionRadius() { return 8.5f; }
+f32 Navi::getMapCollisionRadius()
+{
+	return 8.5f;
+}
 
 /**
  * @note Address: 0x80143AF4
  * @note Size: 0x4
  */
-void Navi::doDirectDraw(Graphics&) { }
+void Navi::doDirectDraw(Graphics&)
+{
+}
 
 // /**
 //  * @note Address: N/A
@@ -2758,7 +2794,10 @@ void Navi::doDirectDraw(Graphics&) { }
  * @note Address: 0x80143AF8
  * @note Size: 0xC
  */
-void Navi::disableController() { mController1 = nullptr; }
+void Navi::disableController()
+{
+	mController1 = nullptr;
+}
 
 // /**
 //  * @note Address: N/A
@@ -2826,7 +2865,7 @@ void Navi::makeVelocity()
 	        || (mController1->getButton() & Controller::PRESS_DPAD_RIGHT))) {
 		mSceneAnimationTimer = 0.0f;
 	} else {
-		mSceneAnimationTimer += sys->mDeltaTime;
+		mSceneAnimationTimer += sys->getDeltaTime();
 	}
 
 	f32 ax = 0.0f;
@@ -3231,7 +3270,7 @@ void Navi::callPikis()
 	FakePiki* last = nullptr;
 	CI_LOOP(iterator)
 	{
-		time += sys->mDeltaTime;
+		time += sys->getDeltaTime();
 		JUT_ASSERTLINE(3156, !(time > 15.0f), "timeout %d,%d:%d\n%d,%d-%d,%d\n", iterator.mCurrX, iterator.mCurrY, iterator.mCurrLayerIdx,
 		               iterator.mMinX, iterator.mMinY, iterator.mMaxX, iterator.mMaxY);
 
@@ -3407,7 +3446,10 @@ bool Navi::invincible()
  * @note Address: 0x80144400
  * @note Size: 0x8
  */
-void Navi::setInvincibleTimer(u8 timer) { mInvincibleTimer = timer; }
+void Navi::setInvincibleTimer(u8 timer)
+{
+	mInvincibleTimer = timer;
+}
 
 /**
  * @note Address: 0x80144408
@@ -3850,7 +3892,10 @@ void Navi::enterAllPikis()
  * @note Address: 0x80144AC0
  * @note Size: 0x14
  */
-bool Navi::formationable() { return mDisbandTimer == 0; }
+bool Navi::formationable()
+{
+	return mDisbandTimer == 0;
+}
 
 // /**
 //  * @note Address: N/A
@@ -3876,19 +3921,28 @@ void Navi::updateKaisanDisable()
  * @note Address: 0x80144B44
  * @note Size: 0xC
  */
-void Navi::clearKaisanDisable() { mDisbandTimer = 0; }
+void Navi::clearKaisanDisable()
+{
+	mDisbandTimer = 0;
+}
 
 /**
  * @note Address: 0x80144B50
  * @note Size: 0x10
  */
-bool Navi::throwable() { return mThrowTimer == 0; }
+bool Navi::throwable()
+{
+	return mThrowTimer == 0;
+}
 
 /**
  * @note Address: 0x80144B60
  * @note Size: 0xC
  */
-void Navi::startThrowDisable() { mThrowTimer = NAVI_THROWTIMER_LENGTH; }
+void Navi::startThrowDisable()
+{
+	mThrowTimer = NAVI_THROWTIMER_LENGTH;
+}
 
 /**
  * @note Address: 0x80144B6C
@@ -3911,7 +3965,10 @@ void Navi::updateThrowDisable()
  * @note Address: 0x80144BA8
  * @note Size: 0xC
  */
-void Navi::clearThrowDisable() { mThrowTimer = 0; }
+void Navi::clearThrowDisable()
+{
+	mThrowTimer = 0;
+}
 
 /**
  * @note Address: 0x80144BB4
@@ -6098,6 +6155,9 @@ void Navi::throwPiki(Piki* piki, Vector3f& cursorPos)
  * @note Address: 0x80146D14
  * @note Size: 0x8
  */
-bool Navi::commandOn() { return mCommandOn2; }
+bool Navi::commandOn()
+{
+	return mCommandOn2;
+}
 
 } // namespace Game

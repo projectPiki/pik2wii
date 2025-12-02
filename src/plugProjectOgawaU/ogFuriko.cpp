@@ -1,6 +1,6 @@
-#include "og/Screen/callbackNodes.h"
 #include "System.h"
 #include "Vector3.h"
+#include "og/Screen/callbackNodes.h"
 #include "og/Screen/ogScreen.h"
 #include "trig.h"
 
@@ -86,7 +86,7 @@ void CallBack_Furiko::setParam(f32 p1, f32 p2, f32 p3)
 void CallBack_Furiko::update()
 {
 	// Updates @ 30FPS
-	f32 time = sys->mDeltaTime / 0.03333333333f;
+	f32 time = sys->getDeltaTime() / 0.03333333333f;
 
 	if (mPane && mCanUpdate) {
 		f32 dist = mCurrPosition.distance(mGoalPosition);

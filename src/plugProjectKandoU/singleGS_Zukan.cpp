@@ -332,7 +332,7 @@ void Camera::doUpdate()
 		Sys::Sphere moveSphere(mBasePhysicalPosition, 10.0f);
 		MoveInfo info(&moveSphere, &Vector3f::zero, 0.0f);
 
-		mapMgr->traceMove(info, sys->mDeltaTime);
+		mapMgr->traceMove(info, sys->getDeltaTime());
 
 		f32 newMinY = mapMgr->getMinY(moveSphere.mPosition) + 10.0f;
 		if (moveSphere.mPosition.y < newMinY) {
@@ -2021,7 +2021,7 @@ void ZukanState::execModeChange(SingleGameSection* game, CMode mode)
 	}
 
 	if (mDoDraw) {
-		mChangeSelTimer += sys->mDeltaTime;
+		mChangeSelTimer += sys->getDeltaTime();
 		game->BaseGameSection::doUpdate();
 	}
 }
@@ -2051,7 +2051,7 @@ void ZukanState::execChangeTeki(SingleGameSection* game)
 	}
 
 	if (mDoDraw) {
-		mChangeSelTimer += sys->mDeltaTime;
+		mChangeSelTimer += sys->getDeltaTime();
 		game->BaseGameSection::doUpdate();
 	}
 }
@@ -2592,7 +2592,7 @@ void SingleGame::ZukanState::execChangePellet(SingleGameSection* game)
 	}
 
 	if (mDoDraw) {
-		mChangeSelTimer += sys->mDeltaTime;
+		mChangeSelTimer += sys->getDeltaTime();
 		game->BaseGameSection::doUpdate();
 	}
 }

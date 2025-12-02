@@ -1,6 +1,6 @@
-#include "Game/Entities/KumaKochappy.h"
 #include "Game/EnemyAnimKeyEvent.h"
 #include "Game/EnemyFunc.h"
+#include "Game/Entities/KumaKochappy.h"
 
 namespace Game {
 namespace KumaKochappy {
@@ -28,7 +28,7 @@ void FSM::init(EnemyBase* enemy)
 void StateDead::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	enemy->deathProcedure();
-	enemy->mTargetVelocity = Vector3f(0.0f);
+	enemy->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	enemy->startMotion(KUMAKOCHAPPYANIM_Dead, nullptr);
 }
 
@@ -47,7 +47,9 @@ void StateDead::exec(EnemyBase* enemy)
  * @note Address: 0x802E51F8
  * @note Size: 0x4
  */
-void StateDead::cleanup(EnemyBase* enemy) { }
+void StateDead::cleanup(EnemyBase* enemy)
+{
+}
 
 /**
  * @note Address: 0x802E51FC
@@ -57,7 +59,7 @@ void StatePress::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	enemy->mHealth = 0.0f;
 	enemy->deathProcedure();
-	enemy->mTargetVelocity = Vector3f(0.0f);
+	enemy->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	enemy->startMotion(KUMAKOCHAPPYANIM_Press, nullptr);
 }
 
@@ -76,7 +78,9 @@ void StatePress::exec(EnemyBase* enemy)
  * @note Address: 0x802E5298
  * @note Size: 0x4
  */
-void StatePress::cleanup(EnemyBase* enemy) { }
+void StatePress::cleanup(EnemyBase* enemy)
+{
+}
 
 /**
  * @note Address: 0x802E529C
@@ -88,7 +92,7 @@ void StateWait::init(EnemyBase* enemy, StateArg* stateArg)
 	kuma->mUnusedValue = 0.0f;
 	kuma->mNextState   = KUMAKOCHAPPY_NULL;
 	kuma->enableEvent(0, EB_Constrained);
-	kuma->mTargetVelocity = Vector3f(0.0f);
+	kuma->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	kuma->startMotion(KUMAKOCHAPPYANIM_Wait, nullptr);
 }
 
@@ -411,9 +415,9 @@ void StateWait::cleanup(EnemyBase* enemy)
  */
 void StateAttack::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* kuma             = OBJ(enemy);
-	kuma->mNextState      = KUMAKOCHAPPY_NULL;
-	kuma->mTargetVelocity = Vector3f(0.0f);
+	Obj* kuma        = OBJ(enemy);
+	kuma->mNextState = KUMAKOCHAPPY_NULL;
+	kuma->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	kuma->setEmotionExcitement();
 	kuma->startMotion(KUMAKOCHAPPYANIM_Attack, nullptr);
 }
@@ -819,7 +823,10 @@ lbl_802E5BA8:
  * @note Address: 0x802E5BF8
  * @note Size: 0x24
  */
-void StateAttack::cleanup(EnemyBase* enemy) { enemy->setEmotionCaution(); }
+void StateAttack::cleanup(EnemyBase* enemy)
+{
+	enemy->setEmotionCaution();
+}
 
 /**
  * @note Address: 0x802E5C1C
@@ -827,9 +834,9 @@ void StateAttack::cleanup(EnemyBase* enemy) { enemy->setEmotionCaution(); }
  */
 void StateFlick::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* kuma             = OBJ(enemy);
-	kuma->mNextState      = KUMAKOCHAPPY_NULL;
-	kuma->mTargetVelocity = Vector3f(0.0f);
+	Obj* kuma        = OBJ(enemy);
+	kuma->mNextState = KUMAKOCHAPPY_NULL;
+	kuma->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	kuma->startMotion(KUMAKOCHAPPYANIM_Flick, nullptr);
 }
 
@@ -1236,7 +1243,9 @@ lbl_802E60E0:
  * @note Address: 0x802E6130
  * @note Size: 0x4
  */
-void StateFlick::cleanup(EnemyBase* enemy) { }
+void StateFlick::cleanup(EnemyBase* enemy)
+{
+}
 
 /**
  * @note Address: 0x802E6134
@@ -1301,7 +1310,7 @@ void StateWalk::exec(EnemyBase* enemy)
 	}
 
 	if (kuma->isFinishMotion()) {
-		kuma->mTargetVelocity = Vector3f(0.0f);
+		kuma->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	} else if (check) {
 		f32 moveSpeed         = CG_GENERALPARMS(kuma).mMoveSpeed.mValue;
 		f32 sinTheta          = (f32)sin(kuma->getFaceDir());
@@ -1689,7 +1698,10 @@ lbl_802E665C:
  * @note Address: 0x802E66A0
  * @note Size: 0x28
  */
-void StateWalk::cleanup(EnemyBase* enemy) { enemy->setAnimSpeed(30.0f); }
+void StateWalk::cleanup(EnemyBase* enemy)
+{
+	enemy->setAnimSpeed(30.0f);
+}
 
 /**
  * @note Address: 0x802E66C8
@@ -1751,7 +1763,7 @@ void StateWalkPath::exec(EnemyBase* enemy)
 	}
 
 	if (kuma->isFinishMotion()) {
-		kuma->mTargetVelocity = Vector3f(0.0f);
+		kuma->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	} else {
 		f32 moveSpeed = CG_GENERALPARMS(kuma).mSearchHeight.mValue; // ??????????????????????????????????
 		f32 sinTheta  = (f32)sin(kuma->getFaceDir());
@@ -2131,6 +2143,9 @@ lbl_802E6BF8:
  * @note Address: 0x802E6C48
  * @note Size: 0x28
  */
-void StateWalkPath::cleanup(EnemyBase* enemy) { enemy->setAnimSpeed(30.0f); }
+void StateWalkPath::cleanup(EnemyBase* enemy)
+{
+	enemy->setAnimSpeed(30.0f);
+}
 } // namespace KumaKochappy
 } // namespace Game

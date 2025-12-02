@@ -1,6 +1,6 @@
-#include "Game/Entities/Kogane.h"
 #include "Game/EnemyAnimKeyEvent.h"
 #include "Game/EnemyFunc.h"
+#include "Game/Entities/Kogane.h"
 #include "efx/TKogane.h"
 
 namespace Game {
@@ -33,7 +33,7 @@ void StateAppear::init(EnemyBase* enemy, StateArg* stateArg)
 	kogane->disableEvent(0, EB_Animating);
 	kogane->enableEvent(0, EB_ModelHidden);
 
-	kogane->mTargetVelocity = Vector3f(0.0f);
+	kogane->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	kogane->startMotion(KOGANEANIM_Move, nullptr);
 	kogane->stopMotion();
 }
@@ -117,7 +117,9 @@ void StateDisappear::exec(EnemyBase* enemy)
  * @note Address: 0x8025D364
  * @note Size: 0x4
  */
-void StateDisappear::cleanup(EnemyBase* enemy) { }
+void StateDisappear::cleanup(EnemyBase* enemy)
+{
+}
 
 /**
  * @note Address: 0x8025D368
@@ -153,8 +155,8 @@ void StateMove::exec(EnemyBase* enemy)
 		kogane->finishMotion();
 	}
 
-	kogane->mAppearTimer += sys->mDeltaTime;
-	kogane->mMoveTimer += sys->mDeltaTime;
+	kogane->mAppearTimer += sys->getDeltaTime();
+	kogane->mMoveTimer += sys->getDeltaTime();
 
 	if (kogane->mCurAnim->mIsPlaying && (u32)kogane->mCurAnim->mType == KEYEVENT_END) {
 		if (kogane->mAppearTimer > CG_PROPERPARMS(kogane).mMaxAppearTime.mValue) {
@@ -169,7 +171,9 @@ void StateMove::exec(EnemyBase* enemy)
  * @note Address: 0x8025D510
  * @note Size: 0x4
  */
-void StateMove::cleanup(EnemyBase* enemy) { }
+void StateMove::cleanup(EnemyBase* enemy)
+{
+}
 
 /**
  * @note Address: 0x8025D514
@@ -182,7 +186,7 @@ void StateWait::init(EnemyBase* enemy, StateArg* stateArg)
 	Parms* parms = CG_PARMS(kogane);
 	kogane->resetMoveTimer(parms->mProperParms.mMinStopTime.mValue, parms->mProperParms.mMaxStopTime.mValue);
 
-	kogane->mTargetVelocity = Vector3f(0.0f);
+	kogane->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	kogane->startMotion(KOGANEANIM_Wait, nullptr);
 }
 
@@ -199,8 +203,8 @@ void StateWait::exec(EnemyBase* enemy)
 		kogane->finishMotion();
 	}
 
-	kogane->mAppearTimer += sys->mDeltaTime;
-	kogane->mMoveTimer += sys->mDeltaTime;
+	kogane->mAppearTimer += sys->getDeltaTime();
+	kogane->mMoveTimer += sys->getDeltaTime();
 
 	if (kogane->mCurAnim->mIsPlaying && (u32)kogane->mCurAnim->mType == KEYEVENT_END) {
 		transit(kogane, KOGANE_Move, nullptr);
@@ -211,7 +215,9 @@ void StateWait::exec(EnemyBase* enemy)
  * @note Address: 0x8025D62C
  * @note Size: 0x4
  */
-void StateWait::cleanup(EnemyBase* enemy) { }
+void StateWait::cleanup(EnemyBase* enemy)
+{
+}
 
 /**
  * @note Address: 0x8025D630
@@ -240,7 +246,7 @@ void StatePress::exec(EnemyBase* enemy)
 	Obj* kogane = OBJ(enemy);
 
 	kogane->koganeScaleUp();
-	kogane->mAppearTimer += sys->mDeltaTime;
+	kogane->mAppearTimer += sys->getDeltaTime();
 
 	if (kogane->mCurAnim->mIsPlaying) {
 		if ((u32)kogane->mCurAnim->mType == KEYEVENT_2) {
@@ -265,7 +271,10 @@ void StatePress::exec(EnemyBase* enemy)
  * @note Address: 0x8025D888
  * @note Size: 0x10
  */
-void StatePress::cleanup(EnemyBase* enemy) { enemy->disableEvent(0, EB_NoInterrupt); }
+void StatePress::cleanup(EnemyBase* enemy)
+{
+	enemy->disableEvent(0, EB_NoInterrupt);
+}
 
 } // namespace Kogane
 } // namespace Game

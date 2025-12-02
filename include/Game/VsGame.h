@@ -1,20 +1,20 @@
 #ifndef _GAME_VSGAME_VSGAME_H
 #define _GAME_VSGAME_VSGAME_H
 
-#include "Graphics.h"
-#include "Vector3.h"
-#include "stream.h"
 #include "CNode.h"
+#include "Game/EnemyBase.h"
+#include "Game/MoviePlayer.h"
+#include "Game/Navi.h"
 #include "Game/PikiContainer.h"
+#include "Game/PikiMgr.h"
 #include "Game/StateMachine.h"
 #include "Game/VsGameSection.h"
-#include "Game/EnemyBase.h"
 #include "Game/gameChallenge2D.h"
-#include "Game/Navi.h"
-#include "Game/PikiMgr.h"
-#include "Game/MoviePlayer.h"
+#include "Graphics.h"
+#include "Vector3.h"
 #include "efx/TNaviEffect.h"
 #include "efx/TPk.h"
+#include "stream.h"
 
 #define CH_SCORE_POKO_MULTIPLIER   10
 #define CH_SCORE_PIKMIN_MULTIPLIER 10
@@ -61,7 +61,7 @@ enum VSPlayerColor {
 
 struct TekiNode : public CNode {
 	inline TekiNode() { }
-	virtual ~TekiNode() {}; // _08 (weak)
+	virtual ~TekiNode() { }; // _08 (weak)
 
 	// _00 		= VTBL
 	// _00-_18	= CNode
@@ -345,7 +345,7 @@ struct GameState : public State {
 	inline void updateNavi(VsGameSection* section, int naviIndex)
 	{
 		if (section->mGhostIconTimers[naviIndex] > 0.0f) {
-			section->mGhostIconTimers[naviIndex] -= sys->mDeltaTime;
+			section->mGhostIconTimers[naviIndex] -= sys->getDeltaTime();
 
 			Navi* navi = naviMgr->getAt(naviIndex);
 			if (navi && section->mGhostIconTimers[naviIndex] <= 0.0f) {

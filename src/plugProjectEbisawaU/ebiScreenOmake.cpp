@@ -1,8 +1,8 @@
-#include "ebi/Omake.h"
+#include "PSSystem/PSSystemIF.h"
+#include "System.h"
 #include "ebi/E2DCallBack.h"
 #include "ebi/E2DGraph.h"
-#include "System.h"
-#include "PSSystem/PSSystemIF.h"
+#include "ebi/Omake.h"
 
 static const char className[] = "ebiScreenOmake";
 
@@ -543,8 +543,8 @@ void TOmake::doOpenScreen(ArgOpen* arg)
 		mPaneList1[6]->hide();
 	}
 
-	mAnims1.play(sys->mDeltaTime * 60.0f, J3DAA_UNKNOWN_0, true);
-	u32 count   = E2DFader::kFadeTime / sys->mDeltaTime;
+	mAnims1.play(sys->getDeltaTime() * 60.0f, J3DAA_UNKNOWN_0, true);
+	u32 count   = E2DFader::kFadeTime / sys->getDeltaTime();
 	mCounter    = count;
 	mCounterMax = count;
 	mState      = 1;
@@ -558,7 +558,7 @@ void TOmake::doOpenScreen(ArgOpen* arg)
 	JGeometry::TBox2f bounds;
 	bounds = *mPaneList2[mCurrSel]->getBounds();
 
-	count               = (0.1f / sys->mDeltaTime);
+	count               = (0.1f / sys->getDeltaTime());
 	mCursor.mCounter    = count;
 	mCursor.mCounterMax = count;
 
@@ -973,7 +973,7 @@ blr
  */
 void TOmake::doCloseScreen(ArgClose* arg)
 {
-	u32 count   = E2DFader::kFadeTime / sys->mDeltaTime;
+	u32 count   = E2DFader::kFadeTime / sys->getDeltaTime();
 	mCounter    = count;
 	mCounterMax = count;
 	mState      = 2;
@@ -987,7 +987,7 @@ void TOmake::doInitWaitState()
 {
 	E2DCallBack_BlinkFontColor* font = &mFonts[mCurrSel];
 	font->mIsEnabled                 = true;
-	font->mSpeed                     = sys->mDeltaTime * 3.333333f;
+	font->mSpeed                     = sys->getDeltaTime() * 3.333333f;
 	font->mColor1Weight              = 0.0f;
 	font->mIsTowardColor1            = true;
 	font->_49                        = false;
@@ -1063,10 +1063,10 @@ bool TOmake::doUpdateStateWait()
 			if (input & Controller::PRESS_A) {
 				PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_DECIDE, 0);
 				if (mCurrSel == 6) {
-					mAnims2.play(sys->mDeltaTime * 60.0f, J3DAA_UNKNOWN_0, true);
+					mAnims2.play(sys->getDeltaTime() * 60.0f, J3DAA_UNKNOWN_0, true);
 					mState2 = 2;
 				} else {
-					u32 count   = 0.5f / sys->mDeltaTime;
+					u32 count   = 0.5f / sys->getDeltaTime();
 					mCounter    = count;
 					mCounterMax = count;
 					mState      = 2;
@@ -1553,7 +1553,7 @@ void TOmake::hidePanes_()
  */
 void TOmake::openFromMovie_()
 {
-	u32 count   = E2DFader::kFadeTime / sys->mDeltaTime;
+	u32 count   = E2DFader::kFadeTime / sys->getDeltaTime();
 	mCounter    = count;
 	mCounterMax = count;
 	mState      = 1;
@@ -1567,7 +1567,7 @@ void TOmake::openFromMovie_()
 void TOmake::openFromCardE_()
 {
 	showPanes_();
-	mAnims1.play(sys->mDeltaTime * 60.0f, J3DAA_UNKNOWN_0, true);
+	mAnims1.play(sys->getDeltaTime() * 60.0f, J3DAA_UNKNOWN_0, true);
 	mState2 = 3;
 }
 

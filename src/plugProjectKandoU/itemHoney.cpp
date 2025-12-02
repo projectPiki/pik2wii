@@ -74,7 +74,7 @@ void FallState::onBounce(CFSMItem* item, Sys::Triangle* tri)
 void BounceState::init(CFSMItem* item, StateArg* arg)
 {
 	item->mAnimator.startAnim(3, item);
-	item->mVelocity = Vector3f(0.0f);
+	item->mVelocity.set(0.0f, 0.0f, 0.0f);
 	item->startSound(PSSE_EV_WORK_HONEY_DROP);
 	Vector3f pos = item->getPosition();
 	Item* honey  = static_cast<Item*>(item);
@@ -558,7 +558,7 @@ void Item::onStartCapture()
 void Item::onUpdateCapture(Matrixf& mtx)
 {
 	mBaseTrMatrix.getColumn(3, mPosition);
-	mVelocity = Vector3f(0.0f);
+	mVelocity.set(0.0f, 0.0f, 0.0f);
 	entryShape();
 }
 

@@ -610,7 +610,7 @@ void Obj::updateShotGunTimer()
 	if (isEvent(0, EB_TakingDamage)) {
 		mShotGunBurstTimer = 0.0f;
 	} else {
-		mShotGunBurstTimer += sys->mDeltaTime;
+		mShotGunBurstTimer += sys->getDeltaTime();
 	}
 }
 

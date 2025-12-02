@@ -249,55 +249,57 @@ struct Navi : public FakePiki, virtual public PelletView {
 	inline struct NaviParms* getParms() { return static_cast<NaviParms*>(mParms); }
 
 	// _000      = VTBL
-	// _000-_250 = FakePiki
-	// _250      = ptr to PelletView
-	CPlate* mCPlateMgr;                     // _254
-	u8 mPlateScaleTimer;                    // _258
-	u8 mStickCount;                         // _259
-	s32 mSprayCounts[2];                    // _25C proven signed by Navi::hasDope
-	u8 _264[4];                             // _264
-	bool mHideModel;                        // _268
-	u8 mUnusedFlag;                         // _269
-	u8 mPluckingCounter;                    // _26A
-	PSM::Navi* mSoundObj;                   // _26C
-	NaviFSM* mFsm;                          // _270
-	NaviState* mCurrentState;               // _274
-	Controller* mController1;               // _278
-	Controller* mController2;               // _27C
-	PlayCamera* mCamera;                    // _280
-	PlayCamera* mCamera2;                   // _284
-	BitFlag<u16> mNaviControlFlag;          // _288
-	NaviWhistle* mWhistle;                  // _28C
-	SysShape::Model* mMarkerModel;          // _290
-	SysShape::Model* mCursorModel;          // _294
-	Sys::MatRepeatAnimator* mCursorMatAnim; // _298
-	Sys::MatLoopAnimator* mArrowMatAnim;    // _29C
-	f32 mHealth;                            // _2A0
-	u8 mInvincibleTimer;                    // _2A4
-	Piki* mNextThrowPiki;                   // _2A8
-	u8 mUnusedFlag2;                        // _2AC
-	f32 mHoldPikiTimer;                     // _2B0
-	f32 mHoldPikiCharge;                    // _2B4, neither charge is used for anything
-	f32 mHoldPikiCharge2;                   // _2B8
-	u8 mThrowTimer;                         // _2BC, use NAVI_THROWSTATE enum
-	SysShape::Joint* mBeaconJoint;          // _2C0
-	Vector3f mBeaconPosition;               // _2C4
-	efx::TNaviEffect* mEffectsObj;          // _2D0
-	s8 mDisbandTimer;                       // _2D4
-	Footmarks* mFootmarks;                  // _2D8
-	u16 mNaviIndex;                         // _2DC
-	u8 _2DE;                                // _2DE
-	Vector3f mCStickTargetVector;           // _2E0
-	Vector3f mCStickPosition;               // _2EC
-	f32 mCStickAngle;                       // _2F8
-	u8 _2FC;                                // _2FC
-	u8 _2FD;                                // _2FD
-	int mCStickState;                       // _300
-	int mCStickIncrement;                   // _304
-	f32 mSceneAnimationTimer;               // _308
-	bool mCommandOn1;                       // _30C
-	bool mCommandOn2;                       // _30D
-	                                        // PelletView: _310 - _320
+	// _000-_254 = FakePiki
+	// _254-_258 = ptr to PelletView
+	u8 _258[0x18];                          // _258, unknown, new in Wii version
+	CPlate* mCPlateMgr;                     // _270
+	u8 mPlateScaleTimer;                    // _274
+	u8 mStickCount;                         // _275
+	s32 mSprayCounts[2];                    // _278 proven signed by Navi::hasDope
+	u8 _264[4];                             // _280
+	bool mHideModel;                        // _284
+	u8 mUnusedFlag;                         // _285
+	u8 mPluckingCounter;                    // _286
+	PSM::Navi* mSoundObj;                   // _288
+	NaviFSM* mFsm;                          // _28C
+	NaviState* mCurrentState;               // _290
+	Controller* mController1;               // _294
+	Controller* mController2;               // _298
+	PlayCamera* mCamera;                    // _29C
+	PlayCamera* mCamera2;                   // _2A0
+	BitFlag<u16> mNaviControlFlag;          // _2A4
+	NaviWhistle* mWhistle;                  // _2A8
+	SysShape::Model* mMarkerModel;          // _2AC
+	SysShape::Model* mCursorModel;          // _2B0
+	u8 _2B4[4];                             // _2B4, unknown location, but before mCursorMatAnim
+	Sys::MatRepeatAnimator* mCursorMatAnim; // _2B8
+	Sys::MatLoopAnimator* mArrowMatAnim;    // _2BC
+	f32 mHealth;                            // _2C0
+	u8 mInvincibleTimer;                    // _2C4
+	Piki* mNextThrowPiki;                   // _2C8
+	u8 mUnusedFlag2;                        // _2CC
+	f32 mHoldPikiTimer;                     // _2D0
+	f32 mHoldPikiCharge;                    // _2D4, neither charge is used for anything
+	f32 mHoldPikiCharge2;                   // _2D8
+	u8 mThrowTimer;                         // _2DC, use NAVI_THROWSTATE enum
+	SysShape::Joint* mBeaconJoint;          // _2E0
+	Vector3f mBeaconPosition;               // _2E4
+	efx::TNaviEffect* mEffectsObj;          // _2F0
+	s8 mDisbandTimer;                       // _2F4
+	Footmarks* mFootmarks;                  // _2F8
+	u16 mNaviIndex;                         // _2FC
+	u8 _2DE;                                // _2FE
+	Vector3f mCStickTargetVector;           // _300
+	Vector3f mCStickPosition;               // _30C
+	f32 mCStickAngle;                       // _318
+	u8 _2FC;                                // _31C
+	u8 _2FD;                                // _31D
+	int mCStickState;                       // _320
+	int mCStickIncrement;                   // _324
+	f32 mSceneAnimationTimer;               // _328
+	bool mCommandOn1;                       // _32C
+	bool mCommandOn2;                       // _32D
+	                                        // PelletView: _330 - _340
 };
 
 struct NaviMgr : public MonoObjectMgr<Navi>, public JKRDisposer {

@@ -1,8 +1,8 @@
 #ifndef _ITERATOR_H
 #define _ITERATOR_H
 
-#include "Container.h"
 #include "Condition.h"
+#include "Container.h"
 
 /**
  * @brief A generic iterator struct for iterating over a container.

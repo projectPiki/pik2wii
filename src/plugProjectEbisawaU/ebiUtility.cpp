@@ -70,12 +70,12 @@ void EUTPadInterface_countNum::update()
 				mSelectionChanged = 1;
 				if (!mIsChanging) {
 					mIsChanging = true;
-					f32 time    = (mTimeFactor1 / sys->mDeltaTime);
+					f32 time    = (mTimeFactor1 / sys->getDeltaTime());
 					mCounter    = time;
 					mCounterMax = time;
 					return;
 				}
-				f32 time    = (mTimeFactor2 / sys->mDeltaTime);
+				f32 time    = (mTimeFactor2 / sys->getDeltaTime());
 				mCounter    = time;
 				mCounterMax = time;
 			}
@@ -88,12 +88,12 @@ void EUTPadInterface_countNum::update()
 				mSelectionChanged = 1;
 				if (!mIsChanging) {
 					mIsChanging = true;
-					f32 time    = (mTimeFactor1 / sys->mDeltaTime);
+					f32 time    = (mTimeFactor1 / sys->getDeltaTime());
 					mCounter    = time;
 					mCounterMax = time;
 					return;
 				}
-				f32 time    = (mTimeFactor2 / sys->mDeltaTime);
+				f32 time    = (mTimeFactor2 / sys->getDeltaTime());
 				mCounter    = time;
 				mCounterMax = time;
 			}
@@ -121,11 +121,15 @@ void EUTColor_complement(JUtility::TColor& color1, JUtility::TColor& color2, f32
  * @note Address: 0x803C1EB4
  * @note Size: 0x4
  */
-void EUTDebug_Tag64ToName(u64, char*) { }
+void EUTDebug_Tag64ToName(u64, char*)
+{
+}
 
 /**
  * @note Address: 0x803C1EB8
  * @note Size: 0x4
  */
-void EUTDebug_Tag32ToName(u32, char*) { }
+void EUTDebug_Tag32ToName(u32, char*)
+{
+}
 } // namespace ebi

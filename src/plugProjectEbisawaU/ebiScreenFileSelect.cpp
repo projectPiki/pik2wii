@@ -1,14 +1,14 @@
+#include "JSystem/JKernel/JKRDvdRipper.h"
+#include "PSSystem/PSSystemIF.h"
+#include "TParticle2dMgr.h"
+#include "ebi/E2DGraph.h"
+#include "ebi/Screen/TFileData.h"
 #include "ebi/Screen/TMainScreen.h"
 #include "ebi/Screen/TScreenDataWindow.h"
-#include "ebi/Screen/TFileData.h"
-#include "ebi/E2DGraph.h"
-#include "efx2d/FileSelect.h"
-#include "og/newScreen/ogUtil.h"
 #include "ebi/Utility.h"
-#include "TParticle2dMgr.h"
-#include "PSSystem/PSSystemIF.h"
+#include "efx2d/FileSelect.h"
 #include "og/Screen/ogScreen.h"
-#include "JSystem/JKernel/JKRDvdRipper.h"
+#include "og/newScreen/ogUtil.h"
 
 namespace ebi {
 namespace Screen {
@@ -1683,8 +1683,8 @@ void TMainScreen::doOpenScreen(ArgOpen*)
 	particle2dMgr->setSceneResourceManager(mParticleResource);
 
 	mMainScreen->clearAnmTransform();
-	mAnimOpenScreenA.play(sys->mDeltaTime * 60.0f, J3DAA_UNKNOWN_0, true);
-	mAnimOpenScreenB.play(sys->mDeltaTime * 60.0f, J3DAA_UNKNOWN_0, true);
+	mAnimOpenScreenA.play(sys->getDeltaTime() * 60.0f, J3DAA_UNKNOWN_0, true);
+	mAnimOpenScreenB.play(sys->getDeltaTime() * 60.0f, J3DAA_UNKNOWN_0, true);
 
 	for (int i = 0; i < 3; i++) {
 		mAnimOpenScreenC[i].setRandFrame();
@@ -1697,12 +1697,12 @@ void TMainScreen::doOpenScreen(ArgOpen*)
 	mAnimOpenScreenD[0].play(0.5f, J3DAA_UNKNOWN_2, false);
 	mAnimOpenScreenD[1].play(0.25f, J3DAA_UNKNOWN_2, false);
 	mAnimOpenScreenD[2].play(0.4f, J3DAA_UNKNOWN_2, false);
-	mAnimOpenScreenE.play(sys->mDeltaTime * 60.0f, J3DAA_UNKNOWN_2, true);
-	mAnimOpenScreenF.play(sys->mDeltaTime * 60.0f, J3DAA_UNKNOWN_2, true);
-	mAnimOpenScreenG.play(sys->mDeltaTime * 60.0f, J3DAA_UNKNOWN_2, true);
-	mAnimOpenScreenH.play(sys->mDeltaTime * 60.0f, J3DAA_UNKNOWN_2, true);
+	mAnimOpenScreenE.play(sys->getDeltaTime() * 60.0f, J3DAA_UNKNOWN_2, true);
+	mAnimOpenScreenF.play(sys->getDeltaTime() * 60.0f, J3DAA_UNKNOWN_2, true);
+	mAnimOpenScreenG.play(sys->getDeltaTime() * 60.0f, J3DAA_UNKNOWN_2, true);
+	mAnimOpenScreenH.play(sys->getDeltaTime() * 60.0f, J3DAA_UNKNOWN_2, true);
 
-	u32 count   = E2DFader::kFadeTime / sys->mDeltaTime;
+	u32 count   = E2DFader::kFadeTime / sys->getDeltaTime();
 	mCounter    = count;
 	mCounterMax = count;
 	mState      = 1;
@@ -1729,14 +1729,14 @@ void TMainScreen::doInitWaitState()
 	mMainScreen->clearAnmTransform();
 	mAnimOpenScreenA.stop();
 	mAnimOpenScreenB.stop();
-	mAnimWaitScreen.play(sys->mDeltaTime * 60.0f, J3DAA_UNKNOWN_0, true);
+	mAnimWaitScreen.play(sys->getDeltaTime() * 60.0f, J3DAA_UNKNOWN_0, true);
 
 	for (int i = 0; i < 3; i++) {
 		mPaneSel[0][i]->setAlpha(255);
 		mPaneSel[1][i]->setAlpha(255);
 	}
 
-	u32 count       = 0.5f / sys->mDeltaTime;
+	u32 count       = 0.5f / sys->getDeltaTime();
 	mOpenCounter    = count;
 	mOpenCounterMax = count;
 
@@ -1758,7 +1758,7 @@ void TMainScreen::doInitWaitState()
  */
 void TMainScreen::doCloseScreen(ArgClose*)
 {
-	u32 count   = E2DFader::kFadeTime / sys->mDeltaTime;
+	u32 count   = E2DFader::kFadeTime / sys->getDeltaTime();
 	mCounter    = count;
 	mCounterMax = count;
 	mState      = 2;
@@ -1950,7 +1950,7 @@ void TMainScreen::doDraw()
 void TMainScreen::inDataBall(s32 fileID)
 {
 	P2ASSERTBOUNDSLINE(759, 0, fileID, 3);
-	mAnimFileBallIn[fileID].play(sys->mDeltaTime * 60.0f, J3DAA_UNKNOWN_0, true);
+	mAnimFileBallIn[fileID].play(sys->getDeltaTime() * 60.0f, J3DAA_UNKNOWN_0, true);
 	mAnimFileBallOut[fileID].stop();
 	mAnimFileBallDecide[fileID].stop();
 
@@ -1983,7 +1983,7 @@ void TMainScreen::outDataBall(s32 fileID)
 {
 	P2ASSERTBOUNDSLINE(796, 0, fileID, 3);
 	mAnimFileBallIn[fileID].stop();
-	mAnimFileBallOut[fileID].play(sys->mDeltaTime * 60.0f, J3DAA_UNKNOWN_0, true);
+	mAnimFileBallOut[fileID].play(sys->getDeltaTime() * 60.0f, J3DAA_UNKNOWN_0, true);
 	mAnimFileBallDecide[fileID].stop();
 }
 
@@ -1996,7 +1996,7 @@ void TMainScreen::decideDataBall(s32 fileID)
 	P2ASSERTBOUNDSLINE(807, 0, fileID, 3);
 	mAnimFileBallIn[fileID].stop();
 	mAnimFileBallOut[fileID].stop();
-	mAnimFileBallDecide[fileID].play(sys->mDeltaTime * 60.0f, J3DAA_UNKNOWN_0, true);
+	mAnimFileBallDecide[fileID].play(sys->getDeltaTime() * 60.0f, J3DAA_UNKNOWN_0, true);
 }
 
 /**
@@ -2020,13 +2020,19 @@ void TMainScreen::createFiledecide(s32 id)
  * @note Address: 0x803D78A8
  * @note Size: 0x30
  */
-bool TMainScreen::isFinishOutDataBall(s32 fileID) { return mAnimFileBallOut[fileID].isFinish(); }
+bool TMainScreen::isFinishOutDataBall(s32 fileID)
+{
+	return mAnimFileBallOut[fileID].isFinish();
+}
 
 /**
  * @note Address: 0x803D78D8
  * @note Size: 0x30
  */
-bool TMainScreen::isFinishDecideDataBall(s32 fileID) { return mAnimFileBallDecide[fileID].isFinish(); }
+bool TMainScreen::isFinishDecideDataBall(s32 fileID)
+{
+	return mAnimFileBallDecide[fileID].isFinish();
+}
 
 /**
  * @note Address: 0x803D7908
@@ -2195,7 +2201,7 @@ void TMainScreen::openDataWindow(s32 fileID)
 
 	if (!mFlags.isSet(FileSelectScreen_Decided)) {
 		mFlags.set(FileSelectScreen_Decided);
-		mAnimOpenDataWindow.play(sys->mDeltaTime * 60.0f, J3DAA_UNKNOWN_0, true);
+		mAnimOpenDataWindow.play(sys->getDeltaTime() * 60.0f, J3DAA_UNKNOWN_0, true);
 		mAnimCloseDataWindow.stop();
 		mAnimDecideDataWindow.stop();
 	}
@@ -2210,7 +2216,7 @@ void TMainScreen::closeDataWindow()
 	if (mFlags.isSet(FileSelectScreen_Decided)) {
 		mFlags.unset(FileSelectScreen_Decided);
 		mAnimOpenDataWindow.stop();
-		mAnimCloseDataWindow.play(sys->mDeltaTime * 60.0f, J3DAA_UNKNOWN_0, true);
+		mAnimCloseDataWindow.play(sys->getDeltaTime() * 60.0f, J3DAA_UNKNOWN_0, true);
 		mAnimDecideDataWindow.stop();
 	}
 }
@@ -2225,7 +2231,7 @@ void TMainScreen::decideDataWindow()
 		mFlags.unset(FileSelectScreen_Decided);
 		mAnimOpenDataWindow.stop();
 		mAnimCloseDataWindow.stop();
-		mAnimDecideDataWindow.play(sys->mDeltaTime * 60.0f, J3DAA_UNKNOWN_0, true);
+		mAnimDecideDataWindow.play(sys->getDeltaTime() * 60.0f, J3DAA_UNKNOWN_0, true);
 	}
 }
 
@@ -2233,7 +2239,10 @@ void TMainScreen::decideDataWindow()
  * @note Address: 0x803D8204
  * @note Size: 0x24
  */
-bool TMainScreen::isFinishCloseDataWindow() { return mAnimCloseDataWindow.isFinish(); }
+bool TMainScreen::isFinishCloseDataWindow()
+{
+	return mAnimCloseDataWindow.isFinish();
+}
 
 /**
  * @note Address: 0x803D8228
@@ -2242,7 +2251,7 @@ bool TMainScreen::isFinishCloseDataWindow() { return mAnimCloseDataWindow.isFini
 void TMainScreen::openMSG(s32 mesgID)
 {
 	mFlags.set(FileSelectScreen_MsgOpen);
-	u32 time        = 0.2f / sys->mDeltaTime;
+	u32 time        = 0.2f / sys->getDeltaTime();
 	mMesgCounter    = time;
 	mMesgCounterMax = time;
 
@@ -2305,7 +2314,7 @@ void TMainScreen::closeMSG()
 {
 	if (mFlags.isSet(FileSelectScreen_MsgOpen)) {
 		mFlags.unset(FileSelectScreen_MsgOpen);
-		u32 time        = 0.2f / sys->mDeltaTime;
+		u32 time        = 0.2f / sys->getDeltaTime();
 		mMesgCounter    = time;
 		mMesgCounterMax = time;
 	}
@@ -2406,8 +2415,8 @@ void TMainScreen::inCopyErase()
 {
 	if (!mFlags.isSet(FileSelectScreen_Copy)) {
 		mFlags.set(FileSelectScreen_Copy);
-		mAnimInCopyEraseA.play(sys->mDeltaTime * 60.0f, J3DAA_UNKNOWN_0, true);
-		mAnimInCopyEraseB.play(sys->mDeltaTime * 60.0f, J3DAA_UNKNOWN_0, true);
+		mAnimInCopyEraseA.play(sys->getDeltaTime() * 60.0f, J3DAA_UNKNOWN_0, true);
+		mAnimInCopyEraseB.play(sys->getDeltaTime() * 60.0f, J3DAA_UNKNOWN_0, true);
 		mAnimOutCopyEraseA.stop();
 		mAnimOutCopyEraseB.stop();
 	}
@@ -2423,8 +2432,8 @@ void TMainScreen::outCopyErase()
 		mFlags.unset(FileSelectScreen_Copy);
 		mAnimInCopyEraseA.stop();
 		mAnimInCopyEraseB.stop();
-		mAnimOutCopyEraseA.play(sys->mDeltaTime * 60.0f, J3DAA_UNKNOWN_0, true);
-		mAnimOutCopyEraseB.play(sys->mDeltaTime * 60.0f, J3DAA_UNKNOWN_0, true);
+		mAnimOutCopyEraseA.play(sys->getDeltaTime() * 60.0f, J3DAA_UNKNOWN_0, true);
+		mAnimOutCopyEraseB.play(sys->getDeltaTime() * 60.0f, J3DAA_UNKNOWN_0, true);
 	}
 }
 
@@ -2436,8 +2445,8 @@ void TMainScreen::inYesNo_()
 {
 	if (!mFlags.isSet(FileSelectScreen_YesNoOpen)) {
 		mFlags.set(FileSelectScreen_YesNoOpen);
-		mAnimInYesNoA.play(sys->mDeltaTime * 60.0f, J3DAA_UNKNOWN_0, true);
-		mAnimInYesNoB.play(sys->mDeltaTime * 60.0f, J3DAA_UNKNOWN_0, true);
+		mAnimInYesNoA.play(sys->getDeltaTime() * 60.0f, J3DAA_UNKNOWN_0, true);
+		mAnimInYesNoB.play(sys->getDeltaTime() * 60.0f, J3DAA_UNKNOWN_0, true);
 		mAnimOutYesNoA.stop();
 		mAnimOutYesNoB.stop();
 	}
@@ -2453,8 +2462,8 @@ void TMainScreen::outYesNo_()
 		mFlags.unset(FileSelectScreen_YesNoOpen);
 		mAnimInYesNoA.stop();
 		mAnimInYesNoB.stop();
-		mAnimOutYesNoA.play(sys->mDeltaTime * 60.0f, J3DAA_UNKNOWN_0, true);
-		mAnimOutYesNoB.play(sys->mDeltaTime * 60.0f, J3DAA_UNKNOWN_0, true);
+		mAnimOutYesNoA.play(sys->getDeltaTime() * 60.0f, J3DAA_UNKNOWN_0, true);
+		mAnimOutYesNoB.play(sys->getDeltaTime() * 60.0f, J3DAA_UNKNOWN_0, true);
 	}
 }
 

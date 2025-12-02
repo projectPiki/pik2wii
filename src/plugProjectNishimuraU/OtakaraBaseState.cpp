@@ -1,6 +1,6 @@
-#include "Game/Entities/OtakaraBase.h"
 #include "Game/EnemyAnimKeyEvent.h"
 #include "Game/EnemyFunc.h"
+#include "Game/Entities/OtakaraBase.h"
 
 namespace Game {
 namespace OtakaraBase {
@@ -39,7 +39,7 @@ void FSM::init(EnemyBase* enemy)
  */
 void StateDead::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	enemy->mTargetVelocity = Vector3f(0.0f);
+	enemy->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	enemy->deathProcedure();
 	enemy->disableEvent(0, EB_Cullable);
 	enemy->startMotion(OTAKARAANIM_Dead, nullptr);
@@ -60,7 +60,9 @@ void StateDead::exec(EnemyBase* enemy)
  * @note Address: 0x802B3D1C
  * @note Size: 0x4
  */
-void StateDead::cleanup(EnemyBase*) { }
+void StateDead::cleanup(EnemyBase*)
+{
+}
 
 /**
  * @note Address: 0x802B3D20
@@ -72,7 +74,7 @@ void StateFlick::init(EnemyBase* enemy, StateArg* stateArg)
 	ota->mNextState       = OTA_Null;
 	ota->mAttackWaitTimer = 0.0f;
 	ota->mEscapeSfxTimer  = 0.0f;
-	ota->mTargetVelocity  = Vector3f(0.0f);
+	ota->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 
 	ota->setEmotionExcitement();
 	ota->startMotion(OTAKARAANIM_Attack, nullptr);
@@ -90,7 +92,7 @@ void StateFlick::exec(EnemyBase* enemy)
 	if (ota->mAttackWaitTimer > CG_PROPERPARMS(ota).mNormalAttack.mValue) {
 		ota->finishMotion();
 	}
-	ota->mAttackWaitTimer += sys->mDeltaTime;
+	ota->mAttackWaitTimer += sys->getDeltaTime();
 
 	if (ota->mIsAttackCharging) {
 		ota->getJAIObject()->startSound(PSSE_EN_OTAKARA_CHARGE, 0);
@@ -111,16 +113,14 @@ void StateFlick::exec(EnemyBase* enemy)
 			ota->createDisChargeEffect();
 
 		} else if ((u32)event->mType == 1000) {
-			if (ota->mHealth <= 0.0f) {
+			if (ota->isDead()) {
 				transit(ota, OTA_Dead, nullptr);
 				return;
 			}
 
 			if (ota->isMovePositionSet(false)) {
 				Vector3f movePos = ota->mMovePosition;
-				Vector3f pos     = ota->getPosition();
-				f32 angle        = angXZ(movePos.x, movePos.z, pos);
-				if (FABS(angDist(angle, ota->getFaceDir())) <= THIRD_PI) {
+				if (isAngleWithin(ota->getAngDist(movePos), 60.0f)) {
 					transit(ota, OTA_Move, nullptr);
 					return;
 				}
@@ -137,7 +137,10 @@ void StateFlick::exec(EnemyBase* enemy)
  * @note Address: 0x802B4038
  * @note Size: 0x24
  */
-void StateFlick::cleanup(EnemyBase* enemy) { enemy->setEmotionCaution(); }
+void StateFlick::cleanup(EnemyBase* enemy)
+{
+	enemy->setEmotionCaution();
+}
 
 /**
  * @note Address: 0x802B405C
@@ -148,7 +151,7 @@ void StateWait::init(EnemyBase* enemy, StateArg* stateArg)
 	Obj* ota             = OBJ(enemy);
 	ota->mNextState      = OTA_Null;
 	ota->mEscapeSfxTimer = 0.0f;
-	ota->mTargetVelocity = Vector3f(0.0f);
+	ota->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	ota->mTargetCreature = nullptr;
 	ota->startMotion(OTAKARAANIM_Wait, nullptr);
 }
@@ -162,14 +165,12 @@ void StateWait::exec(EnemyBase* enemy)
 	Obj* ota = OBJ(enemy);
 	if (ota->isMovePositionSet(false)) {
 		Vector3f movePos = ota->mMovePosition;
-		Vector3f pos     = ota->getPosition();
-		f32 angle        = angXZ(movePos.x, movePos.z, pos);
-		if (FABS(angDist(angle, ota->getFaceDir())) <= THIRD_PI) {
+		if (isAngleWithin(ota->getAngDist(movePos), 60.0f)) {
 			ota->mNextState = OTA_Move;
 			ota->finishMotion();
 			if (ota->isTakeTreasure()) {
-				ota->mNextState      = OTA_Take;
-				ota->mTargetVelocity = Vector3f(0.0f);
+				ota->mNextState = OTA_Take;
+				ota->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 				ota->finishMotion();
 			}
 		} else {
@@ -183,7 +184,7 @@ void StateWait::exec(EnemyBase* enemy)
 		ota->finishMotion();
 	}
 
-	if (ota->mHealth <= 0.0f) {
+	if (ota->isDead()) {
 		ota->mNextState = OTA_Dead;
 		ota->finishMotion();
 	}
@@ -197,7 +198,9 @@ void StateWait::exec(EnemyBase* enemy)
  * @note Address: 0x802B4278
  * @note Size: 0x4
  */
-void StateWait::cleanup(EnemyBase* enemy) { }
+void StateWait::cleanup(EnemyBase* enemy)
+{
+}
 
 /**
  * @note Address: 0x802B427C
@@ -220,37 +223,35 @@ void StateMove::exec(EnemyBase* enemy)
 	Obj* ota = OBJ(enemy);
 	if (ota->isMovePositionSet(false)) {
 		Vector3f movePos = Vector3f(ota->mMovePosition);
-		Vector3f pos     = ota->getPosition();
-		f32 angle        = angXZ(movePos.x, movePos.z, pos);
-		if (FABS(angDist(angle, ota->getFaceDir())) <= THIRD_PI) {
+		if (isAngleWithin(ota->getAngDist(movePos), 60.0f)) {
 			Parms* parms = CG_PARMS(ota);
 			EnemyFunc::walkToTarget(ota, movePos, parms->mGeneral.mMoveSpeed.mValue, parms->mGeneral.mTurnSpeed.mValue,
 			                        parms->mGeneral.mMaxTurnAngle.mValue);
 			if (ota->isTakeTreasure()) {
-				ota->mNextState      = OTA_Take;
-				ota->mTargetVelocity = Vector3f(0.0f);
+				ota->mNextState = OTA_Take;
+				ota->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 				ota->finishMotion();
 			}
 		} else {
-			ota->mNextState      = OTA_Turn;
-			ota->mTargetVelocity = Vector3f(0.0f);
+			ota->mNextState = OTA_Turn;
+			ota->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 			ota->finishMotion();
 		}
 	} else {
-		ota->mNextState      = OTA_Wait;
-		ota->mTargetVelocity = Vector3f(0.0f);
+		ota->mNextState = OTA_Wait;
+		ota->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 		ota->finishMotion();
 	}
 
 	if (EnemyFunc::isStartFlick(ota, false)) {
-		ota->mNextState      = OTA_Flick;
-		ota->mTargetVelocity = Vector3f(0.0f);
+		ota->mNextState = OTA_Flick;
+		ota->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 		ota->finishMotion();
 	}
 
-	if (ota->mHealth <= 0.0f) {
-		ota->mNextState      = OTA_Dead;
-		ota->mTargetVelocity = Vector3f(0.0f);
+	if (ota->isDead()) {
+		ota->mNextState = OTA_Dead;
+		ota->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 		ota->finishMotion();
 	}
 
@@ -265,7 +266,10 @@ void StateMove::exec(EnemyBase* enemy)
  * @note Address: 0x802B4508
  * @note Size: 0x24
  */
-void StateMove::cleanup(EnemyBase* enemy) { enemy->setEmotionCaution(); }
+void StateMove::cleanup(EnemyBase* enemy)
+{
+	enemy->setEmotionCaution();
+}
 
 /**
  * @note Address: 0x802B452C
@@ -273,9 +277,9 @@ void StateMove::cleanup(EnemyBase* enemy) { enemy->setEmotionCaution(); }
  */
 void StateTurn::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* ota             = OBJ(enemy);
-	ota->mNextState      = OTA_Null;
-	ota->mTargetVelocity = Vector3f(0.0f);
+	Obj* ota        = OBJ(enemy);
+	ota->mNextState = OTA_Null;
+	ota->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	ota->setEmotionExcitement();
 	ota->startMotion(OTAKARAANIM_Turn, nullptr);
 }
@@ -288,18 +292,13 @@ void StateTurn::exec(EnemyBase* enemy)
 {
 	Obj* ota = OBJ(enemy);
 	if (ota->isMovePositionSet(false)) {
-		Vector2f XZ;
-		XZ.x          = ota->mMovePosition.x;
-		XZ.y          = ota->mMovePosition.z;
-		f32 angleDist = ota->changeFaceDir(XZ);
-
-		f64 abs = fabs(angleDist);
-		if ((f32)(abs) <= THIRD_PI) {
+		Vector3f movePos = ota->mMovePosition;
+		if (ota->turnToTarget(movePos, CG_GENERALPARMS(ota).mTurnSpeed(), CG_GENERALPARMS(ota).mMaxTurnAngle(), 60.0f)) {
 			ota->mNextState = OTA_Move;
 			ota->finishMotion();
 			if (ota->isTakeTreasure()) {
-				ota->mNextState      = OTA_Take;
-				ota->mTargetVelocity = Vector3f(0.0f);
+				ota->mNextState = OTA_Take;
+				ota->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 				ota->finishMotion();
 			}
 		}
@@ -313,7 +312,7 @@ void StateTurn::exec(EnemyBase* enemy)
 		ota->finishMotion();
 	}
 
-	if (ota->mHealth <= 0.0f) {
+	if (ota->isDead()) {
 		ota->mNextState = OTA_Dead;
 		ota->finishMotion();
 	}
@@ -329,7 +328,10 @@ void StateTurn::exec(EnemyBase* enemy)
  * @note Address: 0x802B47E8
  * @note Size: 0x24
  */
-void StateTurn::cleanup(EnemyBase* enemy) { enemy->setEmotionCaution(); }
+void StateTurn::cleanup(EnemyBase* enemy)
+{
+	enemy->setEmotionCaution();
+}
 
 /**
  * @note Address: 0x802B480C
@@ -379,7 +381,10 @@ void StateTake::exec(EnemyBase* enemy)
  * @note Address: 0x802B49B0
  * @note Size: 0x24
  */
-void StateTake::cleanup(EnemyBase* enemy) { enemy->setEmotionCaution(); }
+void StateTake::cleanup(EnemyBase* enemy)
+{
+	enemy->setEmotionCaution();
+}
 
 /**
  * @note Address: 0x802B49D4
@@ -390,7 +395,7 @@ void StateItemWait::init(EnemyBase* enemy, StateArg* stateArg)
 	Obj* ota             = OBJ(enemy);
 	ota->mNextState      = OTA_Null;
 	ota->mEscapeSfxTimer = 0.0f;
-	ota->mTargetVelocity = Vector3f(0.0f);
+	ota->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	ota->startMotion(OTAKARAANIM_ItemWait, nullptr);
 }
 
@@ -403,9 +408,7 @@ void StateItemWait::exec(EnemyBase* enemy)
 	Obj* ota = OBJ(enemy);
 	if (ota->isMovePositionSet(true)) {
 		Vector3f movePos = ota->mMovePosition;
-		Vector3f pos     = ota->getPosition();
-		f32 angle        = angXZ(movePos.x, movePos.z, pos);
-		if (FABS(angDist(angle, ota->getFaceDir())) <= THIRD_PI) {
+		if (isAngleWithin(ota->getAngDist(movePos), 60.0f)) {
 			ota->mNextState = OTA_ItemMove;
 			ota->finishMotion();
 		} else {
@@ -422,8 +425,8 @@ void StateItemWait::exec(EnemyBase* enemy)
 		ota->mNextState = OTA_ItemDrop;
 		ota->finishMotion();
 
-	} else if (gameSystem != nullptr && gameSystem->isVersusMode()) {
-		if (ota->mHealth <= 0.0f) {
+	} else if (gameSystem != nullptr && gameSystem->getGameMode() == GSM_VERSUS_MODE) {
+		if (ota->isDead()) {
 			ota->mNextState = OTA_ItemDrop;
 			ota->finishMotion();
 		}
@@ -438,7 +441,9 @@ void StateItemWait::exec(EnemyBase* enemy)
  * @note Address: 0x802B4BF4
  * @note Size: 0x4
  */
-void StateItemWait::cleanup(EnemyBase* enemy) { }
+void StateItemWait::cleanup(EnemyBase* enemy)
+{
+}
 
 /**
  * @note Address: 0x802B4BF8
@@ -462,39 +467,37 @@ void StateItemMove::exec(EnemyBase* enemy)
 
 	if (ota->isMovePositionSet(true)) {
 		Vector3f movePos = Vector3f(ota->mMovePosition);
-		Vector3f pos     = ota->getPosition();
-		f32 angle        = angXZ(movePos.x, movePos.z, pos);
-		if (FABS(angDist(angle, ota->getFaceDir())) <= THIRD_PI) {
+		if (isAngleWithin(ota->getAngDist(movePos), 60.0f)) {
 			Parms* parms = CG_PARMS(ota);
 			EnemyFunc::walkToTarget(ota, movePos, parms->mGeneral.mMoveSpeed.mValue, parms->mGeneral.mTurnSpeed.mValue,
 			                        parms->mGeneral.mMaxTurnAngle.mValue);
 		} else {
-			ota->mNextState      = OTA_ItemTurn;
-			ota->mTargetVelocity = Vector3f(0.0f);
+			ota->mNextState = OTA_ItemTurn;
+			ota->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 			ota->finishMotion();
 		}
 
 	} else {
-		ota->mNextState      = OTA_ItemWait;
-		ota->mTargetVelocity = Vector3f(0.0f);
+		ota->mNextState = OTA_ItemWait;
+		ota->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 		ota->finishMotion();
 	}
 
 	if (EnemyFunc::isStartFlick(ota, false)) {
-		ota->mNextState      = OTA_ItemFlick;
-		ota->mTargetVelocity = Vector3f(0.0f);
+		ota->mNextState = OTA_ItemFlick;
+		ota->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 		ota->finishMotion();
 	}
 
 	if (ota->isDropTreasure()) {
-		ota->mNextState      = OTA_ItemDrop;
-		ota->mTargetVelocity = Vector3f(0.0f);
+		ota->mNextState = OTA_ItemDrop;
+		ota->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 		ota->finishMotion();
 
-	} else if (gameSystem != nullptr && gameSystem->isVersusMode()) {
-		if (ota->mHealth <= 0.0f) {
-			ota->mNextState      = OTA_ItemDrop;
-			ota->mTargetVelocity = Vector3f(0.0f);
+	} else if (gameSystem != nullptr && gameSystem->getGameMode() == GSM_VERSUS_MODE) {
+		if (ota->isDead()) {
+			ota->mNextState = OTA_ItemDrop;
+			ota->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 			ota->finishMotion();
 		}
 	}
@@ -510,7 +513,10 @@ void StateItemMove::exec(EnemyBase* enemy)
  * @note Address: 0x802B4EA0
  * @note Size: 0x24
  */
-void StateItemMove::cleanup(EnemyBase* enemy) { enemy->setEmotionCaution(); }
+void StateItemMove::cleanup(EnemyBase* enemy)
+{
+	enemy->setEmotionCaution();
+}
 
 /**
  * @note Address: 0x802B4EC4
@@ -518,9 +524,9 @@ void StateItemMove::cleanup(EnemyBase* enemy) { enemy->setEmotionCaution(); }
  */
 void StateItemTurn::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* ota             = OBJ(enemy);
-	ota->mNextState      = OTA_Null;
-	ota->mTargetVelocity = Vector3f(0.0f);
+	Obj* ota        = OBJ(enemy);
+	ota->mNextState = OTA_Null;
+	ota->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	ota->setEmotionExcitement();
 	ota->startMotion(OTAKARAANIM_ItemTurn, nullptr);
 }
@@ -534,13 +540,8 @@ void StateItemTurn::exec(EnemyBase* enemy)
 	Obj* ota = OBJ(enemy);
 
 	if (ota->isMovePositionSet(true)) {
-		Vector2f XZ;
-		XZ.x          = ota->mMovePosition.x;
-		XZ.y          = ota->mMovePosition.z;
-		f32 angleDist = ota->changeFaceDir(XZ);
-
-		f64 abs = fabs(angleDist);
-		if ((f32)(abs) <= THIRD_PI) {
+		Vector3f movePos = ota->mMovePosition;
+		if (ota->turnToTarget(movePos, CG_GENERALPARMS(ota).mTurnSpeed(), CG_GENERALPARMS(ota).mMaxTurnAngle(), 60.0f)) {
 			ota->mNextState = OTA_ItemMove;
 			ota->finishMotion();
 		}
@@ -558,8 +559,8 @@ void StateItemTurn::exec(EnemyBase* enemy)
 		ota->mNextState = OTA_ItemDrop;
 		ota->finishMotion();
 
-	} else if (gameSystem != nullptr && gameSystem->isVersusMode()) {
-		if (ota->mHealth <= 0.0f) {
+	} else if (gameSystem != nullptr && gameSystem->getGameMode() == GSM_VERSUS_MODE) {
+		if (ota->isDead()) {
 			ota->mNextState = OTA_ItemDrop;
 			ota->finishMotion();
 		}
@@ -576,7 +577,10 @@ void StateItemTurn::exec(EnemyBase* enemy)
  * @note Address: 0x802B518C
  * @note Size: 0x24
  */
-void StateItemTurn::cleanup(EnemyBase* enemy) { enemy->setEmotionCaution(); }
+void StateItemTurn::cleanup(EnemyBase* enemy)
+{
+	enemy->setEmotionCaution();
+}
 
 /**
  * @note Address: 0x802B51B0
@@ -588,7 +592,7 @@ void StateItemFlick::init(EnemyBase* enemy, StateArg* stateArg)
 	ota->mNextState       = OTA_Null;
 	ota->mAttackWaitTimer = 0.0f;
 	ota->mEscapeSfxTimer  = 0.0f;
-	ota->mTargetVelocity  = Vector3f(0.0f);
+	ota->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	ota->setEmotionExcitement();
 	ota->startMotion(OTAKARAANIM_ItemAttack, nullptr);
 	ota->mIsAttackCharging = 1;
@@ -605,7 +609,7 @@ void StateItemFlick::exec(EnemyBase* enemy)
 	if (ota->mAttackWaitTimer > CG_PROPERPARMS(ota).mOtakaraAttack.mValue) {
 		ota->finishMotion();
 	}
-	ota->mAttackWaitTimer += sys->mDeltaTime;
+	ota->mAttackWaitTimer += sys->getDeltaTime();
 
 	EnemyAnimKeyEvent* event = ota->mCurAnim;
 	if (event->mIsPlaying) {
@@ -629,9 +633,7 @@ void StateItemFlick::exec(EnemyBase* enemy)
 
 			if (ota->isMovePositionSet(true)) {
 				Vector3f movePos = ota->mMovePosition;
-				Vector3f pos     = ota->getPosition();
-				f32 angle        = angXZ(movePos.x, movePos.z, pos);
-				if (FABS(angDist(angle, ota->getFaceDir())) <= THIRD_PI) {
+				if (isAngleWithin(ota->getAngDist(movePos), 60.0f)) {
 					transit(ota, OTA_ItemMove, nullptr);
 					return;
 				}
@@ -648,7 +650,10 @@ void StateItemFlick::exec(EnemyBase* enemy)
  * @note Address: 0x802B5480
  * @note Size: 0x24
  */
-void StateItemFlick::cleanup(EnemyBase* enemy) { enemy->setEmotionCaution(); }
+void StateItemFlick::cleanup(EnemyBase* enemy)
+{
+	enemy->setEmotionCaution();
+}
 
 /**
  * @note Address: 0x802B54A4
@@ -659,7 +664,7 @@ void StateItemDrop::init(EnemyBase* enemy, StateArg* stateArg)
 	Obj* ota             = OBJ(enemy);
 	ota->mNextState      = OTA_Null;
 	ota->mEscapeSfxTimer = 0.0f;
-	ota->mTargetVelocity = Vector3f(0.0f);
+	ota->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	ota->setEmotionExcitement();
 	ota->startMotion(OTAKARAANIM_DropItem, nullptr);
 }
@@ -678,7 +683,7 @@ void StateItemDrop::exec(EnemyBase* enemy)
 			ota->fallTreasure(true);
 
 		} else if ((u32)event->mType == 1000) {
-			if (ota->mHealth <= 0.0f) {
+			if (ota->isDead()) {
 				transit(ota, OTA_Dead, nullptr);
 				return;
 			} else if (EnemyFunc::isStartFlick(ota, false)) {
@@ -688,9 +693,7 @@ void StateItemDrop::exec(EnemyBase* enemy)
 
 			if (ota->isMovePositionSet(false)) {
 				Vector3f movePos = ota->mMovePosition;
-				Vector3f pos     = ota->getPosition();
-				f32 angle        = angXZ(movePos.x, movePos.z, pos);
-				if (FABS(angDist(angle, ota->getFaceDir())) <= THIRD_PI) {
+				if (isAngleWithin(ota->getAngDist(movePos), 60.0f)) {
 					transit(ota, OTA_Move, nullptr);
 					return;
 				}
@@ -723,7 +726,7 @@ void StateBombWait::init(EnemyBase* enemy, StateArg* stateArg)
 	Obj* ota                   = OBJ(enemy);
 	ota->mNextState            = OTA_Null;
 	ota->mItemSearchDelayTimer = 0.0f;
-	ota->mTargetVelocity       = Vector3f(0.0f);
+	ota->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	ota->startMotion(OTAKARAANIM_ItemWait, nullptr);
 }
 
@@ -749,9 +752,7 @@ void StateBombWait::exec(EnemyBase* enemy)
 		Creature* creature = ota->getChaseTargetCreature();
 		if (creature) {
 			Vector3f creaturePos = creature->getPosition();
-			Vector3f pos         = ota->getPosition();
-			f32 angle            = angXZ(creaturePos.x, creaturePos.z, pos);
-			if (FABS(angDist(angle, ota->getFaceDir())) <= THIRD_PI) {
+			if (isAngleWithin(ota->getAngDist(creaturePos), 60.0f)) {
 				transit(ota, OTA_BombMove, nullptr);
 				return;
 			}
@@ -766,7 +767,9 @@ void StateBombWait::exec(EnemyBase* enemy)
  * @note Address: 0x802B592C
  * @note Size: 0x4
  */
-void StateBombWait::cleanup(EnemyBase* enemy) { }
+void StateBombWait::cleanup(EnemyBase* enemy)
+{
+}
 
 /**
  * @note Address: 0x802B5930
@@ -798,20 +801,18 @@ void StateBombMove::exec(EnemyBase* enemy)
 	Creature* creature = ota->getChaseTargetCreature();
 	if (creature) {
 		Vector3f creaturePos = creature->getPosition();
-		Vector3f pos         = ota->getPosition();
-		f32 angle            = angXZ(creaturePos.x, creaturePos.z, pos);
-		if (FABS(angDist(angle, ota->getFaceDir())) <= THIRD_PI) {
+		if (isAngleWithin(ota->getAngDist(creaturePos), 60.0f)) {
 			Parms* parms = CG_PARMS(ota);
 			EnemyFunc::walkToTarget(ota, creaturePos, parms->mGeneral.mMoveSpeed.mValue, parms->mGeneral.mTurnSpeed.mValue,
 			                        parms->mGeneral.mMaxTurnAngle.mValue);
 		} else {
-			ota->mNextState      = OTA_BombTurn;
-			ota->mTargetVelocity = Vector3f(0.0f);
+			ota->mNextState = OTA_BombTurn;
+			ota->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 			ota->finishMotion();
 		}
 	} else {
-		ota->mNextState      = OTA_BombWait;
-		ota->mTargetVelocity = Vector3f(0.0f);
+		ota->mNextState = OTA_BombWait;
+		ota->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 		ota->finishMotion();
 	}
 
@@ -826,7 +827,10 @@ void StateBombMove::exec(EnemyBase* enemy)
  * @note Address: 0x802B5B60
  * @note Size: 0x24
  */
-void StateBombMove::cleanup(EnemyBase* enemy) { enemy->setEmotionCaution(); }
+void StateBombMove::cleanup(EnemyBase* enemy)
+{
+	enemy->setEmotionCaution();
+}
 
 /**
  * @note Address: 0x802B5B84
@@ -834,9 +838,9 @@ void StateBombMove::cleanup(EnemyBase* enemy) { enemy->setEmotionCaution(); }
  */
 void StateBombTurn::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* ota             = OBJ(enemy);
-	ota->mNextState      = OTA_Null;
-	ota->mTargetVelocity = Vector3f(0.0f);
+	Obj* ota        = OBJ(enemy);
+	ota->mNextState = OTA_Null;
+	ota->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	ota->setEmotionExcitement();
 	ota->startMotion(OTAKARAANIM_ItemTurn, nullptr);
 }
@@ -859,13 +863,7 @@ void StateBombTurn::exec(EnemyBase* enemy)
 	Creature* creature = ota->getChaseTargetCreature();
 	if (creature) {
 		Vector3f creaturePos = creature->getPosition();
-		Vector2f XZ;
-		XZ.x          = creaturePos.x;
-		XZ.y          = creaturePos.z;
-		f32 angleDist = ota->changeFaceDir(XZ);
-
-		f64 abs = fabs(angleDist);
-		if ((f32)(abs) <= THIRD_PI) {
+		if (ota->turnToTarget(creaturePos, CG_GENERALPARMS(ota).mTurnSpeed(), CG_GENERALPARMS(ota).mMaxTurnAngle(), 60.0f)) {
 			ota->mNextState = OTA_BombMove;
 			ota->finishMotion();
 		}
@@ -885,6 +883,9 @@ void StateBombTurn::exec(EnemyBase* enemy)
  * @note Address: 0x802B5E00
  * @note Size: 0x24
  */
-void StateBombTurn::cleanup(EnemyBase* enemy) { enemy->setEmotionCaution(); }
+void StateBombTurn::cleanup(EnemyBase* enemy)
+{
+	enemy->setEmotionCaution();
+}
 } // namespace OtakaraBase
 } // namespace Game

@@ -18,7 +18,9 @@ Obj::Obj()
  * @note Address: 0x80275EC4
  * @note Size: 0x4
  */
-void Obj::setInitialSetting(EnemyInitialParamBase*) { }
+void Obj::setInitialSetting(EnemyInitialParamBase*)
+{
+}
 
 /**
  * @note Address: 0x80275EC8
@@ -66,13 +68,18 @@ void Obj::doUpdate()
  * @note Address: 0x80276004
  * @note Size: 0x4
  */
-void Obj::doDirectDraw(Graphics&) { }
+void Obj::doDirectDraw(Graphics&)
+{
+}
 
 /**
  * @note Address: 0x80276008
  * @note Size: 0x20
  */
-void Obj::doDebugDraw(Graphics& gfx) { EnemyBase::doDebugDraw(gfx); }
+void Obj::doDebugDraw(Graphics& gfx)
+{
+	EnemyBase::doDebugDraw(gfx);
+}
 
 /**
  * @note Address: 0x80276028
@@ -177,19 +184,28 @@ void Obj::doFinishWaitingBirthTypeDrop()
  * @note Address: 0x802762CC
  * @note Size: 0x28
  */
-void Obj::startCarcassMotion() { startMotion(TANKANIM_Carry, nullptr); }
+void Obj::startCarcassMotion()
+{
+	startMotion(TANKANIM_Carry, nullptr);
+}
 
 /**
  * @note Address: 0x802762F4
  * @note Size: 0x2C
  */
-void Obj::doStartMovie() { effectDrawOff(); }
+void Obj::doStartMovie()
+{
+	effectDrawOff();
+}
 
 /**
  * @note Address: 0x80276320
  * @note Size: 0x2C
  */
-void Obj::doEndMovie() { effectDrawOn(); }
+void Obj::doEndMovie()
+{
+	effectDrawOn();
+}
 
 /**
  * @note Address: 0x8027634C
@@ -227,7 +243,10 @@ void Obj::initWalkSmokeEffect()
  * @note Address: 0x802764A4
  * @note Size: 0x8
  */
-WalkSmokeEffect::Mgr* Obj::getWalkSmokeEffectMgr() { return &mWalkSmokeMgr; }
+WalkSmokeEffect::Mgr* Obj::getWalkSmokeEffectMgr()
+{
+	return &mWalkSmokeMgr;
+}
 
 /**
  * @note Address: 0x802764AC
@@ -325,12 +344,12 @@ f32 Obj::emitCollideRatio(Vector3f& dir, Vector3f& pos, f32 range)
 		MoveInfo moveInfo(&sphere, &vec, C_PARMS->mCreatureProps.mProps.mWallReflection.mValue);
 		moveInfo.mMovingCreature = this;
 
-		mapMgr->traceMove(moveInfo, sys->mDeltaTime);
+		mapMgr->traceMove(moveInfo, sys->getDeltaTime());
 
 		if (moveInfo.mFloorTriangle || moveInfo.mWallTriangle) {
 			mAttackMaxGrowth = mAttackTimer;
 		} else {
-			mAttackTimer += 2.0f * sys->mDeltaTime;
+			mAttackTimer += 2.0f * sys->getDeltaTime();
 			if (mAttackTimer > mAttackMaxGrowth) {
 				mAttackTimer = mAttackMaxGrowth;
 			}
@@ -380,7 +399,7 @@ void Obj::updateCaution()
 	}
 
 	if (mCautionTimer < C_GENERALPARMS.mAlertDuration.mValue) {
-		mCautionTimer += sys->mDeltaTime;
+		mCautionTimer += sys->getDeltaTime();
 	}
 }
 

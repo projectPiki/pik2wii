@@ -1,10 +1,10 @@
 #include "Game/Entities/Frog.h"
-#include "Game/CameraMgr.h"
-#include "Game/rumble.h"
 #include "Game/AIConstants.h"
+#include "Game/CameraMgr.h"
 #include "Game/EnemyFunc.h"
-#include "efx/TFrog.h"
+#include "Game/rumble.h"
 #include "PS.h"
+#include "efx/TFrog.h"
 #include "nans.h"
 
 namespace Game {
@@ -25,7 +25,9 @@ Obj::Obj()
  * @note Address: 0x80258680
  * @note Size: 0x4
  */
-void Obj::setInitialSetting(EnemyInitialParamBase*) { }
+void Obj::setInitialSetting(EnemyInitialParamBase*)
+{
+}
 
 /**
  * @note Address: 0x80258684
@@ -69,10 +71,10 @@ void Obj::doUpdate()
  */
 void Obj::doSimulationFlying(f32 step)
 {
-	f32 remainingAirTime = C_PROPERPARMS.mAirTime() - mAirTimer;
+	f32 remainingAirTime = C_PROPERPARMS.mAirTime() - getAirTimer();
 	if (remainingAirTime > 0.0f) {
 		Vector3f prevVel   = mCurrentVelocity;
-		f32 speed          = prevVel.length2D();
+		f32 speed          = mCurrentVelocity.length2D();
 		mCurrentVelocity.x = mTargetPosition.x - mPosition.x;
 		mCurrentVelocity.z = mTargetPosition.z - mPosition.z;
 		f32 newSpeed       = mCurrentVelocity.length2D();
@@ -94,25 +96,31 @@ void Obj::doSimulationFlying(f32 step)
 
 	mCurrentVelocity.y -= step * _aiConstants->mGravity.mData;
 	if (mCurrentVelocity.y > 0.0f) {
-		turnToTarget2(mTargetPosition, C_GENERALPARMS.mTurnSpeed(), C_GENERALPARMS.mMaxTurnAngle());
+
+		turnToTarget(mTargetPosition, C_GENERALPARMS.mTurnSpeed(), C_GENERALPARMS.mMaxTurnAngle());
 	} else {
 		mCurrentVelocity.y = 0.0f;
 	}
 
-	mAirTimer += sys->mDeltaTime;
+	mAirTimer += sys->getDeltaTime();
 }
 
 /**
  * @note Address: 0x80258A04
  * @note Size: 0x4
  */
-void Obj::doDirectDraw(Graphics& gfx) { }
+void Obj::doDirectDraw(Graphics& gfx)
+{
+}
 
 /**
  * @note Address: 0x80258A08
  * @note Size: 0x20
  */
-void Obj::doDebugDraw(Graphics& gfx) { EnemyBase::doDebugDraw(gfx); }
+void Obj::doDebugDraw(Graphics& gfx)
+{
+	EnemyBase::doDebugDraw(gfx);
+}
 
 /**
  * @note Address: 0x80258A28
@@ -155,8 +163,8 @@ void Obj::getShadowParam(ShadowParam& param)
 		param.mBoundingSphere.mRadius = 22.5f;
 	}
 
-	param.mBoundingSphere.mPosition = Vector3f(0.0f, 1.0f, 0.0f);
-	param.mSize                     = 17.5f;
+	param.mBoundingSphere.mPosition.set(0.0f, 1.0f, 0.0f);
+	param.mSize = 17.5f;
 }
 
 /**
@@ -252,25 +260,37 @@ void Obj::doFinishWaitingBirthTypeDrop()
  * @note Address: 0x80258E18
  * @note Size: 0x28
  */
-void Obj::startCarcassMotion() { EnemyBase::startMotion(FROGANIM_Carry, nullptr); }
+void Obj::startCarcassMotion()
+{
+	EnemyBase::startMotion(FROGANIM_Carry, nullptr);
+}
 
 /**
  * @note Address: 0x80258E18
  * @note Size: 0x28
  */
-Vector3f Obj::viewGetCollTreeOffset() { return Vector3f(20.0f, -15.0f, 0.0f); }
+Vector3f Obj::viewGetCollTreeOffset()
+{
+	return Vector3f(20.0f, -15.0f, 0.0f);
+}
 
 /**
  * @note Address: 0x80258E5C
  * @note Size: 0x20
  */
-void Obj::doStartMovie() { effectDrawOff(); }
+void Obj::doStartMovie()
+{
+	effectDrawOff();
+}
 
 /**
  * @note Address: 0x80258E7C
  * @note Size: 0x20
  */
-void Obj::doEndMovie() { effectDrawOn(); }
+void Obj::doEndMovie()
+{
+	effectDrawOn();
+}
 
 /**
  * @note Address: 0x80258E9C
@@ -308,7 +328,7 @@ void Obj::updateCaution()
 	}
 
 	if (mAlertTimer < C_GENERALPARMS.mAlertDuration()) {
-		mAlertTimer += sys->mDeltaTime;
+		mAlertTimer += sys->getDeltaTime();
 	}
 }
 
@@ -402,25 +422,37 @@ void Obj::pressOnGround()
  * @note Address: 0x802593E8
  * @note Size: 0xB0
  */
-void Obj::createEffect() { mEfxPota = new efx::TFrogPota; }
+void Obj::createEffect()
+{
+	mEfxPota = new efx::TFrogPota;
+}
 
 /**
  * @note Address: 0x80259498
  * @note Size: 0x10
  */
-void Obj::setupEffect() { mEfxPota->mPosition = &mPosition; }
+void Obj::setupEffect()
+{
+	mEfxPota->mPosition = &mPosition;
+}
 
 /**
  * @note Address: 0x802594A8
  * @note Size: 0x34
  */
-void Obj::startJumpEffect() { mEfxPota->create(nullptr); }
+void Obj::startJumpEffect()
+{
+	mEfxPota->create(nullptr);
+}
 
 /**
  * @note Address: 0x802594DC
  * @note Size: 0x30
  */
-void Obj::finishJumpEffect() { mEfxPota->fade(); }
+void Obj::finishJumpEffect()
+{
+	mEfxPota->fade();
+}
 
 /**
  * @note Address: 0x8025950C
@@ -445,13 +477,19 @@ void Obj::createDownEffect(f32 scale)
  * @note Address: 0x802595CC
  * @note Size: 0x30
  */
-void Obj::effectDrawOn() { mEfxPota->endDemoDrawOn(); }
+void Obj::effectDrawOn()
+{
+	mEfxPota->endDemoDrawOn();
+}
 
 /**
  * @note Address: 0x802595FC
  * @note Size: 0x30
  */
-void Obj::effectDrawOff() { mEfxPota->startDemoDrawOff(); }
+void Obj::effectDrawOff()
+{
+	mEfxPota->startDemoDrawOff();
+}
 
 } // namespace Frog
 } // namespace Game

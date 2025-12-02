@@ -30,7 +30,7 @@ Pikmin::TBoidParamMgr::TBoidParamMgr()
 	mCurrGroupCenter    = 0.0f;
 	mCurrBoidNeighbor   = 0.0f;
 
-	u32 time      = 0.0f / sys->mDeltaTime;
+	u32 time      = 0.0f / sys->getDeltaTime();
 	mCounter      = time;
 	mCounter2     = time;
 	mPrevState    = 0;
@@ -265,7 +265,7 @@ void Pikmin::TMgr::forceArriveDest()
 	}
 	mBoidParamMgr.mPrevState    = mBoidParamMgr.mCurrentState;
 	mBoidParamMgr.mCurrentState = 0;
-	u32 time                    = 0.0f / sys->mDeltaTime;
+	u32 time                    = 0.0f / sys->getDeltaTime();
 	mBoidParamMgr.mCounter      = time;
 	mBoidParamMgr.mCounter2     = time;
 	for (int i = 0; i < TITLE_PIKI_TOTAL; i++) {
@@ -283,7 +283,7 @@ void Pikmin::TMgr::assemble()
 {
 	mBoidParamMgr.mPrevState    = mBoidParamMgr.mCurrentState;
 	mBoidParamMgr.mCurrentState = 0;
-	u32 time                    = 2.0f / sys->mDeltaTime;
+	u32 time                    = 2.0f / sys->getDeltaTime();
 	mBoidParamMgr.mCounter      = time;
 	mBoidParamMgr.mCounter2     = time;
 	for (int i = 0; i < TITLE_PIKI_TOTAL; i++) {
@@ -299,7 +299,7 @@ void Pikmin::TMgr::quickAssemble()
 {
 	mBoidParamMgr.mPrevState    = mBoidParamMgr.mCurrentState;
 	mBoidParamMgr.mCurrentState = 1;
-	u32 time                    = 1.0f / sys->mDeltaTime;
+	u32 time                    = 1.0f / sys->getDeltaTime();
 	mBoidParamMgr.mCounter      = time;
 	mBoidParamMgr.mCounter2     = time;
 	for (int i = 0; i < TITLE_PIKI_TOTAL; i++) {
@@ -315,7 +315,7 @@ void Pikmin::TMgr::startBoid1(f32 arg)
 {
 	mBoidParamMgr.mPrevState    = mBoidParamMgr.mCurrentState;
 	mBoidParamMgr.mCurrentState = 2;
-	u32 time                    = (arg / 2) / sys->mDeltaTime;
+	u32 time                    = (arg / 2) / sys->getDeltaTime();
 	mBoidParamMgr.mCounter      = time;
 	mBoidParamMgr.mCounter2     = time;
 	for (int i = 0; i < TITLE_PIKI_TOTAL; i++) {
@@ -331,7 +331,7 @@ void Pikmin::TMgr::startBoid2(f32 arg)
 {
 	mBoidParamMgr.mPrevState    = mBoidParamMgr.mCurrentState;
 	mBoidParamMgr.mCurrentState = 3;
-	u32 time                    = (arg / 2) / sys->mDeltaTime;
+	u32 time                    = (arg / 2) / sys->getDeltaTime();
 	mBoidParamMgr.mCounter      = time;
 	mBoidParamMgr.mCounter2     = time;
 	for (int i = 0; i < TITLE_PIKI_TOTAL; i++) {
@@ -347,7 +347,7 @@ void Pikmin::TMgr::startBoid3(f32 arg)
 {
 	mBoidParamMgr.mPrevState    = mBoidParamMgr.mCurrentState;
 	mBoidParamMgr.mCurrentState = 4;
-	u32 time                    = (arg / 2) / sys->mDeltaTime;
+	u32 time                    = (arg / 2) / sys->getDeltaTime();
 	mBoidParamMgr.mCounter      = time;
 	mBoidParamMgr.mCounter2     = time;
 	for (int i = 0; i < TITLE_PIKI_TOTAL; i++) {
@@ -649,16 +649,16 @@ void Pikmin::TUnit::startState(TUnit::enumState state)
 	case STATE_Unk3:
 		mAngle = Vector2f(1.0f, 0.0f);
 
-		u32 time              = mManager->mParams.mWindTimer.mValue / sys->mDeltaTime;
+		u32 time              = mManager->mParams.mWindTimer.mValue / sys->getDeltaTime();
 		mCounter              = time;
 		mCounter2             = time;
 		mFrameControlB.mFrame = 5.0f * randEbisawaFloat();
-		mFrameControlB.mRate  = mManager->mParams.mAnimSpeedStyle.mValue * (sys->mDeltaTime * 60.f * 0.5f);
+		mFrameControlB.mRate  = mManager->mParams.mAnimSpeedStyle.mValue * (sys->getDeltaTime() * 60.f * 0.5f);
 		break;
 
 	case STATE_Unk1:
 		mParms[0]            = 0.0f;
-		mFrameControlA.mRate = mRandAnimSpeeds.x * (sys->mDeltaTime * 60.0f * 0.5f);
+		mFrameControlA.mRate = mRandAnimSpeeds.x * (sys->getDeltaTime() * 60.0f * 0.5f);
 		break;
 	}
 }
@@ -789,7 +789,8 @@ void Pikmin::TUnit::update()
 	case STATE_Unk2:
 	case STATE_Unk4:
 	case STATE_Unk5:
-		mFrameControlA.mRate = (mRandAnimSpeeds.y * (mParms[0] * mManager->mParams.mAnimSpeedWalk())) * ((sys->mDeltaTime * 60.0f) * 0.5f);
+		mFrameControlA.mRate
+		    = (mRandAnimSpeeds.y * (mParms[0] * mManager->mParams.mAnimSpeedWalk())) * ((sys->getDeltaTime() * 60.0f) * 0.5f);
 		mFrameControlA.update();
 		mManager->mAnimator->setAnmWait(mModel, mFrameControlA.mFrame);
 

@@ -478,7 +478,7 @@ void PelletGoalState::exec(Pellet* pelt)
 			static_cast<EnemyBase*>(pelt->mPelletView->mCreature)->setAnimSpeed(90.0f);
 		}
 	} else {
-		pelt->mAnimSpeed = sys->mDeltaTime * 60.0f;
+		pelt->mAnimSpeed = sys->getDeltaTime() * 60.0f;
 	}
 
 	if (mInDemo && !mDidSuikomi && moviePlayer && moviePlayer->mDemoState == DEMOSTATE_Playing) {
@@ -515,7 +515,7 @@ void PelletGoalState::exec(Pellet* pelt)
 		velocity.x        = 0.0f;
 
 		pelt->setVelocity(velocity);
-		mSuckDelay -= sys->mDeltaTime;
+		mSuckDelay -= sys->getDeltaTime();
 		mStartSuck = true;
 		return;
 	}
@@ -531,8 +531,8 @@ void PelletGoalState::exec(Pellet* pelt)
 	scale += sinTheta;
 	pelt->mScale = Vector3f(scale);
 
-	mSuckTime += (mTimer * sys->mDeltaTime) / mDistance;
-	mTimer += sys->mDeltaTime * 720.0f;
+	mSuckTime += (mTimer * sys->getDeltaTime()) / mDistance;
+	mTimer += sys->getDeltaTime() * 720.0f;
 	if (!(mSuckTime >= 1.0f)) {
 		return;
 	}
@@ -598,7 +598,7 @@ void PelletGoalState::exec(Pellet* pelt)
 		if (pelt->getKind() == PelletType::Carcass || pelt->getKind() == PelletType::Number) {
 			pelt->kill(nullptr);
 		} else if (pelt->getKind() == PelletType::Upgrade || pelt->getKind() == PelletType::Treasure) {
-			pelt->mAnimSpeed = sys->mDeltaTime * 30.0f;
+			pelt->mAnimSpeed = sys->getDeltaTime() * 30.0f;
 			pelt->mCarryAnim.setFrameByKeyType(0);
 		}
 	}
@@ -1461,7 +1461,7 @@ void PelletAppearState::init(Pellet* pelt, StateArg*)
  */
 void PelletAppearState::exec(Pellet* pelt)
 {
-	f32 frameTime = sys->mDeltaTime;
+	f32 frameTime = sys->getDeltaTime();
 	f32 scale     = 0.0f;
 	if (!(mTime < _1C)) {
 		if (mTime < _1C + _20) {
@@ -1531,7 +1531,7 @@ void PelletScaleAppearState::init(Pellet* pelt, StateArg*)
  */
 void PelletScaleAppearState::exec(Pellet* pelt)
 {
-	f32 frameTime = sys->mDeltaTime;
+	f32 frameTime = sys->getDeltaTime();
 	f32 scale     = 0.0f;
 	if (!(mTime < _1C)) {
 		if (mTime < _1C + _20) {
@@ -1610,7 +1610,7 @@ void PelletZukanState::init(Pellet* pelt, StateArg*)
  */
 void PelletZukanState::exec(Pellet* pelt)
 {
-	mTimer += sys->mDeltaTime * PI;
+	mTimer += sys->getDeltaTime() * PI;
 	if (mTimer > TAU) {
 		mTimer = 0.0f;
 	}

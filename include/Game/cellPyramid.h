@@ -1,16 +1,16 @@
 #ifndef _GAME_CELLPYRAMID_H
 #define _GAME_CELLPYRAMID_H
 
-#include "types.h"
-#include "Sys/Sphere.h"
-#include "SweepPrune.h"
-#include "IDelegate.h"
-#include "Graphics.h"
-#include "Rect.h"
-#include "Vector2.h"
-#include "Vector3.h"
 #include "BoundBox.h"
 #include "Condition.h"
+#include "Graphics.h"
+#include "IDelegate.h"
+#include "Rect.h"
+#include "SweepPrune.h"
+#include "Sys/Sphere.h"
+#include "Vector2.h"
+#include "Vector3.h"
+#include "types.h"
 
 namespace Game {
 struct Cell;
@@ -226,6 +226,7 @@ struct CellIteratorArg {
 	CellPyramid* mCellMgr;             // _18
 	bool mOptimise;                    // _1C, if true, use "is within cell", if false, calculate overlapping bounding spheres
 	u8 mUnused;                        // _1D, set to 0 and unused
+	u8 _1E;                            // _1E, unknown, new
 };
 
 #define CI_LOOP(it) for (it.first(); !it.isDone(); it.next())

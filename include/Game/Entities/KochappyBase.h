@@ -1,15 +1,15 @@
 #ifndef _GAME_ENTITIES_KOCHAPPYBASE_H
 #define _GAME_ENTITIES_KOCHAPPYBASE_H
 
+#include "CollInfo.h"
 #include "Game/EnemyAnimatorBase.h"
-#include "Game/EnemyParmsBase.h"
 #include "Game/EnemyBase.h"
 #include "Game/EnemyMgrBase.h"
+#include "Game/EnemyParmsBase.h"
 #include "Game/PelletView.h"
-#include "Game/shadowMgr.h"
 #include "Game/WalkSmokeEffect.h"
+#include "Game/shadowMgr.h"
 #include "SysShape/Joint.h"
-#include "CollInfo.h"
 
 /**
  * --Header for Dwarf Bulborb Base Class--

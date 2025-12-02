@@ -37,14 +37,14 @@ FakePiki::FakePiki()
 	mModel                  = nullptr;
 	mBoundingSphere.mRadius = 8.5f;
 	mFaceDir                = 0.0f;
-	mPosition               = Vector3f(0.0f);
-	mVelocity               = Vector3f(0.0f);
-	mTargetVelocity         = Vector3f(0.0f);
-	mSimPosition            = Vector3f(0.0f);
-	mBoundAnimIdx           = IPikiAnims::NULLANIM;
-	mAnimSpeed              = 30.0f;
-	mCollTree               = new CollTree;
-	mWaterBox               = nullptr;
+	mPosition.set(0.0f, 0.0f, 0.0f);
+	mVelocity.set(0.0f, 0.0f, 0.0f);
+	mTargetVelocity.set(0.0f, 0.0f, 0.0f);
+	mSimPosition.set(0.0f, 0.0f, 0.0f);
+	mBoundAnimIdx = IPikiAnims::NULLANIM;
+	mAnimSpeed    = 30.0f;
+	mCollTree     = new CollTree;
+	mWaterBox     = nullptr;
 	mCollisionBuffer.alloc(this, 8);
 	mLookAtPosition       = nullptr;
 	mLookAtTargetCreature = nullptr;
@@ -58,13 +58,13 @@ FakePiki::FakePiki()
  */
 void FakePiki::initFakePiki()
 {
-	mDoAnimCallback         = nullptr;
-	mWaterBox               = nullptr;
-	mFaceDir                = 0.0f;
-	mPosition               = Vector3f(0.0f);
-	mTargetVelocity         = Vector3f(0.0f);
-	mSimPosition            = Vector3f(0.0f);
-	mVelocity               = Vector3f(0.0f);
+	mDoAnimCallback = nullptr;
+	mWaterBox       = nullptr;
+	mFaceDir        = 0.0f;
+	mPosition.set(0.0f, 0.0f, 0.0f);
+	mTargetVelocity.set(0.0f, 0.0f, 0.0f);
+	mSimPosition.set(0.0f, 0.0f, 0.0f);
+	mVelocity.set(0.0f, 0.0f, 0.0f);
 	mFakePikiBounceTriangle = nullptr;
 
 	if (shadowMgr) {
@@ -1103,8 +1103,8 @@ void FakePiki::turnTo(Vector3f& targetPos)
 void FakePiki::moveVelocity()
 {
 	// update simulation (next/target) velocity based on the triangle we're standing on
-	Sys::Triangle* tri   = mFloorTriangle; // triangle we're currently on
-	Vector3f newVelocity = Vector3f(0.0f);
+	Sys::Triangle* tri = mFloorTriangle; // triangle we're currently on
+	Vector3f newVelocity(0.0f, 0.0f, 0.0f);
 	Vector3f oldVelocity = Vector3f(mTargetVelocity); // our current velocity
 
 	if (tri) {
@@ -1122,7 +1122,7 @@ void FakePiki::moveVelocity()
 			// ground is not slippery
 			if (oldSpeed < 0.1f) {
 				// going below speed threshold, slow to a stop
-				Vector3f fallVelocity = Vector3f(0.0f, -(_aiConstants->mGravity.mData * sys->mDeltaTime), 0.0f);
+				Vector3f fallVelocity = Vector3f(0.0f, -(_aiConstants->mGravity.mData * sys->getDeltaTime()), 0.0f);
 				Vector3f newDir       = mFloorNormal * fallVelocity.dot(mFloorNormal);
 				newDir                = fallVelocity - newDir;
 				// decelerate to a stop
@@ -1132,7 +1132,7 @@ void FakePiki::moveVelocity()
 
 		} else {
 			// some form of slipping happening
-			Vector3f fallVelocity = Vector3f(0.0f, -(_aiConstants->mGravity.mData * sys->mDeltaTime), 0.0f);
+			Vector3f fallVelocity = Vector3f(0.0f, -(_aiConstants->mGravity.mData * sys->getDeltaTime()), 0.0f);
 			Vector3f moveDir      = mFloorNormal * fallVelocity.dot(mFloorNormal);
 			moveDir               = fallVelocity - moveDir;
 			moveDir.normalise();
@@ -1152,14 +1152,14 @@ void FakePiki::moveVelocity()
 			}
 
 			// slip under gravity, extra if extra slippery slope
-			newVelocity = (((moveDir * _aiConstants->mGravity.mData) * sys->mDeltaTime) * slipFactor);
+			newVelocity = (((moveDir * _aiConstants->mGravity.mData) * sys->getDeltaTime()) * slipFactor);
 		}
 	}
 
 	Vector3f accel = (oldVelocity + mSimPosition) - mVelocity;
 	accel.length(); // remnant from some commented out code block with a comparison, probably, or debug info
 
-	mVelocity = mVelocity + accel * (sys->mDeltaTime / 0.1f);
+	mVelocity = mVelocity + accel * (sys->getDeltaTime() / 0.1f);
 	mVelocity = mVelocity + newVelocity;
 }
 
@@ -1170,7 +1170,7 @@ void FakePiki::moveVelocity()
 void FakePiki::moveRotation()
 {
 	if (useMoveRotation()) {
-		f32 delta = sys->mDeltaTime;
+		f32 delta = sys->getDeltaTime();
 		f32 X     = mTargetVelocity.x * mTargetVelocity.x;
 		f32 Z     = mTargetVelocity.z * mTargetVelocity.z;
 		if (X + Z > 1.0f) {
@@ -1380,7 +1380,7 @@ void FakePiki::doAnimation()
 	updateLOD(lodParm);
 	sys->mTimers->stop("doa1");
 
-	f32 frameLen = sys->mDeltaTime;
+	f32 frameLen = sys->getDeltaTime();
 	if (isMovieMotion()) {
 		mAnimSpeed = 30.0f;
 	}
@@ -1415,7 +1415,7 @@ void FakePiki::doAnimation()
 			moveVelocity();
 		}
 		if (useMoveRotation()) {
-			f32 frameLen = sys->mDeltaTime;
+			f32 frameLen = sys->getDeltaTime();
 			if (mTargetVelocity.sqrMagnitude2D() > 1.0f) {
 				mFaceDir = (frameLen * (angDist(JMAAtan2Radian(mTargetVelocity.x, mTargetVelocity.z), mFaceDir) * 0.8f)) * 10.0f + mFaceDir;
 				mFaceDir = roundAng(mFaceDir);
@@ -1469,23 +1469,23 @@ void FakePiki::doSimulation(f32 rate)
 	if (!isMovieExtra()) {
 		if (isPiki()) {
 			if (pikiMgr->mFlags[1] & 1) {
-				mVelocity                 = Vector3f(0.0f);
-				mAcceleration             = Vector3f(0.0f);
+				mVelocity.set(0.0f, 0.0f, 0.0f);
+				mAcceleration.set(0.0f, 0.0f, 0.0f);
 				mBoundingSphere.mPosition = mPosition;
 				return;
 			}
 		} else if (isNavi()) {
 			if (naviMgr->mFlags.isSet(1)) {
-				mVelocity                 = Vector3f(0.0f);
-				mAcceleration             = Vector3f(0.0f);
+				mVelocity.set(0.0f, 0.0f, 0.0f);
+				mAcceleration.set(0.0f, 0.0f, 0.0f);
 				mBoundingSphere.mPosition = mPosition;
 				return;
 			}
 		}
 
 		if (isMovieActor()) {
-			mVelocity     = Vector3f(0.0f);
-			mAcceleration = Vector3f(0.0f);
+			mVelocity.set(0.0f, 0.0f, 0.0f);
+			mAcceleration.set(0.0f, 0.0f, 0.0f);
 		}
 	}
 
@@ -1521,13 +1521,13 @@ void FakePiki::doSimulation(f32 rate)
 	if (speed > accel) {
 		// add friction?
 		speed -= accel;
-		mVelocity     = mVelocity * speed;
-		mAcceleration = Vector3f(0.0f);
+		mVelocity = mVelocity * speed;
+		mAcceleration.set(0.0f, 0.0f, 0.0f);
 
 	} else {
 		// accel not high enough, reset it
-		mVelocity     = mVelocity * speed;
-		mAcceleration = Vector3f(0.0f);
+		mVelocity = mVelocity * speed;
+		mAcceleration.set(0.0f, 0.0f, 0.0f);
 	}
 
 	// update collision sphere

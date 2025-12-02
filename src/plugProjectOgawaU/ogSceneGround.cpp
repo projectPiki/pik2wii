@@ -1,10 +1,10 @@
+#include "Game/GameSystem.h"
 #include "Morimura/DayEndCount.h"
 #include "Morimura/HurryUp.h"
-#include "og/newScreen/Ground.h"
-#include "Game/GameSystem.h"
-#include "PSSystem/PSScene.h"
-#include "PSSystem/PSGame.h"
 #include "PSM/Scene.h"
+#include "PSSystem/PSGame.h"
+#include "PSSystem/PSScene.h"
+#include "og/newScreen/Ground.h"
 
 namespace og {
 namespace newScreen {
@@ -15,7 +15,10 @@ bool sGameFlag_MainBgm_Evening;
  * @note Address: 0x8030DA00
  * @note Size: 0xC
  */
-void initGround() { sGameFlag_MainBgm_Evening = false; }
+void initGround()
+{
+	sGameFlag_MainBgm_Evening = false;
+}
 
 /**
  * __ct
@@ -35,13 +38,17 @@ Ground::Ground()
  * @note Address: N/A
  * @note Size: 0x74
  */
-Ground::~Ground() { }
+Ground::~Ground()
+{
+}
 
 /**
  * @note Address: 0x8030DA60
  * @note Size: 0x4
  */
-void Ground::doUserCallBackFunc(Resource::MgrCommand*) { }
+void Ground::doUserCallBackFunc(Resource::MgrCommand*)
+{
+}
 
 /**
  * @note Address: 0x8030DA64
@@ -127,7 +134,7 @@ void Ground::doUpdateActive()
 		f32 cTime = timemgr->getRealDayTime();
 		u32 out   = PSM::Scene_Ground::cEvenning_fadeOuTime;
 		u32 in    = PSM::Scene_Ground::cEvenning_fadeInTime;
-		cTime     = sys->mDeltaTime / cTime;
+		cTime     = sys->getDeltaTime() / cTime;
 
 		f32 timeToWarning = -(cTime * out - startWarningDayRatio);
 		f32 timeSeconds   = cTime * in + startWarningDayRatio;

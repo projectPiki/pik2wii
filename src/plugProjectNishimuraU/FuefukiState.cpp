@@ -33,7 +33,7 @@ void StateDead::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	enemy->deathProcedure();
 	enemy->disableEvent(0, EB_Cullable);
-	enemy->mTargetVelocity = Vector3f(0.0f);
+	enemy->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	enemy->startMotion(FUEFUKIANIM_Dead, nullptr);
 }
 
@@ -71,7 +71,7 @@ void StateStay::init(EnemyBase* enemy, StateArg* stateArg)
 	fuefuki->enableEvent(0, EB_Untargetable);
 	fuefuki->disableEvent(0, EB_LifegaugeVisible);
 	fuefuki->disableEvent(0, EB_Cullable);
-	fuefuki->mTargetVelocity = Vector3f(0.0f);
+	fuefuki->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	fuefuki->startMotion(FUEFUKIANIM_Landing, nullptr);
 	fuefuki->stopMotion();
 }
@@ -83,7 +83,7 @@ void StateStay::init(EnemyBase* enemy, StateArg* stateArg)
 void StateStay::exec(EnemyBase* enemy)
 {
 	Obj* fuefuki = OBJ(enemy);
-	fuefuki->mStateTimer += sys->mDeltaTime;
+	fuefuki->mStateTimer += sys->getDeltaTime();
 	if (fuefuki->mStateTimer > CG_PROPERPARMS(fuefuki).mAirborneTime.mValue) {
 		transit(fuefuki, FUEFUKI_Land, nullptr);
 	}
@@ -109,7 +109,7 @@ void StateLand::init(EnemyBase* enemy, StateArg* stateArg)
 	fuefuki->mStateTimer  = 0.0f;
 	fuefuki->resetAppearTimer();
 	fuefuki->resetWhisleTimer(true);
-	fuefuki->mWhistleTimer += sys->mDeltaTime;
+	fuefuki->mWhistleTimer += sys->getDeltaTime();
 	fuefuki->setTargetPosition(true);
 	Vector3f pos = Vector3f(fuefuki->mTargetPosition);
 	fuefuki->onSetPosition(pos);
@@ -119,7 +119,7 @@ void StateLand::init(EnemyBase* enemy, StateArg* stateArg)
 	fuefuki->enableEvent(0, EB_NoInterrupt);
 	fuefuki->disableEvent(0, EB_Untargetable);
 	fuefuki->disableEvent(0, EB_Cullable);
-	fuefuki->mTargetVelocity = Vector3f(0.0f);
+	fuefuki->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 
 	if (randWeightFloat(1.0f) < CG_PROPERPARMS(fuefuki).mNormalLandingChance()) {
 		fuefuki->startMotion(FUEFUKIANIM_Landing, nullptr);
@@ -184,7 +184,7 @@ void StateJump::init(EnemyBase* enemy, StateArg* stateArg)
 	fuefuki->mNextState   = FUEFUKI_NULL;
 	fuefuki->mStateTimer  = 0.0f;
 	fuefuki->disableEvent(0, EB_BitterImmune);
-	fuefuki->mTargetVelocity = Vector3f(0.0f);
+	fuefuki->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	fuefuki->startMotion(FUEFUKIANIM_Jump, nullptr);
 }
 
@@ -196,17 +196,18 @@ void StateJump::exec(EnemyBase* enemy)
 {
 	Obj* fuefuki = OBJ(enemy);
 	if (fuefuki->mCanStruggle) {
-		fuefuki->mTargetVelocity = Vector3f(0.0f);
-		if (fuefuki->mHealth <= 0.0f) {
+		fuefuki->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
+		if (fuefuki->isDead()) {
 			transit(fuefuki, FUEFUKI_Dead, nullptr);
 			return;
 		}
 	} else {
-		f32 sinTheta = (f32)sin(fuefuki->getFaceDir());
-		f32 y        = fuefuki->getTargetVelocity().y;
-		f32 cosTheta = (f32)cos(fuefuki->getFaceDir());
+		fuefuki->setTargetSpeed(1500.0f);
+		// f32 sinTheta = (f32)sin(fuefuki->getFaceDir());
+		// f32 y        = fuefuki->getTargetVelocity().y;
+		// f32 cosTheta = (f32)cos(fuefuki->getFaceDir());
 
-		fuefuki->mTargetVelocity = Vector3f(1500.0f * sinTheta, y, 1500.0f * cosTheta);
+		// fuefuki->mTargetVelocity = Vector3f(1500.0f * sinTheta, y, 1500.0f * cosTheta);
 
 		EnemyFunc::flickStickPikmin(fuefuki, CG_GENERALPARMS(fuefuki).mShakeChance.mValue, CG_GENERALPARMS(fuefuki).mShakeKnockback.mValue,
 		                            CG_GENERALPARMS(fuefuki).mShakeDamage.mValue, FLICK_BACKWARD_ANGLE, nullptr);
@@ -216,7 +217,7 @@ void StateJump::exec(EnemyBase* enemy)
 		fuefuki->finishMotion();
 	}
 
-	fuefuki->mStateTimer += sys->mDeltaTime;
+	fuefuki->mStateTimer += sys->getDeltaTime();
 
 	if (fuefuki->mCurAnim->mIsPlaying) {
 		if (fuefuki->mCurAnim->mType == KEYEVENT_2) {
@@ -227,11 +228,7 @@ void StateJump::exec(EnemyBase* enemy)
 			fuefuki->disableEvent(0, EB_LifegaugeVisible);
 			fuefuki->disableEvent(0, EB_Cullable);
 
-			f32 sinTheta = (f32)sin(fuefuki->getFaceDir());
-			f32 y        = fuefuki->getTargetVelocity().y;
-			f32 cosTheta = (f32)cos(fuefuki->getFaceDir());
-
-			fuefuki->mTargetVelocity = Vector3f(1500.0f * sinTheta, y, 1500.0f * cosTheta);
+			fuefuki->setTargetSpeed(1500.0f);
 
 			Vector3f targetVel = Vector3f(fuefuki->mTargetVelocity);
 			fuefuki->setVelocity(targetVel);
@@ -277,7 +274,7 @@ void StateWait::init(EnemyBase* enemy, StateArg* stateArg)
 	fuefuki->mNextState  = FUEFUKI_NULL;
 	fuefuki->mStateTimer = 0.0f;
 	fuefuki->setEmotionExcitement();
-	fuefuki->mTargetVelocity = Vector3f(0.0f);
+	fuefuki->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	fuefuki->startMotion(FUEFUKIANIM_Wait, nullptr);
 }
 
@@ -303,13 +300,13 @@ void StateWait::exec(EnemyBase* enemy)
 		fuefuki->finishMotion();
 	}
 
-	if (fuefuki->mHealth <= 0.0f) {
+	if (fuefuki->isDead()) {
 		fuefuki->mNextState = FUEFUKI_Dead;
 		fuefuki->finishMotion();
 	}
 
-	fuefuki->mStateTimer += sys->mDeltaTime;
-	fuefuki->mWhistleTimer += sys->mDeltaTime;
+	fuefuki->mStateTimer += sys->getDeltaTime();
+	fuefuki->mWhistleTimer += sys->getDeltaTime();
 
 	if (fuefuki->mCurAnim->mIsPlaying && fuefuki->mCurAnim->mType == KEYEVENT_END) {
 		transit(fuefuki, fuefuki->mNextState, nullptr);
@@ -335,7 +332,7 @@ void StateTurn::init(EnemyBase* enemy, StateArg* stateArg)
 	fuefuki->mStateTimer = 0.0f;
 	fuefuki->mNextState  = FUEFUKI_NULL;
 	fuefuki->setEmotionExcitement();
-	fuefuki->mTargetVelocity = Vector3f(0.0f);
+	fuefuki->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	fuefuki->startMotion(FUEFUKIANIM_Pivot, nullptr);
 }
 
@@ -347,11 +344,7 @@ void StateTurn::exec(EnemyBase* enemy)
 {
 	Obj* fuefuki       = OBJ(enemy);
 	Vector3f targetPos = Vector3f(fuefuki->mTargetPosition);
-
-	// this is close.
-	f32 angleDist = fuefuki->turnToTarget(targetPos);
-	f64 abs       = fabs(angleDist);
-	if ((f32)abs <= PI / 6) {
+	if (fuefuki->turnToTarget(targetPos, CG_GENERALPARMS(fuefuki).mTurnSpeed(), CG_GENERALPARMS(fuefuki).mMaxTurnAngle(), 30.0f)) {
 		fuefuki->mNextState = FUEFUKI_Walk;
 		fuefuki->finishMotion();
 	}
@@ -366,13 +359,13 @@ void StateTurn::exec(EnemyBase* enemy)
 		fuefuki->finishMotion();
 	}
 
-	if (fuefuki->mHealth <= 0.0f) {
+	if (fuefuki->isDead()) {
 		fuefuki->mNextState = FUEFUKI_Dead;
 		fuefuki->finishMotion();
 	}
 
-	fuefuki->mStateTimer += sys->mDeltaTime;
-	fuefuki->mWhistleTimer += sys->mDeltaTime;
+	fuefuki->mStateTimer += sys->getDeltaTime();
+	fuefuki->mWhistleTimer += sys->getDeltaTime();
 
 	if (fuefuki->mCurAnim->mIsPlaying && fuefuki->mCurAnim->mType == KEYEVENT_END) {
 		transit(fuefuki, fuefuki->mNextState, nullptr);
@@ -413,7 +406,7 @@ void StateWalk::exec(EnemyBase* enemy)
 		EnemyFunc::walkToTarget(fuefuki, targetPos, CG_GENERALPARMS(fuefuki).mMoveSpeed.mValue, CG_GENERALPARMS(fuefuki).mTurnSpeed.mValue,
 		                        CG_GENERALPARMS(fuefuki).mMaxTurnAngle.mValue);
 		if (fuefuki->isArriveTarget()) {
-			if (fuefuki->mSquadTimer > 0.0f) {
+			if (fuefuki->doScuttle()) {
 				fuefuki->mNextState = FUEFUKI_Turn;
 			} else {
 				fuefuki->mNextState = FUEFUKI_Wait;
@@ -421,11 +414,11 @@ void StateWalk::exec(EnemyBase* enemy)
 			fuefuki->finishMotion();
 		}
 	} else {
-		fuefuki->mTargetVelocity = Vector3f(0.0f);
+		fuefuki->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	}
 
 	if (fuefuki->mStateTimer > 5.0f) {
-		if (fuefuki->mSquadTimer > 0.0f) {
+		if (fuefuki->doScuttle()) {
 			fuefuki->mNextState = FUEFUKI_Turn;
 		} else {
 			fuefuki->mNextState = FUEFUKI_Wait;
@@ -444,13 +437,13 @@ void StateWalk::exec(EnemyBase* enemy)
 		fuefuki->finishMotion();
 	}
 
-	if (fuefuki->mHealth <= 0.0f) {
+	if (fuefuki->isDead()) {
 		fuefuki->mNextState = FUEFUKI_Dead;
 		fuefuki->finishMotion();
 	}
 
-	fuefuki->mStateTimer += sys->mDeltaTime;
-	fuefuki->mWhistleTimer += sys->mDeltaTime;
+	fuefuki->mStateTimer += sys->getDeltaTime();
+	fuefuki->mWhistleTimer += sys->getDeltaTime();
 
 	if (fuefuki->mCurAnim->mIsPlaying && fuefuki->mCurAnim->mType == KEYEVENT_END) {
 		transit(fuefuki, fuefuki->mNextState, nullptr);
@@ -479,7 +472,7 @@ void StateWhisle::init(EnemyBase* enemy, StateArg* stateArg)
 	fuefuki->mStateTimer = 0.0f;
 	fuefuki->startWhisle();
 	fuefuki->setEmotionExcitement();
-	fuefuki->mTargetVelocity = Vector3f(0.0f);
+	fuefuki->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	fuefuki->startMotion(FUEFUKIANIM_Whisle, nullptr);
 }
 
@@ -492,7 +485,7 @@ void StateWhisle::exec(EnemyBase* enemy)
 	Obj* fuefuki = OBJ(enemy);
 	fuefuki->updateWhisle();
 	if (fuefuki->mStateTimer > 3.0f) {
-		if (fuefuki->mSquadTimer > 0.0f) {
+		if (fuefuki->doScuttle()) {
 			fuefuki->mNextState = FUEFUKI_Turn;
 		} else {
 			fuefuki->mNextState = FUEFUKI_Wait;
@@ -506,12 +499,12 @@ void StateWhisle::exec(EnemyBase* enemy)
 		fuefuki->finishMotion();
 	}
 
-	if (fuefuki->mHealth <= 0.0f) {
+	if (fuefuki->isDead()) {
 		fuefuki->mNextState = FUEFUKI_Dead;
 		fuefuki->finishMotion();
 	}
 
-	fuefuki->mStateTimer += sys->mDeltaTime;
+	fuefuki->mStateTimer += sys->getDeltaTime();
 
 	if (fuefuki->mCurAnim->mIsPlaying && fuefuki->mCurAnim->mType == KEYEVENT_END) {
 		transit(fuefuki, fuefuki->mNextState, nullptr);
@@ -541,7 +534,7 @@ void StateStruggle::init(EnemyBase* enemy, StateArg* stateArg)
 	fuefuki->mNextState   = FUEFUKI_NULL;
 	fuefuki->mStateTimer  = 0.0f;
 	fuefuki->setEmotionExcitement();
-	fuefuki->mTargetVelocity = Vector3f(0.0f);
+	fuefuki->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	fuefuki->startMotion(FUEFUKIANIM_Struggle, nullptr);
 }
 
@@ -552,16 +545,16 @@ void StateStruggle::init(EnemyBase* enemy, StateArg* stateArg)
 void StateStruggle::exec(EnemyBase* enemy)
 {
 	Obj* fuefuki = OBJ(enemy);
-	if (fuefuki->mHealth <= 0.0f || (fuefuki->mStuckPikminCount == 0 && fuefuki->mStateTimer > 3.0f)
+	if (fuefuki->isDead() || (fuefuki->mStuckPikminCount == 0 && fuefuki->mStateTimer > 3.0f)
 	    || fuefuki->mStateTimer > CG_PROPERPARMS(fuefuki).mStruggleTime.mValue) {
 		fuefuki->finishMotion();
 	}
 
-	fuefuki->mStateTimer += sys->mDeltaTime;
-	fuefuki->mWhistleTimer += sys->mDeltaTime;
+	fuefuki->mStateTimer += sys->getDeltaTime();
+	fuefuki->mWhistleTimer += sys->getDeltaTime();
 
 	if (fuefuki->mCurAnim->mIsPlaying && fuefuki->mCurAnim->mType == KEYEVENT_END) {
-		if (fuefuki->mHealth <= 0.0f) {
+		if (fuefuki->isDead()) {
 			fuefuki->mNextState = FUEFUKI_Dead;
 		} else {
 			fuefuki->mNextState = FUEFUKI_Jump;

@@ -150,7 +150,7 @@ void ContRumble::update()
 
 	if (maxRumbleIntensity > 0.0f) {
 		mTotalIntensity += maxRumbleIntensity;
-		mRumbleTimer += sys->mDeltaTime;
+		mRumbleTimer += sys->getDeltaTime();
 		mRumbleTimeoutTimer = 0.0f;
 
 		if (mTotalIntensity < 1.0f) {
