@@ -5921,10 +5921,11 @@ sysGCU/menuSection.cpp:
 sysGCU/dvdThread.cpp:
 	.text       start:0x804AAA5C end:0x804AB0E0
 	.rodata     start:0x80559648 end:0x80559670
-	.data       start:0x805CCCC0 end:0x805CCCE0
+	.data       start:0x805CCCC0 end:0x805CCCD0
 
 sysGCU/appThread.cpp:
 	.text       start:0x804AB0E0 end:0x804AB11C
+	.data       start:0x805CCCD0 end:0x805CCCE0
 
 sysGCU/graphics.cpp:
 	.text       start:0x804AB11C end:0x804AE03C
