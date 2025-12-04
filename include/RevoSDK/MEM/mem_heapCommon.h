@@ -56,9 +56,9 @@ MEMiHeapHead* MEMFindContainHeap(const void* memBlock);
 ////////////////////////////////////////////////////////
 /////////////////// INLINE FUNCTIONS ///////////////////
 
-static u32 GetUIntPtr(const void* p)
+static uintptr_t GetUIntPtr(const void* p)
 {
-	return (u32)p;
+	return (uintptr_t)p;
 }
 
 static int ComparePtr(const void* p0, const void* p1)

@@ -1,7 +1,7 @@
 #ifndef EGG_TYPES_H
 #define EGG_TYPES_H
 
-#include "types.h"
+#include <types.h>
 
 // Types pulled from ogws
 // May need to remove/add later

@@ -41,6 +41,7 @@ typedef volatile f128 vf128;
 
 typedef u32 size_t;
 typedef u32 unknown;
+typedef u32 uintptr_t;
 
 #ifndef __cplusplus
 typedef u16 wchar_t;
