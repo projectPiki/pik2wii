@@ -1,11 +1,11 @@
-#include "og/Screen/callbackNodes.h"
-#include "og/Screen/NaviLifeGauge.h"
-#include "og/Screen/ogScreen.h"
-#include "og/newScreen/ogUtil.h"
-#include "LifeGaugeMgr.h"
 #include "JSystem/JUtility/JUTTexture.h"
+#include "LifeGaugeMgr.h"
 #include "System.h"
+#include "og/Screen/NaviLifeGauge.h"
+#include "og/Screen/callbackNodes.h"
+#include "og/Screen/ogScreen.h"
 #include "og/Sound.h"
+#include "og/newScreen/ogUtil.h"
 #include "trig.h"
 
 namespace og {
@@ -180,7 +180,7 @@ void CallBack_LifeGauge::moveIcon()
 			mAngleMgr->chase(PI, msVal._04);
 		}
 	} else if (cNavi && mCanNaviChange) {
-		mMoveTimer -= sys->mDeltaTime;
+		mMoveTimer -= sys->getDeltaTime();
 		if (mMoveTimer < 0.0f) {
 			mCanNaviChange = false;
 			ogSound->setNaviChange(mLifeGaugeType);
@@ -216,7 +216,7 @@ void CallBack_LifeGauge::update()
 		if (mNaviLifeRatio < 0.5f) {
 			mPin1->show();
 			mPin2->show();
-			mLowLifeSoundTimer += mLowLifeSoundRateMod * sys->mDeltaTime;
+			mLowLifeSoundTimer += mLowLifeSoundRateMod * sys->getDeltaTime();
 			if (mLowLifeSoundTimer >= 1.0f) {
 				mLowLifeSoundTimer = 0.0f;
 				if (mNaviLifeRatio > 0.0f && mIsActiveNavi) {

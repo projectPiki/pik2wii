@@ -1,22 +1,22 @@
 #include "Game/MoviePlayer.h"
-#include "Screen/Game2DMgr.h"
-#include "Game/GameSystem.h"
 #include "Game/CameraMgr.h"
+#include "Game/GameSystem.h"
 #include "Game/MapMgr.h"
-#include "PSM/Demo.h"
 #include "Game/P2JST/ObjectSystem.h"
-#include "P2JME/Movie.h"
-#include "JSystem/JStudio_JMessage.h"
-#include "JSystem/JStudio_JStage.h"
-#include "JSystem/JStudio_JParticle.h"
 #include "JSystem/JStudio/TFactory.h"
 #include "JSystem/JStudio/TParse.h"
-#include "LoadResource.h"
+#include "JSystem/JStudio_JMessage.h"
+#include "JSystem/JStudio_JParticle.h"
+#include "JSystem/JStudio_JStage.h"
 #include "JSystem/JUtility/JUTAssertion.h"
+#include "LoadResource.h"
+#include "P2JME/Movie.h"
+#include "PSM/Demo.h"
 #include "PSSystem/PSSystemIF.h"
 #include "ParticleMgr.h"
-#include "utilityU.h"
+#include "Screen/Game2DMgr.h"
 #include "nans.h"
+#include "utilityU.h"
 
 static const u32 padding[]    = { 0, 0, 0 };
 static const char className[] = "moviePlayer";
@@ -237,7 +237,10 @@ void MoviePlayer::doStartMovie()
  * @note Address: 0x8042CD6C
  * @note Size: 0x24
  */
-MovieConfig* MoviePlayer::findConfig(char* demoName, char* courseName) { return movieList->findConfig(demoName, courseName); }
+MovieConfig* MoviePlayer::findConfig(char* demoName, char* courseName)
+{
+	return movieList->findConfig(demoName, courseName);
+}
 
 /**
  * @note Address: 0x8042CD90
@@ -302,7 +305,10 @@ void MoviePlayer::playSuspended()
  * @note Address: 0x8042CF88
  * @note Size: 0xAC
  */
-void MoviePlayer::clearSuspendedDemo() { clearContexts(); }
+void MoviePlayer::clearSuspendedDemo()
+{
+	clearContexts();
+}
 
 /**
  * @note Address: N/A
@@ -508,7 +514,7 @@ bool MoviePlayer::update(Controller* input1, Controller* input2)
 
 	case DEMOSTATE_Fadeout:
 		if (mFadeTimer > 0.0f) {
-			mFadeTimer -= sys->mDeltaTime;
+			mFadeTimer -= sys->getDeltaTime();
 			if (mFadeTimer <= 0.0f) {
 				gameSystem->startFadeblack();
 			}
@@ -521,7 +527,7 @@ bool MoviePlayer::update(Controller* input1, Controller* input2)
 
 	case DEMOSTATE_Loading:
 		if (mFadeTimer > 0.0f) {
-			mFadeTimer -= sys->mDeltaTime;
+			mFadeTimer -= sys->getDeltaTime();
 		}
 		if (mThreadCommand.mMode == DvdThreadCommand::CM_Completed) {
 			sys->startChangeCurrentHeap(mMovieHeap);
@@ -567,7 +573,7 @@ bool MoviePlayer::update(Controller* input1, Controller* input2)
 		if (mObjectSystem) {
 			mObjectSystem->entry();
 		}
-		mFadeTimer -= sys->mDeltaTime;
+		mFadeTimer -= sys->getDeltaTime();
 		if (mFadeTimer < 1.1f && !mCanFinish) {
 			if (isFlag(MVP_IsFinished)) {
 				resetFrame();

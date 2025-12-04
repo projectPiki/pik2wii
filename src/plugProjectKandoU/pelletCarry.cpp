@@ -6,7 +6,10 @@ namespace Game {
  * @note Address: 0x80234EF8
  * @note Size: 0x30
  */
-PelletCarry::PelletCarry() { reset(); }
+PelletCarry::PelletCarry()
+{
+	reset();
+}
 
 /**
  * @note Address: 0x80234F28
@@ -14,8 +17,8 @@ PelletCarry::PelletCarry() { reset(); }
  */
 void PelletCarry::reset()
 {
-	mState         = PCS_Idle;
-	mVelocity      = Vector3f(0.0f);
+	mState = PCS_Idle;
+	mVelocity.set(0.0f, 0.0f, 0.0f);
 	mTimer         = 0.0f;
 	mCarryStrength = 0.0f;
 }
@@ -67,8 +70,8 @@ void PelletCarry::giveup(u16 state)
 		return;
 	}
 
-	mState         = PCS_Idle;
-	mVelocity      = Vector3f(0.0f);
+	mState = PCS_Idle;
+	mVelocity.set(0.0f, 0.0f, 0.0f);
 	mCarryStrength = 0.0f;
 }
 
@@ -81,8 +84,8 @@ bool PelletCarry::frameWork(Vector3f& velocity)
 	// Work done in a frame
 	if (mState != PCS_Idle) {
 		if (mTimer > 0.0f) {
-			mTimer -= sys->mDeltaTime;
-			velocity = Vector3f(0.0f);
+			mTimer -= sys->getDeltaTime();
+			velocity.set(0.0f, 0.0f, 0.0f);
 
 		} else {
 			velocity = mVelocity;

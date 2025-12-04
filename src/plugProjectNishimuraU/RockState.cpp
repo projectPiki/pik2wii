@@ -1,7 +1,7 @@
-#include "Game/Entities/Rock.h"
+#include "Game/CameraMgr.h"
 #include "Game/EnemyAnimKeyEvent.h"
 #include "Game/EnemyFunc.h"
-#include "Game/CameraMgr.h"
+#include "Game/Entities/Rock.h"
 #include "Game/rumble.h"
 #include "nans.h"
 
@@ -36,7 +36,7 @@ void StateWait::init(EnemyBase* enemy, StateArg* stateArg)
 	rock->disableEvent(0, EB_Animating);
 	rock->enableEvent(0, EB_ModelHidden);
 
-	rock->mTargetVelocity = Vector3f(0.0f);
+	rock->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	rock->startMotion(ROCKANIM_Run, nullptr);
 	rock->stopMotion();
 }
@@ -49,7 +49,7 @@ void StateWait::exec(EnemyBase* enemy)
 {
 	Obj* rock = OBJ(enemy);
 	if (rock->mExistDuration != 0.0f) {
-		rock->mTimer += sys->mDeltaTime;
+		rock->mTimer += sys->getDeltaTime();
 		if (rock->mTimer > 1.5f) {
 			transit(rock, ROCK_Appear, nullptr);
 		}
@@ -97,7 +97,7 @@ void StateAppear::init(EnemyBase* enemy, StateArg* stateArg)
 	rock->disableEvent(0, EB_Cullable);
 	rock->disableEvent(0, EB_CullSound);
 
-	rock->mTargetVelocity = Vector3f(0.0f);
+	rock->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	rock->startMotion(ROCKANIM_Run, nullptr);
 
 	shadowMgr->addShadow(rock);
@@ -144,7 +144,10 @@ void StateDropWait::init(EnemyBase* enemy, StateArg* stateArg)
  * @note Address: 0x8026238C
  * @note Size: 0x34
  */
-void StateDropWait::exec(EnemyBase* enemy) { transit(enemy, ROCK_Fall, nullptr); }
+void StateDropWait::exec(EnemyBase* enemy)
+{
+	transit(enemy, ROCK_Fall, nullptr);
+}
 
 /**
  * @note Address: 0x802623C0
@@ -228,7 +231,7 @@ void StateMove::exec(EnemyBase* enemy)
 	Obj* rock = OBJ(enemy);
 	rock->updateMoveVelocity();
 	rock->moveRockScaleUp();
-	rock->mTimer += sys->mDeltaTime;
+	rock->mTimer += sys->getDeltaTime();
 	rock->updateWaterEffectPosition();
 	rock->getJAIObject()->startSound(PSSE_EN_ROCK_ROLL, 0);
 
@@ -257,8 +260,8 @@ void StateMove::cleanup(EnemyBase* enemy)
  */
 void StateDead::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* rock             = OBJ(enemy);
-	rock->mTargetVelocity = Vector3f(0.0f);
+	Obj* rock = OBJ(enemy);
+	rock->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	rock->startMotion(ROCKANIM_Dead, nullptr);
 	shadowMgr->delShadow(rock);
 	rock->createRockDeadEffect();
@@ -286,7 +289,9 @@ void StateDead::exec(EnemyBase* enemy)
  * @note Address: 0x80262850
  * @note Size: 0x4
  */
-void StateDead::cleanup(EnemyBase* enemy) { }
+void StateDead::cleanup(EnemyBase* enemy)
+{
+}
 
 } // namespace Rock
 } // namespace Game

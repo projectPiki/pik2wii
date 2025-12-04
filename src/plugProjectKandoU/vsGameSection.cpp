@@ -381,7 +381,7 @@ void VsGameSection::postSetupFloatMemory()
 		mRedBlueYellowScore[0] = 0.0f;
 		mMarbleRedBlue[1]      = nullptr;
 		mMarbleRedBlue[0]      = nullptr;
-		Vector3f position      = Vector3f(0.0f);
+		Vector3f position(0.0f, 0.0f, 0.0f);
 		createRedBlueBedamas(position);
 
 		for (int i = 0; i < VS_YELLOW_MARLBE_NUM; i++) {
@@ -1078,8 +1078,8 @@ void VsGameSection::initCardPellets()
 	for (int j = 0; j < mMaxCherries; j++) {
 		Pellet* pellet = pelletMgr->birth(&arg);
 		if (pellet) {
-			Vector3f position = Vector3f(0.0f);
-			mCherryArray[j]   = pellet;
+			Vector3f position(0.0f, 0.0f, 0.0f);
+			mCherryArray[j] = pellet;
 			pellet->setPosition(position, false);
 			mCherryArray[j] = pellet;
 		} else {
@@ -1175,7 +1175,7 @@ void VsGameSection::updateCardGeneration()
 	}
 
 	if (mCardCount < 4 || (isHigh && mCardCount < maxSpawnCherries)) {
-		f32 ticking = sys->mDeltaTime;
+		f32 ticking = sys->getDeltaTime();
 		if (isHigh) {
 			ticking *= 2.0f;
 		}

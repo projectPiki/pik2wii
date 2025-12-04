@@ -274,7 +274,7 @@ void Obj::onKill(CreatureKillArg* killArg)
  */
 void Obj::doSimulation(f32 simSpeed)
 {
-	mAcceleration = Vector3f(0.0f);
+	mAcceleration.set(0.0f, 0.0f, 0.0f);
 	if (mSticked && !mIsStuckToPiki && getStateID() != SHIJIMICHOU_Dead) {
 		P2ASSERTLINE(374, mGroupLeader != this);
 
@@ -596,7 +596,7 @@ void Obj::fly()
 		sinVal *= C_PARMS->mRotateFaceDirFactor;
 		f32 faceDirOffset = TORADIANS(sinVal);
 		mFaceDir          = mTargetFaceDir;
-		turnToTarget2(mGoalPosition, rotAccel, rotSpeed);
+		turnToTarget(mGoalPosition, rotAccel, rotSpeed);
 
 		f32 angle = mFaceDir + faceDirOffset;
 		f32 x     = moveSpeed * sinf(angle);
@@ -971,7 +971,7 @@ bool Obj::checkRestOn()
 			return true;
 		}
 
-		f32 angleDist = getAngDist2(collSphere.mPosition);
+		f32 angleDist = getAngDist(collSphere.mPosition);
 		updateFaceDir(roundAng(0.3f * angleDist + mFaceDir));
 	}
 

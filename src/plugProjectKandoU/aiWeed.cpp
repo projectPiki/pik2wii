@@ -1,10 +1,10 @@
+#include "Game/Entities/ItemWeed.h"
+#include "Game/Piki.h"
+#include "PikiAI.h"
 #include "efx/PikiDamage.h"
 #include "efx/TPk.h"
 #include "efx/TWeedPull.h"
-#include "Game/Entities/ItemWeed.h"
-#include "Game/Piki.h"
 #include "nans.h"
-#include "PikiAI.h"
 #include "string.h"
 
 namespace PikiAI {
@@ -195,7 +195,9 @@ void ActWeed::cleanup()
  * @note Address: 0x8020E53C
  * @note Size: 0x4
  */
-void ActWeed::collisionCallback(Game::Piki*, Game::CollEvent&) { }
+void ActWeed::collisionCallback(Game::Piki*, Game::CollEvent&)
+{
+}
 
 /**
  * @note Address: 0x8020E540
@@ -240,7 +242,7 @@ void ActFlockAttack::init(ActionArg* arg)
 
 	mParent->startMotion(mAnimIdx, mAnimIdx, this, nullptr);
 	mFlags.clear();
-	mParent->mTargetVelocity = Vector3f(0.0f);
+	mParent->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 }
 
 /**
@@ -338,6 +340,9 @@ void ActFlockAttack::onKeyEvent(SysShape::KeyEvent const& keyEvent)
  * @note Address: 0x8020EA88
  * @note Size: 0xC
  */
-void ActFlockAttack::cleanup() { mTarget = nullptr; }
+void ActFlockAttack::cleanup()
+{
+	mTarget = nullptr;
+}
 
 } // namespace PikiAI

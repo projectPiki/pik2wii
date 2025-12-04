@@ -1,10 +1,10 @@
+#include "Game/GameSystem.h"
+#include "Game/MoviePlayer.h"
+#include "Game/Navi.h"
+#include "Game/gamePlayData.h"
 #include "Morimura/HurryUp.h"
 #include "Morimura/mrUtil.h"
 #include "PSSystem/PSSystemIF.h"
-#include "Game/GameSystem.h"
-#include "Game/MoviePlayer.h"
-#include "Game/gamePlayData.h"
-#include "Game/Navi.h"
 #include "nans.h"
 
 static const int unusedHurryUpArray[] = { 0, 0, 0 };
@@ -940,7 +940,7 @@ lbl_80347304:
  */
 void THurryUp2D::move()
 {
-	f32 time = mMoveSp * 60.0f * sys->mDeltaTime;
+	f32 time = mMoveSp * 60.0f * sys->getDeltaTime();
 	mPaneHurry->setOffset(-(time * mTimer - (mPane1Pos.x + mInitPosX)), mPane1Pos.y);
 	mPaneSundown->setOffset((time * mTimer + (mPane2Pos.x - mInitPosX)), mPane2Pos.y);
 
@@ -989,7 +989,7 @@ void THurryUp2D::scaleUp1()
 	f32 scale;
 	if (pane->mScale.x < goal) {
 		f32 factor = mTimer * mScaleSp1 * 60.0f;
-		scale      = factor * sys->mDeltaTime + mParams[mState].mScale;
+		scale      = factor * sys->getDeltaTime() + mParams[mState].mScale;
 		if (scale >= goal) {
 			scale = goal;
 		}
@@ -1013,7 +1013,7 @@ void THurryUp2D::scaleUp1()
 void THurryUp2D::colorUp()
 {
 	u8 alpha = 255;
-	f32 v1   = mColorUpSp * (sys->mDeltaTime * 120.0f);
+	f32 v1   = mColorUpSp * (sys->getDeltaTime() * 120.0f);
 	f32 time = (int)v1;
 	if (time * mTimer < mParams[mState].mAlpha2) {
 		f32 time2 = mParams[mState].mAlpha1;
@@ -1040,7 +1040,7 @@ void THurryUp2D::scaleUp2()
 	f32 goal = mParams[mState].mGoalScale;
 	if (mPaneSunL->mScale.x < goal) {
 		f32 factor = mTimer * mScaleSp2 * 60.0f;
-		f32 scale  = factor * sys->mDeltaTime + mParams[mState].mScale;
+		f32 scale  = factor * sys->getDeltaTime() + mParams[mState].mScale;
 		if (scale > goal) {
 			scale = goal;
 		}

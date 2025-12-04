@@ -1,8 +1,8 @@
-#include "types.h"
-#include "Game/Entities/Hiba.h"
 #include "Game/EnemyAnimKeyEvent.h"
-#include "efx/TEnemyBomb.h"
+#include "Game/Entities/Hiba.h"
 #include "PS.h"
+#include "efx/TEnemyBomb.h"
+#include "types.h"
 
 namespace Game {
 namespace Hiba {
@@ -51,13 +51,17 @@ void StateDead::init(EnemyBase* enemy, StateArg* stateArg)
  * @note Address: 0x8026B600
  * @note Size: 0x4
  */
-void StateDead::exec(EnemyBase*) { }
+void StateDead::exec(EnemyBase*)
+{
+}
 
 /**
  * @note Address: 0x8026B604
  * @note Size: 0x4
  */
-void StateDead::cleanup(EnemyBase*) { }
+void StateDead::cleanup(EnemyBase*)
+{
+}
 
 /**
  * @note Address: 0x8026B608
@@ -83,7 +87,7 @@ void StateWait::init(EnemyBase* enemy, StateArg* stateArg)
 void StateWait::exec(EnemyBase* enemy)
 {
 	Obj* hiba = OBJ(enemy);
-	hiba->mTimer += sys->mDeltaTime;
+	hiba->mTimer += sys->getDeltaTime();
 
 	if (hiba->mHealth <= 0.0f) {
 		transit(hiba, HIBA_Dead, nullptr);
@@ -100,7 +104,9 @@ void StateWait::exec(EnemyBase* enemy)
  * @note Address: 0x8026B6DC
  * @note Size: 0x4
  */
-void StateWait::cleanup(EnemyBase*) { }
+void StateWait::cleanup(EnemyBase*)
+{
+}
 
 /**
  * @note Address: 0x8026B6E0
@@ -127,7 +133,7 @@ void StateAttack::exec(EnemyBase* enemy)
 		hiba->finishMotion();
 	}
 
-	hiba->mTimer += sys->mDeltaTime;
+	hiba->mTimer += sys->getDeltaTime();
 
 	hiba->updateEfxLod();
 	hiba->interactFireAttack();

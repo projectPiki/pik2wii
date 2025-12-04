@@ -34,13 +34,19 @@ bool InteractEarthquake::actEnemy(EnemyBase* enemy)
  * @note Address: 0x8010BAF0
  * @note Size: 0x40
  */
-bool InteractPress::actEnemy(EnemyBase* enemy) { return enemy->pressCallBack(mCreature, mDamage, mCollPart); }
+bool InteractPress::actEnemy(EnemyBase* enemy)
+{
+	return enemy->pressCallBack(mCreature, mDamage, mCollPart);
+}
 
 /**
  * @note Address: 0x8010BB30
  * @note Size: 0x40
  */
-bool InteractFlyCollision::actEnemy(EnemyBase* enemy) { return enemy->flyCollisionCallBack(mCreature, mDamage, mCollPart); }
+bool InteractFlyCollision::actEnemy(EnemyBase* enemy)
+{
+	return enemy->flyCollisionCallBack(mCreature, mDamage, mCollPart);
+}
 
 /**
  * @note Address: 0x8010BB70
@@ -49,6 +55,16 @@ bool InteractFlyCollision::actEnemy(EnemyBase* enemy) { return enemy->flyCollisi
 bool InteractAttack::actEnemy(EnemyBase* enemy)
 {
 	bool isSuccess = false;
+
+	// this block is new in the Wii version
+	if (_10) {
+		if (!enemy->damageCallBack(mCreature, mDamage, mCollPart)) {
+			Vector3f dir(0.0f, 100.0f, 0.0f);
+			enemy->bombCallBack(mCreature, dir, mDamage);
+		}
+		enemy->pressCallBack(mCreature, mDamage, mCollPart);
+		return;
+	}
 
 	if (!enemy->isEvent(0, EB_Invulnerable)) {
 		bool toDamage = false;
@@ -82,7 +98,10 @@ bool InteractAttack::actEnemy(EnemyBase* enemy)
  * @note Address: 0x8010BC8C
  * @note Size: 0x38
  */
-bool InteractDrop::actEnemy(EnemyBase* enemy) { return enemy->dropCallBack(mCreature); }
+bool InteractDrop::actEnemy(EnemyBase* enemy)
+{
+	return enemy->dropCallBack(mCreature);
+}
 
 /**
  * @note Address: 0x8010BCC4

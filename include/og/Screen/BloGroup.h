@@ -1,6 +1,7 @@
 #ifndef _OG_SCREEN_BLOGROUP_H
 #define _OG_SCREEN_BLOGROUP_H
 
+#include "JSystem/J2D/J2DGrafContext.h"
 #include "P2DScreen.h"
 
 namespace og {

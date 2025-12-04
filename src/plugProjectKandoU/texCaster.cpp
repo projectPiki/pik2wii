@@ -113,14 +113,14 @@ void Caster::update()
 	case CS_Finished:
 		break;
 	case CS_Increasing:
-		mColor += mChangeRate * sys->mDeltaTime;
+		mColor += mChangeRate * sys->getDeltaTime();
 		if (mColor >= 1.0f) {
 			mColor  = 1.0f;
 			mStatus = CS_Finished;
 		}
 		break;
 	case CS_Decreasing:
-		mColor -= mChangeRate * sys->mDeltaTime;
+		mColor -= mChangeRate * sys->getDeltaTime();
 		if (mColor <= 0.0f) {
 			mColor  = 0.0f;
 			mStatus = CS_Hidden;

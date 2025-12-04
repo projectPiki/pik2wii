@@ -1,10 +1,10 @@
 #ifndef _RADAR_H
 #define _RADAR_H
 
-#include "types.h"
-#include "Vector3.h"
-#include "Game/cellPyramid.h"
 #include "CNode.h"
+#include "Game/cellPyramid.h"
+#include "Vector3.h"
+#include "types.h"
 
 #define RADAR_MAX_OBJECTS 160
 
@@ -111,7 +111,7 @@ struct Radar {
 };
 
 struct OgDummy : public Game::TPositionObject {
-	inline OgDummy() { mPosition = Vector3f(0.0f); }
+	inline OgDummy() { mPosition.set(0.0f, 0.0f, 0.0f); }
 
 	virtual Vector3f getPosition() { return mPosition; } // _08 (weak)
 

@@ -282,7 +282,7 @@ void Section::updateMenu()
  */
 void Section::doUpdateMainTitle()
 {
-	mGoToDemoTimer += sys->mDeltaTime;
+	mGoToDemoTimer += sys->getDeltaTime();
 	updateMenu();
 	mMainTitleMgr.update();
 	if (mController1->isButtonHeld(~JUTGamePad::False)) {
@@ -302,7 +302,7 @@ void Section::doUpdateMainTitle()
 		mgr->checkScene();
 		PSSystem::SeqBase* seq = PSSystem::getSeqData(mgr, BGM_MainTheme);
 
-		f32 rate = (ebi::TMainTitleMgr::kFadeOutTime / sys->mDeltaTime);
+		f32 rate = (ebi::TMainTitleMgr::kFadeOutTime / sys->getDeltaTime());
 		rate     = ROUND_F32_TO_U8(rate);
 		seq->stopSeq((int)rate);
 	}
@@ -409,7 +409,7 @@ void Section::doUpdateOmake()
 		PSSystem::validateSceneMgr(mgr);
 		mgr->checkScene();
 		PSSystem::SeqBase* seq = PSSystem::getSeqData(mgr, BGM_Bonus);
-		f32 rate               = (ebi::TMainTitleMgr::kFadeOutTime / sys->mDeltaTime);
+		f32 rate               = (ebi::TMainTitleMgr::kFadeOutTime / sys->getDeltaTime());
 		rate                   = ROUND_F32_TO_U8(rate);
 		seq->stopSeq((int)rate);
 	}
@@ -471,7 +471,7 @@ void Section::doUpdateOption()
 	if (mOptionMgr.mIsFinished) {
 
 		PSSystem::SeqBase* seq = PSSystemGetSeqCheck(BGM_Options);
-		f32 rate               = (ebi::TMainTitleMgr::kFadeOutTime / sys->mDeltaTime);
+		f32 rate               = (ebi::TMainTitleMgr::kFadeOutTime / sys->getDeltaTime());
 		rate                   = ROUND_F32_TO_U8(rate);
 		seq->stopSeq((int)rate);
 	}

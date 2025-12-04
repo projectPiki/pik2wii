@@ -13,10 +13,10 @@ namespace Game {
 struct DynParticle {
 	DynParticle()
 	{
-		mRadius          = 1.0f;
-		mIsTouching      = false;
-		mNext            = nullptr;
-		mCollisionNormal = Vector3f(0.0f);
+		mRadius     = 1.0f;
+		mIsTouching = false;
+		mNext       = nullptr;
+		mCollisionNormal.set(0.0f, 0.0f, 0.0f);
 	}
 
 	DynParticle* getAt(int);

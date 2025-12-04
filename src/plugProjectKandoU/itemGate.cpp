@@ -315,7 +315,7 @@ bool ItemGate::getVectorField(Sys::Sphere& sphere, Vector3f& vectorField)
 		vectorField = _270;
 
 	} else {
-		vectorField = Vector3f(0.0f);
+		vectorField.set(0.0f, 0.0f, 0.0f);
 	}
 
 	return true;

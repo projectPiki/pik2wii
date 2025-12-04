@@ -1,14 +1,14 @@
 #ifndef _PIKIAI_H
 #define _PIKIAI_H
 
-#include "types.h"
-#include "Vector3.h"
-#include "SysShape/MotionListener.h"
-#include "Condition.h"
 #include "CollInfo.h"
-#include "Game/pelletMgr.h"
+#include "Condition.h"
 #include "Game/SlotChangeListener.h"
+#include "Game/pelletMgr.h"
 #include "Sys/Sphere.h"
+#include "SysShape/MotionListener.h"
+#include "Vector3.h"
+#include "types.h"
 
 namespace Sys {
 struct Triangle;
@@ -800,6 +800,7 @@ struct ActFormation : public Action, virtual Game::SlotChangeListener, virtual S
 	// _0C-_10 = SlotChangeListener*
 	// _10-_14 = MotionListener*
 	Game::Navi* mNavi;             // _14
+	u8 _18[0x4];                   // _18, unknown, new
 	ActFormationInitArg mInitArg;  // _18
 	int mNextAIType;               // _24
 	u16 mSortState;                // _28, use FORMATION_SORT_ enum

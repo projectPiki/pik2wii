@@ -94,9 +94,8 @@ void JUTXfb::initiate(u16 width, u16 height, JKRHeap* heap, JUTXfb::EXfbNumber n
 	}
 
 	u16 alignedWidth  = ALIGN_NEXT(width, 0x10);
-	u32 alignedHeight = alignedWidth * height;
 	int flags         = 0x20;
-	alignedHeight <<= 1;
+	u32 alignedHeight = (alignedWidth * height) << 1;
 
 	mBuffers[0] = new (heap, flags) u8[alignedHeight];
 	mEnabled[0] = true;
@@ -124,8 +123,8 @@ void JUTXfb::initiate(u16 width, u16 height, JKRHeap* heap, JUTXfb::EXfbNumber n
 u32 JUTXfb::accumeXfbSize()
 {
 	JUTVideo* video  = JUTVideo::getManager();
-	const u16 height = video->getEfbHeight();
 	const u16 width  = video->getFbWidth();
-	const u16 lines  = GXGetNumXfbLines(height, GXGetYScaleFactor(height, video->mRenderModeObj->xfbHeight));
+	const u16 height = video->getEfbHeight();
+	const u16 lines  = GXGetNumXfbLines(height, GXGetYScaleFactor(height, video->getXfbHeight()));
 	return (u16)ALIGN_NEXT(width, 0x10) * lines * 2;
 }

@@ -1,9 +1,9 @@
-#include "og/newScreen/Challenge.h"
-#include "og/Screen/callbackNodes.h"
 #include "System.h"
-#include "og/Sound.h"
-#include "trig.h"
 #include "nans.h"
+#include "og/Screen/callbackNodes.h"
+#include "og/Sound.h"
+#include "og/newScreen/Challenge.h"
+#include "trig.h"
 
 namespace og {
 namespace newScreen {
@@ -29,7 +29,9 @@ ObjChallengeBase::ObjChallengeBase()
  * @note Address: 0x8032C938
  * @note Size: 0xAC
  */
-ObjChallengeBase::~ObjChallengeBase() { }
+ObjChallengeBase::~ObjChallengeBase()
+{
+}
 
 /**
  * @note Address: 0x8032C9E4
@@ -71,7 +73,7 @@ void ObjChallengeBase::updateTimer(f32 set, f32 dec)
 {
 	// for sublevels past 1, wait a set time before increasing the time
 	if (mSubLevel != 0 && mIncTimeLeftDelay > 0.0f) {
-		mIncTimeLeftDelay -= sys->mDeltaTime;
+		mIncTimeLeftDelay -= sys->getDeltaTime();
 		if (dec > 0.0f && mIncTimeLeftDelay < 0.0f) {
 			ogSound->setTimeCarry();
 		}
@@ -109,7 +111,10 @@ void ObjChallengeBase::updateTimer(f32 set, f32 dec)
  * @note Address: 0x8032CC78
  * @note Size: 0x8
  */
-void ObjChallengeBase::setSubLevel(u32 a1) { mSubLevel = a1; }
+void ObjChallengeBase::setSubLevel(u32 a1)
+{
+	mSubLevel = a1;
+}
 
 ObjChallengeBase::StaticValues ObjChallengeBase::msBaseVal;
 

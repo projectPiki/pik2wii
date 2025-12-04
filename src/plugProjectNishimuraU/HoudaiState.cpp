@@ -34,7 +34,7 @@ void StateDead::init(EnemyBase* enemy, StateArg* stateArg)
 	Obj* houdai = OBJ(enemy);
 	houdai->forceFinishIKMotion();
 	houdai->deathProcedure();
-	houdai->mTargetVelocity = Vector3f(0.0f);
+	houdai->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	houdai->setEmotionCaution();
 	houdai->startMotion(HOUDAIANIM_Dead, nullptr);
 	houdai->createHoudaiDeadEffect();
@@ -82,7 +82,7 @@ void StateStay::init(EnemyBase* enemy, StateArg* stateArg)
 	houdai->enableEvent(0, EB_BitterImmune);
 	houdai->disableEvent(0, EB_Animating);
 	houdai->mTargetCreature = nullptr;
-	houdai->mTargetVelocity = Vector3f(0.0f);
+	houdai->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	houdai->startMotion(HOUDAIANIM_Dormant, nullptr);
 	houdai->stopMotion();
 }
@@ -133,7 +133,7 @@ void StateLand::init(EnemyBase* enemy, StateArg* stateArg)
 	houdai->enableEvent(0, EB_Animating);
 	houdai->setEmotionExcitement();
 	houdai->mTargetCreature = nullptr;
-	houdai->mTargetVelocity = Vector3f(0.0f);
+	houdai->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 
 	houdai->startMotion(HOUDAIANIM_Dormant, nullptr);
 	houdai->createAppearEffect();
@@ -236,7 +236,7 @@ void StateWait::init(EnemyBase* enemy, StateArg* stateArg)
 	houdai->mStateTimer     = 0.0f;
 	houdai->mStateDuration  = 1.5f + randWeightFloat(1.5f);
 	houdai->mTargetCreature = nullptr;
-	houdai->mTargetVelocity = Vector3f(0.0f);
+	houdai->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	houdai->startMotion(HOUDAIANIM_Wait, nullptr);
 }
 
@@ -247,7 +247,7 @@ void StateWait::init(EnemyBase* enemy, StateArg* stateArg)
 void StateWait::exec(EnemyBase* enemy)
 {
 	Obj* houdai = OBJ(enemy);
-	houdai->mStateTimer += sys->mDeltaTime;
+	houdai->mStateTimer += sys->getDeltaTime();
 
 	if (houdai->mHealth <= 0.0f) {
 		houdai->mNextState = HOUDAI_Dead;
@@ -286,7 +286,7 @@ void StateFlick::init(EnemyBase* enemy, StateArg* stateArg)
 	houdai->mNextState      = HOUDAI_NULL;
 	houdai->mStateTimer     = 0.0f;
 	houdai->mTargetCreature = nullptr;
-	houdai->mTargetVelocity = Vector3f(0.0f);
+	houdai->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	houdai->startMotion(HOUDAIANIM_Flick, nullptr);
 	houdai->startBlendMotion();
 }
@@ -344,7 +344,7 @@ void StateWalk::init(EnemyBase* enemy, StateArg* stateArg)
 	houdai->mStateTimer     = 0.0f;
 	houdai->mStateDuration  = 3.5f + randWeightFloat(3.5f);
 	houdai->mTargetCreature = nullptr;
-	houdai->mTargetVelocity = Vector3f(0.0f);
+	houdai->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	houdai->startIKMotion();
 	houdai->getTargetPosition();
 }
@@ -357,7 +357,7 @@ void StateWalk::exec(EnemyBase* enemy)
 {
 	Obj* houdai = OBJ(enemy);
 	houdai->getTargetPosition();
-	houdai->mStateTimer += sys->mDeltaTime;
+	houdai->mStateTimer += sys->getDeltaTime();
 
 	if (EnemyFunc::isStartFlick(houdai, false)) {
 		houdai->mNextState = HOUDAI_Flick;
@@ -395,7 +395,7 @@ void StateShot::init(EnemyBase* enemy, StateArg* stateArg)
 	houdai->mShotGunState       = 0;
 	houdai->mShotGunSearchTimer = 0.0f;
 	houdai->mTargetCreature     = nullptr;
-	houdai->mTargetVelocity     = Vector3f(0.0f);
+	houdai->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	houdai->startMotion(HOUDAIANIM_Attack, nullptr);
 	houdai->startBlendMotion();
 	houdai->createShotGunOpenEffect();
@@ -451,8 +451,8 @@ void StateShot::exec(EnemyBase* enemy)
 		}
 	}
 
-	houdai->mShotGunSearchTimer += sys->mDeltaTime;
-	houdai->mStateTimer += sys->mDeltaTime;
+	houdai->mShotGunSearchTimer += sys->getDeltaTime();
+	houdai->mStateTimer += sys->getDeltaTime();
 
 	if (houdai->mHealth <= 0.0f) {
 		if (houdai->isStopMotion()) {

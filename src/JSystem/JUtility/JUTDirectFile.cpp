@@ -107,6 +107,7 @@ void JUTDirectFile::fclose()
  */
 int JUTDirectFile::fgets(void* buf, int len)
 {
+	int startLen = len;
 	// Check if the file is open
 	if (!mIsOpen) {
 		return -1;
@@ -132,9 +133,10 @@ int JUTDirectFile::fgets(void* buf, int len)
 		return -1;
 	}
 
-	int readMax   = len - 1;  // Maximum number of bytes to read
 	u8* byteBuf   = (u8*)buf; // Buffer to store the read bytes
 	int readCount = 0;        // Number of bytes read
+
+	len = len - 1; // Maximum number of bytes to read
 
 	// Read data from the file until the end of the file is reached
 	while (mPos < mLength) {
@@ -146,8 +148,8 @@ int JUTDirectFile::fgets(void* buf, int len)
 		// Calculate the chunk size to read
 		u32 currPos   = mPos & (JUTDF_BUFSIZE - 1);
 		u32 chunkSize = (mToRead - currPos);
-		if (readCount + chunkSize > readMax) {
-			chunkSize = len - readCount - 1;
+		if (readCount + chunkSize > len) {
+			chunkSize = (startLen - readCount) - 1;
 		}
 
 		// Read bytes from the file until the end of a line is reached
@@ -180,7 +182,7 @@ int JUTDirectFile::fgets(void* buf, int len)
 		mPos += chunkSize;
 
 		// If the maximum number of bytes to read is reached, stop reading
-		if (readCount >= readMax) {
+		if (readCount >= len) {
 			*byteBuf = 0;
 			break;
 		}

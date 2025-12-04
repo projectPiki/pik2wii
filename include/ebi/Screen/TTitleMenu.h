@@ -1,9 +1,9 @@
 #ifndef _EBI_SCREEN_TTITLEMENU_H
 #define _EBI_SCREEN_TTITLEMENU_H
 
+#include "ebi/E2DCallBack.h"
 #include "ebi/Screen/TScreenBase.h"
 #include "ebi/Utility.h"
-#include "ebi/E2DCallBack.h"
 
 struct Controller;
 
@@ -16,7 +16,7 @@ struct TTitleMenu_Object_Icon {
 	inline void start()
 	{
 		mStatus = 1;
-		mAnimA->play(sys->mDeltaTime * 60.0f, J3DAA_UNKNOWN_0, true);
+		mAnimA->play(sys->getDeltaTime() * 60.0f, J3DAA_UNKNOWN_0, true);
 		mAnimB->stop();
 	}
 
@@ -29,7 +29,7 @@ struct TTitleMenu_Object_Icon {
 			if (mAnimA->isFinish()) {
 				mStatus = 2;
 				mAnimA->stop();
-				mAnimB->play(sys->mDeltaTime * 60.0f, J3DAA_UNKNOWN_2, true);
+				mAnimB->play(sys->getDeltaTime() * 60.0f, J3DAA_UNKNOWN_2, true);
 			}
 			break;
 		case 3:
@@ -43,7 +43,7 @@ struct TTitleMenu_Object_Icon {
 	inline void stop()
 	{
 		mStatus = 3;
-		mAnimA->playBack(sys->mDeltaTime * 60.0f, true);
+		mAnimA->playBack(sys->getDeltaTime() * 60.0f, true);
 		mAnimB->stop();
 	}
 

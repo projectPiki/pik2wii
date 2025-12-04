@@ -1,10 +1,10 @@
+#include "Game/Data.h"
+#include "Game/GameConfig.h"
+#include "ebi/E2DGraph.h"
 #include "ebi/TMainTitleMgr.h"
 #include "ebi/title/TTitle.h"
-#include "ebi/E2DGraph.h"
 #include "nans.h"
 #include "og/newScreen/ogUtil.h"
-#include "Game/GameConfig.h"
-#include "Game/Data.h"
 
 static const u32 padding[]    = { 0, 0, 0 };
 static const char className[] = "ebiMainTitleMgr";
@@ -160,7 +160,7 @@ void TMainTitleMgr::startMenuSet(s32, s32 select)
 	title::titleMgr->setLogo();
 	mState              = MainMenu;
 	mIsForceSelect      = false;
-	u32 count           = E2DFader::kFadeTime / sys->mDeltaTime;
+	u32 count           = E2DFader::kFadeTime / sys->getDeltaTime();
 	mOpenMenuCounter    = count;
 	mOpenMenuCounterMax = count;
 	mDrawState          = 1;
@@ -170,13 +170,19 @@ void TMainTitleMgr::startMenuSet(s32, s32 select)
  * @note Address: 0x803EA9AC
  * @note Size: 0xC
  */
-void TMainTitleMgr::forceQuit() { mState = Standby; }
+void TMainTitleMgr::forceQuit()
+{
+	mState = Standby;
+}
 
 /**
  * @note Address: 0x803EA9B8
  * @note Size: 0x10
  */
-bool TMainTitleMgr::isFinish() { return u8(mState == Standby); }
+bool TMainTitleMgr::isFinish()
+{
+	return u8(mState == Standby);
+}
 
 /**
  * @note Address: N/A
@@ -191,7 +197,10 @@ bool TMainTitleMgr::isAnyKey()
  * @note Address: 0x803EA9C8
  * @note Size: 0x8
  */
-int TMainTitleMgr::getSelectedMenu() { return mSelectedMenuOption; }
+int TMainTitleMgr::getSelectedMenu()
+{
+	return mSelectedMenuOption;
+}
 
 /**
  * @note Address: 0x803EA9D0
@@ -220,10 +229,10 @@ void TMainTitleMgr::update()
 			if (Game::gGameConfig.mParms.mKFesVersion.mData) {
 				mSelectedMenuOption = Select_Challenge;
 				mDoEndBGM           = true;
-				u32 count           = 1.0f / sys->mDeltaTime;
+				u32 count           = 1.0f / sys->getDeltaTime();
 				mExitMenuCounter    = count;
 				mExitMenuCounterMax = count;
-				u32 count2          = 1.0f / sys->mDeltaTime;
+				u32 count2          = 1.0f / sys->getDeltaTime();
 				mOpenMenuCounter    = count2;
 				mOpenMenuCounterMax = count2;
 				mDrawState          = 2;
@@ -231,10 +240,10 @@ void TMainTitleMgr::update()
 			} else if (Game::gGameConfig.mParms.mNintendoVersion.mData) {
 				mSelectedMenuOption = Select_Challenge;
 				mDoEndBGM           = true;
-				u32 count           = 1.0f / sys->mDeltaTime;
+				u32 count           = 1.0f / sys->getDeltaTime();
 				mExitMenuCounter    = count;
 				mExitMenuCounterMax = count;
-				u32 count2          = 1.0f / sys->mDeltaTime;
+				u32 count2          = 1.0f / sys->getDeltaTime();
 				mOpenMenuCounter    = count2;
 				mOpenMenuCounterMax = count2;
 				mDrawState          = 2;
@@ -277,7 +286,7 @@ void TMainTitleMgr::update()
 			Screen::ArgCloseTMBack arg(1.0f);
 			mTMBack.closeScreen(&arg);
 			if (!mTitleMenu.isCancel()) {
-				u32 count           = 1.0f / sys->mDeltaTime;
+				u32 count           = 1.0f / sys->getDeltaTime();
 				mOpenMenuCounter    = count;
 				mOpenMenuCounterMax = count;
 				mDrawState          = 2;

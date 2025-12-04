@@ -1,6 +1,6 @@
-#include "Game/Entities/Ujib.h"
 #include "Game/EnemyAnimKeyEvent.h"
 #include "Game/EnemyFunc.h"
+#include "Game/Entities/Ujib.h"
 
 namespace Game {
 namespace Ujib {
@@ -36,7 +36,7 @@ void StateDead::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	enemy->deathProcedure();
 	enemy->disableEvent(0, EB_Cullable);
-	enemy->mTargetVelocity = Vector3f(0.0f);
+	enemy->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	enemy->startMotion(UJIBANIM_Dead, nullptr);
 }
 
@@ -55,7 +55,9 @@ void StateDead::exec(EnemyBase* enemy)
  * @note Address: 0x8025B6C0
  * @note Size: 0x4
  */
-void StateDead::cleanup(EnemyBase* enemy) { }
+void StateDead::cleanup(EnemyBase* enemy)
+{
+}
 
 /**
  * @note Address: 0x8025B6C4
@@ -66,7 +68,7 @@ void StatePress::init(EnemyBase* enemy, StateArg* stateArg)
 	enemy->mHealth = 0.0f;
 	enemy->deathProcedure();
 	enemy->disableEvent(0, EB_Cullable);
-	enemy->mTargetVelocity = Vector3f(0.0f);
+	enemy->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	enemy->startMotion(UJIBANIM_PressDead, nullptr);
 }
 
@@ -85,7 +87,9 @@ void StatePress::exec(EnemyBase* enemy)
  * @note Address: 0x8025B76C
  * @note Size: 0x4
  */
-void StatePress::cleanup(EnemyBase* enemy) { }
+void StatePress::cleanup(EnemyBase* enemy)
+{
+}
 
 /**
  * @note Address: 0x8025B770
@@ -103,7 +107,7 @@ void StateStay::init(EnemyBase* enemy, StateArg* stateArg)
 	uji->disableEvent(0, EB_LifegaugeVisible);
 	uji->disableEvent(0, EB_Animating);
 	uji->enableEvent(0, EB_ModelHidden);
-	uji->mTargetVelocity = Vector3f(0.0f);
+	uji->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	uji->startMotion(UJIBANIM_Appear, nullptr);
 	uji->stopMotion();
 }
@@ -152,7 +156,7 @@ void StateAppear::init(EnemyBase* enemy, StateArg* stateArg)
 	uji->hardConstraintOn();
 	uji->enableEvent(0, EB_NoInterrupt);
 	uji->enableEvent(0, EB_LifegaugeVisible);
-	uji->mTargetVelocity = Vector3f(0.0f);
+	uji->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	uji->setEmotionExcitement();
 	uji->startMotion(UJIBANIM_Appear, nullptr);
 	uji->createAppearEffect();
@@ -194,7 +198,7 @@ void StateDive::init(EnemyBase* enemy, StateArg* stateArg)
 	Obj* uji = OBJ(enemy);
 	uji->hardConstraintOn();
 	uji->enableEvent(0, EB_BitterImmune);
-	uji->mTargetVelocity = Vector3f(0.0f);
+	uji->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	uji->setEmotionCaution();
 	uji->startMotion(UJIBANIM_Dive, nullptr);
 	uji->createDisAppearEffect();
@@ -670,7 +674,9 @@ lbl_8025C040:
  * @note Address: 0x8025C090
  * @note Size: 0x4
  */
-void StateMove::cleanup(EnemyBase* enemy) { }
+void StateMove::cleanup(EnemyBase* enemy)
+{
+}
 
 /**
  * @note Address: 0x8025C094
@@ -721,7 +727,9 @@ void StateMoveSide::exec(EnemyBase* enemy)
  * @note Address: 0x8025C1F8
  * @note Size: 0x4
  */
-void StateMoveSide::cleanup(EnemyBase* enemy) { }
+void StateMoveSide::cleanup(EnemyBase* enemy)
+{
+}
 
 /**
  * @note Address: 0x8025C1FC
@@ -772,7 +780,9 @@ void StateMoveCentre::exec(EnemyBase* enemy)
  * @note Address: 0x8025C360
  * @note Size: 0x4
  */
-void StateMoveCentre::cleanup(EnemyBase* enemy) { }
+void StateMoveCentre::cleanup(EnemyBase* enemy)
+{
+}
 
 /**
  * @note Address: 0x8025C364
@@ -823,7 +833,9 @@ void StateMoveTop::exec(EnemyBase* enemy)
  * @note Address: 0x8025C4C8
  * @note Size: 0x4
  */
-void StateMoveTop::cleanup(EnemyBase* enemy) { }
+void StateMoveTop::cleanup(EnemyBase* enemy)
+{
+}
 
 /**
  * @note Address: 0x8025C4CC
@@ -878,7 +890,9 @@ void StateGoHome::exec(EnemyBase* enemy)
  * @note Address: 0x8025C6DC
  * @note Size: 0x4
  */
-void StateGoHome::cleanup(EnemyBase* enemy) { }
+void StateGoHome::cleanup(EnemyBase* enemy)
+{
+}
 
 /**
  * @note Address: 0x8025C6E0
@@ -886,8 +900,8 @@ void StateGoHome::cleanup(EnemyBase* enemy) { }
  */
 void StateAttack1::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* uji             = OBJ(enemy);
-	uji->mTargetVelocity = Vector3f(0.0f);
+	Obj* uji = OBJ(enemy);
+	uji->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	uji->startMotion(UJIBANIM_Attack1, nullptr);
 	uji->mNextState = UJIB_NULL;
 	uji->createBridgeEffect();
@@ -934,7 +948,9 @@ void StateAttack1::exec(EnemyBase* enemy)
  * @note Address: 0x8025C878
  * @note Size: 0x4
  */
-void StateAttack1::cleanup(EnemyBase* enemy) { }
+void StateAttack1::cleanup(EnemyBase* enemy)
+{
+}
 
 /**
  * @note Address: 0x8025C87C
@@ -944,7 +960,7 @@ void StateAttack2::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	Obj* uji = OBJ(enemy);
 	uji->disableEvent(0, EB_NoInterrupt);
-	uji->mTargetVelocity = Vector3f(0.0f);
+	uji->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	uji->startMotion(UJIBANIM_Attack2, nullptr);
 }
 
@@ -998,7 +1014,10 @@ void StateAttack2::exec(EnemyBase* enemy)
  * @note Address: 0x8025CADC
  * @note Size: 0x10
  */
-void StateAttack2::cleanup(EnemyBase* enemy) { enemy->disableEvent(0, EB_NoInterrupt); }
+void StateAttack2::cleanup(EnemyBase* enemy)
+{
+	enemy->disableEvent(0, EB_NoInterrupt);
+}
 
 /**
  * @note Address: 0x8025CAEC
@@ -1006,7 +1025,7 @@ void StateAttack2::cleanup(EnemyBase* enemy) { enemy->disableEvent(0, EB_NoInter
  */
 void StateEat::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	enemy->mTargetVelocity = Vector3f(0.0f);
+	enemy->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	enemy->startMotion(UJIBANIM_Eat, nullptr);
 }
 
@@ -1049,7 +1068,9 @@ void StateEat::exec(EnemyBase* enemy)
  * @note Address: 0x8025CCD0
  * @note Size: 0x4
  */
-void StateEat::cleanup(EnemyBase* enemy) { }
+void StateEat::cleanup(EnemyBase* enemy)
+{
+}
 
 } // namespace Ujib
 } // namespace Game

@@ -213,7 +213,7 @@ void OtakaraSensor::adjScale(f32 scale)
 void OtakaraSensor::update()
 {
 	if (mAppearTimer > 0.0f) {
-		mAppearTimer -= sys->mDeltaTime;
+		mAppearTimer -= sys->getDeltaTime();
 	}
 
 	calcAppear();
@@ -261,7 +261,7 @@ void OtakaraSensor::calcGrayColor()
 	if (mState != 5) {
 		if (mIsPoweringOff) {
 			if (mPowerOffTimer > 0.0f) {
-				mPowerOffTimer -= sys->mDeltaTime;
+				mPowerOffTimer -= sys->getDeltaTime();
 			} else {
 				mIsPoweringOff = false;
 				mDoIncNoise    = true;
@@ -285,7 +285,7 @@ void OtakaraSensor::calcGrayColor()
 		}
 
 		if (mIsPoweredOff && mSetGrayTimer > 0.0f) {
-			mSetGrayTimer -= sys->mDeltaTime;
+			mSetGrayTimer -= sys->getDeltaTime();
 			if (mSetGrayTimer < 0.0f) {
 				ogSound->setGraySensor();
 				startGraySensor();
@@ -296,7 +296,7 @@ void OtakaraSensor::calcGrayColor()
 		switch (mState) {
 		case 3:
 			col1.set(255, 0, 200, 255);
-			mNoiseTimer += sys->mDeltaTime * TAU * 2.5f;
+			mNoiseTimer += sys->getDeltaTime() * TAU * 2.5f;
 			if (mNoiseTimer > TAU) {
 				mNoiseTimer -= TAU;
 			}
@@ -306,7 +306,7 @@ void OtakaraSensor::calcGrayColor()
 
 		case 4:
 			col1.set(255, 0, 200, 255);
-			f32 timeFactor = sys->mDeltaTime * TAU;
+			f32 timeFactor = sys->getDeltaTime() * TAU;
 			mNoiseTimer += newScreen::ObjCave::msVal.mTreasureRadarNoiseModifierHigh * timeFactor;
 			if (mNoiseTimer > TAU)
 				mNoiseTimer -= TAU;
@@ -334,7 +334,7 @@ void OtakaraSensor::calcAppear()
 {
 	if (mEfxActive) {
 		if (mTimer > 0.0f) {
-			mTimer -= sys->mDeltaTime;
+			mTimer -= sys->getDeltaTime();
 			if (mTimer < 0.0f) {
 				mAngleMgr->chase(HALF_PI, _4C.x);
 				mDoStartAppear  = true;
@@ -345,7 +345,7 @@ void OtakaraSensor::calcAppear()
 
 	if (mDoStartAppear) {
 		if (mSensorGetTimer > 0.0f) {
-			mSensorGetTimer -= sys->mDeltaTime;
+			mSensorGetTimer -= sys->getDeltaTime();
 			if (mSensorGetTimer <= 0.0f) {
 				mScaleMgr->up(0.7f, 40.0f, 0.5f, 0.0f);
 				mAppearTimer = 3.0f;
@@ -451,7 +451,7 @@ void OtakaraSensor::calcAngle()
 void OtakaraSensor::calcReaction()
 {
 	if (mReactTimer > 0.0f) {
-		mReactTimer -= sys->mDeltaTime;
+		mReactTimer -= sys->getDeltaTime();
 		if (mReactTimer < 0.0f) {
 			mReactTimer = 0.0f;
 			if (!og::newScreen::checkMovieActive()) {

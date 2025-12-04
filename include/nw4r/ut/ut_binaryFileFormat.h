@@ -9,7 +9,7 @@ namespace ut {
 ///////////////////// BINARY TYPES /////////////////////
 
 /**
- * @brief TODO
+ * @brief Header info for blocks of data.
  *
  * @note Size: 0x8.
  */
@@ -19,7 +19,7 @@ struct BinaryBlockHeader {
 };
 
 /**
- * @brief TODO
+ * @brief Header info for binary files.
  *
  * @note Size: 0x10.
  */

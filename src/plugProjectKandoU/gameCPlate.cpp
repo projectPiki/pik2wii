@@ -73,20 +73,20 @@ CPlate::CPlate(int slotLimit)
 {
 	mMoveStickRadius = 10.0f;
 	mBaseRadius      = 10.0f;
-	mPosition        = Vector3f(0.0f);
+	mPosition.set(0.0f, 0.0f, 0.0f);
 	mAngle           = 0.0f;
 	mSlots           = new Slot[mSlotLimit];
 	mActiveGroupSize = 0;
 	mSlotCount       = 0;
 	_110             = 0;
 	mIsPositionUnset = 1;
-	mUnused          = Vector3f(0.0f);
+	mUnused.set(0.0f, 0.0f, 0.0f);
 	for (int i = 0; i < ARRAY_SIZE(mHappaStageCounts); i++) {
 		mHappaStageCounts[i] = 0;
 	}
-	mVelocity           = Vector3f(0.0f);
-	mBasePositionOffset = Vector3f(0.0f);
-	mShrinkTimer        = 0;
+	mVelocity.set(0.0f, 0.0f, 0.0f);
+	mBasePositionOffset.set(0.0f, 0.0f, 0.0f);
+	mShrinkTimer = 0;
 }
 
 /**

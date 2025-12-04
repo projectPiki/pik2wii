@@ -663,7 +663,7 @@ void Obj::createItemAndEnemy()
 			EnemyBirthArg birthArg;
 			birthArg.mFaceDir = mFaceDir;
 			getThrowupItemPosition(&birthArg.mPosition);
-			Vector3f velocity = Vector3f(0.0f);
+			Vector3f velocity(0.0f, 0.0f, 0.0f);
 			mititeMgr->createGroupByBigFoot(birthArg, TAMAGOMUSHI_GROUP_COUNT, velocity,
 			                                100.0f); // spread fall speeds randomly by up to +/- 100
 		}
@@ -1121,7 +1121,7 @@ void Obj::effectDrawOff()
 void Obj::addShadowScale()
 {
 	if (mShadowScale < 1.0f) {
-		mShadowScale += 2.0f * sys->mDeltaTime;
+		mShadowScale += 2.0f * sys->getDeltaTime();
 		if (mShadowScale > 1.0f) {
 			mShadowScale = 1.0f;
 		}

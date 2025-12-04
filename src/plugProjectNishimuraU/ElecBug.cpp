@@ -55,7 +55,7 @@ void Obj::onKill(CreatureKillArg* arg)
  */
 void Obj::doUpdate()
 {
-	mInactiveTimer += sys->mDeltaTime;
+	mInactiveTimer += sys->getDeltaTime();
 	mFsm->exec(this);
 }
 

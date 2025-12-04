@@ -788,7 +788,7 @@ void CollPart::init(SysShape::MtxObject* mtxObject)
 	mRadius     = 0.0f;
 	mBaseRadius = 0.0f;
 	mOffset     = 0.0f;
-	mPosition   = Vector3f(0.0f);
+	mPosition.set(0.0f, 0.0f, 0.0f);
 	mModel      = mtxObject;
 	mJointIndex = -1;
 	mUnusedVal  = 0;
@@ -878,7 +878,7 @@ void CollPart::calcStickLocal(Vector3f& input, Vector3f& localPosition)
 
 		f32 len = mtx.getRowLength(0);
 		if (FABS(len) < 0.001f) {
-			localPosition = Vector3f(0.0f);
+			localPosition.set(0.0f, 0.0f, 0.0f);
 			return;
 		}
 
@@ -1603,7 +1603,7 @@ MouthCollPart::MouthCollPart()
 	mRadius     = 0.0f;
 	mBaseRadius = 0.0f;
 	mOffset     = 0.0f;
-	mPosition   = Vector3f(0.0f);
+	mPosition.set(0.0f, 0.0f, 0.0f);
 	mModel      = nullptr;
 	mJointIndex = -1;
 	mUnusedVal  = 0;

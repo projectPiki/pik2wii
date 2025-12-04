@@ -1,6 +1,6 @@
-#include "Game/Entities/Kabuto.h"
 #include "Game/EnemyAnimKeyEvent.h"
 #include "Game/EnemyFunc.h"
+#include "Game/Entities/Kabuto.h"
 #include "efx/THebi.h"
 
 namespace Game {
@@ -39,7 +39,7 @@ void Kabuto::StateDead::init(EnemyBase* enemy, StateArg* stateArg)
 	Obj* kabuto = OBJ(enemy);
 	kabuto->deathProcedure();
 	kabuto->disableEvent(0, EB_Cullable);
-	kabuto->mTargetVelocity = Vector3f(0.0f);
+	kabuto->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	if (kabuto->getEnemyTypeID() == EnemyTypeID::EnemyID_Fkabuto) {
 		kabuto->startMotion(KABUTOANIM_FixDead, nullptr);
 		kabuto->finishWaitEffect();
@@ -63,7 +63,9 @@ void Kabuto::StateDead::exec(EnemyBase* enemy)
  * @note Address: 0x802E1DA4
  * @note Size: 0x4
  */
-void Kabuto::StateDead::cleanup(EnemyBase* enemy) { }
+void Kabuto::StateDead::cleanup(EnemyBase* enemy)
+{
+}
 
 /**
  * @note Address: 0x802E1DA8
@@ -76,7 +78,7 @@ void Kabuto::StateWait::init(EnemyBase* enemy, StateArg* stateArg)
 	kabuto->setRandTarget();
 	kabuto->mNextState = KABUTO_NULL;
 	kabuto->enableEvent(0, EB_Constrained);
-	kabuto->mTargetVelocity = Vector3f(0.0f);
+	kabuto->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	kabuto->startMotion(KABUTOANIM_Wait, nullptr);
 }
 
@@ -87,7 +89,7 @@ void Kabuto::StateWait::init(EnemyBase* enemy, StateArg* stateArg)
 void Kabuto::StateWait::exec(EnemyBase* enemy)
 {
 	Obj* kabuto = OBJ(enemy);
-	if (kabuto->mHealth <= 0.0f) {
+	if (kabuto->isDead()) {
 		transit(kabuto, KABUTO_Dead, nullptr);
 		return;
 	}
@@ -100,7 +102,7 @@ void Kabuto::StateWait::exec(EnemyBase* enemy)
 		kabuto->finishMotion();
 	}
 
-	kabuto->mStateTimer += sys->mDeltaTime;
+	kabuto->mStateTimer += sys->getDeltaTime();
 
 	if (kabuto->mCurAnim->mIsPlaying && kabuto->mCurAnim->mType == KEYEVENT_END) {
 		transit(kabuto, kabuto->mNextState, nullptr);
@@ -111,7 +113,10 @@ void Kabuto::StateWait::exec(EnemyBase* enemy)
  * @note Address: 0x802E1F20
  * @note Size: 0x24
  */
-void Kabuto::StateWait::cleanup(EnemyBase* enemy) { enemy->constraintOff(); }
+void Kabuto::StateWait::cleanup(EnemyBase* enemy)
+{
+	enemy->constraintOff();
+}
 
 /**
  * @note Address: 0x802E1F44
@@ -123,7 +128,7 @@ void Kabuto::StateTurn::init(EnemyBase* enemy, StateArg* stateArg)
 	kabuto->mStateTimer = 0.0f;
 	kabuto->mNextState  = KABUTO_NULL;
 	kabuto->enableEvent(0, EB_Constrained);
-	kabuto->mTargetVelocity = Vector3f(0.0f);
+	kabuto->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	kabuto->startMotion(KABUTOANIM_Pivot, nullptr);
 }
 
@@ -134,7 +139,7 @@ void Kabuto::StateTurn::init(EnemyBase* enemy, StateArg* stateArg)
 void Kabuto::StateTurn::exec(EnemyBase* enemy)
 {
 	Obj* kabuto = OBJ(enemy);
-	if (kabuto->mHealth <= 0.0f) {
+	if (kabuto->isDead()) {
 		transit(kabuto, KABUTO_Dead, nullptr);
 		return;
 	}
@@ -147,16 +152,15 @@ void Kabuto::StateTurn::exec(EnemyBase* enemy)
 		if (target) {
 			kabuto->mAlertTimer = 0.0f;
 			Vector3f targetPos  = target->getPosition();
-			kabuto->turnToTarget2(targetPos, CG_GENERALPARMS(kabuto).mTurnSpeed(), CG_GENERALPARMS(kabuto).mMaxTurnAngle());
+			kabuto->turnToTarget(targetPos, CG_GENERALPARMS(kabuto).mTurnSpeed(), CG_GENERALPARMS(kabuto).mMaxTurnAngle());
 			if (kabuto->isAttackableTarget()) {
 				kabuto->mNextState = KABUTO_Attack;
 				kabuto->finishMotion();
 			}
 		} else {
 			Vector3f targetPos = kabuto->mTargetPosition;
-			f32 angle          = kabuto->changeFaceDir(targetPos);
-			f64 abs            = fabs(angle);
-			if ((f32)abs <= PI / 6.0f) {
+			f32 angle = kabuto->turnToTarget(targetPos, CG_GENERALPARMS(kabuto).mTurnSpeed(), CG_GENERALPARMS(kabuto).mMaxTurnAngle());
+			if (isAngleWithin(angle, 30.0f)) {
 				kabuto->mNextState = KABUTO_Move;
 				kabuto->finishMotion();
 			}
@@ -400,7 +404,10 @@ lbl_802E22A0:
  * @note Address: 0x802E22D8
  * @note Size: 0x24
  */
-void Kabuto::StateTurn::cleanup(EnemyBase* enemy) { enemy->constraintOff(); }
+void Kabuto::StateTurn::cleanup(EnemyBase* enemy)
+{
+	enemy->constraintOff();
+}
 
 /**
  * @note Address: 0x802E22FC
@@ -408,11 +415,11 @@ void Kabuto::StateTurn::cleanup(EnemyBase* enemy) { enemy->constraintOff(); }
  */
 void Kabuto::StateMove::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* kabuto             = OBJ(enemy);
-	kabuto->mStateTimer     = 0.0f;
-	kabuto->mIsWalking      = false;
-	kabuto->mNextState      = KABUTO_NULL;
-	kabuto->mTargetVelocity = Vector3f(0.0f);
+	Obj* kabuto         = OBJ(enemy);
+	kabuto->mStateTimer = 0.0f;
+	kabuto->mIsWalking  = false;
+	kabuto->mNextState  = KABUTO_NULL;
+	kabuto->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	kabuto->startMotion(KABUTOANIM_Move, nullptr);
 }
 
@@ -423,7 +430,7 @@ void Kabuto::StateMove::init(EnemyBase* enemy, StateArg* stateArg)
 void Kabuto::StateMove::exec(EnemyBase* enemy)
 {
 	Obj* kabuto = OBJ(enemy);
-	if (kabuto->mHealth <= 0.0f) {
+	if (kabuto->isDead()) {
 		transit(kabuto, KABUTO_Dead, nullptr);
 		return;
 	}
@@ -448,17 +455,12 @@ void Kabuto::StateMove::exec(EnemyBase* enemy)
 				kabuto->mNextState = KABUTO_Wait;
 				kabuto->finishMotion();
 			} else {
-				f32 angle = kabuto->changeFaceDir(targetPos);
-				f32 limit = PI * (DEG2RAD * 30.0f);
-				f64 abs   = fabs(angle);
-				if ((f32)abs <= limit) {
+				f32 angle = kabuto->turnToTarget(targetPos, CG_GENERALPARMS(kabuto).mTurnSpeed(), CG_GENERALPARMS(kabuto).mMaxTurnAngle());
+				// f32 limit = PI * (DEG2RAD * 30.0f);
+				// f64 abs   = fabs(angle);
+				if (isAngleWithin(angle, 30.0f)) {
 					if (kabuto->mIsWalking) {
-						f32 speed = CG_GENERALPARMS(kabuto).mMoveSpeed();
-						f32 x     = sin(kabuto->getFaceDir());
-						f32 y     = kabuto->getTargetVelocity().y;
-						f32 z     = cos(kabuto->getFaceDir());
-
-						kabuto->mTargetVelocity = Vector3f(speed * x, y, speed * z);
+						kabuto->setTargetSpeed(CG_GENERALPARMS(kabuto).mMoveSpeed());
 					}
 
 				} else {
@@ -472,10 +474,10 @@ void Kabuto::StateMove::exec(EnemyBase* enemy)
 	if (kabuto->isFinishMotion()) {
 		kabuto->mIsWalking = false;
 		kabuto->enableEvent(0, EB_Constrained);
-		kabuto->mTargetVelocity = Vector3f(0.0f);
+		kabuto->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	}
 
-	kabuto->mStateTimer += sys->mDeltaTime;
+	kabuto->mStateTimer += sys->getDeltaTime();
 
 	if (kabuto->mCurAnim->mIsPlaying) {
 		if (kabuto->mCurAnim->mType == KEYEVENT_LOOP_START) {
@@ -743,7 +745,10 @@ lbl_802E26A0:
  * @note Address: 0x802E26D8
  * @note Size: 0x24
  */
-void Kabuto::StateMove::cleanup(EnemyBase* enemy) { enemy->constraintOff(); }
+void Kabuto::StateMove::cleanup(EnemyBase* enemy)
+{
+	enemy->constraintOff();
+}
 
 /**
  * @note Address: 0x802E26FC
@@ -755,7 +760,7 @@ void Kabuto::StateFlick::init(EnemyBase* enemy, StateArg* stateArg)
 	kabuto->mStateTimer = 0.0f;
 	kabuto->mNextState  = KABUTO_NULL;
 	kabuto->enableEvent(0, EB_Constrained);
-	kabuto->mTargetVelocity = Vector3f(0.0f);
+	kabuto->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	kabuto->setEmotionExcitement();
 	kabuto->startMotion(KABUTOANIM_Flick, nullptr);
 }
@@ -777,11 +782,11 @@ void Kabuto::StateFlick::exec(EnemyBase* enemy)
 			                            CG_GENERALPARMS(kabuto).mShakeDamage.mValue, kabuto->getFaceDir(), nullptr);
 			kabuto->mFlickTimer = 0.0f;
 
-			if (kabuto->mHealth <= 0.0f) {
+			if (kabuto->isDead()) {
 				transit(kabuto, KABUTO_Dead, nullptr);
 			}
 		} else if (kabuto->mCurAnim->mType == KEYEVENT_END) {
-			if (kabuto->mHealth <= 0.0f) {
+			if (kabuto->isDead()) {
 				transit(kabuto, KABUTO_Dead, nullptr);
 			} else {
 				transit(kabuto, KABUTO_Attack, nullptr);
@@ -813,7 +818,7 @@ void Kabuto::StateAttack::init(EnemyBase* enemy, StateArg* stateArg)
 	kabuto->enableEvent(0, EB_Constrained);
 	kabuto->setEmotionExcitement();
 	kabuto->disableEvent(0, EB_Cullable);
-	kabuto->mTargetVelocity = Vector3f(0.0f);
+	kabuto->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	kabuto->startMotion(KABUTOANIM_Attack, nullptr);
 }
 
@@ -824,7 +829,7 @@ void Kabuto::StateAttack::init(EnemyBase* enemy, StateArg* stateArg)
 void Kabuto::StateAttack::exec(EnemyBase* enemy)
 {
 	Obj* kabuto = OBJ(enemy);
-	if (kabuto->mHealth <= 0.0f) {
+	if (kabuto->isDead()) {
 		transit(kabuto, KABUTO_Dead, nullptr);
 		return;
 	}
@@ -951,7 +956,7 @@ void Kabuto::StateFixAppear::exec(EnemyBase* enemy)
 {
 	Obj* kabuto = OBJ(enemy);
 	if (kabuto->mCurAnim->mIsPlaying && kabuto->mCurAnim->mType == KEYEVENT_END) {
-		if (kabuto->mHealth <= 0.0f) {
+		if (kabuto->isDead()) {
 			transit(kabuto, KABUTO_Dead, nullptr);
 			return;
 		}
@@ -968,9 +973,8 @@ void Kabuto::StateFixAppear::exec(EnemyBase* enemy)
 
 		Creature* target = kabuto->getSearchedTarget();
 		if (target) {
-			f32 angle = kabuto->getCreatureViewAngle(target);
-			f32 limit = CG_GENERALPARMS(kabuto).mMaxAttackAngle();
-			if (FABS(angle) <= PI * (DEG2RAD * limit)) {
+			f32 angle = kabuto->getAngDist(target);
+			if (isAngleWithin(angle, CG_GENERALPARMS(kabuto).mMaxAttackAngle())) {
 				transit(kabuto, KABUTO_FixWait, nullptr);
 				return;
 			} else {
@@ -987,7 +991,10 @@ void Kabuto::StateFixAppear::exec(EnemyBase* enemy)
  * @note Address: 0x802E30E0
  * @note Size: 0x10
  */
-void Kabuto::StateFixAppear::cleanup(EnemyBase* enemy) { enemy->disableEvent(0, EB_NoInterrupt); }
+void Kabuto::StateFixAppear::cleanup(EnemyBase* enemy)
+{
+	enemy->disableEvent(0, EB_NoInterrupt);
+}
 
 /**
  * @note Address: 0x802E30F0
@@ -1058,7 +1065,7 @@ void Kabuto::StateFixWait::init(EnemyBase* enemy, StateArg* stateArg)
 void Kabuto::StateFixWait::exec(EnemyBase* enemy)
 {
 	Obj* kabuto = OBJ(enemy);
-	if (kabuto->mHealth <= 0.0f) {
+	if (kabuto->isDead()) {
 		transit(kabuto, KABUTO_Dead, nullptr);
 		return;
 	}
@@ -1072,9 +1079,8 @@ void Kabuto::StateFixWait::exec(EnemyBase* enemy)
 	} else {
 		Creature* target = kabuto->getSearchedTarget();
 		if (target) {
-			f32 angle = kabuto->getCreatureViewAngle(target);
-			f32 limit = CG_GENERALPARMS(kabuto).mMaxAttackAngle();
-			if (FABS(angle) <= PI * (DEG2RAD * limit)) {
+			f32 angle = kabuto->getAngDist(target);
+			if (isAngleWithin(angle, CG_GENERALPARMS(kabuto).mMaxAttackAngle())) {
 				kabuto->mNextState = KABUTO_FixWait;
 			} else {
 				kabuto->mNextState = KABUTO_FixTurn;
@@ -1094,7 +1100,9 @@ void Kabuto::StateFixWait::exec(EnemyBase* enemy)
  * @note Address: 0x802E3530
  * @note Size: 0x4
  */
-void Kabuto::StateFixWait::cleanup(EnemyBase* enemy) { }
+void Kabuto::StateFixWait::cleanup(EnemyBase* enemy)
+{
+}
 
 /**
  * @note Address: 0x802E3534
@@ -1116,7 +1124,7 @@ void Kabuto::StateFixTurn::init(EnemyBase* enemy, StateArg* stateArg)
 void Kabuto::StateFixTurn::exec(EnemyBase* enemy)
 {
 	Obj* kabuto = OBJ(enemy);
-	if (kabuto->mHealth <= 0.0f) {
+	if (kabuto->isDead()) {
 		transit(kabuto, KABUTO_Dead, nullptr);
 		return;
 	}
@@ -1129,13 +1137,12 @@ void Kabuto::StateFixTurn::exec(EnemyBase* enemy)
 		if (target) {
 			kabuto->mAlertTimer = 0.0f;
 			Vector3f targetPos  = target->getPosition();
-			f32 angle           = kabuto->changeFaceDir(targetPos);
+			f32 angle = kabuto->turnToTarget(targetPos, CG_GENERALPARMS(kabuto).mTurnSpeed(), CG_GENERALPARMS(kabuto).mMaxTurnAngle());
 			if (kabuto->isAttackableTarget()) {
 				kabuto->mNextState = KABUTO_FixAttack;
 				kabuto->finishMotion();
 			} else {
-				f32 limit = CG_GENERALPARMS(kabuto).mMaxAttackAngle();
-				if (FABS(angle) <= PI * (DEG2RAD * limit)) {
+				if (isAngleWithin(angle, CG_GENERALPARMS(kabuto).mMaxAttackAngle())) {
 					kabuto->mNextState = KABUTO_FixWait;
 					kabuto->finishMotion();
 				} else {
@@ -1184,7 +1191,7 @@ void Kabuto::StateFixAttack::init(EnemyBase* enemy, StateArg* stateArg)
 void Kabuto::StateFixAttack::exec(EnemyBase* enemy)
 {
 	Obj* kabuto = OBJ(enemy);
-	if (kabuto->mHealth <= 0.0f) {
+	if (kabuto->isDead()) {
 		transit(kabuto, KABUTO_Dead, nullptr);
 		return;
 	}
@@ -1207,9 +1214,8 @@ void Kabuto::StateFixAttack::exec(EnemyBase* enemy)
 
 			Creature* target = kabuto->getSearchedTarget();
 			if (target) {
-				f32 angle = kabuto->getCreatureViewAngle(target);
-				f32 limit = CG_GENERALPARMS(kabuto).mMaxAttackAngle();
-				if (FABS(angle) <= PI * (DEG2RAD * limit)) {
+				f32 angle = kabuto->getAngDist(target);
+				if (isAngleWithin(angle, CG_GENERALPARMS(kabuto).mMaxAttackAngle())) {
 					transit(kabuto, KABUTO_FixWait, nullptr);
 				} else {
 					transit(kabuto, KABUTO_FixTurn, nullptr);
@@ -1225,7 +1231,9 @@ void Kabuto::StateFixAttack::exec(EnemyBase* enemy)
  * @note Address: 0x802E3B2C
  * @note Size: 0x4
  */
-void Kabuto::StateFixAttack::cleanup(EnemyBase* enemy) { }
+void Kabuto::StateFixAttack::cleanup(EnemyBase* enemy)
+{
+}
 
 /**
  * @note Address: 0x802E3B30
@@ -1256,11 +1264,11 @@ void Kabuto::StateFixFlick::exec(EnemyBase* enemy)
 			                            CG_GENERALPARMS(kabuto).mShakeDamage.mValue, kabuto->getFaceDir(), nullptr);
 			kabuto->mFlickTimer = 0.0f;
 
-			if (kabuto->mHealth <= 0.0f) {
+			if (kabuto->isDead()) {
 				transit(kabuto, KABUTO_Dead, nullptr);
 			}
 		} else if (kabuto->mCurAnim->mType == KEYEVENT_END) {
-			if (kabuto->mHealth <= 0.0f) {
+			if (kabuto->isDead()) {
 				transit(kabuto, KABUTO_Dead, nullptr);
 			} else {
 				transit(kabuto, KABUTO_FixAttack, nullptr);
@@ -1273,7 +1281,9 @@ void Kabuto::StateFixFlick::exec(EnemyBase* enemy)
  * @note Address: 0x802E3CF0
  * @note Size: 0x4
  */
-void Kabuto::StateFixFlick::cleanup(EnemyBase* enemy) { }
+void Kabuto::StateFixFlick::cleanup(EnemyBase* enemy)
+{
+}
 
 } // namespace Kabuto
 } // namespace Game

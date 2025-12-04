@@ -7,7 +7,7 @@ namespace Kochappy {
 static const char kochappyMgrName[] = "kochappyMgr";
 
 namespace {
-static const char* cKochappyChangeTexName = "/enemy/data/Kochappy/kochappy_body_s3tc.1.bti";
+static const char* cKochappyChangeTexName = "enemy/data/Kochappy/kochappy_body_s3tc.1.bti";
 } // namespace
 
 /**
@@ -17,14 +17,17 @@ static const char* cKochappyChangeTexName = "/enemy/data/Kochappy/kochappy_body_
 Mgr::Mgr(int objLimit, u8 modelType)
     : KochappyBase::Mgr(objLimit, modelType)
 {
-	mName = "赤コチャッピーマネージャ"; // red kochappy manager
+	setName("赤コチャッピーマネージャ"); // red kochappy manager
 }
 
 /**
  * @note Address: 0x801123B4
  * @note Size: 0x48
  */
-void Mgr::doAlloc() { init(new KochappyBase::Parms); }
+void Mgr::doAlloc()
+{
+	init(new KochappyBase::Parms);
+}
 
 /**
  * @note Address: 0x80112514

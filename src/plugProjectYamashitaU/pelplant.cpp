@@ -272,9 +272,9 @@ void Obj::getShadowParam(ShadowParam& param)
 void Obj::doAnimationUpdateAnimator()
 {
 	BlendAccelerationFunc func;
-	static_cast<EnemyBlendAnimatorBase*>(mAnimator)->animate(&func, EnemyAnimatorBase::defaultAnimSpeed * sys->mDeltaTime,
-	                                                         EnemyAnimatorBase::defaultAnimSpeed * sys->mDeltaTime,
-	                                                         EnemyAnimatorBase::defaultAnimSpeed * sys->mDeltaTime);
+	static_cast<EnemyBlendAnimatorBase*>(mAnimator)->animate(&func, EnemyAnimatorBase::defaultAnimSpeed * sys->getDeltaTime(),
+	                                                         EnemyAnimatorBase::defaultAnimSpeed * sys->getDeltaTime(),
+	                                                         EnemyAnimatorBase::defaultAnimSpeed * sys->getDeltaTime());
 	static_cast<EnemyBlendAnimatorBase*>(mAnimator)->mAnimator.setModelCalc(mModel, 0);
 }
 
@@ -442,7 +442,7 @@ void Obj::changePelletColor()
 			return;
 		}
 
-		const f32 dt = sys->mDeltaTime;
+		const f32 dt = sys->getDeltaTime();
 		if (isPelFlag(PELPLANTFLAG_Growing)) {
 			mColorChangeTimer += dt;
 		}

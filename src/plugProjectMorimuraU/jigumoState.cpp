@@ -1,8 +1,8 @@
-#include "Game/Entities/Jigumo.h"
-#include "Game/EnemyAnimKeyEvent.h"
-#include "Game/FakePiki.h"
-#include "Game/EnemyFunc.h"
 #include "Game/CameraMgr.h"
+#include "Game/EnemyAnimKeyEvent.h"
+#include "Game/EnemyFunc.h"
+#include "Game/Entities/Jigumo.h"
+#include "Game/FakePiki.h"
 #include "Game/rumble.h"
 #include "nans.h"
 
@@ -195,8 +195,8 @@ void StateHide::init(EnemyBase* enemy, StateArg* stateArg)
 	}
 
 	OBJ(enemy)->mHideAnimPosition = enemy->mPosition;
-	enemy->mCurrentVelocity       = Vector3f(0.0f);
-	enemy->mTargetVelocity        = Vector3f(0.0f);
+	enemy->mCurrentVelocity.set(0.0f, 0.0f, 0.0f);
+	enemy->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	enemy->hardConstraintOn();
 	enemy->setAtari(false);
 	enemy->mCollTree->getCollPart('body')->mSpecialID = '____';
@@ -254,8 +254,8 @@ StateDead::StateDead(int stateID)
 void StateDead::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	enemy->startMotion(JIGUMOANIM_Dead, nullptr);
-	enemy->mCurrentVelocity = Vector3f(0.0f);
-	enemy->mTargetVelocity  = Vector3f(0.0f);
+	enemy->mCurrentVelocity.set(0.0f, 0.0f, 0.0f);
+	enemy->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	enemy->deathProcedure();
 }
 
@@ -337,9 +337,9 @@ void StateAttack::exec(EnemyBase* enemy)
 			}
 
 		} else if (enemy->mCurAnim->mType == KEYEVENT_END) {
-			mIsAttackActive              = 0;
-			enemy->mCurrentVelocity      = Vector3f(0.0f);
-			enemy->mTargetVelocity       = Vector3f(0.0f);
+			mIsAttackActive = 0;
+			enemy->mCurrentVelocity.set(0.0f, 0.0f, 0.0f);
+			enemy->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 			OBJ(enemy)->mNextFaceDir     = roundAng(PI + enemy->mFaceDir);
 			OBJ(enemy)->mGoalPosition    = enemy->mHomePosition;
 			OBJ(enemy)->mCarryAngleSpeed = 0.0f;
@@ -358,7 +358,7 @@ void StateAttack::exec(EnemyBase* enemy)
 			OBJ(enemy)->mIsReversing = true;
 			mIsAttackActive          = 0;
 			OBJ(enemy)->effectStop();
-			enemy->mTargetVelocity = Vector3f(0.0f);
+			enemy->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 		}
 
 		Vector3f pos     = OBJ(enemy)->getPosition();
@@ -366,7 +366,7 @@ void StateAttack::exec(EnemyBase* enemy)
 		if (pos.sqrDistance(goalPos) < 100.0f) {
 			mIsAttackActive = 0;
 			OBJ(enemy)->effectStop();
-			enemy->mTargetVelocity = Vector3f(0.0f);
+			enemy->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 		}
 	}
 
@@ -412,7 +412,7 @@ void StateMiss::exec(EnemyBase* enemy)
 {
 	if (CG_PARMS(enemy)->_8FC) {
 		Vector3f goalPos = OBJ(enemy)->getGoalPos();
-		f32 angleDist    = enemy->turnToTarget2(goalPos, CG_GENERALPARMS(enemy).mTurnSpeed(), CG_GENERALPARMS(enemy).mMaxTurnAngle());
+		f32 angleDist    = enemy->turnToTarget(goalPos, CG_GENERALPARMS(enemy).mTurnSpeed(), CG_GENERALPARMS(enemy).mMaxTurnAngle());
 		if (absF(angleDist) < 0.05f) {
 			enemy->finishMotion();
 		}
@@ -469,8 +469,8 @@ void StateReturn::exec(EnemyBase* enemy)
 	}
 
 	if (enemy->mCurAnim->mIsPlaying && enemy->mCurAnim->mType == KEYEVENT_END) {
-		enemy->mCurrentVelocity = Vector3f(0.0f);
-		enemy->mTargetVelocity  = Vector3f(0.0f);
+		enemy->mCurrentVelocity.set(0.0f, 0.0f, 0.0f);
+		enemy->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 		if (enemy->mStuckPikminCount > 0) {
 			transit(enemy, JIGUMO_Flick, nullptr);
 			OBJ(enemy)->mNextState = JIGUMO_Hide;
@@ -538,8 +538,8 @@ void StateCarry::exec(EnemyBase* enemy)
 	}
 
 	if (goalDist < limit) {
-		enemy->mCurrentVelocity = Vector3f(0.0f);
-		enemy->mTargetVelocity  = Vector3f(0.0f);
+		enemy->mCurrentVelocity.set(0.0f, 0.0f, 0.0f);
+		enemy->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 
 		if (enemy->mStuckPikminCount > 1) {
 			transit(enemy, JIGUMO_Flick, nullptr);
@@ -577,8 +577,8 @@ StateFlick::StateFlick(int stateID)
  */
 void StateFlick::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	enemy->mTargetVelocity  = Vector3f(0.0f);
-	enemy->mCurrentVelocity = Vector3f(0.0f);
+	enemy->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
+	enemy->mCurrentVelocity.set(0.0f, 0.0f, 0.0f);
 	if (OBJ(enemy)->mIsReversing) {
 		enemy->startMotion(JIGUMOANIM_Flick, nullptr);
 	} else {
@@ -713,7 +713,7 @@ void StateSearch::exec(EnemyBase* enemy)
 	    = OBJ(enemy)->getNearestPikiOrNavi(CG_GENERALPARMS(enemy).mSearchAngle(), CG_GENERALPARMS(enemy).mSearchDistance()); // r28
 	enemy->mTargetCreature = target;
 	if (target) {
-		f32 angleDist = enemy->getCreatureViewAngle(target);
+		f32 angleDist = enemy->getAngDist(target);
 		if (absF(angleDist) < 0.01f) {
 			enemy->finishMotion();
 			mAnimIdx                  = JIGUMOANIM_NULL;
@@ -722,12 +722,12 @@ void StateSearch::exec(EnemyBase* enemy)
 			enemy->finishMotion();
 			mAnimIdx = JIGUMOANIM_Turn;
 		} else {
-			enemy->turnToTarget(target);
+			enemy->turnToTarget(target, CG_GENERALPARMS(enemy).mTurnSpeed(), CG_GENERALPARMS(enemy).mMaxTurnAngle());
 		}
 	} else {
 		target = OBJ(enemy)->getNearestPikiOrNavi(CG_GENERALPARMS(enemy).mViewAngle(), CG_GENERALPARMS(enemy).mSightRadius());
 		if (target) {
-			f32 angleDist = enemy->getCreatureViewAngle(target);
+			f32 angleDist = enemy->getAngDist(target);
 			if (absF(angleDist) < 0.1f) {
 				if (animIdx == JIGUMOANIM_Turn) {
 					mAnimIdx = JIGUMOANIM_Wait;
@@ -737,7 +737,7 @@ void StateSearch::exec(EnemyBase* enemy)
 				mAnimIdx = JIGUMOANIM_Turn;
 				enemy->finishMotion();
 			} else {
-				enemy->turnToTarget(target);
+				enemy->turnToTarget(target, CG_GENERALPARMS(enemy).mTurnSpeed(), CG_GENERALPARMS(enemy).mMaxTurnAngle());
 			}
 		} else {
 			transit(enemy, JIGUMO_Wait, nullptr);
@@ -855,7 +855,10 @@ void StateSAttack::exec(EnemyBase* enemy)
  * @note Address: 0x80368664
  * @note Size: 0x24
  */
-void StateSAttack::cleanup(EnemyBase* enemy) { enemy->setEmotionCaution(); }
+void StateSAttack::cleanup(EnemyBase* enemy)
+{
+	enemy->setEmotionCaution();
+}
 
 /**
  * @note Address: 0x80368688
@@ -871,7 +874,10 @@ StateSMiss::StateSMiss(int stateID)
  * @note Address: 0x803686C4
  * @note Size: 0x2C
  */
-void StateSMiss::init(EnemyBase* enemy, StateArg* stateArg) { enemy->startMotion(JIGUMOANIM_SMiss, nullptr); }
+void StateSMiss::init(EnemyBase* enemy, StateArg* stateArg)
+{
+	enemy->startMotion(JIGUMOANIM_SMiss, nullptr);
+}
 
 /**
  * @note Address: 0x803686F0

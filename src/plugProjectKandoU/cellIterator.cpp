@@ -1,5 +1,11 @@
 #include "Game/cellPyramid.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "cellIterator";
+}
+
 namespace Game {
 /**
  * @note Address: 0x8022E36C
@@ -11,13 +17,14 @@ CellIteratorArg::CellIteratorArg()
 	mCondition       = nullptr;
 	mUseCustomRadius = 0;
 
-	mSphere.mPosition = Vector3f(0.0f);
-	mSphere.mRadius   = 0.0f;
+	mSphere.mPosition.set(0.0f, 0.0f, 0.0f);
+	mSphere.mRadius = 0.0f;
 
 	mCellMgr = cellMgr;
 
 	mUnused   = 0;
 	mOptimise = false;
+	_1E       = 0;
 }
 
 /**
@@ -33,6 +40,7 @@ CellIteratorArg::CellIteratorArg(Sys::Sphere& sphere)
 	mCellMgr         = Game::cellMgr;
 	mUnused          = 0;
 	mOptimise        = false;
+	_1E              = 0;
 }
 
 /**
@@ -40,7 +48,10 @@ CellIteratorArg::CellIteratorArg(Sys::Sphere& sphere)
  * @note Size: 0x7C
  * Matches
  */
-CellIterator::CellIterator(Game::CellIteratorArg& arg) { mArg = arg; }
+CellIterator::CellIterator(Game::CellIteratorArg& arg)
+{
+	mArg = arg;
+}
 
 /**
  * @note Address: 0x8022E45C
@@ -84,7 +95,10 @@ bool CellIterator::next()
  * @note Size: 0x10
  * Matches
  */
-bool CellIterator::isDone() { return mCurrLeg == nullptr; }
+bool CellIterator::isDone()
+{
+	return mCurrLeg == nullptr;
+}
 
 /**
  * @note Address: 0x8022E544
@@ -102,7 +116,10 @@ CellObject* CellIterator::operator*()
  * @note Address: 0x8022E560
  * @note Size: 0x1C
  */
-CellObject* CellIterator::getCellObject() { return *(*this); }
+CellObject* CellIterator::getCellObject()
+{
+	return *(*this);
+}
 
 /**
  * @note Address: 0x8022E57C
@@ -179,15 +196,26 @@ bool CellIterator::satisfy()
 
 	if (!mArg.mOptimise) {
 		if (!mArg.mUseCustomRadius) {
-			objPos = objPos - mArg.mSphere.mPosition;
+			objPos      = objPos - mArg.mSphere.mPosition;
+			f32 sqrDist = objPos.sqrMagnitude2D();
+			f32 rad     = mArg.mSphere.mRadius + boundingSphere.mRadius;
+			if (mArg._1E) {
+				rad = mArg.mSphere.mRadius;
+			}
 
-			if (isWithinSphere(objPos, mArg.mSphere.mRadius + boundingSphere.mRadius)) {
+			if (sqrDist > rad * rad) {
 				return false;
 			}
 		} else {
-			objPos -= mArg.mSphere.mPosition;
+			objPos.x -= mArg.mSphere.mPosition.x;
+			objPos.z -= mArg.mSphere.mPosition.z;
+			f32 sqrDist = objPos.sqrMagnitude2D();
+			f32 rad     = mArg.mSphere.mRadius + boundingSphere.mRadius;
+			if (mArg._1E) {
+				rad = mArg.mSphere.mRadius;
+			}
 
-			if (isWithinSphere(objPos, mArg.mSphere.mRadius + boundingSphere.mRadius)) {
+			if (sqrDist > rad * rad) {
 				return false;
 			}
 		}
@@ -221,15 +249,15 @@ void CellIterator::calcExtent()
 	mMaxY = (spherePosition.z + sphereRadius - bounds.y) * normalizationFactor;
 
 	if (mMinX > mMaxX) {
-		JUT_PANICLINE(249, "x %f>%f", mMinX, mMaxX);
+		JUT_PANICLINE(261, "x %f>%f", mMinX, mMaxX);
 	}
 
 	if (mMinY > mMaxY) {
-		JUT_PANICLINE(252, "y %f>%f", mMinY, mMaxY);
+		JUT_PANICLINE(264, "y %f>%f", mMinY, mMaxY);
 	}
 
 	if ((mMaxX - mMinX) * (mMaxY - mMinY) >= 10000) {
-		JUT_PANICLINE(259, "xy %f %f\n%f %f\n", mMinX, mMinY, mMaxX, mMaxY);
+		JUT_PANICLINE(271, "xy %f %f\n%f %f\n", mMinX, mMinY, mMaxX, mMaxY);
 	}
 
 	mCurrX = mMinX;
@@ -347,5 +375,7 @@ lbl_8022EA6C:
  * @note Address: 0x8022EA90
  * @note Size: 0x4
  */
-void CellIterator::dump() { }
+void CellIterator::dump()
+{
+}
 } // namespace Game

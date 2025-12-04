@@ -262,7 +262,7 @@ bool Obj::isInHomeRange()
  */
 void Obj::setJumpMove(Vector3f& targetPos)
 {
-	f32 angleDist = getAngDist2(targetPos);
+	f32 angleDist = getAngDist(targetPos);
 	if (absVal(angleDist) > HALF_PI) {
 		int turnDir = (angleDist == 0.0f) ? 0 : (angleDist > 0.0f) ? 1 : -1;
 
@@ -271,7 +271,7 @@ void Obj::setJumpMove(Vector3f& targetPos)
 		mFaceDirOffset = angleDist / 22.0f;
 	}
 
-	if (FABS(angleDist) <= TORADIANS(30.0f)) {
+	if (isAngleWithin(angleDist, 30.0f)) {
 		Vector3f velocity = Vector3f(targetPos.x - mPosition.x, 0.0f, targetPos.z - mPosition.z);
 		f32 dist          = velocity.normalise();
 		f32 moveSpeed     = C_GENERALPARMS.mMoveSpeed.mValue;

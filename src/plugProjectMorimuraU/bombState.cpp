@@ -1,11 +1,11 @@
-#include "types.h"
+#include "Game/CameraMgr.h"
+#include "Game/EnemyAnimKeyEvent.h"
 #include "Game/Entities/Bomb.h"
 #include "Game/Entities/OtakaraBase.h"
-#include "Game/EnemyAnimKeyEvent.h"
-#include "Game/CameraMgr.h"
 #include "Game/rumble.h"
 #include "efx/TBombrock.h"
 #include "nans.h"
+#include "types.h"
 
 namespace Game {
 namespace Bomb {
@@ -58,7 +58,7 @@ void Bomb::StateWait::exec(EnemyBase* enemy)
 	}
 
 	if (!bomb->isStopMotion()) {
-		bomb->addDamage(sys->mDeltaTime, 1.0f);
+		bomb->addDamage(sys->getDeltaTime(), 1.0f);
 		bomb->mSoundObj->startSound(PSSE_EN_BOMB_LOOP, 0);
 
 	} else if (bomb->isAnimStart()) {
@@ -109,7 +109,7 @@ void Bomb::StateBomb::init(EnemyBase* enemy, StateArg* stateArg)
 void StateBomb::exec(EnemyBase* enemy)
 {
 	enemy->mSoundObj->startSound(PSSE_EN_BOMB_LOOP, 0);
-	enemy->addDamage(sys->mDeltaTime, 1.0f);
+	enemy->addDamage(sys->getDeltaTime(), 1.0f);
 
 	if (enemy->mHealth <= 0.0f) {
 		mExplodeDelayTimer++;

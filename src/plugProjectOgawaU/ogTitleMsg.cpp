@@ -276,7 +276,7 @@ void TitleMsgDrop::update()
 	for (u32 i = 0; i < mStringLength; i++) {
 		J2DPane* pane = mPanes1[i];
 		if (motion->mTimer > 0.0f) {
-			motion->mTimer -= sys->mDeltaTime;
+			motion->mTimer -= sys->getDeltaTime();
 		} else {
 			motion->mRandTime -= 1.0f;
 			motion->mYOffset += motion->mRandTime;
@@ -300,7 +300,7 @@ void TitleMsgDrop::update()
 		}
 
 		if (mDropFlags[i]) {
-			mTimers[i] -= sys->mDeltaTime;
+			mTimers[i] -= sys->getDeltaTime();
 			if (mTimers[i] < 0.0f) {
 				mTimers[i] = 0.0f;
 			}
@@ -390,7 +390,7 @@ void TitleMsgWave::update()
 		mPanes1[i]->updateScale(mXScale * ((mod / 4 + 1.0f) * calc), (1.0f + mod) * calc);
 
 		if (!mDropFlags[i]) {
-			mTimers[i] += sys->mDeltaTime;
+			mTimers[i] += sys->getDeltaTime();
 			if (mTimers[i] > 0.1f) {
 				mDropFlags[i]          = true;
 				J2DPane* pane          = mPanes1[i];
@@ -406,7 +406,7 @@ void TitleMsgWave::update()
 		}
 	}
 
-	mDelayTimer -= sys->mDeltaTime;
+	mDelayTimer -= sys->getDeltaTime();
 	if (mDelayTimer < 0.0f) {
 		start();
 	}
@@ -483,7 +483,7 @@ void TitleMsgClash::update()
 	for (u32 i = 0; i < mStringLength; i++) {
 		mPanes1[i]->updateScale(mCurrScale * mXScale, 1.0f);
 		if (!mDropFlags[i]) {
-			mTimers[i] += sys->mDeltaTime;
+			mTimers[i] += sys->getDeltaTime();
 			if (mTimers[i] > 1.0f) {
 				mDropFlags[i]          = true;
 				J2DPane* pane          = mPanes1[i];

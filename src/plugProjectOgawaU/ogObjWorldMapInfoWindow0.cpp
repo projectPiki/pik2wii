@@ -1,19 +1,22 @@
-#include "Morimura/challengeSelect2D.h"
 #include "Morimura/VsSelect.h"
 #include "Morimura/Zukan.h"
+#include "Morimura/challengeSelect2D.h"
+#include "System.h"
 #include "og/Screen/MenuMgr.h"
-#include "og/Screen/ogScreen.h"
 #include "og/Screen/callbackNodes.h"
+#include "og/Screen/ogScreen.h"
 #include "og/Sound.h"
 #include "og/newScreen/WorldMapInfoWindow.h"
 #include "trig.h"
-#include "System.h"
 
 /**
  * @note Address: N/A
  * @note Size: 0xE4
  */
-static void _Print(char* format, ...) { OSReport(format, __FILE__); }
+static void _Print(char* format, ...)
+{
+	OSReport(format, __FILE__);
+}
 
 namespace og {
 namespace newScreen {
@@ -101,7 +104,7 @@ bool ObjWorldMapInfoWindow0::doStart(::Screen::StartSceneArg const*)
 bool ObjWorldMapInfoWindow0::doUpdateFadein()
 {
 	commonUpdate();
-	mFadeLevel += sys->mDeltaTime;
+	mFadeLevel += sys->getDeltaTime();
 	bool result = false;
 	if (mFadeLevel > msBaseVal.mFadeInOutTime) {
 		result = true;
@@ -114,7 +117,10 @@ bool ObjWorldMapInfoWindow0::doUpdateFadein()
  * @note Address: 0x8032B8A4
  * @note Size: 0x20
  */
-void ObjWorldMapInfoWindow0::commonUpdate() { ObjSMenuPauseVS::commonUpdate(); }
+void ObjWorldMapInfoWindow0::commonUpdate()
+{
+	ObjSMenuPauseVS::commonUpdate();
+}
 
 /**
  * @note Address: 0x8032B8C4
@@ -150,7 +156,10 @@ void ObjWorldMapInfoWindow0::out_menu_1()
  * @note Address: 0x8032B96C
  * @note Size: 0xC
  */
-void ObjWorldMapInfoWindow0::out_L() { mState = 2; }
+void ObjWorldMapInfoWindow0::out_L()
+{
+	mState = 2;
+}
 
 /**
  * @note Address: 0x8032B978
@@ -168,7 +177,10 @@ void ObjWorldMapInfoWindow0::doUpdateFadeoutFinish()
  * @note Address: 0x8032BA00
  * @note Size: 0xC
  */
-int ObjWorldMapInfoWindow0::getResult() { return mDispWmap->mResult; }
+int ObjWorldMapInfoWindow0::getResult()
+{
+	return mDispWmap->mResult;
+}
 
 } // namespace newScreen
 } // namespace og

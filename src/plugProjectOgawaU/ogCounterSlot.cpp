@@ -70,7 +70,7 @@ void CallBack_CounterSlot::update()
 				pane->hide();
 			}
 		}
-		mTimer += sys->mDeltaTime;
+		mTimer += sys->getDeltaTime();
 		if (mTimer >= mUpdateInterval) {
 			mTimer = 0.0f;
 			mCurrentDigitID++;

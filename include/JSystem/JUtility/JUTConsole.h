@@ -1,9 +1,9 @@
 #ifndef _JUTCONSOLE_H
 #define _JUTCONSOLE_H
 
+#include "JSystem/JGadget/linklist.h"
 #include "JSystem/JKernel/JKRHeap.h"
 #include "JSystem/JUtility/JUTFont.h"
-#include "JSystem/JGadget/linklist.h"
 #include "stdarg.h"
 #include "types.h"
 

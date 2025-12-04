@@ -1,6 +1,6 @@
-#include "ebi/title/TTitle.h"
-#include "JSystem/J3D/J3DModelLoader.h"
 #include "JSystem/J3D/J3DAnmLoader.h"
+#include "JSystem/J3D/J3DModelLoader.h"
+#include "ebi/title/TTitle.h"
 #include "nans.h"
 
 static const u32 padding[]    = { 0, 0, 0 };
@@ -61,7 +61,10 @@ bool TParamBase::loadSettingFile(JKRArchive* arc, char* path)
  * @note Address: 0x803C0B80
  * @note Size: 0xB0
  */
-void TObjBase::calcModelBaseMtx_() { E3DModel_set2DCoordToBaseTRMatrix_(mModel, mPosition, mAngle, mParms[1]); }
+void TObjBase::calcModelBaseMtx_()
+{
+	E3DModel_set2DCoordToBaseTRMatrix_(mModel, mPosition, mAngle, mParms[1]);
+}
 
 /**
  * @note Address: N/A
@@ -117,11 +120,11 @@ void TMapBase::setArchive(JKRArchive* arc)
 
 	mFrameCtrlWait.init(mAnimWait->mTotalFrameCount);
 	mFrameCtrlWait.mAttribute = J3DAA_UNKNOWN_2;
-	mFrameCtrlWait.mRate      = sys->mDeltaTime * 60.0f * 0.5f;
+	mFrameCtrlWait.mRate      = sys->getDeltaTime() * 60.0f * 0.5f;
 
 	mFrameCtrlWind.init(mAnimWind->mTotalFrameCount);
 	mFrameCtrlWind.mAttribute = J3DAA_UNKNOWN_2;
-	mFrameCtrlWind.mRate      = sys->mDeltaTime * 60.0f * 0.5f;
+	mFrameCtrlWind.mRate      = sys->getDeltaTime() * 60.0f * 0.5f;
 }
 
 /**
@@ -131,7 +134,7 @@ void TMapBase::setArchive(JKRArchive* arc)
 void TMapBase::startWind(f32 time)
 {
 	mState        = 1;
-	u32 wind      = time / sys->mDeltaTime;
+	u32 wind      = time / sys->getDeltaTime();
 	mWindTimer    = wind;
 	mWindTimerMax = wind;
 }
@@ -215,7 +218,7 @@ void TBGEnemyBase::start()
 {
 	mFrameCtrl.init(mAnim->mTotalFrameCount);
 	mFrameCtrl.mAttribute = J3DAA_UNKNOWN_0;
-	mFrameCtrl.mRate      = sys->mDeltaTime * 60.0f * 0.5f;
+	mFrameCtrl.mRate      = sys->getDeltaTime() * 60.0f * 0.5f;
 }
 
 /**
@@ -278,11 +281,11 @@ void TBlackPlane::start()
 {
 	mFrameCtrl.init(mAnim->mTotalFrameCount - 2);
 	mFrameCtrl.mAttribute = J3DAA_UNKNOWN_0;
-	mFrameCtrl.mRate      = sys->mDeltaTime * 60.0f * 0.5f;
+	mFrameCtrl.mRate      = sys->getDeltaTime() * 60.0f * 0.5f;
 
 	mFrameCtrlColor.init(mAnimColor->mTotalFrameCount - 2);
 	mFrameCtrlColor.mAttribute = J3DAA_UNKNOWN_0;
-	mFrameCtrlColor.mRate      = sys->mDeltaTime * 60.0f * 0.5f;
+	mFrameCtrlColor.mRate      = sys->getDeltaTime() * 60.0f * 0.5f;
 }
 
 /**

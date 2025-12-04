@@ -1,9 +1,9 @@
 #ifndef _GAME_ENEMYFUNC_H
 #define _GAME_ENEMYFUNC_H
 
-#include "Game/Piki.h"
-#include "Game/EnemyBase.h"
 #include "Condition.h"
+#include "Game/EnemyBase.h"
+#include "Game/Piki.h"
 #include "types.h"
 
 #define FLICK_BACKWARD_ANGLE (-1000.0f)
@@ -71,11 +71,8 @@ inline bool isPikminOrNaviInRange(EnemyBase* enemy, f32 range)
 {
 	if (isThereOlimar(enemy, range, nullptr)) {
 		return true;
-	} else if (isTherePikmin(enemy, range, nullptr)) {
-		return true;
 	}
-
-	return false;
+	return isTherePikmin(enemy, range, nullptr);
 }
 } // namespace EnemyFunc
 } // namespace Game

@@ -91,7 +91,7 @@ bool MiniHoudaiShotGunNode::update()
 
 	MoveInfo moveInfo(&moveSphere, &mVelocity, 0.0f); // 0x1B0
 	moveInfo.mMovingCreature = mOwner;
-	mapMgr->traceMove(moveInfo, sys->mDeltaTime);
+	mapMgr->traceMove(moveInfo, sys->getDeltaTime());
 
 	setPosition(moveSphere.mPosition);
 
@@ -1809,7 +1809,7 @@ bool MiniHoudaiShotGunMgr::searchShotGunRotation()
 		}
 	}
 
-	Vector2f vec2D(((0.45f * dist) / ((val / sys->mDeltaTime) / 20.0f)) / sys->mDeltaTime, (val / sys->mDeltaTime) / 20.0f);
+	Vector2f vec2D(((0.45f * dist) / ((val / sys->getDeltaTime()) / 20.0f)) / sys->getDeltaTime(), (val / sys->getDeltaTime()) / 20.0f);
 	mShellSpeed = vec2D.length();
 
 	f32 angleDist = angDist(mAngle, HALF_PI - JMAAtan2Radian(vec2D.x, vec2D.y));

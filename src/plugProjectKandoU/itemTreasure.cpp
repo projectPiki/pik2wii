@@ -282,7 +282,7 @@ bool Item::getVectorField(Sys::Sphere& bounds, Vector3f& pos)
 	if (dist > getWorkRadius() + 5.0f) {
 		pos = diff;
 	} else {
-		pos = Vector3f(0.0f);
+		pos.set(0.0f, 0.0f, 0.0f);
 	}
 	return true;
 }

@@ -170,6 +170,22 @@ struct TSinCosTable {
 		// return (x < 0.0f) ? mTable[(int)-(x * 325.9493f) % 2048].second : mTable[(int)(x * 325.9493f) % 2048].second;
 	}
 
+	inline f32 sinDegree(f32 degree)
+	{
+		if (degree < 0.0f) {
+			return -table[(u16)(-22.755556106567383f * degree) & 0x1fffU].first;
+		}
+		return table[(u16)(22.755556106567383f * degree) & 0x1fffU].first;
+	}
+
+	inline f32 cosDegree(f32 degree)
+	{
+		if (degree < 0.0f) {
+			degree = -degree;
+		}
+		return table[(u16)(22.755556106567383f * degree) & 0x1fffU].second;
+	}
+
 	f32 sinShort(s16 v) const { return mTable[static_cast<u16>(v) >> 5].first; }
 	f32 cosShort(s16 v) const { return mTable[static_cast<u16>(v) >> 5].second; }
 

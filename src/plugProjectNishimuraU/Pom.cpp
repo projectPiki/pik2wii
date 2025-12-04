@@ -10,6 +10,12 @@
 #include "efx/TOnyon.h"
 #include "efx/TPonDead.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "246-Pom";
+}
+
 namespace Game {
 namespace Pom {
 
@@ -90,18 +96,18 @@ void Obj::doUpdate()
  */
 void Obj::changeMaterial()
 {
-	J3DModel* j3dModel      = mModel->mJ3dModel;
-	J3DModelData* modelData = j3dModel->mModelData;
+	J3DModel* j3dModel      = mModel->getJ3DModel();
+	J3DModelData* modelData = j3dModel->getModelData();
 
-	u16 nameIdx           = j3dModel->mModelData->mMaterialTable.mMaterialNames->getIndex("hanabira1_v");
-	J3DMaterial* material = modelData->mMaterialTable.mMaterials[nameIdx];
-	material->mTevBlock->setTevColor(0, mRgbColor);
+	u16 nameIdx           = j3dModel->getModelData()->getMaterialTable().getMaterialName()->getIndex("hanabira1_v");
+	J3DMaterial* material = modelData->getMaterialTable().getMaterialNodePointer(nameIdx);
+	material->getTevBlock()->setTevColor(0, mRgbColor);
 	j3dModel->calcMaterial();
 
-	for (u16 i = 0; i < modelData->mMaterialTable.mMaterialNum; i++) {
-		J3DMatPacket& packet = j3dModel->mMatPackets[i];
-		j3dSys.mMatPacket    = &j3dModel->mMatPackets[i];
-		modelData->mMaterialTable.mMaterials[i]->diff(packet.mShapePacket->mDiffFlag);
+	for (u16 i = 0; i < modelData->getMaterialTable().getMaterialNum(); i++) {
+		J3DMatPacket* packet = j3dModel->getMatPacket(i);
+		j3dSys.setMatPacket(j3dModel->getMatPacket(i));
+		modelData->mMaterialTable.mMaterials[i]->diff(packet->getShapePacket()->mDiffFlag);
 	}
 }
 
@@ -139,12 +145,12 @@ void Obj::setFSM(FSM* fsm)
  */
 void Obj::getShadowParam(ShadowParam& shadowParam)
 {
-	shadowParam.mPosition.x               = mPosition.x;
-	shadowParam.mPosition.y               = mPosition.y + 2.0f;
-	shadowParam.mPosition.z               = mPosition.z;
-	shadowParam.mBoundingSphere.mPosition = Vector3f(0.0f, 1.0f, 0.0f);
-	shadowParam.mBoundingSphere.mRadius   = 0.1f;
-	shadowParam.mSize                     = 0.1f;
+	shadowParam.mPosition.x = mPosition.x;
+	shadowParam.mPosition.y = mPosition.y + 2.0f;
+	shadowParam.mPosition.z = mPosition.z;
+	shadowParam.mBoundingSphere.mPosition.set(0.0f, 1.0f, 0.0f);
+	shadowParam.mBoundingSphere.mRadius = 0.1f;
+	shadowParam.mSize                   = 0.1f;
 }
 
 /**
@@ -282,7 +288,7 @@ void Obj::shotPikmin()
 	Vector3f pos = getPosition();
 	pos.y += 50.0f;
 
-	int val = mStuckPikminCount * mShotMultiplier;
+	int val = getStickCount() * getShotMultiplier();
 	Stickers stickers(this);
 	Iterator<Creature> iter(&stickers);
 
@@ -293,7 +299,7 @@ void Obj::shotPikmin()
 			int pikiKind = static_cast<Piki*>(creature)->mPikiKind;
 			if (pikiKind < Bulbmin) {
 				BirthMgr::dec(pikiKind);
-				if (getEnemyTypeID() != EnemyTypeID::EnemyID_RandPom && static_cast<Piki*>(creature)->mPikiKind == mPikiKind) {
+				if (getEnemyTypeID() != EnemyTypeID::EnemyID_RandPom && static_cast<Piki*>(creature)->getKind() == getPikiKind()) {
 					mUsedSlotCount--;
 				}
 			}
@@ -308,7 +314,11 @@ void Obj::shotPikmin()
 		if (sprout) {
 			f32 randAngle = randWeightFloat(TAU);
 
-			Vector3f initPos = Vector3f(110.0f * cosf(randAngle), 750.0f, 110.0f * sinf(randAngle));
+			f32 x = 110.0f * sinf(randAngle);
+			f32 z = 110.0f * cosf(randAngle);
+			Vector3f initPos(x, 750.0f, z);
+			//  = getDirection(randAngle, 110.0f, 750.0f);
+
 			ItemPikihead::InitArg initArg((EPikiKind)mPikiKind, initPos);
 
 			sprout->init(&initArg);
@@ -349,7 +359,7 @@ void Obj::changePomColor()
 				}
 			}
 		} else {
-			mQueenColorTimer += sys->mDeltaTime;
+			mQueenColorTimer += sys->getDeltaTime();
 		}
 	}
 }
@@ -369,7 +379,8 @@ void Obj::createSwingSmokeEffect()
 		waterFX.create(&argScale);
 
 	} else {
-		efx::Arg arg(mPosition.x, mPosition.y - 5.0f, mPosition.z);
+		Vector3f pos = Vector3f(mPosition.x, mPosition.y - 5.0f, mPosition.z);
+		efx::Arg arg(pos);
 		efx::TEnemyDownSmoke smokeFX(1.0f);
 
 		smokeFX.mScale = 0.7f;

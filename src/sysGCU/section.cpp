@@ -190,12 +190,12 @@ void Section::main()
 		    if (!mDemoController1->mButton.mButton || !mDemoController2->mButton.mButton) {
 		        mTimer = 0.0f;
 		    }
-		    mTimer += sys->mDeltaTime;
+		    mTimer += sys->getDeltaTime();
 		    if (mTimer > 180.0f)
 		        sys->resetOn(false);
 		}*/
 		if (!config->mParms.mE3version.mData) {
-			mTimer += sys->mDeltaTime;
+			mTimer += sys->getDeltaTime();
 			if (mTimer > 180.0f)
 				sys->resetOn(false);
 		}

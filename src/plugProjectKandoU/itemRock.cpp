@@ -42,7 +42,7 @@ void NormalState::exec(Item* item)
 {
 	f32 changeTime = item->mGrowTimes[item->mSize];
 	if (item->mSize > Item::SIZE_Max) {
-		item->mSizeTimer += sys->mDeltaTime;
+		item->mSizeTimer += sys->getDeltaTime();
 		if (item->mSizeTimer >= changeTime) {
 			mIsFullSize   = true;
 			item->mHealth = item->mHealthLimits[item->mSize - 1];
@@ -569,7 +569,7 @@ bool Item::getVectorField(Sys::Sphere& sphere, Vector3f& vec)
 	if (dist > getWorkRadius()) {
 		vec = sep;
 	} else {
-		vec = Vector3f(0.0f);
+		vec.set(0.0f, 0.0f, 0.0f);
 	}
 
 	return true;

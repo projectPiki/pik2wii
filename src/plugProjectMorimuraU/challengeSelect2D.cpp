@@ -1401,10 +1401,10 @@ void TChallengePlayModeScreen::update()
 
 			switch (mState) {
 			case 1:
-				mTimer += sys->mDeltaTime;
+				mTimer += sys->getDeltaTime();
 				mMovePos = (1.0f - og::Screen::calcSmooth0to1(mTimer, 0.3f)) * 800.0f;
 				if (mMovePos <= 0.0f) {
-					mTimer2 += sys->mDeltaTime;
+					mTimer2 += sys->getDeltaTime();
 					if (mTimer2 > 0.5f) {
 						mState = 2;
 						if (TChallengeSelect::mSelected1p) {
@@ -1426,7 +1426,7 @@ void TChallengePlayModeScreen::update()
 			case 0:
 				break;
 			case 3:
-				mTimer += sys->mDeltaTime;
+				mTimer += sys->getDeltaTime();
 				mMovePos = og::Screen::calcSmooth0to1(mTimer, 0.3f) * -800.0f;
 				if (mTimer >= 0.3f) {
 					mState = 0;

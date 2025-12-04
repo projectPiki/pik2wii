@@ -94,7 +94,7 @@ void DayEndState::exec(SingleGameSection* game)
 {
 	switch (mStatus) {
 	case DESTATE_PlayCutscene:
-		mTimer -= sys->mDeltaTime;
+		mTimer -= sys->getDeltaTime();
 		if (mTimer <= 0.0f) {
 			mLeftBehindPikis.clear();
 			// dont leave behind pikis on day 1
@@ -258,7 +258,7 @@ void DayEndState::onMovieCommand(SingleGameSection* game, int id)
 {
 	switch (id) {
 	case 1:
-		Vector3f origin = Vector3f(0.0f);
+		Vector3f origin(0.0f, 0.0f, 0.0f);
 		if (mapMgr->getDemoMatrix()) {
 			origin   = mapMgr->getDemoMatrix()->mtxMult(origin);
 			origin.y = mapMgr->getMinY(origin);

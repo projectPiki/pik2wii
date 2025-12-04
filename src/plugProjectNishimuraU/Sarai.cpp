@@ -243,7 +243,7 @@ void Obj::fallMeckGround()
 			continue;
 		}
 
-		Vector3f fallVelocity = Vector3f(0.0f);
+		Vector3f fallVelocity(0.0f, 0.0f, 0.0f);
 
 		const f32 fallMeckSpeed = C_PROPERPARMS.mFallMeckSpeed.mValue;
 		fallVelocity.y -= fallMeckSpeed;

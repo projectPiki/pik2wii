@@ -9,7 +9,9 @@ namespace Demon {
  * @note Address: 0x8028E394
  * @note Size: 0x90
  */
-Obj::Obj() { }
+Obj::Obj()
+{
+}
 
 /**
  * @note Address: 0x8028E424
@@ -17,7 +19,7 @@ Obj::Obj() { }
  */
 FakePiki* Obj::getAttackableTarget()
 {
-	mAttackTimer += sys->mDeltaTime;
+	mAttackTimer += sys->getDeltaTime();
 	if (mAttackTimer > 3.0f) {
 		Vector3f pos = getPosition();
 

@@ -1,15 +1,15 @@
-#include "og/newScreen/Contena.h"
-#include "og/Screen/ContenaCounter.h"
-#include "og/Screen/ogScreen.h"
-#include "og/Screen/AlphaMgr.h"
-#include "og/Screen/StickAnimMgr.h"
-#include "og/Screen/anime.h"
-#include "og/Sound.h"
+#include "Controller.h"
 #include "Game/Piki.h"
 #include "System.h"
-#include "Controller.h"
-#include "trig.h"
+#include "og/Screen/AlphaMgr.h"
+#include "og/Screen/ContenaCounter.h"
+#include "og/Screen/StickAnimMgr.h"
+#include "og/Screen/anime.h"
+#include "og/Screen/ogScreen.h"
+#include "og/Sound.h"
+#include "og/newScreen/Contena.h"
 #include "stdlib.h"
+#include "trig.h"
 
 namespace og {
 namespace newScreen {
@@ -93,7 +93,9 @@ ObjContena::ObjContena(char const* name)
  * @note Address: 0x80320104
  * @note Size: 0xAC
  */
-ObjContena::~ObjContena() { }
+ObjContena::~ObjContena()
+{
+}
 
 /**
  * @note Address: 0x803201B0
@@ -440,10 +442,10 @@ bool ObjContena::moveContena()
 	JUT_ASSERTLINE(607, data->mOnyonID != -1, "Contena Type error!\n");
 
 	if (mTimer1 > 0.0f) {
-		mTimer1 -= sys->mDeltaTime;
+		mTimer1 -= sys->getDeltaTime();
 	}
 	if (mTimer2 > 0.0f) {
-		mTimer2 -= sys->mDeltaTime;
+		mTimer2 -= sys->getDeltaTime();
 	}
 
 	if (!data->mState) {
@@ -478,7 +480,7 @@ bool ObjContena::moveContena()
 				mTimer0 = mMoveTime;
 				break;
 			case 1:
-				mTimer0 -= sys->mDeltaTime;
+				mTimer0 -= sys->getDeltaTime();
 				if (mTimer0 < 0.0f)
 					mScreenState = 2;
 				break;
@@ -497,7 +499,7 @@ bool ObjContena::moveContena()
 				mTimer0 = mMoveTime;
 				break;
 			case 3:
-				mTimer0 -= sys->mDeltaTime;
+				mTimer0 -= sys->getDeltaTime();
 				if (mTimer0 < 0.0f)
 					mScreenState = 4;
 				break;
@@ -1070,25 +1072,35 @@ bool ObjContena::doStart(::Screen::StartSceneArg const*)
  * @note Address: 0x80321BB8
  * @note Size: 0x8
  */
-bool ObjContena::doEnd(::Screen::EndSceneArg const*) { return true; }
+bool ObjContena::doEnd(::Screen::EndSceneArg const*)
+{
+	return true;
+}
 
 /**
  * @note Address: 0x80321BC0
  * @note Size: 0x4
  */
-void ObjContena::doUpdateFadeinFinish() { }
+void ObjContena::doUpdateFadeinFinish()
+{
+}
 
 /**
  * @note Address: 0x80321BC4
  * @note Size: 0xC
  */
-void ObjContena::doUpdateFinish() { mFadeLevel = 0.0f; }
+void ObjContena::doUpdateFinish()
+{
+	mFadeLevel = 0.0f;
+}
 
 /**
  * @note Address: 0x80321BD0
  * @note Size: 0x4
  */
-void ObjContena::doUpdateFadeoutFinish() { }
+void ObjContena::doUpdateFadeoutFinish()
+{
+}
 
 /**
  * @note Address: 0x80321BD4
@@ -1098,7 +1110,7 @@ bool ObjContena::doUpdateFadein()
 {
 	bool check = false;
 	commonUpdate();
-	mFadeLevel += sys->mDeltaTime;
+	mFadeLevel += sys->getDeltaTime();
 	mScreenAngle   = mFadeLevel / msVal._20;
 	mMenuMoveAngle = (1.0f - og::Screen::calcSmooth0to1(mFadeLevel, msVal._20)) * 800.0f;
 
@@ -1115,7 +1127,7 @@ bool ObjContena::doUpdateFadein()
 bool ObjContena::doUpdateFadeout()
 {
 	bool check = false;
-	mFadeLevel += sys->mDeltaTime;
+	mFadeLevel += sys->getDeltaTime();
 	mScreenAngle   = 1.0f - mFadeLevel / msVal._20;
 	mMenuMoveAngle = -800.0f * og::Screen::calcSmooth0to1(mFadeLevel, msVal._20);
 	if (mFadeLevel >= msVal._20) {

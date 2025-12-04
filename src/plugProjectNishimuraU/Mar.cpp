@@ -7,6 +7,12 @@
 #include "RevoSDK/rand.h"
 #include "types.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "246-Mar";
+}
+
 namespace Game {
 namespace Mar {
 
@@ -90,8 +96,8 @@ void Obj::changeMaterial()
 {
 	// Don't even ask...
 	J3DModelData* modelData = nullptr;
-	J3DModel* model         = mModel->mJ3dModel;
-	modelData               = model->mModelData;
+	J3DModel* model         = mModel->getJ3DModel();
+	modelData               = model->getModelData();
 
 	model->calcMaterial();
 
@@ -139,10 +145,10 @@ void Obj::doDebugDraw(Graphics& gfx)
  */
 void Obj::getShadowParam(ShadowParam& shadow)
 {
-	Matrixf* baseMatrix              = mModel->getJoint("mune")->getWorldMatrix();
-	shadow.mPosition                 = baseMatrix->getTranslation();
-	shadow.mPosition.y               = mPosition.y + mShadowOffset;
-	shadow.mBoundingSphere.mPosition = Vector3f(0.0f, 1.0f, 0.0f);
+	Matrixf* baseMatrix = mModel->getJoint("mune")->getWorldMatrix();
+	shadow.mPosition    = baseMatrix->getTranslation();
+	shadow.mPosition.y  = mPosition.y + mShadowOffset;
+	shadow.mBoundingSphere.mPosition.set(0.0f, 1.0f, 0.0f);
 	if (isFlying() || !mFloorTriangle) {
 		shadow.mBoundingSphere.mRadius = C_PROPERPARMS.mStandardFlightHeight.mValue + 100.0f;
 	} else {
@@ -221,8 +227,9 @@ void Obj::doEndMovie()
 Vector3f Obj::getOffsetForMapCollision()
 {
 	Vector3f pos = getHeadJointPos();
-	pos -= mPosition;
-	pos.y = -10.0f;
+	pos.y        = -10.0f;
+	pos.x -= mPosition.x;
+	pos.z -= mPosition.z;
 	return pos;
 }
 
@@ -235,7 +242,7 @@ void Obj::getThrowupItemPosition(Vector3f* position)
 	if (isEvent(0, EB_Bittered)) {
 		EnemyBase::getThrowupItemPosition(position);
 	} else {
-		*position = Vector3f(mPosition.x, mPosition.y + 500.0f, mPosition.z);
+		(*position).set(mPosition.x, mPosition.y + 500.0f, mPosition.z);
 	}
 }
 
@@ -374,7 +381,7 @@ void Obj::subShadowRadius()
 void Obj::updateFallTimer()
 {
 	if (mStuckPikminCount) {
-		mFallTimer += sys->mDeltaTime;
+		mFallTimer += sys->getDeltaTime();
 	} else {
 		mFallTimer = 0.0f;
 	}
@@ -386,7 +393,7 @@ void Obj::updateFallTimer()
  */
 StateID Obj::getFlyingNextState()
 {
-	if (mHealth <= 0.0f) {
+	if (isDead()) {
 		return MAR_Dead;
 	}
 
@@ -410,7 +417,7 @@ StateID Obj::getFlyingNextState()
  */
 void Obj::addPitchRatio()
 {
-	mPitchRatio += C_PROPERPARMS.mVerticalSwingSpeed.mValue * sys->mDeltaTime;
+	mPitchRatio += C_PROPERPARMS.mVerticalSwingSpeed.mValue * sys->getDeltaTime();
 	if (mPitchRatio > TAU) {
 		mPitchRatio -= TAU;
 	}
@@ -434,7 +441,7 @@ Piki* Obj::getSearchedPikmin()
 	{
 		Piki* piki = *iPiki;
 		if (piki->isAlive() && piki->isPikmin() && piki->mFloorTriangle && !piki->isStickToMouth() && piki->mSticker != this) {
-			f32 sightDiff = getCreatureViewAngle(piki);
+			f32 sightDiff = getAngDist(piki);
 			if (FABS(sightDiff) <= FOV) {
 				Vector3f pikiPos2 = piki->getPosition();
 				if (sqrDistanceXZ(mPosition, pikiPos2) < sqrSight) {
@@ -454,16 +461,18 @@ bool Obj::isTargetLost()
 {
 	Creature* target = mTargetCreature;
 	if (target && target->isAlive() && !target->isStickToMouth() && target->mSticker != this) {
-		f32 viewAngle = C_GENERALPARMS.mViewAngle.mValue;
+		Parms* parms  = C_PARMS;
+		f32 viewAngle = parms->mGeneral.mViewAngle();
 		if (mStuckPikminCount) {
 			viewAngle = 180.0f;
 		}
 
-		f32 sightRad  = C_GENERALPARMS.mSightRadius.mValue;
-		f32 privRad   = C_GENERALPARMS.mPrivateRadius.mValue;
-		f32 sightDiff = getCreatureViewAngle(target);
+		// f32 sightRad  = C_GENERALPARMS.mSightRadius();
+		// f32 privRad   = C_GENERALPARMS.mPrivateRadius();
+		// f32 sightDiff = getAngDist(target);
 
-		return isTargetWithinRange(target, sightDiff, privRad, sightRad, 12800.0f, viewAngle);
+		return isTargetOutOfRange(target, getAngDist(target), parms->mGeneral.mPrivateRadius(), parms->mGeneral.mSightRadius(), 12800.0f,
+		                          viewAngle);
 	}
 
 	return true;
@@ -988,8 +997,7 @@ Vector3f Obj::getAttackPosition()
 
 	for (f32 ratio = t; ratio < 1.0f; ratio += inc) {
 		f32 ratioCompl = 1.0f - ratio;
-		nextPos
-		    = Vector3f(vec2.x * ratioCompl + vec1.x * ratio, vec2.y * ratioCompl + vec1.y * ratio, vec2.z * ratioCompl + vec1.z * ratio);
+		nextPos.set(vec2.x * ratioCompl + vec1.x * ratio, vec2.y * ratioCompl + vec1.y * ratio, vec2.z * ratioCompl + vec1.z * ratio);
 
 		f32 minY = mapMgr->getMinY(nextPos);
 		if (minY > nextPos.y) {
@@ -1010,7 +1018,7 @@ Vector3f Obj::getAttackPosition()
 void Obj::windTarget()
 {
 	if (mWindScaleTimer < 1.0f) {
-		mWindScaleTimer += 3.0f * sys->mDeltaTime;
+		mWindScaleTimer += 3.0f * sys->getDeltaTime();
 		if (mWindScaleTimer > 1.0f) {
 			mWindScaleTimer = 1.0f;
 		}

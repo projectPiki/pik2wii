@@ -21,7 +21,7 @@ Navi* getNearestNavi(Creature* creature, f32 searchAngle, f32 searchRadius, f32*
 	searchAngle = TORADIANS(searchAngle);
 
 	if (searchRadius < 0.0f) {
-		searchRadius = FLT_MAX;
+		searchRadius = 3.4028235e38f;
 	} else {
 		searchRadius = SQUARE(searchRadius);
 	}
@@ -42,7 +42,7 @@ Navi* getNearestNavi(Creature* creature, f32 searchAngle, f32 searchRadius, f32*
 		Navi* currNavi = *iter;
 		if (currNavi->isAlive()) {
 			f32 angleDist = creature->getAngDist(currNavi);
-			if (FABS(angleDist) <= searchAngle) {
+			if (absF(angleDist) <= searchAngle) {
 				// something here
 				Vector3f sep = Vector3f(currNavi->getPosition().x, 0.0f, currNavi->getPosition().z)
 				             - Vector3f(creature->getPosition().x, 0.0f, creature->getPosition().z);
@@ -372,7 +372,7 @@ Piki* getNearestPikmin(Creature* creature, f32 searchAngle, f32 searchRadius, f3
 	f32 minDist;
 	searchAngle = TORADIANS(searchAngle);
 	if (searchRadius < 0.0f) {
-		searchRadius = FLT_MAX;
+		searchRadius = 3.4028235e38f;
 	} else {
 		searchRadius = SQUARE(searchRadius);
 	}
@@ -746,7 +746,7 @@ Piki* getNearestPikmin(Creature* creature, f32 searchAngle, f32 searchRadius, f3
 Creature* getNearestPikminOrNavi(Creature* creature, f32 searchAngle, f32 searchRadius, f32* targetDist, Condition<Navi>* naviCondition,
                                  Condition<Piki>* pikiCondition)
 {
-	f32 dist = FLT_MAX;
+	f32 dist = 3.4028235e38f;
 	if (!targetDist) {
 		targetDist = &dist;
 	}
@@ -2090,12 +2090,7 @@ int getStickPikminColorNum(Creature* creature, int color)
 void walkToTarget(EnemyBase* enemy, Creature* target, f32 speed, f32 turnFactor, f32 maxTurnSpeed)
 {
 	enemy->turnToTarget(target, turnFactor, maxTurnSpeed);
-
-	f32 x = sin(enemy->getFaceDir());
-	f32 y = enemy->getTargetVelocity().y;
-	f32 z = cos(enemy->getFaceDir());
-
-	enemy->mTargetVelocity = Vector3f(speed * x, y, speed * z);
+	enemy->setTargetSpeed(speed);
 }
 
 /**
@@ -2104,13 +2099,8 @@ void walkToTarget(EnemyBase* enemy, Creature* target, f32 speed, f32 turnFactor,
  */
 void walkToTarget(EnemyBase* enemy, Vector3f& targetPos, f32 moveSpeed, f32 turnFactor, f32 maxTurnSpeed)
 {
-	enemy->turnToTarget2(targetPos, turnFactor, maxTurnSpeed);
-
-	f32 x = sin(enemy->getFaceDir());
-	f32 y = enemy->getTargetVelocity().y;
-	f32 z = cos(enemy->getFaceDir());
-
-	enemy->mTargetVelocity = Vector3f(moveSpeed * x, y, moveSpeed * z);
+	enemy->turnToTarget(targetPos, turnFactor, maxTurnSpeed);
+	enemy->setTargetSpeed(moveSpeed);
 }
 
 /**

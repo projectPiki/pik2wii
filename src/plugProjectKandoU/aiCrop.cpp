@@ -88,7 +88,7 @@ int ActCrop::execClimb()
 {
 	// climb up at 25 unit speed
 	mParent->mVelocity = mClimbDirection * 25.0f;
-	mParent->move(sys->mDeltaTime);
+	mParent->move(sys->getDeltaTime());
 
 	if (mParent->mClimbingPosition.y > 1.0f - (2.0f * mPlantHeightRatio)) {
 		if (mCollPart->getChild() && mCollPart->getChild()->mPartType == COLLTYPE_TUBETREE) {
@@ -184,7 +184,7 @@ int ActCrop::exec()
 		Vector3f vertVel   = unitYVel * horizComp;
 		mParent->mVelocity = horizVel + vertVel;
 		mParent->mVelocity = mParent->mVelocity * 10.0f;
-		mParent->move(sys->mDeltaTime);
+		mParent->move(sys->getDeltaTime());
 
 		mParent->startStick(mCreature, part);
 

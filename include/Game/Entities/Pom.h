@@ -1,13 +1,13 @@
 #ifndef _GAME_ENTITIES_POM_H
 #define _GAME_ENTITIES_POM_H
 
-#include "Game/EnemyStateMachine.h"
-#include "Game/EnemyAnimatorBase.h"
-#include "Game/EnemyParmsBase.h"
-#include "Game/EnemyMgrBase.h"
-#include "Game/EnemyBase.h"
-#include "JSystem/JUtility/JUTNameTab.h"
 #include "Collinfo.h"
+#include "Game/EnemyAnimatorBase.h"
+#include "Game/EnemyBase.h"
+#include "Game/EnemyMgrBase.h"
+#include "Game/EnemyParmsBase.h"
+#include "Game/EnemyStateMachine.h"
+#include "JSystem/JUtility/JUTNameTab.h"
 
 /**
  * --Header for (All) Candypop Buds (Pom)--
@@ -56,6 +56,8 @@ struct Obj : public EnemyBase {
 	void setPomColor(int);
 
 	inline int getPikiKind() const { return mPikiKind; }
+
+	inline int getShotMultiplier() { return mShotMultiplier; }
 
 	// _00 		= VTBL
 	// _00-_2BC	= EnemyBase
@@ -169,19 +171,20 @@ struct FSM : public EnemyStateMachine {
 
 struct State : public EnemyFSMState {
 	inline State(u16 stateID, const char* name)
-	    : EnemyFSMState(stateID)
+	    : EnemyFSMState(stateID, name)
 	{
-		mName = name;
+		// setName(name);
 	}
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
 };
 
-struct StateClose : public State {
-	inline StateClose()
-	    : State(POM_Close, "close")
+struct StateWait : public State {
+	inline StateWait(const char* name)
+	    : State(POM_Wait, name)
 	{
+		// setName("wait");
 	}
 
 	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
@@ -193,8 +196,8 @@ struct StateClose : public State {
 };
 
 struct StateDead : public State {
-	inline StateDead()
-	    : State(POM_Dead, "dead")
+	inline StateDead(const char* name)
+	    : State(POM_Dead, name)
 	{
 	}
 
@@ -207,8 +210,22 @@ struct StateDead : public State {
 };
 
 struct StateOpen : public State {
-	inline StateOpen()
-	    : State(POM_Open, "open")
+	inline StateOpen(const char* name)
+	    : State(POM_Open, name)
+	{
+	}
+
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
+
+	// _00		= VTBL
+	// _00-_10 	= EnemyFSMState
+};
+
+struct StateClose : public State {
+	inline StateClose(const char* name)
+	    : State(POM_Close, name)
 	{
 	}
 
@@ -221,8 +238,8 @@ struct StateOpen : public State {
 };
 
 struct StateShot : public State {
-	inline StateShot()
-	    : State(POM_Shot, "shot")
+	inline StateShot(const char* name)
+	    : State(POM_Shot, name)
 	{
 	}
 
@@ -235,22 +252,8 @@ struct StateShot : public State {
 };
 
 struct StateSwing : public State {
-	inline StateSwing()
-	    : State(POM_Swing, "swing")
-	{
-	}
-
-	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
-	virtual void exec(EnemyBase* enemy);                     // _0C
-	virtual void cleanup(EnemyBase* enemy);                  // _10
-
-	// _00		= VTBL
-	// _00-_10 	= EnemyFSMState
-};
-
-struct StateWait : public State {
-	inline StateWait()
-	    : State(POM_Wait, "wait")
+	inline StateSwing(const char* name)
+	    : State(POM_Swing, name)
 	{
 	}
 

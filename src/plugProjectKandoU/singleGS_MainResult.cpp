@@ -1,19 +1,19 @@
-#include "Game/SingleGame.h"
-#include "Game/Navi.h"
-#include "Game/generalEnemyMgr.h"
-#include "Game/itemMgr.h"
-#include "Game/Farm.h"
+#include "Game/CameraMgr.h"
+#include "Game/Entities/ItemOnyon.h"
+#include "Game/Entities/PelletCarcass.h"
 #include "Game/Entities/PelletItem.h"
 #include "Game/Entities/PelletOtakara.h"
-#include "Game/MoviePlayer.h"
-#include "Game/Entities/PelletCarcass.h"
-#include "Game/Entities/ItemOnyon.h"
+#include "Game/Farm.h"
 #include "Game/GameLight.h"
-#include "Game/CameraMgr.h"
+#include "Game/MoviePlayer.h"
+#include "Game/Navi.h"
+#include "Game/SingleGame.h"
+#include "Game/generalEnemyMgr.h"
+#include "Game/itemMgr.h"
 #include "Screen/Game2DMgr.h"
 #include "TParticle2dMgr.h"
-#include "utilityU.h"
 #include "nans.h"
+#include "utilityU.h"
 
 static JKRHeap* theTekiHeap;
 
@@ -63,7 +63,10 @@ void MainResultState::init(SingleGameSection* game, StateArg* arg)
  * @note Address: 0x8021A1FC
  * @note Size: 0x24
  */
-void MainResultState::beforeSave() { playData->setPikminCounts_Yesterday(); }
+void MainResultState::beforeSave()
+{
+	playData->setPikminCounts_Yesterday();
+}
 
 /**
  * @note Address: 0x8021A220
@@ -133,7 +136,7 @@ void MainResultState::exec(SingleGameSection* game)
 		game->BaseHIOSection::doUpdate();
 		return;
 	case Result_Unused1: // this state seems to never be used
-		mStartTimer -= sys->mDeltaTime;
+		mStartTimer -= sys->getDeltaTime();
 		if (mStartTimer < 0.0f)
 			mStatus = Result_ScreenActive;
 		break;
@@ -155,10 +158,12 @@ void MainResultState::exec(SingleGameSection* game)
 		}
 		break;
 	case Result_Finish:
-		mStartTimer -= sys->mDeltaTime;
+		mStartTimer -= sys->getDeltaTime();
 		if (mStartTimer < 0.0f) {
 			game->clearHeap();
-			FOREACH_NODE(Result::TNode, mResultNode.mChild, node) { }
+			FOREACH_NODE(Result::TNode, mResultNode.mChild, node)
+			{
+			}
 			transit(game, SGS_Select, nullptr);
 			return;
 		}
@@ -168,7 +173,7 @@ void MainResultState::exec(SingleGameSection* game)
 	// Since item rendering is disabled in day results, manually render onions/ship
 	ItemOnyon::mgr->doAnimation();
 	ItemOnyon::mgr->doEntry();
-	ItemOnyon::mgr->doSimulation(sys->mDeltaTime);
+	ItemOnyon::mgr->doSimulation(sys->getDeltaTime());
 
 	Viewport* vp = sys->mGfx->mCurrentViewport;
 	SysShape::Model::setViewCalcModeInd();

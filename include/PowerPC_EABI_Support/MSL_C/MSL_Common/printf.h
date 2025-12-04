@@ -1,9 +1,13 @@
 #ifndef _MSL_PRINTF_H
 #define _MSL_PRINTF_H
 
-#include "stdarg.h"
-#include "PowerPC_EABI_Support/MSL_C/MSL_Common/file_struc.h"
 #include "PowerPC_EABI_Support/MSL_C/MSL_Common/ansi_files.h"
+#include "PowerPC_EABI_Support/MSL_C/MSL_Common/file_struc.h"
+#include "stdarg.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif // ifdef __cplusplus
 
 void printf(const char*, ...);
 // printf_s
@@ -14,6 +18,7 @@ int vprintf(const char*, va_list);
 // vfprintf
 // vfprintf_s
 int vsnprintf(char*, size_t, const char*, va_list);
+// int vswprintf(wchar_t*, size_t, const wchar_t*, va_list);
 // vsnprintf_s
 int vsprintf(char*, const char*, va_list);
 // vsprintf_s
@@ -21,5 +26,9 @@ int snprintf(char*, size_t, const char*, ...);
 // snprintf_s
 int sprintf(char*, const char*, ...);
 // sprintf_s
+
+#ifdef __cplusplus
+};
+#endif // ifdef __cplusplus
 
 #endif

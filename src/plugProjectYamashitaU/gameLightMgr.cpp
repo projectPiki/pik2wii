@@ -1,12 +1,12 @@
-#include "trig.h"
-#include "Game/GameLight.h"
-#include "Game/shadowMgr.h"
 #include "Game/CameraMgr.h"
-#include "Game/TimeMgr.h"
+#include "Game/GameLight.h"
 #include "Game/GameSystem.h"
+#include "Game/TimeMgr.h"
 #include "Game/gamePlayData.h"
+#include "Game/shadowMgr.h"
 #include "Viewport.h"
 #include "nans.h"
+#include "trig.h"
 
 namespace Game {
 
@@ -223,7 +223,7 @@ bool GameLightEventNode::update(GameLightMgr* lightMgr)
 
 	switch (mState) {
 	case LIGHTSTATE_Grow:
-		mStateTimer += sys->mDeltaTime;
+		mStateTimer += sys->getDeltaTime();
 		if (mStateTimer > mGrowTime) {
 			mStateTimer = mGrowTime;
 			mColorRatio = 1.0f;
@@ -241,7 +241,7 @@ bool GameLightEventNode::update(GameLightMgr* lightMgr)
 		break;
 
 	case LIGHTSTATE_Steady:
-		mStateTimer += sys->mDeltaTime;
+		mStateTimer += sys->getDeltaTime();
 		if (mStateTimer > 4.0f) {
 			mStateTimer = 0.0f;
 		}
@@ -260,7 +260,7 @@ bool GameLightEventNode::update(GameLightMgr* lightMgr)
 		break;
 
 	case LIGHTSTATE_Fade:
-		mStateTimer += sys->mDeltaTime;
+		mStateTimer += sys->getDeltaTime();
 		if (mStateTimer > mFadeTime) {
 			mStateTimer = mFadeTime;
 			mColorRatio = 0.0f;
@@ -408,7 +408,7 @@ GameLightMgr::GameLightMgr(char* name)
 	registLightObj(mSubLight);
 
 	// setup specular light
-	mSpecLight = new LightObj("スペキュラ-ライト", GX_LIGHT7, TYPE_Spec, JUtility::TColor(255, 255, 255, 255)); // 'specular light'
+	mSpecLight          = new LightObj("スペキュラ-ライト", GX_LIGHT7, TYPE_Spec, JUtility::TColor(255, 255, 255, 255)); // 'specular light'
 	mSpecLight->mKScale = 40.0f;
 	registLightObj(mSpecLight);
 
@@ -2819,7 +2819,7 @@ void GameLightMgr::updateSpotType()
 	mFogMgr->mNearZ = complement<f32>(mSettings.mRegularSpotLight.mFog.mFogParms.mStartZ.mValue,
 	                                  mSettings.mStellarSpotLight.mFog.mFogParms.mStartZ.mValue, mStellarColorRatio);
 	mFogMgr->mFarZ  = complement<f32>(mSettings.mRegularSpotLight.mFog.mFogParms.mEndZ.mValue,
-                                     mSettings.mStellarSpotLight.mFog.mFogParms.mEndZ.mValue, mStellarColorRatio);
+	                                  mSettings.mStellarSpotLight.mFog.mFogParms.mEndZ.mValue, mStellarColorRatio);
 
 	// Shadow
 	mSettings.mStellarSpotLight.mShadow.getColor(mShadowColor);
@@ -2899,7 +2899,7 @@ void GameLightMgr::updatePosition(Viewport* viewport)
 		                                           mSettings.mStellarSpotLight.mMainLight.mSpotParms.mCutOff.mValue, mStellarColorRatio);
 		mSubLight->mSpotFn       = GX_SP_COS2;
 		mSubLight->mCutoffAngle  = complement<f32>(mSettings.mRegularSpotLight.mSubLight.mSpotParms.mCutOff.mValue,
-                                                  mSettings.mStellarSpotLight.mSubLight.mSpotParms.mCutOff.mValue, mStellarColorRatio);
+		                                           mSettings.mStellarSpotLight.mSubLight.mSpotParms.mCutOff.mValue, mStellarColorRatio);
 
 		int viewportID = viewport->mVpId;
 		if (viewportID < 0 || viewportID > 1) {

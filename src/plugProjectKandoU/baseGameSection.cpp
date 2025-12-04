@@ -820,8 +820,8 @@ void BaseGameSection::initGenerators()
 	}
 	switch (naviCount) {
 	case 0: {
-		bool olimarAlive  = false;
-		Vector3f velocity = Vector3f(0.0f);
+		bool olimarAlive = false;
+		Vector3f velocity(0.0f, 0.0f, 0.0f);
 
 		f32 mapRotation = mapMgr->getMapRotation();
 		Vector3f position(-40.0f, 0.0f, 2.0f);
@@ -878,7 +878,7 @@ void BaseGameSection::initGenerators()
 				PSMTXMultVec((PSQuaternion*)demoMtx, (Vec*)&position, (Vec*)&vec_0x1c78);
 				position   = vec_0x1c78;
 				position.y = mapMgr->getMinY(position);
-				velocity   = Vector3f(0.0f);
+				velocity.set(0.0f, 0.0f, 0.0f);
 			}
 		}
 		Navi* louie = naviMgr->birth();
@@ -1683,7 +1683,7 @@ void BaseGameSection::initBlendCamera()
 void BaseGameSection::updateBlendCamera()
 {
 	if (mPrevNaviIdx == NAVIID_Olimar) {
-		mBlendFactor -= sys->mDeltaTime / 0.2f;
+		mBlendFactor -= sys->getDeltaTime() / 0.2f;
 		if (mBlendFactor < 0.0f) {
 			mBlendFactor         = 0.0f;
 			mIsBlendCameraActive = false;
@@ -1691,7 +1691,7 @@ void BaseGameSection::updateBlendCamera()
 		}
 
 	} else {
-		mBlendFactor += sys->mDeltaTime / 0.2f;
+		mBlendFactor += sys->getDeltaTime() / 0.2f;
 		if (mBlendFactor > 1.0f) {
 			mBlendFactor         = 1.0f;
 			mIsBlendCameraActive = false;
@@ -1787,7 +1787,7 @@ void BaseGameSection::updateSplitter()
 		return;
 	}
 
-	mSecondViewportHeight += mSplit * sys->mDeltaTime;
+	mSecondViewportHeight += mSplit * sys->getDeltaTime();
 	int id = mPrevNaviIdx;
 	if (id == NAVIID_Multiplayer && mSecondViewportHeight <= 0.5f) {
 		mSecondViewportHeight = 0.5f;

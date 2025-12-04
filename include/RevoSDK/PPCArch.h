@@ -39,6 +39,8 @@ extern "C" {
 #define HID2_DCMEE  0x00020000 // DMA cache miss error error enable
 #define HID2_DQOEE  0x00010000 // DMA queue overflow error enable
 
+#define HID4_H4A (1 << (31 - 0)) // unknown
+
 #define L2CR_L2E  0x80000000 // L2 Enable
 #define L2CR_L2I  0x00200000 // Global invalidate
 #define L2CR_L2IP 0x00000001 // L2 global invalidate in progress

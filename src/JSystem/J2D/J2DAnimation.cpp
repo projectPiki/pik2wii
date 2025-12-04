@@ -1,10 +1,10 @@
 #include "JSystem/J2D/J2DAnm.h"
 #include "JSystem/J2D/J2DScreen.h"
+#include "JSystem/J3D/J3DAnmTevRegKey.h"
+#include "JSystem/J3D/J3DAnmTexPattern.h"
 #include "JSystem/J3D/J3DAnmTransform.h"
 #include "JSystem/J3D/J3DAnmVisibilityFull.h"
 #include "JSystem/JUtility/JUTResource.h"
-#include "JSystem/J3D/J3DAnmTexPattern.h"
-#include "JSystem/J3D/J3DAnmTevRegKey.h"
 #include "types.h"
 
 template <class T>
@@ -654,7 +654,10 @@ J2DAnmTexPattern::J2DAnmTexPatternTIMGPointer::J2DAnmTexPatternTIMGPointer()
  * @note Size: 0x54
  * __dt__Q216J2DAnmTexPattern27J2DAnmTexPatternTIMGPointerFv
  */
-J2DAnmTexPattern::J2DAnmTexPatternTIMGPointer::~J2DAnmTexPatternTIMGPointer() { delete mPalette; }
+J2DAnmTexPattern::J2DAnmTexPatternTIMGPointer::~J2DAnmTexPatternTIMGPointer()
+{
+	delete mPalette;
+}
 
 /**
  * @note Address: 0x8005C8E8

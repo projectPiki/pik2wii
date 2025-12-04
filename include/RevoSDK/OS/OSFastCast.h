@@ -47,7 +47,7 @@ static inline void OSInitFastCast()
 
 // Float to int.
 // NB: should theoretically have these for u8/u16/s8/s16 eventually.
-static u16 __OSf32tou16(register f32 arg)
+static inline u16 __OSf32tou16(register f32 arg)
 {
 	f32 a;
 	register f32* ptr = &a;
@@ -63,7 +63,7 @@ static u16 __OSf32tou16(register f32 arg)
 	return r;
 }
 
-static void OSf32tou16(f32* in, volatile u16* out)
+static inline void OSf32tou16(f32* in, volatile u16* out)
 {
 	*out = __OSf32tou16(*in);
 }
@@ -133,7 +133,7 @@ static inline void OSf32tos8(f32* f, s8* out)
 // NB: should have these for u8/u16/s8/s16 eventually.
 
 // TODO: make these based on above/as necessary.
-static f32 __OSu16tof32(register u16* arg)
+static inline f32 __OSu16tof32(register u16* arg)
 {
 	register f32 ret;
 
@@ -146,7 +146,7 @@ static f32 __OSu16tof32(register u16* arg)
 	return ret;
 }
 
-static void OSu16tof32(u16* in, volatile f32* out)
+static inline void OSu16tof32(u16* in, volatile f32* out)
 {
 	*out = __OSu16tof32(in);
 }

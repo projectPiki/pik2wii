@@ -1,14 +1,14 @@
-#include "og/newScreen/Floor.h"
-#include "Game/VsGame.h"
 #include "Controller.h"
-#include "Game/gameStat.h"
-#include "Screen/Game2DMgr.h"
-#include "Radar.h"
-#include "nans.h"
-#include "types.h"
 #include "Game/SingleGame.h"
-#include "TParticle2dMgr.h"
+#include "Game/VsGame.h"
+#include "Game/gameStat.h"
 #include "PSSystem/PSSystemIF.h"
+#include "Radar.h"
+#include "Screen/Game2DMgr.h"
+#include "TParticle2dMgr.h"
+#include "nans.h"
+#include "og/newScreen/Floor.h"
+#include "types.h"
 
 namespace Game {
 namespace VsGame {
@@ -60,7 +60,10 @@ void LoadState::init(Game::VsGameSection* section, StateArg* args)
  * @note Address: 0x8022D2A8
  * @note Size: 0x24
  */
-void LoadState::dvdLoad() { mSection->setupFloatMemory(); }
+void LoadState::dvdLoad()
+{
+	mSection->setupFloatMemory();
+}
 
 /**
  * @note Address: 0x8022D2CC
@@ -102,7 +105,7 @@ void LoadState::exec(VsGameSection* section)
 					mAutoStartTime = 0.0f;
 				}
 			}
-			mAutoStartTime -= sys->mDeltaTime;
+			mAutoStartTime -= sys->getDeltaTime();
 		}
 		if (!mIsGameStarting && mDvdThreadCommand.mMode == DvdThreadCommand::CM_Completed) {
 			if (gameSystem->isChallengeMode() || (gameSystem->isVersusMode() && mAutoStartTime <= 0.0f)) {
@@ -135,7 +138,9 @@ void LoadState::draw(VsGameSection* section, Graphics& graphic)
  * @note Address: 0x8022D60C
  * @note Size: 0x4
  */
-void LoadState::cleanup(VsGameSection*) { }
+void LoadState::cleanup(VsGameSection*)
+{
+}
 
 } // namespace VsGame
 } // namespace Game

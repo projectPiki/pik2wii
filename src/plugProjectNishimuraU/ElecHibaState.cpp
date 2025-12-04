@@ -1,7 +1,7 @@
-#include "Game/Entities/ElecHiba.h"
 #include "Game/EnemyAnimKeyEvent.h"
-#include "efx/TEnemyBomb.h"
+#include "Game/Entities/ElecHiba.h"
 #include "PS.h"
+#include "efx/TEnemyBomb.h"
 
 namespace Game {
 namespace ElecHiba {
@@ -74,13 +74,17 @@ void StateDead::init(EnemyBase* enemy, StateArg* stateArg)
  * @note Address: 0x8026E428
  * @note Size: 0x4
  */
-void StateDead::exec(EnemyBase* enemy) { }
+void StateDead::exec(EnemyBase* enemy)
+{
+}
 
 /**
  * @note Address: 0x8026E42C
  * @note Size: 0x4
  */
-void StateDead::cleanup(EnemyBase* enemy) { }
+void StateDead::cleanup(EnemyBase* enemy)
+{
+}
 
 /**
  * @note Address: 0x8026E430
@@ -113,7 +117,7 @@ void StateWait::exec(EnemyBase* enemy)
 {
 	Obj* elecHiba = OBJ(enemy);
 
-	elecHiba->mWaitTimer += sys->mDeltaTime;
+	elecHiba->mWaitTimer += sys->getDeltaTime();
 
 	if (elecHiba->mIsVersusModeHiba != 0) {
 		if (elecHiba->isWaitFinish()) {
@@ -130,7 +134,9 @@ void StateWait::exec(EnemyBase* enemy)
  * @note Address: 0x8026E584
  * @note Size: 0x4
  */
-void StateWait::cleanup(EnemyBase* enemy) { }
+void StateWait::cleanup(EnemyBase* enemy)
+{
+}
 
 /**
  * @note Address: 0x8026E588
@@ -160,7 +166,7 @@ void StateSign::exec(EnemyBase* enemy)
 {
 	Obj* elecHiba = OBJ(enemy);
 
-	elecHiba->mWaitTimer += sys->mDeltaTime;
+	elecHiba->mWaitTimer += sys->getDeltaTime();
 	elecHiba->getJAIObject()->startSound(PSSE_EN_ELEC_HIBA_CHARGE, 0);
 
 	if (elecHiba->mHealth <= 0.0f) {
@@ -220,7 +226,7 @@ void StateAttack::exec(EnemyBase* enemy)
 {
 	Obj* elecHiba = OBJ(enemy);
 
-	elecHiba->mWaitTimer += sys->mDeltaTime;
+	elecHiba->mWaitTimer += sys->getDeltaTime();
 
 	if (elecHiba->mIsVersusModeHiba != 0) {
 		if (elecHiba->isAttackFinish()) {

@@ -344,7 +344,7 @@ void BlackMan::Obj::doUpdate()
 		}
 	}
 
-	mWraithFallTimer -= sys->mDeltaTime;
+	mWraithFallTimer -= sys->getDeltaTime();
 	if (isEvent(0, EB_HardConstrained) && getStateID() == WRAITH_Fall) {
 		f32 fallTimer = -C_PARMS->mFallStartDelay;
 		if (!mTyre || mWraithFallTimer < fallTimer) {
@@ -1021,8 +1021,8 @@ void BlackMan::Obj::doStartStoneState()
 {
 	EnemyBase::doStartStoneState();
 	if (getStateID() != WRAITH_Fall) {
-		mTargetVelocity  = Vector3f(0.0f);
-		mCurrentVelocity = Vector3f(0.0f);
+		mTargetVelocity.set(0.0f, 0.0f, 0.0f);
+		mCurrentVelocity.set(0.0f, 0.0f, 0.0f);
 	}
 
 	if (mTyre) {
@@ -1118,7 +1118,7 @@ void BlackMan::Obj::collisionCallback(Game::CollEvent& collEvent)
 	if (collCreature->isTeki()) {
 		EnemyBase* teki = static_cast<EnemyBase*>(collCreature);
 		if (teki->getEnemyTypeID() == EnemyTypeID::EnemyID_Tyre) {
-			mAcceleration = Vector3f(0.0f); // I wanna know the story behind this line of code
+			mAcceleration.set(0.0f, 0.0f, 0.0f); // I wanna know the story behind this line of code
 		}
 	}
 
@@ -1645,8 +1645,8 @@ void BlackMan::Obj::walkFunc()
 	if (mTyre && C_PARMS->mStartPhase != mEscapePhase) {
 		mEscapePhase = C_PARMS->mStartPhase;
 		if (mEscapePhase == 4) {
-			mCurrentVelocity = Vector3f(0.0f);
-			mTargetVelocity  = Vector3f(0.0f);
+			mCurrentVelocity.set(0.0f, 0.0f, 0.0f);
+			mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 			setPathFinder(false);
 		} else {
 			mFoundPath = 0;
@@ -1698,7 +1698,7 @@ void BlackMan::Obj::walkFunc()
 
 	bool isInTurn = false; // lets the wraith do SICK DRIFTS
 	// turn inline hell is here
-	f32 angleDist = getAngDist2(mTargetPosition);
+	f32 angleDist = getAngDist(mTargetPosition);
 
 	if (fabs((int)(angleDist > 0.25f))) {
 		isInTurn = true;

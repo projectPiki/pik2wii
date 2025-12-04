@@ -25,7 +25,9 @@ JUTDbPrint::JUTDbPrint(JUTFont* font, JKRHeap* heap)
  * @note Address: N/A
  * @note Size: 0x50
  */
-JUTDbPrint::~JUTDbPrint() { }
+JUTDbPrint::~JUTDbPrint()
+{
+}
 
 /**
  * @note Address: 0x800294D4
@@ -63,7 +65,10 @@ JUTFont* JUTDbPrint::changeFont(JUTFont* newFont)
  * @note Size: 0x38
  * flush__10JUTDbPrintFv
  */
-void JUTDbPrint::flush() { flush(0, 0, JUTVideo::sManager->getFbWidth(), JUTVideo::sManager->getEfbHeight()); }
+void JUTDbPrint::flush()
+{
+	flush(0, 0, JUTVideo::sManager->getFbWidth(), JUTVideo::sManager->getEfbHeight());
+}
 
 /**
  * @note Address: 0x800295D0
@@ -84,7 +89,7 @@ void JUTDbPrint::flush(int left, int top, int right, int bottom)
 
 			// Set the font and color
 			getFont()->setGX();
-			getFont()->setCharColor(mColor);
+			getFont()->setCharColor((u32)mColor);
 
 			while (currList) {
 				// If the list is visible, draw the string

@@ -1,11 +1,11 @@
 #ifndef _GAME_GAMESYSTEM_H
 #define _GAME_GAMESYSTEM_H
 
-#include "types.h"
 #include "CNode.h"
-#include "ObjectMgr.h"
 #include "Game/BaseGameSection.h"
 #include "Game/TimeMgr.h"
+#include "ObjectMgr.h"
+#include "types.h"
 
 struct Graphics;
 struct JUTTexture;
@@ -67,9 +67,18 @@ struct GameSystem : public NodeObjectMgr<GenericObjectMgr> {
 	u32 setPause(bool, char*, int);
 	int startPause(bool, int, char*);
 
+	inline GameSystemMode getGameMode() { return mMode; }
+
 	inline bool isStoryMode() { return mMode == GSM_STORY_MODE; }
 	inline bool isVersusMode() { return mMode == GSM_VERSUS_MODE; }
-	inline bool isMultiplayerMode() { return (mMode == GSM_VERSUS_MODE || mMode == GSM_TWO_PLAYER_CHALLENGE); }
+	inline bool isMultiplayerMode()
+	{
+		bool res = false;
+		if (mMode == GSM_VERSUS_MODE || mMode == GSM_TWO_PLAYER_CHALLENGE) {
+			res = true;
+		}
+		return res;
+	}
 	inline bool isChallengeMode() { return (mMode == GSM_ONE_PLAYER_CHALLENGE || mMode == GSM_TWO_PLAYER_CHALLENGE); }
 	inline bool isTwoPlayerMode() { return mMode == GSM_TWO_PLAYER_CHALLENGE; }
 	bool isZukanMode() { return mMode == GSM_PIKLOPEDIA; }

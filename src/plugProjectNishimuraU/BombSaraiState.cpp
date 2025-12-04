@@ -1,8 +1,8 @@
-#include "Game/Entities/BombSarai.h"
+#include "Game/CameraMgr.h"
 #include "Game/EnemyAnimKeyEvent.h"
 #include "Game/EnemyFunc.h"
+#include "Game/Entities/BombSarai.h"
 #include "Game/MapMgr.h"
-#include "Game/CameraMgr.h"
 #include "Game/rumble.h"
 #include "nans.h"
 
@@ -41,7 +41,7 @@ void FSM::init(EnemyBase* enemy)
 void StateDead::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	enemy->deathProcedure();
-	enemy->mTargetVelocity = Vector3f(0.0f);
+	enemy->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	enemy->disableEvent(0, EB_Untargetable);
 	enemy->disableEvent(0, EB_Cullable);
 	enemy->startMotion(BOMBSARAIANIM_Dead, nullptr);
@@ -87,7 +87,9 @@ void StateDead::exec(EnemyBase* enemy)
  * @note Address: 0x802B02BC
  * @note Size: 0x4
  */
-void StateDead::cleanup(EnemyBase* enemy) { }
+void StateDead::cleanup(EnemyBase* enemy)
+{
+}
 
 /**
  * @note Address: 0x802B02C0
@@ -98,7 +100,7 @@ void StateDamage::init(EnemyBase* enemy, StateArg* stateArg)
 	Obj* sarai         = OBJ(enemy);
 	sarai->mStateTimer = 0.0f;
 	sarai->disableEvent(0, EB_NoInterrupt);
-	sarai->mTargetVelocity = Vector3f(0.0f);
+	sarai->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	sarai->disableEvent(0, EB_Untargetable);
 	sarai->setEmotionExcitement();
 	sarai->startMotion(BOMBSARAIANIM_Struggle, nullptr);
@@ -118,7 +120,7 @@ void StateDamage::exec(EnemyBase* enemy)
 		sarai->finishMotion();
 	}
 
-	sarai->mStateTimer += sys->mDeltaTime;
+	sarai->mStateTimer += sys->getDeltaTime();
 
 	if (sarai->mCurAnim->mIsPlaying) {
 		if (sarai->mCurAnim->mType == KEYEVENT_2) {
@@ -163,9 +165,9 @@ void StateWait::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	Obj* sarai = OBJ(enemy);
 	sarai->enableEvent(0, EB_Untargetable);
-	sarai->mNextState      = BOMBSARAI_NULL;
-	sarai->mStateTimer     = 0.0f;
-	sarai->mTargetVelocity = Vector3f(0.0f);
+	sarai->mNextState  = BOMBSARAI_NULL;
+	sarai->mStateTimer = 0.0f;
+	sarai->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	sarai->startMotion(BOMBSARAIANIM_Wait, nullptr);
 }
 
@@ -183,7 +185,7 @@ void StateWait::exec(EnemyBase* enemy)
 			sarai->mNextState = BOMBSARAI_Supply;
 			sarai->finishMotion();
 		} else {
-			sarai->mStateTimer += sys->mDeltaTime;
+			sarai->mStateTimer += sys->getDeltaTime();
 			if (sarai->mStateTimer > 3.0f) {
 				sarai->mNextState = BOMBSARAI_Move;
 				sarai->finishMotion();
@@ -208,7 +210,9 @@ void StateWait::exec(EnemyBase* enemy)
  * @note Address: 0x802B06F0
  * @note Size: 0x4
  */
-void StateWait::cleanup(EnemyBase* enemy) { }
+void StateWait::cleanup(EnemyBase* enemy)
+{
+}
 
 /**
  * @note Address: 0x802B06F4
@@ -219,9 +223,9 @@ void StateBombWait::init(EnemyBase* enemy, StateArg* stateArg)
 	Obj* sarai = OBJ(enemy);
 	sarai->enableEvent(0, EB_Untargetable);
 	sarai->enableEvent(0, EB_NoInterrupt);
-	sarai->mNextState      = BOMBSARAI_NULL;
-	sarai->mStateTimer     = 0.0f;
-	sarai->mTargetVelocity = Vector3f(0.0f);
+	sarai->mNextState  = BOMBSARAI_NULL;
+	sarai->mStateTimer = 0.0f;
+	sarai->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	sarai->setEmotionExcitement();
 	sarai->startMotion(BOMBSARAIANIM_BombWait, nullptr);
 }
@@ -277,8 +281,8 @@ void StateBombWait::exec(EnemyBase* enemy)
 		}
 	}
 
-	sarai->mStateTimer += sys->mDeltaTime;
-	sarai->mBombCarryTimer += sys->mDeltaTime;
+	sarai->mStateTimer += sys->getDeltaTime();
+	sarai->mBombCarryTimer += sys->getDeltaTime();
 
 	if (sarai->mCurAnim->mIsPlaying && sarai->mCurAnim->mType == KEYEVENT_END) {
 		transit(sarai, sarai->mNextState, nullptr);
@@ -605,7 +609,7 @@ void StateMove::init(EnemyBase* enemy, StateArg* stateArg)
 	sarai->mNextState  = BOMBSARAI_NULL;
 	sarai->mStateTimer = 0.0f;
 	sarai->setRandTarget();
-	sarai->mTargetVelocity = Vector3f(0.0f);
+	sarai->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	sarai->startMotion(BOMBSARAIANIM_Run, nullptr);
 }
 
@@ -623,7 +627,7 @@ void StateMove::exec(EnemyBase* enemy)
 			sarai->mNextState = BOMBSARAI_Supply;
 			sarai->finishMotion();
 		} else {
-			sarai->mStateTimer += sys->mDeltaTime;
+			sarai->mStateTimer += sys->getDeltaTime();
 
 			Vector3f pos       = sarai->getPosition();
 			Vector3f targetPos = Vector3f(sarai->mTargetPosition);
@@ -636,7 +640,7 @@ void StateMove::exec(EnemyBase* enemy)
 			                        CG_GENERALPARMS(sarai).mMaxTurnAngle.mValue);
 		}
 	} else {
-		sarai->mTargetVelocity = Vector3f(0.0f);
+		sarai->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	}
 
 	if (height > CG_PROPERPARMS(sarai).mTransitHeight.mValue || sarai->mStateTimer > 5.0f) {
@@ -656,7 +660,9 @@ void StateMove::exec(EnemyBase* enemy)
  * @note Address: 0x802B0E24
  * @note Size: 0x4
  */
-void StateMove::cleanup(EnemyBase* enemy) { }
+void StateMove::cleanup(EnemyBase* enemy)
+{
+}
 
 /**
  * @note Address: 0x802B0E28
@@ -671,7 +677,7 @@ void StateBombMove::init(EnemyBase* enemy, StateArg* stateArg)
 	sarai->mStateTimer = 0.0f;
 	sarai->setRandTarget();
 	sarai->setEmotionExcitement();
-	sarai->mTargetVelocity = Vector3f(0.0f);
+	sarai->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	sarai->startMotion(BOMBSARAIANIM_BombRun, nullptr);
 }
 
@@ -715,7 +721,7 @@ void StateBombMove::exec(EnemyBase* enemy)
 	}
 
 	if (sarai->isFinishMotion()) {
-		sarai->mTargetVelocity = Vector3f(0.0f);
+		sarai->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	} else {
 		EnemyFunc::walkToTarget(sarai, targetPos, CG_GENERALPARMS(sarai).mMoveSpeed(), CG_GENERALPARMS(sarai).mTurnSpeed(),
 		                        CG_GENERALPARMS(sarai).mMaxTurnAngle());
@@ -734,8 +740,8 @@ void StateBombMove::exec(EnemyBase* enemy)
 		}
 	}
 
-	sarai->mStateTimer += sys->mDeltaTime;
-	sarai->mBombCarryTimer += sys->mDeltaTime;
+	sarai->mStateTimer += sys->getDeltaTime();
+	sarai->mBombCarryTimer += sys->getDeltaTime();
 
 	if (sarai->mCurAnim->mIsPlaying && sarai->mCurAnim->mType == KEYEVENT_END) {
 		transit(sarai, sarai->mNextState, nullptr);
@@ -1103,7 +1109,7 @@ void StateSupply::init(EnemyBase* enemy, StateArg* stateArg)
 	sarai->mNextState = BOMBSARAI_NULL;
 	sarai->supplyBomb();
 	sarai->setEmotionExcitement();
-	sarai->mTargetVelocity = Vector3f(0.0f);
+	sarai->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	sarai->startMotion(BOMBSARAIANIM_Supply, nullptr);
 	sarai->createSupliEffect();
 }
@@ -1147,8 +1153,8 @@ void StateRelease::init(EnemyBase* enemy, StateArg* stateArg)
 	Obj* sarai = OBJ(enemy);
 	sarai->enableEvent(0, EB_Untargetable);
 	sarai->enableEvent(0, EB_NoInterrupt);
-	sarai->mNextState      = BOMBSARAI_NULL;
-	sarai->mTargetVelocity = Vector3f(0.0f);
+	sarai->mNextState = BOMBSARAI_NULL;
+	sarai->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	sarai->setEmotionExcitement();
 	sarai->startMotion(BOMBSARAIANIM_Release, nullptr);
 }
@@ -1201,7 +1207,7 @@ void StateFall::init(EnemyBase* enemy, StateArg* stateArg)
 	Obj* sarai         = OBJ(enemy);
 	sarai->mStateTimer = 0.0f;
 	sarai->enableEvent(0, EB_NoInterrupt);
-	sarai->mTargetVelocity = Vector3f(0.0f);
+	sarai->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	sarai->disableEvent(0, EB_Untargetable);
 	sarai->setEmotionExcitement();
 	sarai->startMotion(BOMBSARAIANIM_Fall, nullptr);
@@ -1224,7 +1230,7 @@ void StateFall::exec(EnemyBase* enemy)
 		sarai->finishMotion();
 	}
 
-	sarai->mStateTimer += sys->mDeltaTime;
+	sarai->mStateTimer += sys->getDeltaTime();
 
 	if (sarai->mCurAnim->mIsPlaying) {
 		if (sarai->mCurAnim->mType == KEYEVENT_2) {
@@ -1317,7 +1323,10 @@ void StateTakeOff1::exec(EnemyBase* enemy)
  * @note Address: 0x802B1C74
  * @note Size: 0x24
  */
-void StateTakeOff1::cleanup(EnemyBase* enemy) { enemy->setEmotionCaution(); }
+void StateTakeOff1::cleanup(EnemyBase* enemy)
+{
+	enemy->setEmotionCaution();
+}
 
 /**
  * @note Address: 0x802B1C98
@@ -1363,7 +1372,10 @@ void StateTakeOff2::exec(EnemyBase* enemy)
  * @note Address: 0x802B1DFC
  * @note Size: 0x24
  */
-void StateTakeOff2::cleanup(EnemyBase* enemy) { enemy->setEmotionCaution(); }
+void StateTakeOff2::cleanup(EnemyBase* enemy)
+{
+	enemy->setEmotionCaution();
+}
 
 /**
  * @note Address: 0x802B1E20
@@ -1407,7 +1419,10 @@ void StateFlick::exec(EnemyBase* enemy)
  * @note Address: 0x802B1F4C
  * @note Size: 0x24
  */
-void StateFlick::cleanup(EnemyBase* enemy) { enemy->setEmotionCaution(); }
+void StateFlick::cleanup(EnemyBase* enemy)
+{
+	enemy->setEmotionCaution();
+}
 
 /**
  * @note Address: 0x802B1F70

@@ -133,7 +133,7 @@ void ResetManager::update()
 bool ResetManager::updateStatusEffects()
 {
 	bool done = false;
-	mFadeTimer += sys->mDeltaTime;
+	mFadeTimer += sys->getDeltaTime();
 	if (mFadeTimer > 0.25f) {
 		mFadeTimer = 0.25f;
 		done       = true;

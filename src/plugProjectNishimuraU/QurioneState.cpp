@@ -1,5 +1,5 @@
-#include "Game/Entities/Qurione.h"
 #include "Game/EnemyAnimKeyEvent.h"
+#include "Game/Entities/Qurione.h"
 
 namespace Game {
 namespace Qurione {
@@ -36,7 +36,7 @@ void StateStay::init(EnemyBase* enemy, StateArg* stateArg)
 	wisp->disableEvent(0, EB_Animating);
 	wisp->enableEvent(0, EB_ModelHidden);
 
-	wisp->mTargetVelocity = Vector3f(0.0f);
+	wisp->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	wisp->startMotion(QURIONEANIM_Appear, nullptr);
 	wisp->stopMotion();
 }
@@ -48,7 +48,7 @@ void StateStay::init(EnemyBase* enemy, StateArg* stateArg)
 void StateStay::exec(EnemyBase* enemy)
 {
 	Obj* wisp = OBJ(enemy);
-	wisp->mUtilityTimer += sys->mDeltaTime;
+	wisp->mUtilityTimer += sys->getDeltaTime();
 
 	if ((wisp->mUtilityTimer > 1.0f) && wisp->isAppear()) {
 		transit(wisp, QURIONE_Appear, nullptr);
@@ -75,7 +75,7 @@ void StateAppear::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	Obj* wisp = OBJ(enemy);
 	wisp->setAtari(false);
-	wisp->mTargetVelocity = Vector3f(0.0f);
+	wisp->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	wisp->startMotion(QURIONEANIM_Appear, nullptr);
 
 	wisp->createAppearEffect();
@@ -116,7 +116,7 @@ void StateDisappear::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	Obj* wisp = OBJ(enemy);
 	wisp->setAtari(false);
-	wisp->mTargetVelocity = Vector3f(0.0f);
+	wisp->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	wisp->startMotion(QURIONEANIM_Hide, nullptr);
 	wisp->createDisppearEffect();
 }
@@ -160,8 +160,8 @@ void StateDisappear::cleanup(EnemyBase* enemy)
  */
 void StateMove::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* wisp             = OBJ(enemy);
-	wisp->mTargetVelocity = Vector3f(0.0f);
+	Obj* wisp = OBJ(enemy);
+	wisp->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	wisp->startMotion(QURIONEANIM_Wait, nullptr);
 }
 
@@ -190,7 +190,9 @@ void StateMove::exec(EnemyBase* enemy)
  * @note Address: 0x8025F8A0
  * @note Size: 0x4
  */
-void StateMove::cleanup(EnemyBase* enemy) { }
+void StateMove::cleanup(EnemyBase* enemy)
+{
+}
 
 /**
  * @note Address: 0x8025F8A4
@@ -201,7 +203,7 @@ void StateDrop::init(EnemyBase* enemy, StateArg* stateArg)
 	Obj* wisp = OBJ(enemy);
 	wisp->disableEvent(0, EB_Cullable);
 	wisp->createHitEffect();
-	wisp->mTargetVelocity = Vector3f(0.0f);
+	wisp->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	wisp->startMotion(QURIONEANIM_Damage, nullptr);
 }
 
@@ -225,7 +227,10 @@ void StateDrop::exec(EnemyBase* enemy)
  * @note Address: 0x8025F968
  * @note Size: 0x10
  */
-void StateDrop::cleanup(EnemyBase* enemy) { enemy->enableEvent(0, EB_Cullable); }
+void StateDrop::cleanup(EnemyBase* enemy)
+{
+	enemy->enableEvent(0, EB_Cullable);
+}
 
 /**
  * @note Address: 0x8025F978
@@ -252,7 +257,7 @@ void StateDead::init(EnemyBase* enemy, StateArg* stateArg)
 void StateDead::exec(EnemyBase* enemy)
 {
 	Obj* wisp = OBJ(enemy);
-	wisp->mUtilityTimer += sys->mDeltaTime;
+	wisp->mUtilityTimer += sys->getDeltaTime();
 
 	if (wisp->isFlyKill()) {
 		wisp->finishGlowEffect();
@@ -264,7 +269,9 @@ void StateDead::exec(EnemyBase* enemy)
  * @note Address: 0x8025FA88
  * @note Size: 0x4
  */
-void StateDead::cleanup(EnemyBase* enemy) { }
+void StateDead::cleanup(EnemyBase* enemy)
+{
+}
 
 } // namespace Qurione
 } // namespace Game

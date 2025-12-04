@@ -175,9 +175,8 @@ void Obj::interactGasAttack()
 		if (creature->isAlive() && (creature->isNavi() || creature->isPiki())) {
 			Vector3f position = creature->getPosition();
 			if ((max > position.y) && (min < position.y)) {
-				Vector2f delta;
-				getDistance2D(position, delta);
-				if (SQUARE(delta.x) + SQUARE(delta.y) < radSqr) {
+
+				if (mPosition.sqrDistance2D(position) < radSqr) {
 					InteractGas gas(this, C_GENERALPARMS.mAttackDamage.mValue);
 					creature->stimulate(gas);
 				}

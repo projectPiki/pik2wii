@@ -83,7 +83,7 @@ void TPressStart::doOpenScreen(ArgOpen*)
  */
 void TPressStart::doCloseScreen(ArgClose*)
 {
-	u32 time  = 0.2f / sys->mDeltaTime;
+	u32 time  = 0.2f / sys->getDeltaTime();
 	mAlpha    = time;
 	mAlphaMax = time;
 }
@@ -166,8 +166,8 @@ void TPressStart::startLoop_()
 		mAnims1[i].stop();
 		mAnims2[i].stop();
 	}
-	mAnims1[mCurrentScreen].play(sys->mDeltaTime * 60.0f, J3DAA_UNKNOWN_0, true);
-	mAnims2[mCurrentScreen].play(sys->mDeltaTime * 60.0f, J3DAA_UNKNOWN_0, true);
+	mAnims1[mCurrentScreen].play(sys->getDeltaTime() * 60.0f, J3DAA_UNKNOWN_0, true);
+	mAnims2[mCurrentScreen].play(sys->getDeltaTime() * 60.0f, J3DAA_UNKNOWN_0, true);
 	mScreens[mCurrentScreen]->animation();
 }
 } // namespace Screen

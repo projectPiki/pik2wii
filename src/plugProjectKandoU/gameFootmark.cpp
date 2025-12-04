@@ -10,8 +10,8 @@ namespace Game {
  */
 Footmark::Footmark()
 {
-	mPosition = Vector3f(0.0f);
-	mFlags    = 0;
+	mPosition.set(0.0f, 0.0f, 0.0f);
+	mFlags = 0;
 }
 
 /**

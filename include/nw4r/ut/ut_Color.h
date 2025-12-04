@@ -1,5 +1,5 @@
-#ifndef NW4R_UT_CHAR_STRM_READER_H
-#define NW4R_UT_CHAR_STRM_READER_H
+#ifndef NW4R_UT_COLOR_H
+#define NW4R_UT_COLOR_H
 
 #include <nw4r/types_nw4r.h>
 

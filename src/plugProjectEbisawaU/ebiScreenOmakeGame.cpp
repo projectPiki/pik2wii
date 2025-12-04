@@ -1,6 +1,6 @@
-#include "ebi/Omake.h"
-#include "ebi/E2DGraph.h"
 #include "PSSystem/PSSystemIF.h"
+#include "ebi/E2DGraph.h"
+#include "ebi/Omake.h"
 
 static const char name[] = "ebiScreenOmakeGame";
 
@@ -73,14 +73,14 @@ void TOmakeGame::doSetArchive(JKRArchive* arc)
 void TOmakeGame::doOpenScreen(ArgOpen*)
 {
 	mExitState = true;
-	mAnimationEnter.play(sys->mDeltaTime * 60.0f, J3DAA_UNKNOWN_0, true);
-	mAnimationChangeGame.play(sys->mDeltaTime * 60.0f, J3DAA_UNKNOWN_0, true);
+	mAnimationEnter.play(sys->getDeltaTime() * 60.0f, J3DAA_UNKNOWN_0, true);
+	mAnimationChangeGame.play(sys->getDeltaTime() * 60.0f, J3DAA_UNKNOWN_0, true);
 	mIsChangedGameSel = true;
 	mSelection        = 0;
 
 	JGeometry::TBox2f box;
 	box                 = *mPaneSelectBox[mSelection]->getBounds();
-	u32 time            = 0.1f / sys->mDeltaTime;
+	u32 time            = 0.1f / sys->getDeltaTime();
 	mCursor.mCounter    = time;
 	mCursor.mCounterMax = time;
 	mCursor.mBounds1    = box;
@@ -108,7 +108,10 @@ void TOmakeGame::doOpenScreen(ArgOpen*)
  * @note Address: 0x803F14F4
  * @note Size: 0x3C
  */
-void TOmakeGame::doCloseScreen(ArgClose*) { mAnimationExit.play(sys->mDeltaTime * 60.0f, J3DAA_UNKNOWN_0, true); }
+void TOmakeGame::doCloseScreen(ArgClose*)
+{
+	mAnimationExit.play(sys->getDeltaTime() * 60.0f, J3DAA_UNKNOWN_0, true);
+}
 
 /**
  * @note Address: 0x803F1530
@@ -144,7 +147,7 @@ bool TOmakeGame::doUpdateStateWait()
 
 			mBlinkFont[mSelection].enable();
 			openMsg(GameDesc);
-			mAnimationChangeGame.playBack(sys->mDeltaTime * 60.0f, false);
+			mAnimationChangeGame.playBack(sys->getDeltaTime() * 60.0f, false);
 			mIsChangedGameSel = false;
 			PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_CURSOR, 0);
 		}
@@ -163,7 +166,7 @@ bool TOmakeGame::doUpdateStateWait()
 		mPaneThumbnails[PikminPart]->hide();
 		mPaneThumbnails[PikminPath]->hide();
 		mPaneThumbnails[mSelection]->show();
-		mAnimationChangeGame.play(sys->mDeltaTime * 60.0f, J3DAA_UNKNOWN_0, true);
+		mAnimationChangeGame.play(sys->getDeltaTime() * 60.0f, J3DAA_UNKNOWN_0, true);
 		mIsChangedGameSel = true;
 	}
 	return false;

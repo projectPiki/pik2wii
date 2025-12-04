@@ -35,21 +35,21 @@ TTitleMgr::TTitleMgr()
 	mState        = TITLE_Inactive;
 	mLevelSetting = LEVEL_Summer;
 
-	u32 count         = 0.0f / sys->mDeltaTime;
+	u32 count         = 0.0f / sys->getDeltaTime();
 	mCounterCommon    = count;
 	mCounterCommonMax = count;
 
-	count         = 0.0f / sys->mDeltaTime;
+	count         = 0.0f / sys->getDeltaTime();
 	mCounter2     = count;
 	mCounter2Max  = count;
 	mIsWindActive = 0;
 	mCanInput     = 0;
 
-	count              = 0.0f / sys->mDeltaTime;
+	count              = 0.0f / sys->getDeltaTime();
 	mCounterControl    = count;
 	mCounterControlMax = count;
 
-	count                 = 0.0f / sys->mDeltaTime;
+	count                 = 0.0f / sys->getDeltaTime();
 	mCounterPressStart    = count;
 	mCounterPressStartMax = count;
 
@@ -497,17 +497,17 @@ void TTitleMgr::start()
 	mBlackPlane.start();
 	updateCameras();
 
-	u32 count     = 10.0f / sys->mDeltaTime;
+	u32 count     = 10.0f / sys->getDeltaTime();
 	mCounter2     = count;
 	mCounter2Max  = count;
 	mIsWindActive = 0;
 	mCanInput     = 0;
 
-	count              = mTitleParms.mCanOpenMenuDelay.mValue / sys->mDeltaTime;
+	count              = mTitleParms.mCanOpenMenuDelay.mValue / sys->getDeltaTime();
 	mCounterControl    = count;
 	mCounterControlMax = count;
 
-	count                 = mTitleParms.mPressStartDelay.mValue / sys->mDeltaTime;
+	count                 = mTitleParms.mPressStartDelay.mValue / sys->getDeltaTime();
 	mCounterPressStart    = count;
 	mCounterPressStartMax = count;
 
@@ -635,7 +635,7 @@ bool TTitleMgr::boidToAssemble(s32 coordType)
 void TTitleMgr::boid3ToAssemble()
 {
 	mPikminMgr.startBoid3(mTitleParms.mBoidDurationSwirl.mValue);
-	u32 count         = mTitleParms.mBoidDurationSwirl.mValue / sys->mDeltaTime;
+	u32 count         = mTitleParms.mBoidDurationSwirl.mValue / sys->getDeltaTime();
 	mCounterCommon    = count;
 	mCounterCommonMax = count;
 	//  UNUSED FUNCTION
@@ -685,13 +685,13 @@ void TTitleMgr::startState(enumState state)
 	switch (state) {
 	case TITLE_BoidDisperse:
 		mPikminMgr.startBoid1(mTitleParms.mBoidDurationDisperse);
-		count             = mTitleParms.mBoidDurationDisperse.mValue / sys->mDeltaTime;
+		count             = mTitleParms.mBoidDurationDisperse.mValue / sys->getDeltaTime();
 		mCounterCommon    = count;
 		mCounterCommonMax = count;
 		break;
 	case TITLE_BoidRegroup:
 		mPikminMgr.startBoid2(mTitleParms.mBoidDurationRegroup);
-		count             = mTitleParms.mBoidDurationRegroup.mValue / sys->mDeltaTime;
+		count             = mTitleParms.mBoidDurationRegroup.mValue / sys->getDeltaTime();
 		mCounterCommon    = count;
 		mCounterCommonMax = count;
 		break;
@@ -699,13 +699,13 @@ void TTitleMgr::startState(enumState state)
 		boid3ToAssemble();
 		break;
 	case TITLE_StartWind:
-		count             = mTitleParms.mWindMoveDuration.mValue / sys->mDeltaTime;
+		count             = mTitleParms.mWindMoveDuration.mValue / sys->getDeltaTime();
 		mCounterCommon    = count;
 		mCounterCommonMax = count;
 		mMapBase.startWind(mTitleParms.mPlantMoveDuration.mValue);
 		break;
 	case TITLE_Enemy:
-		count             = mTitleParms.mEnemyStayDuration.mValue / sys->mDeltaTime;
+		count             = mTitleParms.mEnemyStayDuration.mValue / sys->getDeltaTime();
 		mCounterCommon    = count;
 		mCounterCommonMax = count;
 		break;
@@ -757,7 +757,7 @@ bool TTitleMgr::update()
 					assembleCheck = false;
 				} else {
 					mState            = TITLE_StartWind;
-					u32 count         = mTitleParms.mWindMoveDuration.mValue / sys->mDeltaTime;
+					u32 count         = mTitleParms.mWindMoveDuration.mValue / sys->getDeltaTime();
 					mCounterCommon    = count;
 					mCounterCommonMax = count;
 					mMapBase.startWind(mTitleParms.mPlantMoveDuration.mValue);
@@ -802,7 +802,7 @@ bool TTitleMgr::update()
 						assembleCheck = false;
 					} else {
 						mState            = TITLE_StartWind;
-						u32 count         = mTitleParms.mWindMoveDuration.mValue / sys->mDeltaTime;
+						u32 count         = mTitleParms.mWindMoveDuration.mValue / sys->getDeltaTime();
 						mCounterCommon    = count;
 						mCounterCommonMax = count;
 						mMapBase.startWind(mTitleParms.mPlantMoveDuration);
@@ -815,11 +815,11 @@ bool TTitleMgr::update()
 			}
 
 			if (flag) {
-				u32 count    = 10.0f / sys->mDeltaTime;
+				u32 count    = 10.0f / sys->getDeltaTime();
 				mCounter2    = count;
 				mCounter2Max = count;
 			} else {
-				u32 count    = 3.0f / sys->mDeltaTime;
+				u32 count    = 3.0f / sys->getDeltaTime();
 				mCounter2    = count;
 				mCounter2Max = count;
 			}
@@ -876,7 +876,7 @@ void TTitleMgr::updateState()
 			mCounterCommon--;
 		}
 		if (mKoganeMgr.mObject->isController() || mChappyMgr.mObject->isController()) {
-			u32 count         = 10.0f / sys->mDeltaTime;
+			u32 count         = 10.0f / sys->getDeltaTime();
 			mCounterCommon    = count;
 			mCounterCommonMax = count;
 		}

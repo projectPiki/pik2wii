@@ -36,7 +36,7 @@ JUTGraphFifo::JUTGraphFifo(u32 size)
  */
 JUTGraphFifo::~JUTGraphFifo()
 {
-	sCurrentFifo->save();
+	// sCurrentFifo->save();
 
 	while (isGPActive()) {
 		;

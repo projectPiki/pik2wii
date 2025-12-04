@@ -79,7 +79,7 @@ Obj::Obj()
 void Obj::doUpdate()
 {
 	if (mFloorTriangle) {
-		mTargetVelocity = Vector3f(0.0f);
+		mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	} else {
 		mTargetVelocity = mCurrentVelocity;
 	}
@@ -216,8 +216,8 @@ void Obj::onStartCapture()
 	if (mCaptureMatrix) {
 		Vector3f position = mCaptureMatrix->getColumn(3);
 		onSetPosition(position);
-		mCurrentVelocity = Vector3f(0.0f);
-		mTargetVelocity  = Vector3f(0.0f);
+		mCurrentVelocity.set(0.0f, 0.0f, 0.0f);
+		mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 		enableEvent(0, EB_Constrained);
 		enableEvent(0, EB_Invulnerable);
 		disableEvent(0, EB_Cullable);

@@ -192,7 +192,7 @@ void StateWait::init(EnemyBase* enemy, StateArg* stateArg)
  */
 void StateWait::exec(EnemyBase* enemy)
 {
-	f32 frameTime = sys->mDeltaTime;
+	f32 frameTime = sys->getDeltaTime();
 	if (OBJ(enemy)->isPelFlag(PELPLANTFLAG_Growing)) {
 		OBJ(enemy)->mGrowTimer += frameTime;
 	}

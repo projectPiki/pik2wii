@@ -767,8 +767,8 @@ void MapRoom::doDirectDraw(Graphics&)
  */
 RoomMapMgr::RoomMapMgr(Cave::CaveInfo* info)
 {
-	mStartPositions[0] = Vector3f(0.0f);
-	mStartPositions[1] = Vector3f(0.0f);
+	mStartPositions[0].set(0.0f, 0.0f, 0.0f);
+	mStartPositions[1].set(0.0f, 0.0f, 0.0f);
 
 	mMapUnitMgr = new MapUnitMgr;
 
@@ -3643,9 +3643,9 @@ Sys::TriIndexList* RoomMapMgr::traceMove_original(MoveInfo& info, f32 step)
 		return nullptr;
 	}
 
-	int count2      = 0;
-	f32 floatSum    = 0.0f;
-	Vector3f sumVec = Vector3f(0.0f);
+	int count2   = 0;
+	f32 floatSum = 0.0f;
+	Vector3f sumVec(0.0f, 0.0f, 0.0f);
 	for (int i = 0; i < count; i++) {
 		if (floatArray[i] < 0.0f) {
 			continue;

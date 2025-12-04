@@ -51,8 +51,8 @@ void StateDead::init(EnemyBase* enemy, StateArg* stateArg)
 	panModoki->startMotion(PANMODOKIANIM_Dead, nullptr);
 	panModoki->setAnimSpeed(EnemyAnimatorBase::defaultAnimSpeed);
 	panModoki->deathProcedure();
-	panModoki->mCurrentVelocity = Vector3f(0.0f);
-	panModoki->mTargetVelocity  = Vector3f(0.0f);
+	panModoki->mCurrentVelocity.set(0.0f, 0.0f, 0.0f);
+	panModoki->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	panModoki->killNest();
 }
 
@@ -103,7 +103,7 @@ void StateWalk::init(EnemyBase* enemy, StateArg* stateArg)
  */
 void StateWalk::exec(EnemyBase* enemy)
 {
-	if (enemy->mHealth <= 0.0f) {
+	if (enemy->isDead()) {
 		transit(enemy, PANMODOKI_Dead, nullptr);
 		return;
 	}
@@ -152,8 +152,8 @@ void StateBack::init(EnemyBase* enemy, StateArg* stateArg)
 		enemy->setMotionFrame(enemy->getFirstKeyFrame());
 	}
 
-	enemy->mTargetVelocity  = Vector3f(0.0f);
-	enemy->mCurrentVelocity = Vector3f(0.0f);
+	enemy->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
+	enemy->mCurrentVelocity.set(0.0f, 0.0f, 0.0f);
 
 	Pellet* target = OBJ(enemy)->getCarryTarget();
 	if (target) {
@@ -173,7 +173,7 @@ void StateBack::init(EnemyBase* enemy, StateArg* stateArg)
  */
 void StateBack::exec(EnemyBase* enemy)
 {
-	if (enemy->mHealth <= 0.0f) {
+	if (enemy->isDead()) {
 		transit(enemy, PANMODOKI_Dead, nullptr);
 		return;
 	}
@@ -194,8 +194,8 @@ void StateBack::exec(EnemyBase* enemy)
 		}
 
 		if (OBJ(enemy)->isCarryToGoal()) {
-			enemy->mTargetVelocity  = Vector3f(0.0f);
-			enemy->mCurrentVelocity = Vector3f(0.0f);
+			enemy->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
+			enemy->mCurrentVelocity.set(0.0f, 0.0f, 0.0f);
 			transit(enemy, PANMODOKI_CarryEnd, nullptr);
 		} else {
 			Pellet* target = OBJ(enemy)->getCarryTarget();
@@ -263,10 +263,10 @@ void StatePulled::init(EnemyBase* enemy, StateArg* stateArg)
 	}
 
 	OBJ(enemy)->createPulledSmokeEffect();
-	enemy->mTargetVelocity  = Vector3f(0.0f);
-	enemy->mCurrentVelocity = Vector3f(0.0f);
-	OBJ(enemy)->_2E4        = 0;
-	OBJ(enemy)->mNextState  = PANMODOKI_NULL;
+	enemy->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
+	enemy->mCurrentVelocity.set(0.0f, 0.0f, 0.0f);
+	OBJ(enemy)->_2E4       = 0;
+	OBJ(enemy)->mNextState = PANMODOKI_NULL;
 }
 
 /**
@@ -275,7 +275,7 @@ void StatePulled::init(EnemyBase* enemy, StateArg* stateArg)
  */
 void StatePulled::exec(EnemyBase* enemy)
 {
-	if (enemy->mHealth <= 0.0f) {
+	if (enemy->isDead()) {
 		transit(enemy, PANMODOKI_Dead, nullptr);
 		return;
 	}
@@ -345,7 +345,10 @@ void StatePulled::exec(EnemyBase* enemy)
  * @note Address: 0x8034D99C
  * @note Size: 0x24
  */
-void StatePulled::cleanup(EnemyBase* enemy) { OBJ(enemy)->fadePulledSmokeEffect(); }
+void StatePulled::cleanup(EnemyBase* enemy)
+{
+	OBJ(enemy)->fadePulledSmokeEffect();
+}
 
 /**
  * @note Address: 0x8034D9C0
@@ -401,8 +404,8 @@ void StateHide::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	enemy->startMotion(PANMODOKIANIM_Hide, nullptr);
 	enemy->setAnimSpeed(EnemyAnimatorBase::defaultAnimSpeed);
-	enemy->mTargetVelocity = Vector3f(0.0f);
-	mHideTimer             = 0;
+	enemy->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
+	mHideTimer = 0;
 }
 
 /**
@@ -451,7 +454,7 @@ void StateDamage::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	enemy->startMotion(PANMODOKIANIM_Damage, nullptr);
 	enemy->setAnimSpeed(EnemyAnimatorBase::defaultAnimSpeed);
-	enemy->mTargetVelocity = Vector3f(0.0f);
+	enemy->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 
 	Pellet* target = OBJ(enemy)->getCarryTarget();
 	if (target) {
@@ -481,7 +484,7 @@ void StateDamage::init(EnemyBase* enemy, StateArg* stateArg)
 void StateDamage::exec(EnemyBase* enemy)
 {
 	if (enemy->mCurAnim->mIsPlaying && enemy->mCurAnim->mType == KEYEVENT_END) {
-		if (enemy->mHealth <= 0.0f) {
+		if (enemy->isDead()) {
 			transit(enemy, PANMODOKI_Dead, nullptr);
 		} else {
 			transit(enemy, PANMODOKI_Wait, nullptr);
@@ -507,7 +510,7 @@ void StateWait::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	enemy->startMotion(PANMODOKIANIM_Wait, nullptr);
 	enemy->setAnimSpeed(EnemyAnimatorBase::defaultAnimSpeed);
-	enemy->mTargetVelocity = Vector3f(0.0f);
+	enemy->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	mWaitTimer             = 0;
 	OBJ(enemy)->mNextState = PANMODOKI_Walk;
 }
@@ -518,7 +521,7 @@ void StateWait::init(EnemyBase* enemy, StateArg* stateArg)
  */
 void StateWait::exec(EnemyBase* enemy)
 {
-	if (enemy->mHealth <= 0.0f) {
+	if (enemy->isDead()) {
 		transit(enemy, PANMODOKI_Dead, nullptr);
 		return;
 	}
@@ -555,8 +558,8 @@ void StateStick::init(EnemyBase* enemy, StateArg* stateArg)
 		enemy->setAnimSpeed(EnemyAnimatorBase::defaultAnimSpeed * CG_PROPERPARMS(enemy).mWalkAnimSpeed.mValue);
 	}
 
-	enemy->mTargetVelocity  = Vector3f(0.0f);
-	enemy->mCurrentVelocity = Vector3f(0.0f);
+	enemy->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
+	enemy->mCurrentVelocity.set(0.0f, 0.0f, 0.0f);
 
 	Pellet* target = OBJ(enemy)->getCarryTarget();
 	if (!target || !OBJ(enemy)->isTargetable(target) || !target->isSlotFree(9999)) {
@@ -573,7 +576,7 @@ void StateStick::init(EnemyBase* enemy, StateArg* stateArg)
  */
 void StateStick::exec(EnemyBase* enemy)
 {
-	if (enemy->mHealth <= 0.0f) {
+	if (enemy->isDead()) {
 		transit(enemy, PANMODOKI_Dead, nullptr);
 		return;
 	}
@@ -593,8 +596,8 @@ void StateStick::exec(EnemyBase* enemy)
 	stickRadius *= stickRadius;
 	if (dist < stickRadius) {
 		if (OBJ(enemy)->isTargetable(target) && target->isSlotFree(9999)) {
-			enemy->mCurrentVelocity = Vector3f(0.0f);
-			enemy->mTargetVelocity  = Vector3f(0.0f);
+			enemy->mCurrentVelocity.set(0.0f, 0.0f, 0.0f);
+			enemy->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 			enemy->startStick(target, 9999);
 			target->startPick();
 			OBJ(enemy)->setCarryDir(false);
@@ -606,7 +609,7 @@ void StateStick::exec(EnemyBase* enemy)
 		EnemyFunc::walkToTarget(enemy, targetPos, 0.5f * CG_GENERALPARMS(enemy).mMoveSpeed(), CG_PROPERPARMS(enemy).mFastTurnSpeed(),
 		                        CG_PROPERPARMS(enemy).mMaxFastTurnAngle());
 
-		enemy->turnToTarget2(targetPos, CG_PROPERPARMS(enemy).mFastTurnSpeed(), CG_PROPERPARMS(enemy).mMaxFastTurnAngle());
+		enemy->turnToTarget(targetPos, CG_PROPERPARMS(enemy).mFastTurnSpeed(), CG_PROPERPARMS(enemy).mMaxFastTurnAngle());
 
 		_10++;
 		f32 rad = 2.5f * OBJ(enemy)->mCarrySizeDiff;
@@ -647,7 +650,10 @@ void StateSucked::init(EnemyBase* enemy, StateArg* stateArg)
  * @note Address: 0x8034E5A4
  * @note Size: 0xC
  */
-void StateSucked::exec(EnemyBase* enemy) { OBJ(enemy)->mCanReactToPress = 1; }
+void StateSucked::exec(EnemyBase* enemy)
+{
+	OBJ(enemy)->mCanReactToPress = 1;
+}
 
 /**
  * @note Address: 0x8034E5B0
@@ -675,7 +681,7 @@ void StateCarryEnd::init(EnemyBase* enemy, StateArg* stateArg)
  */
 void StateCarryEnd::exec(EnemyBase* enemy)
 {
-	if (enemy->mHealth <= 0.0f) {
+	if (enemy->isDead()) {
 		transit(enemy, PANMODOKI_Dead, nullptr);
 
 	} else {
@@ -688,7 +694,7 @@ void StateCarryEnd::exec(EnemyBase* enemy)
 			}
 
 		} else {
-			enemy->turnToTarget2(_10, CG_GENERALPARMS(enemy).mTurnSpeed(), CG_GENERALPARMS(enemy).mMaxTurnAngle());
+			enemy->turnToTarget(_10, CG_GENERALPARMS(enemy).mTurnSpeed(), CG_GENERALPARMS(enemy).mMaxTurnAngle());
 			diff *= 0.05f;
 			enemy->forceMovePosition(diff);
 		}

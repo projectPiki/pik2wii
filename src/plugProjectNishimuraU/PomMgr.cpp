@@ -1,17 +1,20 @@
 #include "Game/Entities/Pom.h"
-#include "Game/generalEnemyMgr.h"
 #include "Game/GameSystem.h"
+#include "Game/Piki.h"
 #include "Game/gamePlayData.h"
 #include "Game/gameStat.h"
-#include "Game/Piki.h"
+#include "Game/generalEnemyMgr.h"
 #include "JSystem/JUtility/JUTNameTab.h"
 #include "nans.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "246-PomMgr";
+}
+
 namespace Game {
 namespace Pom {
-
-static const int somePomArray[] = { 0, 0, 0 };
-static const char pomMgrName[]  = "246-PomMgr";
 
 /**
  * @note Address: 0x80253E8C
@@ -20,7 +23,7 @@ static const char pomMgrName[]  = "246-PomMgr";
 Mgr::Mgr(int objLimit, u8 modelType)
     : EnemyMgrBase(objLimit, modelType)
 {
-	mName = "ポンガシ草マネージャ"; // pongashi plant manager
+	setName("ポンガシ草マネージャ"); // pongashi plant manager
 }
 
 /**
@@ -83,7 +86,10 @@ EnemyBase* Mgr::birth(EnemyBirthArg& birthArg)
  * @note Address: 0x802540D0
  * @note Size: 0x48
  */
-void Mgr::doAlloc() { init(new Parms); }
+void Mgr::doAlloc()
+{
+	init(new Parms);
+}
 
 /**
  * @note Address: 0x802542E0
@@ -109,7 +115,10 @@ void Mgr::createObj(int count)
  * @note Address: 0x80254524
  * @note Size: 0x10
  */
-EnemyBase* Mgr::getEnemy(int index) { return &mObj[index]; }
+EnemyBase* Mgr::getEnemy(int index)
+{
+	return &mObj[index];
+}
 
 /**
  * @note Address: 0x80254534

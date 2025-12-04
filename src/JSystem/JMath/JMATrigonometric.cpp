@@ -1,5 +1,5 @@
-#include "math.h"
 #include "JSystem/JMath.h"
+#include "math.h"
 #include "types.h"
 
 /**
@@ -30,7 +30,10 @@ f32 orderfloats(f32 x)
  * @note Size: 0x258
  */
 // void atan2___Q25JMath18TAtanTable<1024, f32> CFff()
-f32 JMath::TAtanTable<1024, f32>::atan2_(f32 y, f32 x) const { return (y >= 0.0f ? calc(y, x) : calcInverse(y, x)); }
+f32 JMath::TAtanTable<1024, f32>::atan2_(f32 y, f32 x) const
+{
+	return (y >= 0.0f ? calc(y, x) : calcInverse(y, x));
+}
 
 namespace JMath {
 const TSinCosTable<2048, f32> sincosTable_;

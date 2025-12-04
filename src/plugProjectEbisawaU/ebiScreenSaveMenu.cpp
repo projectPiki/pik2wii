@@ -1,9 +1,9 @@
-#include "ebi/Screen/TSaveMenu.h"
-#include "System.h"
-#include "og/newScreen/ogUtil.h"
-#include "PSSystem/PSSystemIF.h"
-#include "ebi/E2DGraph.h"
 #include "Controller.h"
+#include "PSSystem/PSSystemIF.h"
+#include "System.h"
+#include "ebi/E2DGraph.h"
+#include "ebi/Screen/TSaveMenu.h"
+#include "og/newScreen/ogUtil.h"
 
 static const char name[] = "ebiScreenSaveMenu";
 
@@ -61,7 +61,7 @@ void TSaveMenu::doOpenScreen(ArgOpen*)
 {
 	mAlpha               = 200;
 	mDrawState           = 0;
-	u32 count            = E2DFader::kFadeTime / sys->mDeltaTime;
+	u32 count            = E2DFader::kFadeTime / sys->getDeltaTime();
 	mOpenCloseCounter    = count;
 	mOpenCloseCounterMax = count;
 	mDrawState           = 2;
@@ -77,7 +77,7 @@ void TSaveMenu::doOpenScreen(ArgOpen*)
 void TSaveMenu::doCloseScreen(ArgClose*)
 {
 	mFadeTimer           = 0.0f;
-	u32 count            = E2DFader::kFadeTime / sys->mDeltaTime;
+	u32 count            = E2DFader::kFadeTime / sys->getDeltaTime();
 	mOpenCloseCounter    = count;
 	mOpenCloseCounterMax = count;
 	mDrawState           = 1;
@@ -113,7 +113,7 @@ bool TSaveMenu::doUpdateStateOpen()
 	mCursor1.update();
 	mCursor2.update();
 
-	mFadeTimer += sys->mDeltaTime;
+	mFadeTimer += sys->getDeltaTime();
 
 	mScreenMovePos = (1.0f - og::Screen::calcSmooth0to1(mFadeTimer, 0.3f)) * 800.0f;
 	mScreenObj->setXY(mScreenMovePos, 0.0f);
@@ -150,7 +150,7 @@ bool TSaveMenu::doUpdateStateClose()
 	mCursor1.update();
 	mCursor2.update();
 
-	mFadeTimer += sys->mDeltaTime;
+	mFadeTimer += sys->getDeltaTime();
 
 	mScreenMovePos = (og::Screen::calcSmooth0to1(mFadeTimer, 0.3f)) * -800.0f;
 	mScreenObj->setXY(mScreenMovePos, 0.0f);
@@ -268,7 +268,10 @@ void TSaveMenu::noMsg()
  * @note Address: 0x803DDB88
  * @note Size: 0x10
  */
-bool TSaveMenu::isFinishMsg() { return u8(mStateID == MSG_Kill); }
+bool TSaveMenu::isFinishMsg()
+{
+	return u8(mStateID == MSG_Kill);
+}
 
 /**
  * @note Address: 0x803DDB98
@@ -324,7 +327,7 @@ void TSaveMenu::startMsgState_(enumMsgState state)
 			mAnimScreen[2]->open(0.0f);
 			PSSystem::spSysIF->playSystemSe(PSSE_SY_MEMORYCARD_OK, 0);
 		}
-		u32 count       = 0.8f / sys->mDeltaTime;
+		u32 count       = 0.8f / sys->getDeltaTime();
 		mTextCounter    = count;
 		mTextCounterMax = count;
 		break;
@@ -344,7 +347,7 @@ void TSaveMenu::startMsgState_(enumMsgState state)
 		default:
 			JUT_PANICLINE(395, "ありえない！ありえない！たはあっ！\n"); // "Impossible! Impossible! Tahaha"
 		}
-		u32 count2      = 0.5f / sys->mDeltaTime;
+		u32 count2      = 0.5f / sys->getDeltaTime();
 		mTextCounter    = count2;
 		mTextCounterMax = count2;
 		break;

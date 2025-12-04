@@ -660,7 +660,7 @@ bool CardMgr::SlotMachine::goodPlace()
 void VsGame::CardMgr::SlotMachine::update()
 {
 	updateAppear();
-	f32 deltaTime = sys->mDeltaTime;
+	f32 deltaTime = sys->getDeltaTime();
 	switch (mSpinState) { // await spin stop
 	case SPIN_WAIT_START:
 		mSpinAccel = -TAU;
@@ -781,7 +781,7 @@ void VsGame::CardMgr::SlotMachine::update()
 		mSpinSpeed = 0.0f;
 		mSpinAccel = 0.0f;
 		if (gGameConfig.mParms.mVsY.mData == 1) {
-			mSpinTimer -= sys->mDeltaTime;
+			mSpinTimer -= sys->getDeltaTime();
 			if (mSpinTimer <= 0.0f) {
 				mCardMgr->usePlayerCard(mPlayerIndex, nullptr); // nice tekimgr dumbass
 			}
@@ -818,7 +818,7 @@ void VsGame::CardMgr::SlotMachine::updateAppear()
 {
 	switch (mAppearState) {
 	case APPEAR_LEAVE:
-		mAppearValue -= sys->mDeltaTime * 300.0f;
+		mAppearValue -= sys->getDeltaTime() * 300.0f;
 		if (mAppearValue <= 0.0f) {
 			mAppearValue = 0.0f;
 			mAppearState = APPEAR_AWAIT;
@@ -828,7 +828,7 @@ void VsGame::CardMgr::SlotMachine::updateAppear()
 		mAppearValue = 0.0f;
 		break;
 	case APPEAR_ENTER:
-		mAppearValue += sys->mDeltaTime * 300.0f;
+		mAppearValue += sys->getDeltaTime() * 300.0f;
 		if (mAppearValue >= 150.0f) {
 			mAppearValue = 150.0f;
 			if (mCherryStock > 0) {
@@ -1059,8 +1059,8 @@ void VsGame::CardMgr::drawSlot(Graphics& gfx, Vector3f& place, SlotMachine& mach
 		if (machine._6C > 1.0f) {
 			machine._6C -= 1.0f;
 		}
-		machine._68 += sys->mDeltaTime;
-		machine._6C += sys->mDeltaTime / 2;
+		machine._68 += sys->getDeltaTime();
+		machine._6C += sys->getDeltaTime() / 2;
 
 		// this bunch seems good
 		f32 pos = machine._44;
@@ -1150,7 +1150,7 @@ void VsGame::CardMgr::SlotMachine::startZoomUse()
 void VsGame::CardMgr::SlotMachine::updateZoomIn()
 {
 	if (_50 == 0) {
-		mTimer += sys->mDeltaTime * 4.0f;
+		mTimer += sys->getDeltaTime() * 4.0f;
 		_44 = mTimer * 10.0f + 20.0f;
 		_48 = 0.0f;
 		if (mTimer > 1.0f) {
@@ -1158,7 +1158,7 @@ void VsGame::CardMgr::SlotMachine::updateZoomIn()
 			_50    = 1;
 		}
 	} else {
-		mTimer += sys->mDeltaTime;
+		mTimer += sys->getDeltaTime();
 		if (mTimer > 1.0f) {
 			mTimer -= 1.0f;
 		}
@@ -1175,7 +1175,7 @@ void VsGame::CardMgr::SlotMachine::updateZoomIn()
  */
 void VsGame::CardMgr::SlotMachine::updateZoomUse()
 {
-	mTimer += sys->mDeltaTime * 3.0f;
+	mTimer += sys->getDeltaTime() * 3.0f;
 	if (mTimer > 1.0f) {
 		mTimer -= 1.0f;
 	}

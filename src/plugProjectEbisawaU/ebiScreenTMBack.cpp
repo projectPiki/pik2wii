@@ -1,8 +1,8 @@
-#include "ebi/E2DGraph.h"
-#include "ebi/Screen/TTMBack.h"
-#include "ebi/Screen/TNintendoLogo.h"
 #include "Graphics.h"
 #include "System.h"
+#include "ebi/E2DGraph.h"
+#include "ebi/Screen/TNintendoLogo.h"
+#include "ebi/Screen/TTMBack.h"
 
 namespace ebi {
 namespace Screen {
@@ -31,7 +31,7 @@ void TTMBack::doSetArchive(JKRArchive* archive)
 void TTMBack::doOpenScreen(ArgOpen* arg)
 {
 	P2ASSERTLINE(33, arg != nullptr);
-	u32 duration         = (u32)(static_cast<ArgOpenTMBack*>(arg)->_04 / sys->mDeltaTime);
+	u32 duration         = (u32)(static_cast<ArgOpenTMBack*>(arg)->_04 / sys->getDeltaTime());
 	mOpenCloseCounter    = duration;
 	mOpenCloseCounterMax = duration;
 }
@@ -42,7 +42,7 @@ void TTMBack::doOpenScreen(ArgOpen* arg)
  */
 void TTMBack::doCloseScreen(ArgClose* arg)
 {
-	u32 duration         = (u32)(0.5f / sys->mDeltaTime);
+	u32 duration         = (u32)(0.5f / sys->getDeltaTime());
 	mOpenCloseCounter    = duration;
 	mOpenCloseCounterMax = duration;
 }

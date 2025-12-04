@@ -1,11 +1,11 @@
 #ifndef _GAME_ENTITIES_ROCK_H
 #define _GAME_ENTITIES_ROCK_H
 
-#include "Game/EnemyStateMachine.h"
 #include "Game/EnemyAnimatorBase.h"
-#include "Game/EnemyParmsBase.h"
-#include "Game/EnemyMgrBase.h"
 #include "Game/EnemyBase.h"
+#include "Game/EnemyMgrBase.h"
+#include "Game/EnemyParmsBase.h"
+#include "Game/EnemyStateMachine.h"
 #include "Game/gameGenerator.h"
 #include "efx/TRock.h"
 
@@ -99,7 +99,7 @@ struct Obj : public EnemyBase {
 	void effectDrawOn();
 	void effectDrawOff();
 
-	inline f32 getMoveSpeed() { return C_PROPERPARMS.mSearchRumbleSpeed(); }
+	inline f32 getScaleUpRate() { return mScaleUpRate; }
 
 	// _00 		= VTBL
 	// _00-_2BC	= EnemyBase

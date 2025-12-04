@@ -1,8 +1,8 @@
-#include "Game/Entities/Armor.h"
 #include "Game/EnemyAnimKeyEvent.h"
-#include "Game/rumble.h"
-#include "Game/Entities/ItemBridge.h"
 #include "Game/EnemyFunc.h"
+#include "Game/Entities/Armor.h"
+#include "Game/Entities/ItemBridge.h"
+#include "Game/rumble.h"
 
 namespace Game {
 namespace Armor {
@@ -38,7 +38,7 @@ void StateDead::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	enemy->deathProcedure();
 	enemy->disableEvent(0, EB_Cullable);
-	enemy->mTargetVelocity = Vector3f(0.0f);
+	enemy->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	enemy->startMotion(ARMORANIM_Dead, nullptr);
 }
 
@@ -64,7 +64,9 @@ void StateDead::exec(EnemyBase* enemy)
  * @note Address: 0x80286490
  * @note Size: 0x4
  */
-void StateDead::cleanup(EnemyBase* enemy) { }
+void StateDead::cleanup(EnemyBase* enemy)
+{
+}
 
 /**
  * @note Address: 0x80286494
@@ -75,7 +77,7 @@ void StateStay::init(EnemyBase* enemy, StateArg* stateArg)
 	enemy->hardConstraintOn();
 	enemy->disableEvent(0, EB_LifegaugeVisible);
 	enemy->disableEvent(0, EB_Animating);
-	enemy->mTargetVelocity = Vector3f(0.0f);
+	enemy->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	enemy->startMotion(ARMORANIM_Appear, nullptr);
 	enemy->stopMotion();
 }
@@ -119,7 +121,7 @@ void StateAppear::init(EnemyBase* enemy, StateArg* stateArg)
 	armor->lifeIncrement();
 	armor->hardConstraintOn();
 	armor->enableEvent(0, EB_LifegaugeVisible);
-	armor->mTargetVelocity = Vector3f(0.0f);
+	armor->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	armor->setEmotionExcitement();
 	armor->startMotion(ARMORANIM_Appear, nullptr);
 	armor->createAppearEffect();
@@ -141,7 +143,7 @@ void StateAppear::exec(EnemyBase* enemy)
 			Vector3f armorPos = armor->getPosition();
 			rumbleMgr->startRumble(RUMBLETYPE_Fixed9, armorPos, RUMBLEID_Both);
 		} else if (animType == KEYEVENT_END) {
-			if (armor->mHealth <= 0.0f) {
+			if (armor->isDead()) {
 				transit(armor, ARMOR_Dead, nullptr);
 			} else {
 				transit(armor, ARMOR_Move, nullptr);
@@ -154,7 +156,10 @@ void StateAppear::exec(EnemyBase* enemy)
  * @note Address: 0x80286764
  * @note Size: 0x24
  */
-void StateAppear::cleanup(EnemyBase* enemy) { enemy->hardConstraintOff(); }
+void StateAppear::cleanup(EnemyBase* enemy)
+{
+	enemy->hardConstraintOff();
+}
 
 /**
  * @note Address: 0x80286788
@@ -164,7 +169,7 @@ void StateDive::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	Obj* armor = OBJ(enemy);
 	armor->hardConstraintOn();
-	armor->mTargetVelocity = Vector3f(0.0f);
+	armor->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	armor->setEmotionCaution();
 	armor->startMotion(ARMORANIM_Dive, nullptr);
 	armor->createDisAppearEffect();
@@ -192,7 +197,10 @@ void StateDive::exec(EnemyBase* enemy)
  * @note Address: 0x80286884
  * @note Size: 0x24
  */
-void StateDive::cleanup(EnemyBase* enemy) { enemy->hardConstraintOff(); }
+void StateDive::cleanup(EnemyBase* enemy)
+{
+	enemy->hardConstraintOff();
+}
 
 /**
  * @note Address: 0x802868A8
@@ -216,20 +224,17 @@ void StateMove::exec(EnemyBase* enemy)
 	                                                     nullptr, nullptr, nullptr);
 	if (target) {
 		armor->mTargetCreature = target;
-		f32 angleDist          = armor->changeFaceDir2(target);
+		f32 angleDist          = armor->turnToTarget(target, CG_GENERALPARMS(armor).mTurnSpeed(), CG_GENERALPARMS(armor).mMaxTurnAngle());
 
-		armor->setTargetVelocity();
+		armor->setTargetSpeed(CG_GENERALPARMS(armor).mMoveSpeed());
 
 		if (armor->isTargetAttackable(target, angleDist, CG_GENERALPARMS(armor).mMaxAttackRange(),
 		                              CG_GENERALPARMS(armor).mMaxAttackAngle())) {
 			armor->mNextState = ARMOR_Attack2;
 			armor->finishMotion();
 		} else {
-			Vector3f homePos = armor->mHomePosition;
-			Vector3f pos     = armor->getPosition();
-			f32 homeDist     = pos.distance(homePos);
 
-			if (homeDist > CG_GENERALPARMS(armor).mTerritoryRadius()) {
+			if (armor->distanceFromHome() > CG_GENERALPARMS(armor).mTerritoryRadius()) {
 				armor->mNextState = ARMOR_GoHome;
 				armor->finishMotion();
 			} else {
@@ -250,7 +255,7 @@ void StateMove::exec(EnemyBase* enemy)
 		armor->finishMotion();
 	}
 
-	if (armor->mHealth <= 0.0f) {
+	if (armor->isDead()) {
 		transit(armor, ARMOR_Dead, nullptr);
 		return;
 	}
@@ -617,7 +622,9 @@ lbl_80286D84:
  * @note Address: 0x80286DD4
  * @note Size: 0x4
  */
-void StateMove::cleanup(EnemyBase* enemy) { }
+void StateMove::cleanup(EnemyBase* enemy)
+{
+}
 
 /**
  * @note Address: 0x80286DD8
@@ -655,7 +662,7 @@ void StateMoveSide::exec(EnemyBase* enemy)
 		armor->finishMotion();
 	}
 
-	if (armor->mHealth <= 0.0f) {
+	if (armor->isDead()) {
 		transit(armor, ARMOR_Dead, nullptr);
 		return;
 	}
@@ -671,7 +678,9 @@ void StateMoveSide::exec(EnemyBase* enemy)
  * @note Address: 0x80286F34
  * @note Size: 0x4
  */
-void StateMoveSide::cleanup(EnemyBase* enemy) { }
+void StateMoveSide::cleanup(EnemyBase* enemy)
+{
+}
 
 /**
  * @note Address: 0x80286F38
@@ -708,7 +717,7 @@ void StateMoveCentre::exec(EnemyBase* enemy)
 		armor->finishMotion();
 	}
 
-	if (armor->mHealth <= 0.0f) {
+	if (armor->isDead()) {
 		transit(armor, ARMOR_Dead, nullptr);
 		return;
 	}
@@ -724,7 +733,9 @@ void StateMoveCentre::exec(EnemyBase* enemy)
  * @note Address: 0x80287094
  * @note Size: 0x4
  */
-void StateMoveCentre::cleanup(EnemyBase* enemy) { }
+void StateMoveCentre::cleanup(EnemyBase* enemy)
+{
+}
 
 /**
  * @note Address: 0x80287098
@@ -761,7 +772,7 @@ void StateMoveTop::exec(EnemyBase* enemy)
 		armor->finishMotion();
 	}
 
-	if (armor->mHealth <= 0.0f) {
+	if (armor->isDead()) {
 		transit(armor, ARMOR_Dead, nullptr);
 		return;
 	}
@@ -777,7 +788,9 @@ void StateMoveTop::exec(EnemyBase* enemy)
  * @note Address: 0x802871F4
  * @note Size: 0x4
  */
-void StateMoveTop::cleanup(EnemyBase* enemy) { }
+void StateMoveTop::cleanup(EnemyBase* enemy)
+{
+}
 
 /**
  * @note Address: 0x802871F8
@@ -822,7 +835,7 @@ void StateGoHome::exec(EnemyBase* enemy)
 		transit(armor, armor->mNextState, nullptr);
 	}
 
-	if (armor->mHealth <= 0.0f) {
+	if (armor->isDead()) {
 		transit(armor, ARMOR_Dead, nullptr);
 		return;
 	}
@@ -836,7 +849,9 @@ void StateGoHome::exec(EnemyBase* enemy)
  * @note Address: 0x80287448
  * @note Size: 0x4
  */
-void StateGoHome::cleanup(EnemyBase* enemy) { }
+void StateGoHome::cleanup(EnemyBase* enemy)
+{
+}
 
 /**
  * @note Address: 0x8028744C
@@ -844,8 +859,8 @@ void StateGoHome::cleanup(EnemyBase* enemy) { }
  */
 void StateAttack1::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* armor             = OBJ(enemy);
-	armor->mTargetVelocity = Vector3f(0.0f);
+	Obj* armor = OBJ(enemy);
+	armor->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	armor->startMotion(ARMORANIM_Attack1, nullptr);
 	armor->mNextState = ARMOR_NULL;
 	armor->createBridgeEffect();
@@ -884,7 +899,7 @@ void StateAttack1::exec(EnemyBase* enemy)
 			transit(armor, armor->mNextState, nullptr);
 		}
 	}
-	if (armor->mHealth <= 0.0f) {
+	if (armor->isDead()) {
 		transit(armor, ARMOR_Dead, nullptr);
 		return;
 	}
@@ -894,7 +909,9 @@ void StateAttack1::exec(EnemyBase* enemy)
  * @note Address: 0x802875E0
  * @note Size: 0x4
  */
-void StateAttack1::cleanup(EnemyBase* enemy) { }
+void StateAttack1::cleanup(EnemyBase* enemy)
+{
+}
 
 /**
  * @note Address: 0x802875E4
@@ -903,7 +920,7 @@ void StateAttack1::cleanup(EnemyBase* enemy) { }
 void StateAttack2::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	OBJ(enemy)->mAttackLoopTime = 0.0f;
-	enemy->mTargetVelocity      = Vector3f(0.0f);
+	enemy->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	enemy->startMotion(ARMORANIM_Attack2, nullptr);
 }
 
@@ -923,7 +940,7 @@ void StateAttack2::exec(EnemyBase* enemy)
 		armor->finishMotion();
 	}
 
-	armor->mAttackLoopTime += sys->mDeltaTime;
+	armor->mAttackLoopTime += sys->getDeltaTime();
 
 	if (armor->mCurAnim->mIsPlaying) {
 		if (armor->mCurAnim->mType == KEYEVENT_2) {
@@ -938,7 +955,7 @@ void StateAttack2::exec(EnemyBase* enemy)
 			rumbleMgr->startRumble(RUMBLETYPE_Fixed9, armorPos, RUMBLEID_Both);
 
 		} else if (armor->mCurAnim->mType == KEYEVENT_END) {
-			if (armor->mHealth <= 0.0f) {
+			if (armor->isDead()) {
 				transit(armor, ARMOR_Dead, nullptr);
 				return;
 			}
@@ -955,7 +972,9 @@ void StateAttack2::exec(EnemyBase* enemy)
  * @note Address: 0x802877DC
  * @note Size: 0x4
  */
-void StateAttack2::cleanup(EnemyBase* enemy) { }
+void StateAttack2::cleanup(EnemyBase* enemy)
+{
+}
 
 /**
  * @note Address: 0x802877E0
@@ -963,7 +982,7 @@ void StateAttack2::cleanup(EnemyBase* enemy) { }
  */
 void StateEat::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	enemy->mTargetVelocity = Vector3f(0.0f);
+	enemy->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	enemy->startMotion(ARMORANIM_Eat, nullptr);
 }
 
@@ -974,7 +993,7 @@ void StateEat::init(EnemyBase* enemy, StateArg* stateArg)
 void StateEat::exec(EnemyBase* enemy)
 {
 	Obj* armor = OBJ(enemy);
-	if (armor->mHealth <= 0.0f) {
+	if (armor->isDead()) {
 		transit(armor, ARMOR_Dead, nullptr);
 		return;
 	}
@@ -991,7 +1010,9 @@ void StateEat::exec(EnemyBase* enemy)
  * @note Address: 0x802878B4
  * @note Size: 0x4
  */
-void StateEat::cleanup(EnemyBase* enemy) { }
+void StateEat::cleanup(EnemyBase* enemy)
+{
+}
 
 /**
  * @note Address: 0x802878B8
@@ -999,7 +1020,7 @@ void StateEat::cleanup(EnemyBase* enemy) { }
  */
 void StateFlick::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	enemy->mTargetVelocity = Vector3f(0.0f);
+	enemy->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	enemy->startMotion(ARMORANIM_Flick, nullptr);
 }
 
@@ -1011,7 +1032,7 @@ void StateFlick::exec(EnemyBase* enemy)
 {
 	Obj* armor = OBJ(enemy);
 
-	if (armor->mHealth <= 0.0f) {
+	if (armor->isDead()) {
 		transit(armor, ARMOR_Dead, nullptr);
 		return;
 	}
@@ -1036,7 +1057,9 @@ void StateFlick::exec(EnemyBase* enemy)
  * @note Address: 0x80287A38
  * @note Size: 0x4
  */
-void StateFlick::cleanup(EnemyBase* enemy) { }
+void StateFlick::cleanup(EnemyBase* enemy)
+{
+}
 
 /**
  * @note Address: 0x80287A3C
@@ -1044,7 +1067,7 @@ void StateFlick::cleanup(EnemyBase* enemy) { }
  */
 void StateFail::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	enemy->mTargetVelocity = Vector3f(0.0f);
+	enemy->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	enemy->startMotion(ARMORANIM_AttackFail, nullptr);
 }
 
@@ -1055,7 +1078,7 @@ void StateFail::init(EnemyBase* enemy, StateArg* stateArg)
 void StateFail::exec(EnemyBase* enemy)
 {
 	Obj* armor = OBJ(armor);
-	if (armor->mHealth <= 0.0f) {
+	if (armor->isDead()) {
 		transit(armor, ARMOR_Dead, nullptr);
 		return;
 	}
@@ -1071,7 +1094,9 @@ void StateFail::exec(EnemyBase* enemy)
  * @note Address: 0x80287AF8
  * @note Size: 0x4
  */
-void StateFail::cleanup(EnemyBase* enemy) { }
+void StateFail::cleanup(EnemyBase* enemy)
+{
+}
 
 } // namespace Armor
 } // namespace Game

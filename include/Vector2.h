@@ -1,10 +1,10 @@
 #ifndef _VECTOR2_H
 #define _VECTOR2_H
 
-#include "types.h"
-#include "sqrt.h"
 #include "JSystem/JGeometry.h"
 #include "math.h"
+#include "sqrt.h"
+#include "types.h"
 
 template <typename T>
 struct Vector2 {
@@ -67,6 +67,8 @@ struct Vector2 {
 
 	operator JGeometry::TVec2f() { return JGeometry::TVec2f(x, y); }
 
+	inline bool isWithin(f32 radius) { return (SQUARE(x) + SQUARE(y)) < SQUARE(radius); }
+
 	inline f32 sqrMagnitude() const { return x * x + y * y; }
 
 	inline f32 length() const;
@@ -81,13 +83,25 @@ struct Vector2 {
 typedef Vector2<f32> Vector2f;
 typedef Vector2<int> Vector2i;
 
-inline Vector2f operator+(const Vector2f& a, f32 b) { return Vector2f(a.x + b, a.y + b); }
+inline Vector2f operator+(const Vector2f& a, f32 b)
+{
+	return Vector2f(a.x + b, a.y + b);
+}
 
-inline Vector2f operator*(const Vector2f& a, f32 b) { return Vector2f(a.x * b, a.y * b); }
+inline Vector2f operator*(const Vector2f& a, f32 b)
+{
+	return Vector2f(a.x * b, a.y * b);
+}
 
-inline Vector2f operator+(const Vector2f& a, const Vector2f& b) { return Vector2f(a.x + b.x, a.y + b.y); }
+inline Vector2f operator+(const Vector2f& a, const Vector2f& b)
+{
+	return Vector2f(a.x + b.x, a.y + b.y);
+}
 
-inline Vector2f operator-(const Vector2f& a, const Vector2f& b) { return Vector2f(a.x - b.x, a.y - b.y); }
+inline Vector2f operator-(const Vector2f& a, const Vector2f& b)
+{
+	return Vector2f(a.x - b.x, a.y - b.y);
+}
 
 inline f32 _lenVec2D(Vector2f& vec)
 {

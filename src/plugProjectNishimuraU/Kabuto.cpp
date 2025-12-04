@@ -300,7 +300,7 @@ void Obj::updateCaution()
 	}
 
 	if (mAlertTimer < C_GENERALPARMS.mAlertDuration.mValue) {
-		mAlertTimer += sys->mDeltaTime;
+		mAlertTimer += sys->getDeltaTime();
 	}
 }
 

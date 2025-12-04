@@ -1,11 +1,11 @@
 #ifndef _EBI_TITLE_ENTITIES_TKOGANE_H
 #define _EBI_TITLE_ENTITIES_TKOGANE_H
 
+#include "BaseParm.h"
 #include "CNode.h"
 #include "Vector2.h"
-#include "ebi/title/TObjects.h"
 #include "ebi/E3DGraph.h"
-#include "BaseParm.h"
+#include "ebi/title/TObjects.h"
 
 struct JKRArchive;
 struct Controller;
@@ -110,7 +110,7 @@ struct TUnit : public TObjBase {
 		mAnim.mAnimFolder = nullptr;
 		mTargetPos        = Vector2f(0.0f);
 		mTargetAngle      = Vector2f(1.0f, 0.0f);
-		u32 time          = 0.0f / sys->mDeltaTime;
+		u32 time          = 0.0f / sys->getDeltaTime();
 		mCounter          = time;
 		mCounter2         = time;
 		mControl          = nullptr;

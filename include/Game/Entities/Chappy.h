@@ -1,8 +1,8 @@
 #ifndef _GAME_ENTITIES_CHAPPY_H
 #define _GAME_ENTITIES_CHAPPY_H
 
-#include "Game/EnemyMgrBase.h"
 #include "Game/EnemyBase.h"
+#include "Game/EnemyMgrBase.h"
 #include "Game/Entities/ChappyBase.h"
 
 /**

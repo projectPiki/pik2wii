@@ -1,11 +1,11 @@
-#include "Game/Entities/KingChappy.h"
+#include "Game/CameraMgr.h"
 #include "Game/EnemyAnimKeyEvent.h"
 #include "Game/EnemyFunc.h"
-#include "Game/CameraMgr.h"
-#include "Game/rumble.h"
+#include "Game/Entities/KingChappy.h"
 #include "Game/MapMgr.h"
 #include "Game/Navi.h"
 #include "Game/PikiMgr.h"
+#include "Game/rumble.h"
 #include "PSM/EnemyBoss.h"
 #include "PSSystem/PSMainSide_ObjSound.h"
 #include "nans.h"
@@ -95,7 +95,7 @@ void StateWalk::exec(EnemyBase* enemy)
 
 	if (OBJ(enemy)->mNextState >= 0) {
 		enemy->finishMotion();
-		enemy->mTargetVelocity = Vector3f(0.0f);
+		enemy->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	}
 
 	if (enemy->mCurAnim->mIsPlaying) {
@@ -111,7 +111,10 @@ void StateWalk::exec(EnemyBase* enemy)
  * @note Address: 0x80359620
  * @note Size: 0x28
  */
-void StateWalk::cleanup(EnemyBase* enemy) { enemy->setAnimSpeed(EnemyAnimatorBase::defaultAnimSpeed); }
+void StateWalk::cleanup(EnemyBase* enemy)
+{
+	enemy->setAnimSpeed(EnemyAnimatorBase::defaultAnimSpeed);
+}
 
 /**
  * @note Address: 0x80359648
@@ -130,7 +133,7 @@ StateAttack::StateAttack(int stateID)
 void StateAttack::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	OBJ(enemy)->startMotionSelf(KINGANIM_Attack, nullptr);
-	enemy->mTargetVelocity   = Vector3f(0.0f);
+	enemy->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	mEatenPikis              = 0;
 	_14                      = 0;
 	mEatenBombs              = 0;
@@ -164,7 +167,7 @@ void StateAttack::exec(EnemyBase* enemy)
 	Sys::Sphere sphere(tonguePos, 5.0f);
 
 	MoveInfo moveInfo(&sphere, &tongueVel, CG_PARMS(enemy)->mCreatureProps.mProps.mWallReflection.mValue);
-	mapMgr->traceMove(moveInfo, sys->mDeltaTime);
+	mapMgr->traceMove(moveInfo, sys->getDeltaTime());
 
 	if (moveInfo.mFloorTriangle || moveInfo.mWallTriangle) {
 		OBJ(enemy)->mAllowAnimBlending = true;
@@ -756,8 +759,8 @@ StateDead::StateDead(int stateID)
 void StateDead::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	OBJ(enemy)->startMotionSelf(KINGANIM_Dead, nullptr);
-	enemy->mCurrentVelocity = Vector3f(0.0f);
-	enemy->mTargetVelocity  = Vector3f(0.0f);
+	enemy->mCurrentVelocity.set(0.0f, 0.0f, 0.0f);
+	enemy->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	enemy->deathProcedure();
 	OBJ(enemy)->createEffect(Obj::KingEfx_Dead);
 
@@ -798,7 +801,10 @@ void StateDead::exec(EnemyBase* enemy)
  * @note Address: 0x80359FBC
  * @note Size: 0x28
  */
-void StateDead::cleanup(EnemyBase* enemy) { OBJ(enemy)->fadeEffect(Obj::KingEfx_Dead); }
+void StateDead::cleanup(EnemyBase* enemy)
+{
+	OBJ(enemy)->fadeEffect(Obj::KingEfx_Dead);
+}
 
 /**
  * @note Address: 0x80359FE4
@@ -817,8 +823,8 @@ StateFlick::StateFlick(int stateID)
 void StateFlick::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	OBJ(enemy)->startMotionSelf(KINGANIM_Flick, nullptr);
-	enemy->mCurrentVelocity = Vector3f(0.0f);
-	enemy->mTargetVelocity  = Vector3f(0.0f);
+	enemy->mCurrentVelocity.set(0.0f, 0.0f, 0.0f);
+	enemy->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	enemy->enableEvent(0, EB_NoInterrupt);
 }
 
@@ -1560,7 +1566,10 @@ lbl_8035A91C:
  * @note Address: 0x8035A96C
  * @note Size: 0x10
  */
-void StateFlick::cleanup(EnemyBase* enemy) { enemy->disableEvent(0, EB_NoInterrupt); }
+void StateFlick::cleanup(EnemyBase* enemy)
+{
+	enemy->disableEvent(0, EB_NoInterrupt);
+}
 
 /**
  * @note Address: 0x8035A97C
@@ -1579,8 +1588,8 @@ StateWarCry::StateWarCry(int stateID)
 void StateWarCry::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	OBJ(enemy)->startMotionSelf(KINGANIM_WarCry, nullptr);
-	enemy->mCurrentVelocity = Vector3f(0.0f);
-	enemy->mTargetVelocity  = Vector3f(0.0f);
+	enemy->mCurrentVelocity.set(0.0f, 0.0f, 0.0f);
+	enemy->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 }
 
 /**
@@ -1610,10 +1619,8 @@ void StateWarCry::exec(EnemyBase* enemy)
 
 		case KEYEVENT_4:
 			Vector3f kingPos = enemy->getPosition();
-			f32 roarDist;
-			f32 roarAngle;
-			f32 yMin = kingPos.y - 20.0f; // f29
-			f32 yMax = 30.0f + yMin;      // f28
+			f32 yMin         = kingPos.y - 20.0f; // f29
+			f32 yMax         = 30.0f + yMin;      // f28
 			Iterator<Piki> iterPiki(pikiMgr);
 			CI_LOOP(iterPiki)
 			{
@@ -1621,15 +1628,8 @@ void StateWarCry::exec(EnemyBase* enemy)
 				if (piki->isAlive()) {
 					Vector3f pikiPos = piki->getPosition();
 					if (yMax > pikiPos.y && yMin < pikiPos.y) {
-						roarAngle      = CG_PROPERPARMS(enemy).mRoarEffectiveAngleDeg();
-						roarDist       = CG_PROPERPARMS(enemy).mRoarEffectiveRange();
-						f32 angDist    = enemy->getCreatureViewAngle(piki);
-						bool distCheck = false;
-						Vector3f sep   = enemy->getTargetSeparation(piki);
-						if ((sep.sqrMagnitude() < SQUARE(roarDist)) && FABS(angDist) <= PI * (DEG2RAD * roarAngle)) {
-							distCheck = true;
-						}
-						if (distCheck) {
+						if (enemy->isTargetAttackable(piki, CG_PROPERPARMS(enemy).mRoarEffectiveRange(),
+						                              CG_PROPERPARMS(enemy).mRoarEffectiveAngleDeg())) {
 							InteractAstonish astonish(enemy, 100.0f);
 							piki->stimulate(astonish);
 						}
@@ -1658,7 +1658,7 @@ void StateWarCry::exec(EnemyBase* enemy)
 			break;
 
 		case KEYEVENT_END:
-			if (enemy->mHealth <= 0.0f) {
+			if (enemy->isDead()) {
 				transit(enemy, KINGCHAPPY_Dead, nullptr);
 			} else {
 				transit(enemy, KINGCHAPPY_Walk, nullptr);
@@ -1742,7 +1742,7 @@ void StateDamage::exec(EnemyBase* enemy)
 			break;
 
 		case KEYEVENT_END:
-			if (enemy->mHealth <= 0.0f) {
+			if (enemy->isDead()) {
 				transit(enemy, KINGCHAPPY_Dead, nullptr);
 			} else {
 				transit(enemy, KINGCHAPPY_Walk, nullptr);
@@ -1781,7 +1781,7 @@ StateTurn::StateTurn(int stateID)
 void StateTurn::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	OBJ(enemy)->startMotionSelf(KINGANIM_Turn, nullptr);
-	enemy->mTargetVelocity = Vector3f(0.0f);
+	enemy->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 }
 
 /**
@@ -1873,7 +1873,7 @@ void StateHide::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	OBJ(enemy)->startMotionSelf(KINGANIM_Dive, nullptr);
 	enemy->setEmotionCaution();
-	enemy->mTargetVelocity = Vector3f(0.0f);
+	enemy->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	enemy->enableEvent(0, EB_BitterImmune);
 	enemy->hardConstraintOn();
 
@@ -2112,7 +2112,10 @@ StateCaution::StateCaution(int stateID)
  * @note Address: 0x8035C0C8
  * @note Size: 0x2C
  */
-void StateCaution::init(EnemyBase* enemy, StateArg* stateArg) { OBJ(enemy)->startMotionSelf(KINGANIM_Caution, nullptr); }
+void StateCaution::init(EnemyBase* enemy, StateArg* stateArg)
+{
+	OBJ(enemy)->startMotionSelf(KINGANIM_Caution, nullptr);
+}
 
 /**
  * @note Address: 0x8035C0F4
@@ -2144,7 +2147,10 @@ StateSwallow::StateSwallow(int stateID)
  * @note Address: 0x8035C194
  * @note Size: 0x2C
  */
-void StateSwallow::init(EnemyBase* enemy, StateArg* stateArg) { OBJ(enemy)->startMotionSelf(KINGANIM_Swallow, nullptr); }
+void StateSwallow::init(EnemyBase* enemy, StateArg* stateArg)
+{
+	OBJ(enemy)->startMotionSelf(KINGANIM_Swallow, nullptr);
+}
 
 /**
  * @note Address: 0x8035C1C0

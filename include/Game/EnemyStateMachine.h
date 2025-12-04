@@ -81,6 +81,8 @@ struct EnemyFSMState {
 	virtual void transit(EnemyBase* enemy, int nextStateID, StateArg* settings); // _1C
 	virtual void doDirectDraw(EnemyBase* enemy, Graphics& gfx) { }               // _20 (weak)
 
+	inline void setName(const char* name) { mName = name; }
+
 	// _00 = VTBL
 	int mStateID;                     // _04
 	EnemyStateMachine* mStateMachine; // _08

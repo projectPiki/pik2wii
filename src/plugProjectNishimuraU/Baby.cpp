@@ -275,7 +275,7 @@ void Obj::moveNoTarget()
 		EnemyFunc::walkToTarget(this, mTargetPos, parms->mGeneral.mMoveSpeed.mValue, parms->mGeneral.mTurnSpeed.mValue,
 		                        parms->mGeneral.mMaxTurnAngle.mValue);
 	} else {
-		mTargetVelocity = Vector3f(0.0f);
+		mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	}
 }
 

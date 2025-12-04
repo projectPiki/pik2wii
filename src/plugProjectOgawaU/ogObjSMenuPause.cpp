@@ -1,19 +1,22 @@
-#include "og/newScreen/SMenu.h"
-#include "og/Screen/MenuMgr.h"
-#include "og/Screen/ogScreen.h"
-#include "og/Screen/callbackNodes.h"
-#include "og/Screen/anime.h"
-#include "og/Sound.h"
+#include "Controller.h"
 #include "Game/gamePlayData.h"
 #include "System.h"
-#include "Controller.h"
+#include "og/Screen/MenuMgr.h"
+#include "og/Screen/anime.h"
+#include "og/Screen/callbackNodes.h"
+#include "og/Screen/ogScreen.h"
+#include "og/Sound.h"
+#include "og/newScreen/SMenu.h"
 #include "trig.h"
 
 /**
  * @note Address: N/A
  * @note Size: 0xE4
  */
-static void _Print(char* format, ...) { OSReport(format, __FILE__); }
+static void _Print(char* format, ...)
+{
+	OSReport(format, __FILE__);
+}
 
 namespace og {
 namespace newScreen {
@@ -94,7 +97,9 @@ ObjSMenuPause::ObjSMenuPause(char const* name)
  * @note Address: 0x803144FC
  * @note Size: 0xC4
  */
-ObjSMenuPause::~ObjSMenuPause() { }
+ObjSMenuPause::~ObjSMenuPause()
+{
+}
 
 /**
  * @note Address: 0x803145C0
@@ -360,7 +365,10 @@ void ObjSMenuPause::doUpdateRAction()
  * @note Address: 0x80314D1C
  * @note Size: 0x10
  */
-void ObjSMenuPause::doUpdateCancelAction() { mDisp->mExitStatus = 2; }
+void ObjSMenuPause::doUpdateCancelAction()
+{
+	mDisp->mExitStatus = 2;
+}
 
 /**
  * @note Address: 0x80314D2C
@@ -432,7 +440,10 @@ bool ObjSMenuPause::doStart(::Screen::StartSceneArg const* arg)
  * @note Address: 0x80314F9C
  * @note Size: 0x8
  */
-bool ObjSMenuPause::doEnd(::Screen::EndSceneArg const*) { return true; }
+bool ObjSMenuPause::doEnd(::Screen::EndSceneArg const*)
+{
+	return true;
+}
 
 /**
  * @note Address: 0x80314FA4
@@ -508,7 +519,7 @@ bool ObjSMenuPause::menu_pause()
 
 	bool doClose = false;
 	if (!mPauseOpened) {
-		mMenuPauseTimer += sys->mDeltaTime;
+		mMenuPauseTimer += sys->getDeltaTime();
 		if (mMenuPauseTimer >= 1.0f) {
 			mPauseOpened = true;
 		}
@@ -579,7 +590,7 @@ bool ObjSMenuPause::menu_yuugata()
 
 	bool doClose = false;
 	if (!mSunsetOpened) {
-		mMenuSunsetTimer += sys->mDeltaTime;
+		mMenuSunsetTimer += sys->getDeltaTime();
 		if (mMenuSunsetTimer >= 1.0f) {
 			mSunsetOpened = true;
 		}
@@ -636,7 +647,7 @@ bool ObjSMenuPause::menu_zenkai()
 {
 	bool doClose = false;
 	if (!mReturnOpened) {
-		mMenuReturnTimer += sys->mDeltaTime;
+		mMenuReturnTimer += sys->getDeltaTime();
 		if (mMenuReturnTimer >= 1.0f) {
 			mReturnOpened = true;
 		}

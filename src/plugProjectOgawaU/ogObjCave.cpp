@@ -1,13 +1,13 @@
-#include "og/newScreen/Cave.h"
+#include "System.h"
+#include "nans.h"
+#include "og/Screen/BloGroup.h"
 #include "og/Screen/DopingScreen.h"
 #include "og/Screen/NaviLifeGauge.h"
 #include "og/Screen/PikminCounter.h"
 #include "og/Screen/TotalPokoScreen.h"
-#include "og/Screen/BloGroup.h"
 #include "og/Screen/ogScreen.h"
+#include "og/newScreen/Cave.h"
 #include "trig.h"
-#include "System.h"
-#include "nans.h"
 
 namespace og {
 namespace newScreen {
@@ -43,7 +43,9 @@ ObjCave::ObjCave(const char* name)
  * @note Address: 0x8031C0A4
  * @note Size: 0xAC
  */
-ObjCave::~ObjCave() { }
+ObjCave::~ObjCave()
+{
+}
 
 /**
  * @note Address: 0x8031C150
@@ -141,7 +143,7 @@ void ObjCave::commonUpdate()
 		}
 
 		if (mTotalPokoActive) {
-			mTotalPokoTimer += sys->mDeltaTime;
+			mTotalPokoTimer += sys->getDeltaTime();
 			if (mTotalPokoTimer > 2.0f) {
 				mTotalPokoActive = false;
 			}
@@ -263,7 +265,7 @@ bool ObjCave::doEnd(::Screen::EndSceneArg const*)
 bool ObjCave::doUpdateFadein()
 {
 	bool check = false;
-	mFadeLevel += sys->mDeltaTime;
+	mFadeLevel += sys->getDeltaTime();
 	if (mFadeLevel > msVal.mFadeinTime) {
 		mFadeLevel = msVal.mFadeinTime;
 		check      = true;
@@ -278,13 +280,18 @@ bool ObjCave::doUpdateFadein()
  * @note Address: 0x8031CB2C
  * @note Size: 0x4
  */
-void ObjCave::doUpdateFadeinFinish() { }
+void ObjCave::doUpdateFadeinFinish()
+{
+}
 
 /**
  * @note Address: 0x8031CB30
  * @note Size: 0xC
  */
-void ObjCave::doUpdateFinish() { mFadeLevel = 0.0f; }
+void ObjCave::doUpdateFinish()
+{
+	mFadeLevel = 0.0f;
+}
 
 /**
  * @note Address: 0x8031CB3C
@@ -293,7 +300,7 @@ void ObjCave::doUpdateFinish() { mFadeLevel = 0.0f; }
 bool ObjCave::doUpdateFadeout()
 {
 	bool check = false;
-	mFadeLevel += sys->mDeltaTime;
+	mFadeLevel += sys->getDeltaTime();
 	if (mFadeLevel > msVal.mFadeoutTime) {
 		mFadeLevel = msVal.mFadeoutTime;
 		check      = true;
@@ -308,7 +315,9 @@ bool ObjCave::doUpdateFadeout()
  * @note Address: 0x8031CBB8
  * @note Size: 0x4
  */
-void ObjCave::doUpdateFadeoutFinish() { }
+void ObjCave::doUpdateFadeoutFinish()
+{
+}
 
 ObjCave::StaticValues ObjCave::msVal;
 

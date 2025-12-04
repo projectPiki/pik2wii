@@ -1,7 +1,7 @@
-#include "ebi/CardError.h"
-#include "System.h"
-#include "MemoryCardMgr.h"
 #include "Game/MemoryCard/Mgr.h"
+#include "MemoryCardMgr.h"
+#include "System.h"
+#include "ebi/CardError.h"
 
 namespace ebi {
 namespace CardError {
@@ -49,13 +49,19 @@ void FSMStateMachine::init(TMgr* mgr)
  * @note Address: 0x803D1B30
  * @note Size: 0x2C
  */
-void FSMState::init(TMgr* mgr, Game::StateArg* arg) { do_init(mgr, arg); }
+void FSMState::init(TMgr* mgr, Game::StateArg* arg)
+{
+	do_init(mgr, arg);
+}
 
 /**
  * @note Address: 0x803D1B60
  * @note Size: 0x2C
  */
-void FSMState::exec(TMgr* mgr) { do_exec(mgr); }
+void FSMState::exec(TMgr* mgr)
+{
+	do_exec(mgr);
+}
 
 /**
  * @note Address: 0x803D1B90
@@ -66,7 +72,7 @@ void FSMState_Warning::do_init(TMgr* mgr, Game::StateArg*)
 	mIsClosed = false;
 	mCanClose = false;
 
-	u32 rate         = 0.0f / sys->mDeltaTime;
+	u32 rate         = 0.0f / sys->getDeltaTime();
 	mgr->mCounter    = rate;
 	mgr->mCounterMax = rate;
 
@@ -134,7 +140,7 @@ void FSMState_CardRequest::do_init(TMgr* mgr, Game::StateArg*)
 	mgr->mScreen.mCanExit = false;
 	mState                = 0;
 
-	u32 rate         = 3.0f / sys->mDeltaTime;
+	u32 rate         = 3.0f / sys->getDeltaTime();
 	mgr->mCounter    = rate;
 	mgr->mCounterMax = rate;
 
@@ -414,7 +420,9 @@ namespace Screen {
  * @note Address: 0x803D2718
  * @note Size: 0x460
  */
-TMemoryCard::~TMemoryCard() { }
+TMemoryCard::~TMemoryCard()
+{
+}
 
 /**
  * @note Address: 0x803D2B78

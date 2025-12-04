@@ -17,6 +17,9 @@
 #include "nans.h"
 #include "types.h"
 
+#define DEATH_PLANE   (-500.0f) // at what height do Pikis and enemies die?
+#define RESPAWN_PLANE (-300.0f) // at what height do treasures and bodies warp to a waypoint?
+
 namespace Game {
 
 static const char unused[] = "creature";
@@ -515,9 +518,9 @@ WaterBox* Creature::checkWater(WaterBox* waterBox, Sys::Sphere& boundSphere)
  *
  * @param hellArg The argument for checking hell conditions.
  * @return The status of the creature in the hell area.
- *         - CREATURE_HELL_DEATH if the creature is below -500.0f in the y-axis and is a Pikmin.
- *         - CREATURE_HELL_BELOWMAP if the creature is below -300.0f in the y-axis.
- *         - CREATURE_HELL_ALIVE if the creature is above -300.0f in the y-axis.
+ *         - HELL_Death if the creature is below -500.0f in the y-axis and is a Pikmin.
+ *         - HELL_BelowMap if the creature is below -300.0f in the y-axis.
+ *         - HELL_Alive if the creature is above -300.0f in the y-axis.
  *
  * @note Address: 0x8013BC24
  * @note Size: 0x144
@@ -526,7 +529,9 @@ int Creature::checkHell(Creature::CheckHellArg& hellArg)
 {
 	Vector3f pos = getPosition();
 
-	if (pos.y < -500.0f) {
+	// !! this is where Early Blues softlocking happens !!
+	// (i.e. the Navi part and Pellet part of a napping captain get different results)
+	if (pos.y < DEATH_PLANE) {
 		if (isPiki() && static_cast<Piki*>(this)->isPikmin()) {
 			deathMgr->inc(DeathCounter::COD_Battle); // getting sent to hell would get you into valhalla in P2
 		}
@@ -535,10 +540,10 @@ int Creature::checkHell(Creature::CheckHellArg& hellArg)
 			kill(nullptr);
 		}
 
-		return CREATURE_HELL_DEATH;
+		return HELL_Death;
 	}
 
-	return pos.y < -300.0f;
+	return (pos.y < RESPAWN_PLANE) ? HELL_BelowMap : HELL_Alive;
 }
 
 /**
@@ -596,10 +601,9 @@ int Creature::getCellPikiCount()
 void Creature::applyImpulse(Vector3f& unused, Vector3f& impulse)
 {
 	Vector3f oldVelocity = getVelocity();
-	Vector3f newVelocity = oldVelocity;
 
-	newVelocity = newVelocity + (impulse * mMass);
-	setVelocity(newVelocity);
+	oldVelocity = oldVelocity + (impulse * mMass);
+	setVelocity(oldVelocity);
 }
 
 /**
@@ -608,13 +612,13 @@ void Creature::applyImpulse(Vector3f& unused, Vector3f& impulse)
  */
 void Creature::checkCollision(CellObject* other)
 {
-	Creature* cellCreature = static_cast<Creature*>(other);
 
 	if (isDebugCollision()) {
-		getCreatureName();
-		cellCreature->getCreatureName();
+		// getCreatureName();
+		// cellCreature->getCreatureName();
 	}
 
+	Creature* cellCreature = static_cast<Creature*>(other);
 	if (!cellCreature->isAtari() || !isAtari()) {
 		return;
 	}
@@ -680,8 +684,8 @@ void Creature::resolveOneColl(CollPart* source, CollPart* dest, Vector3f& direct
 	}
 
 	if (isDebugCollision()) {
-		getCreatureName();
-		op->getCreatureName();
+		// getCreatureName();
+		// op->getCreatureName();
 	}
 
 	bool flickCheck = false;
@@ -691,43 +695,47 @@ void Creature::resolveOneColl(CollPart* source, CollPart* dest, Vector3f& direct
 
 	Vector3f collisionNormal(-direction.x, -direction.y, -direction.z);
 	if (collisionNormal.normalise() == 0.0f) {
-		collisionNormal = Vector3f(0.0f, 0.0f, 1.0f);
+		collisionNormal.set(0.0f, 0.0f, 1.0f);
 	}
 
-	Vector3f velAtSource;
-	Vector3f velAtDest;
-	Vector3f pointSource = source->mPosition + (collisionNormal * source->mRadius);
-	Vector3f pointDest   = dest->mPosition - (collisionNormal * dest->mRadius);
+	Vector3f velAtSource(0.0f, 0.0f, 0.0f);
+	Vector3f velAtDest(0.0f, 0.0f, 0.0f);
+	Vector3f pointSource;
+	Vector3f pointDest;
+	pointSource = source->mPosition + (collisionNormal * source->mRadius);
+	pointDest   = dest->mPosition - (collisionNormal * dest->mRadius);
 
 	getVelocityAt(pointSource, velAtSource);
 	op->getVelocityAt(pointDest, velAtDest);
 
+	f32 xzDrag = 0.5f;
+	f32 yDrag  = 0.0f;
 	f32 massRatioThisCreature;
 	f32 massRatioOtherCreature;
 
-	f32 totalMass = mMass + op->mMass;
-	if (totalMass > 0.0f) {
-		massRatioThisCreature  = mMass / totalMass;
+	// f32 totalMass = mMass + op->mMass;
+	if (mMass + op->mMass > 0.0f) {
+		massRatioThisCreature  = mMass / (mMass + op->mMass);
 		massRatioOtherCreature = 1.0f - massRatioThisCreature;
 	} else {
 		massRatioThisCreature = massRatioOtherCreature = 0.5f;
 	}
 
-	f32 fps = 1.0f / sys->mDeltaTime;
+	f32 fps = 1.0f / sys->getDeltaTime();
 	if (isNavi() && !op->isNavi()) {
 		if (!op->isPiki()) {
-			addAccel(mAcceleration, direction, massRatioThisCreature, fps, 0.5f, 0.0f);
+			addAccel(mAcceleration, direction, massRatioThisCreature, fps, xzDrag, yDrag);
 		}
 	} else {
-		setAccel(mAcceleration, direction, massRatioThisCreature, fps, 0.5f, 0.0f);
+		setAccel(mAcceleration, direction, massRatioThisCreature, fps, xzDrag, yDrag);
 	}
 
 	if (op->isNavi() && !isNavi()) {
 		if (!isPiki()) {
-			setOpAccel(op->mAcceleration, direction, massRatioOtherCreature, fps, 0.5f, 0.0f);
+			setOpAccel(op->mAcceleration, direction, massRatioOtherCreature, fps, xzDrag, yDrag);
 		}
 	} else {
-		setOpAccel(op->mAcceleration, direction, massRatioOtherCreature, fps, 0.5f, 0.0f);
+		setOpAccel(op->mAcceleration, direction, massRatioOtherCreature, fps, xzDrag, yDrag);
 	}
 
 	f32 accelMag = mAcceleration.length();
@@ -743,8 +751,8 @@ void Creature::resolveOneColl(CollPart* source, CollPart* dest, Vector3f& direct
 	}
 
 	if (flickCheck) {
-		mAcceleration     = Vector3f(0.0f);
-		op->mAcceleration = Vector3f(0.0f);
+		mAcceleration.set(0.0f, 0.0f, 0.0f);
+		op->mAcceleration.set(0.0f, 0.0f, 0.0f);
 	}
 
 	CollEvent destToSrcEvent(op, dest, source);
@@ -758,8 +766,8 @@ void Creature::resolveOneColl(CollPart* source, CollPart* dest, Vector3f& direct
 
 	if (sepDot <= 0.0f) {
 		if (isDebugCollision()) {
-			getCreatureName();
-			op->getCreatureName();
+			// getCreatureName();
+			// op->getCreatureName();
 		}
 
 		return;
@@ -786,7 +794,20 @@ void Creature::resolveOneColl(CollPart* source, CollPart* dest, Vector3f& direct
 
 	totalMass2 += getAngularEffect(pointSource, collisionNormal);
 	totalMass2 += op->getAngularEffect(pointDest, collisionNormal);
-	f32 posFac           = collisionImpulseFactor / (totalMass2);
+
+	f32 posFac = 0.0f;
+	if (totalMass2 != 0.0f) {
+		posFac = collisionImpulseFactor / (totalMass2);
+	}
+
+	// something weird happening here
+	Vector3f tmp;
+	bool check = ASSERT_DIR_NOT_NAN(pointDest.y, pointDest.x, pointDest.z);
+	if (check) {
+		pointDest.x = 0.0f;
+		tmp.y       = 0.0f;
+	}
+
 	Vector3f updatedVec1 = collisionNormal * posFac;
 	Vector3f updatedVec2 = collisionNormal * -posFac;
 

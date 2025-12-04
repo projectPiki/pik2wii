@@ -100,7 +100,7 @@ bool HoudaiShotGunNode::update()
 
 	MoveInfo moveInfo(&moveSphere, &mVelocity, 0.0f); // 0x1B0
 	moveInfo.mMovingCreature = mOwner;
-	mapMgr->traceMove(moveInfo, sys->mDeltaTime);
+	mapMgr->traceMove(moveInfo, sys->getDeltaTime());
 
 	setPosition(moveSphere.mPosition);
 

@@ -1,7 +1,7 @@
 #include "Game/TimeMgr.h"
 #include "JSystem/JKernel/JKRDvdRipper.h"
-#include "stream.h"
 #include "System.h"
+#include "stream.h"
 
 namespace Game {
 
@@ -164,7 +164,7 @@ f32 TimeMgr::getSunGaugeRatio()
 void TimeMgr::update()
 {
 	if (!isFlag(TIMEFLAG_Stopped)) {
-		mCurrentRealTime += mSpeedFactor * sys->mDeltaTime;
+		mCurrentRealTime += mSpeedFactor * sys->getDeltaTime();
 
 		if (mCurrentRealTime > mParms.mParms.mDayLengthSeconds.mValue) {
 			mCurrentRealTime -= mParms.mParms.mDayLengthSeconds.mValue;
@@ -180,7 +180,10 @@ void TimeMgr::update()
  * @note Address: 0x80127398
  * @note Size: 0x18
  */
-bool TimeMgr::isDayOver() { return mCurrentTimeOfDay > mParms.mParms.mDayEndTime.mValue; }
+bool TimeMgr::isDayOver()
+{
+	return mCurrentTimeOfDay > mParms.mParms.mDayEndTime.mValue;
+}
 
 /**
  * @note Address: 0x801273B0

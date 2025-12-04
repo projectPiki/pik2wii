@@ -102,7 +102,7 @@ void Section::doDraw(Graphics& gfx)
  */
 bool Section::doUpdate()
 {
-	mTimer += sys->mDeltaTime;
+	mTimer += sys->getDeltaTime();
 
 	BaseHIOSection::doUpdate();
 	if (mMoviePlayer.isFinishPlaying()) {

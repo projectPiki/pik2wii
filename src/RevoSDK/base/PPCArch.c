@@ -1,4 +1,5 @@
 #include "RevoSDK/PPCArch.h"
+#include "RevoSDK/os.h"
 #include "types.h"
 
 union FpscrUnion {
@@ -513,4 +514,27 @@ ASM void PPCSetFpNonIEEEMode(void)
 	mtfsb1      29
 	blr
 #endif // clang-format on
+}
+
+/**
+ * @brief TODO
+ *
+ */
+void PPCMthid4(register u32 val)
+{
+	if (val & HID4_H4A) {
+#ifdef __MWERKS__ // clang-format off
+        ASM (
+            mtspr 0x3F3, val
+        )
+#endif // clang-format on
+	} else {
+		OSReport("H4A should not be cleared because of Broadway errata.\n");
+		val |= HID4_H4A;
+#ifdef __MWERKS__ // clang-format off
+        ASM (
+            mtspr 0x3F3, val
+        )
+#endif // clang-format on
+	}
 }

@@ -49,9 +49,8 @@ void Obj::onInit(CreatureInitArg* initArg)
 	EnemyBase::onInit(initArg);
 
 	if (mDropGroup == EDG_None) {
-		mScaleModifier = 0.0001f;
-		mScale         = Vector3f(0.0001f);
-		mCollTree->mPart->setScale(0.0001f);
+		setScale(0.0001f);
+		setCollScale(0.0001f);
 	}
 
 	enableEvent(0, EB_Invulnerable);
@@ -70,7 +69,7 @@ void Obj::onInit(CreatureInitArg* initArg)
 
 	if (getEnemyTypeID() == EnemyTypeID::EnemyID_Rock) {
 		// if falling rock
-		if (mExistDuration != 0.0f) {
+		if (isFiniteLifetime()) {
 			disableEvent(0, EB_Cullable);
 			mTimer = randWeightFloat(1.5f);
 		}
@@ -152,7 +151,7 @@ void Obj::getShadowParam(ShadowParam& shadowParam)
 		shadowParam.mPosition               = mPosition;
 		shadowParam.mBoundingSphere.mRadius = 50.0f + (mPosition.y - mHomePosition.y);
 	} else {
-		shadowParam.mPosition = Vector3f(mPosition.x, mPosition.y + 5.0f, mPosition.z);
+		shadowParam.mPosition.set(mPosition.x, mPosition.y + 5.0f, mPosition.z);
 
 		if (isEvent(1, EB2_Earthquake)) {
 			shadowParam.mBoundingSphere.mRadius = 50.0f;
@@ -161,8 +160,8 @@ void Obj::getShadowParam(ShadowParam& shadowParam)
 		}
 	}
 
-	shadowParam.mBoundingSphere.mPosition = Vector3f(0.0f, 1.0f, 0.0f);
-	shadowParam.mSize                     = 25.0f * mScaleModifier;
+	shadowParam.mBoundingSphere.mPosition.set(0.0f, 1.0f, 0.0f);
+	shadowParam.mSize = 25.0f * getScaleMod();
 }
 
 /**
@@ -309,18 +308,17 @@ bool Obj::ignoreAtari(Creature* creature)
  */
 bool Obj::fallRockScaleUp()
 {
-	bool isDone = false;
-	if (mScaleModifier < 1.0f) {
-		f32 scale = mScaleUpRate * sys->mDeltaTime + mScaleModifier;
+	bool isDone  = false;
+	f32 scaleMod = getScaleMod();
+	if (scaleMod < 1.0f) {
+		f32 scale = getScaleUpRate() * sys->getDeltaTime() + scaleMod;
 		if (scale >= 1.0f) {
 			isDone = true;
 			scale  = 1.0f;
 		}
 
-		mScaleModifier = scale;
-		mScale         = Vector3f(scale);
-
-		mCollTree->mPart->setScale(scale);
+		setScale(scale);
+		setCollScale(scale);
 	}
 
 	return isDone;
@@ -332,18 +330,17 @@ bool Obj::fallRockScaleUp()
  */
 bool Obj::moveRockScaleUp()
 {
-	bool isDone = false;
-	if (mScaleModifier < 1.0f) {
-		f32 scale = 5.0f * sys->mDeltaTime + mScaleModifier;
+	bool isDone  = false;
+	f32 scaleMod = getScaleMod();
+	if (scaleMod < 1.0f) {
+		f32 scale = 5.0f * sys->getDeltaTime() + scaleMod;
 		if (scale >= 1.0f) {
 			isDone = true;
 			scale  = 1.0f;
 		}
 
-		mScaleModifier = scale;
-		mScale         = Vector3f(scale);
-
-		mCollTree->mPart->setScale(scale);
+		setScale(scale);
+		setCollScale(scale);
 	}
 
 	return isDone;
@@ -355,7 +352,9 @@ bool Obj::moveRockScaleUp()
  */
 void Obj::initMoveVelocity()
 {
-	Vector3f vel = getDirection(mFaceDir);
+	f32 z = cosf(mFaceDir);
+	f32 x = sinf(mFaceDir);
+	Vector3f vel(x, 0.0f, z);
 	vel *= C_GENERALPARMS.mMoveSpeed();
 	mTargetVelocity = vel;
 	setVelocity(vel);
@@ -383,14 +382,8 @@ void Obj::updateMoveVelocity()
 			targetPos = mPosition + mTargetVelocity;
 		}
 
-		turnToTarget2(targetPos, C_GENERALPARMS.mTurnSpeed(), C_GENERALPARMS.mMaxTurnAngle());
-
-		f32 moveSpeed = getMoveSpeed();
-		f32 x         = dolsinf(getFaceDir());
-		f32 y         = getTargetVelocity().y;
-		f32 z         = dolcosf(getFaceDir());
-
-		mTargetVelocity = Vector3f(moveSpeed * x, y, moveSpeed * z);
+		turnToTarget(targetPos, C_GENERALPARMS.mTurnSpeed(), C_GENERALPARMS.mMaxTurnAngle());
+		setTargetSpeed(C_PROPERPARMS.mSearchRumbleSpeed());
 
 	} else {
 		mTargetVelocity.x = 0.01f * mCurrentVelocity.x + 0.99f * mTargetVelocity.x;
@@ -399,7 +392,7 @@ void Obj::updateMoveVelocity()
 
 		Vector3f targetPos = mPosition + mTargetVelocity;
 
-		turnToTarget2(targetPos, C_GENERALPARMS.mTurnSpeed(), C_GENERALPARMS.mMaxTurnAngle());
+		turnToTarget(targetPos, C_GENERALPARMS.mTurnSpeed(), C_GENERALPARMS.mMaxTurnAngle());
 	}
 	/*
 	stwu     r1, -0xa0(r1)
@@ -738,7 +731,7 @@ void Obj::startRollingWaterEffect()
 		f32 heightDiff = waterFX->mSeaHeight - mPosition.y;
 		if (8.0f <= heightDiff && heightDiff < 45.0f) {
 			efx::TRockWRun* waterFX = mEfxWaterRun;
-			waterFX->mPosition      = Vector3f(mPosition.x, waterFX->mSeaHeight, mPosition.z);
+			waterFX->mPosition.set(mPosition.x, waterFX->mSeaHeight, mPosition.z);
 			waterFX->mChasePos.create(nullptr);
 		} else {
 			waterFX->mChasePos.fade();
@@ -765,7 +758,7 @@ void Obj::updateWaterEffectPosition()
 		f32 heightDiff = mEfxWaterRun->mSeaHeight - mPosition.y;
 		if (8.0f <= heightDiff && heightDiff < 45.0f) {
 			efx::TRockWRun* waterFX = mEfxWaterRun;
-			waterFX->mPosition      = Vector3f(mPosition.x, mEfxWaterRun->mSeaHeight, mPosition.z);
+			waterFX->mPosition.set(mPosition.x, mEfxWaterRun->mSeaHeight, mPosition.z);
 			waterFX->mChasePos.create(nullptr);
 		} else {
 			mEfxWaterRun->mChasePos.fade();

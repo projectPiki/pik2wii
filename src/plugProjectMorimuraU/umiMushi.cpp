@@ -656,7 +656,7 @@ void Obj::walkFunc()
 
 	faceDirRads = TORADIANS(rotationDelta);
 	mFaceDir    = mPrevFaceDir;
-	turnToTarget2(mGoalPosition, rotationAccel, rotationSpeed);
+	turnToTarget(mGoalPosition, rotationAccel, rotationSpeed);
 
 	f32 deltaFaceDir = mFaceDir + faceDirRads;
 
@@ -825,7 +825,7 @@ f32 Obj::turnFunc()
 	f32 maxAngle  = factor * C_PROPERPARMS.mRotateSpeedMax();
 	f32 turnSpeed = factor * C_PROPERPARMS.mRotateSpeed();
 
-	f32 angleDist = turnToTarget2(targetPos, turnSpeed, maxAngle);
+	f32 angleDist = turnToTarget(targetPos, turnSpeed, maxAngle);
 	return absF(angleDist);
 	/*
 	stwu     r1, -0x70(r1)
@@ -1360,7 +1360,7 @@ bool Obj::isAttackStart()
 	f32 attackAngle = TORADIANS(C_GENERALPARMS.mAttackHitAngle()); // f30
 
 	if (mTargetNavi && mTargetNavi->isAlive()) {
-		f32 angle = getCreatureViewAngle(mTargetNavi);
+		f32 angle = getAngDist(mTargetNavi);
 		if (absF(angle) <= attackAngle) {
 			Vector3f pos     = mPosition;
 			Vector3f naviPos = Vector3f(mTargetNavi->getPosition().x, 0.0f, mTargetNavi->getPosition().z);
@@ -1547,14 +1547,14 @@ lbl_803862AC:
  */
 bool Obj::isNeedTurn()
 {
-	f32 angle = getCreatureViewAngle(mGoalPosition);
+	f32 angle = getAngDist(mGoalPosition);
 	if (absF(angle) > TORADIANS(C_PROPERPARMS.mTurnStartAngle())) {
 		return true;
 	}
 
 	if (mTargetNavi) {
 		Vector3f naviPos = mTargetNavi->getPosition();
-		f32 naviAngle    = getCreatureViewAngle(naviPos);
+		f32 naviAngle    = getAngDist(naviPos);
 		if (absF(naviAngle) > TORADIANS(C_PROPERPARMS.mTurnStartAngle())) {
 			return true;
 		}
@@ -1606,7 +1606,7 @@ bool Obj::canMove()
 		mTargetCreature  = mTargetNavi;
 
 		if (sqrDist > SQUARE(rad)) {
-			mTargetVelocity = Vector3f(0.0f);
+			mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 			return false;
 		}
 	}
@@ -1730,7 +1730,7 @@ bool Obj::outMove()
 			Vector3f pos = mPosition;
 			Vector3f vec = mTargetPosition;
 			if (sqrDistanceXZ(pos, vec) < 100.0f) {
-				mTargetVelocity = Vector3f(0.0f);
+				mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 				return true;
 			}
 			Vector3f sep = vec - pos;
@@ -1742,14 +1742,14 @@ bool Obj::outMove()
 			f32 maxAngle  = 0.5f * C_PROPERPARMS.mRotateSpeedMax(); // f27
 			f32 turnSpeed = 0.5f * C_PROPERPARMS.mRotateSpeed();    // f28
 			f32 velY      = getTargetVelocity().y;
-			turnToTarget2(mTargetPosition, turnSpeed, maxAngle);
+			turnToTarget(mTargetPosition, turnSpeed, maxAngle);
 
 			mTargetVelocity = Vector3f(vel.x, velY, vel.z);
 		} else {
 			f32 maxAngle  = 0.5f * C_PROPERPARMS.mRotateSpeedMax(); // f27
 			f32 turnSpeed = 0.5f * C_PROPERPARMS.mRotateSpeed();    // f28
 
-			turnToTarget2(naviPos, turnSpeed, maxAngle);
+			turnToTarget(naviPos, turnSpeed, maxAngle);
 		}
 	}
 

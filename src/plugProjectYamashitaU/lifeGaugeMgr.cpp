@@ -1,12 +1,15 @@
 #include "LifeGaugeMgr.h"
+#include "Game/MoviePlayer.h"
 #include "JSystem/JKernel/JKRArchive.h"
 #include "JSystem/JUtility/JUTTexture.h"
-#include "Game/MoviePlayer.h"
 #include "Viewport.h"
 #include "nans.h"
 
 // i'd put this in Vector3f but i really dont wanna include all of GX in that - HP.
-inline void GXDrawVector3f(Vector3f& vec) { GXPosition3f32(vec.x, vec.y, vec.z); }
+inline void GXDrawVector3f(Vector3f& vec)
+{
+	GXPosition3f32(vec.x, vec.y, vec.z);
+}
 
 LifeGaugeMgr* lifeGaugeMgr;
 
@@ -14,7 +17,10 @@ LifeGaugeMgr* lifeGaugeMgr;
  * @note Address: 0x80119BFC
  * @note Size: 0x34
  */
-LifeGauge::LifeGauge() { init(MAX_LIFEGAUGE_SEGMENTS); }
+LifeGauge::LifeGauge()
+{
+	init(MAX_LIFEGAUGE_SEGMENTS);
+}
 
 /**
  * @note Address: 0x80119C30
@@ -37,7 +43,7 @@ void LifeGauge::update(f32 healthRatio)
 
 	// need to update segment count
 	if (mCurrentSegmentNum != (u8)newSegmentNum) {
-		f32 delta = absF(((u8)newSegmentNum - mCurrentSegmentNum) / ((f32)mMaxSegmentNum)) * (sys->mDeltaTime * 150.0f);
+		f32 delta = absF(((u8)newSegmentNum - mCurrentSegmentNum) / ((f32)mMaxSegmentNum)) * (sys->getDeltaTime() * 150.0f);
 
 		// health will update at least every 3 changes, no matter how small said changes are
 		if (delta < 0.4f) {
@@ -242,7 +248,9 @@ void LifeGaugeList::draw(Graphics& gfx)
  * @note Address: 0x8011A7D0
  * @note Size: 0xDC
  */
-LifeGaugeMgr::LifeGaugeMgr() { }
+LifeGaugeMgr::LifeGaugeMgr()
+{
+}
 
 /**
  * @note Address: 0x8011A944

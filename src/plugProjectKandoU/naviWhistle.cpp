@@ -1,9 +1,9 @@
-#include "Game/Navi.h"
-#include "Game/NaviParms.h"
 #include "Game/CurrTriInfo.h"
 #include "Game/MapMgr.h"
-#include "Game/gamePlayData.h"
+#include "Game/Navi.h"
+#include "Game/NaviParms.h"
 #include "Game/PlatInstance.h"
+#include "Game/gamePlayData.h"
 #include "trig.h"
 
 namespace Game {
@@ -120,7 +120,10 @@ void NaviWhistle::stop()
  * @note Address: 0x80165420
  * @note Size: 0x10
  */
-bool NaviWhistle::timeout() { return mState == WS_Idle; }
+bool NaviWhistle::timeout()
+{
+	return mState == WS_Idle;
+}
 
 /**
  * @note Address: 0x80165430
@@ -149,7 +152,7 @@ void NaviWhistle::updateWhistle()
 		mColor.interp(255.0f, -175.0f, 120.0f, -110.0f, 0.0f, 255.0f, 120.0f, 0.0f,
 		              mActiveTime / static_cast<NaviParms*>(mNavi->mParms)->mNaviParms.mMaxCallTime.mValue);
 
-		mActiveTime += sys->mDeltaTime;
+		mActiveTime += sys->getDeltaTime();
 		// If we've been calling for too long, end
 		if (mActiveTime > mNavi->getParms()->mNaviParms.mMaxCallTime.mValue) {
 			mActiveTime = 0.0f;
@@ -177,7 +180,7 @@ void NaviWhistle::updateWhistle()
 	case WS_Ended:
 		// If ended, fade out the whistle
 		mColor.a = (1.0f - mActiveTime / mNavi->getParms()->mNaviParms.mCircleDisappearTime.mValue) * 120.0f;
-		mActiveTime += sys->mDeltaTime;
+		mActiveTime += sys->getDeltaTime();
 
 		// If we've faded out for too long, reset
 		if (mActiveTime > mNavi->getParms()->mNaviParms.mCircleDisappearTime()) {
@@ -200,7 +203,7 @@ void NaviWhistle::update(Vector3f& stick, bool active)
 {
 	Vector3f offset;
 	if (active) {
-		offset = Vector3f(0.0f);
+		offset .set(0.0f, 0.0f, 0.0f);
 	} else {
 		Vector3f stickVec = stick;
 		stickVec.normalise();

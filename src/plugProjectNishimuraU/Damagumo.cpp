@@ -965,7 +965,7 @@ void Obj::effectDrawOff()
 void Obj::addShadowScale()
 {
 	if (mShadowScale < 1.0f) {
-		mShadowScale += 2.0f * sys->mDeltaTime;
+		mShadowScale += 2.0f * sys->getDeltaTime();
 		if (mShadowScale > 1.0f) {
 			mShadowScale = 1.0f;
 		}

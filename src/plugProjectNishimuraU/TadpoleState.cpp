@@ -31,7 +31,7 @@ void StateDead::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	enemy->deathProcedure();
 	enemy->disableEvent(0, EB_Cullable);
-	enemy->mTargetVelocity = Vector3f(0.0f);
+	enemy->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	enemy->startMotion(TADPOLEANIM_Dead, nullptr);
 }
 
@@ -65,10 +65,10 @@ void StateDead::cleanup(EnemyBase* enemy)
  */
 void StateWait::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	Obj* tadpole             = OBJ(enemy);
-	tadpole->mStateTimer     = 0.0f;
-	tadpole->mNextState      = TADPOLE_Move;
-	tadpole->mTargetVelocity = Vector3f(0.0f);
+	Obj* tadpole         = OBJ(enemy);
+	tadpole->mStateTimer = 0.0f;
+	tadpole->mNextState  = TADPOLE_Move;
+	tadpole->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	tadpole->startMotion(TADPOLEANIM_Wait, nullptr);
 }
 
@@ -91,7 +91,7 @@ void StateWait::exec(EnemyBase* enemy)
 		tadpole->finishMotion();
 	}
 
-	tadpole->mStateTimer += sys->mDeltaTime;
+	tadpole->mStateTimer += sys->getDeltaTime();
 
 	if (tadpole->mHealth <= 0.0f) {
 		transit(tadpole, TADPOLE_Dead, nullptr);
@@ -142,7 +142,7 @@ void StateMove::exec(EnemyBase* enemy)
 	                        CG_GENERALPARMS(tadpole).mMaxTurnAngle.mValue);
 
 	if (tadpole->mStateTimer > 3.0f || sqrDistanceXZ(tadpolePos, targetPos) < 100.0f) {
-		tadpole->mTargetVelocity = Vector3f(0.0f);
+		tadpole->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 		tadpole->finishMotion();
 	}
 
@@ -151,11 +151,11 @@ void StateMove::exec(EnemyBase* enemy)
 	if (navi) {
 		tadpole->mTargetPosition = Vector3f(tadpole->getTargetPosition(navi));
 		tadpole->mNextState      = TADPOLE_Amaze;
-		tadpole->mTargetVelocity = Vector3f(0.0f);
+		tadpole->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 		tadpole->finishMotion();
 	}
 
-	tadpole->mStateTimer += sys->mDeltaTime;
+	tadpole->mStateTimer += sys->getDeltaTime();
 
 	if (tadpole->mHealth <= 0.0f) {
 		transit(tadpole, TADPOLE_Dead, nullptr);
@@ -186,7 +186,7 @@ void StateMove::cleanup(EnemyBase* enemy)
 void StateAmaze::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	enemy->disableEvent(0, EB_NoInterrupt);
-	enemy->mTargetVelocity = Vector3f(0.0f);
+	enemy->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	enemy->setEmotionExcitement();
 	enemy->startMotion(TADPOLEANIM_Amaze, nullptr);
 }
@@ -309,7 +309,7 @@ void StateLeap::exec(EnemyBase* enemy)
 	Obj* tadpole = OBJ(enemy);
 
 	if (tadpole->isFinishMotion()) {
-		tadpole->mTargetVelocity = Vector3f(0.0f);
+		tadpole->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	} else if (tadpole->getMotionFrame() >= 15.0f) {
 		Vector3f tadpolePos = tadpole->getPosition();
 		Vector3f targetPos  = tadpole->mTargetPosition;
@@ -347,7 +347,7 @@ void StateLeap::exec(EnemyBase* enemy)
 		tadpole->mTargetVelocity.z = 0.1f * (diff.z - targetVel.z) + targetVel.z;
 	}
 
-	tadpole->mStateTimer += sys->mDeltaTime;
+	tadpole->mStateTimer += sys->getDeltaTime();
 
 	if (tadpole->mHealth <= 0.0f) {
 		transit(tadpole, TADPOLE_Dead, nullptr);

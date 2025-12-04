@@ -1,10 +1,10 @@
+#include "System.h"
+#include "Vector3.h"
+#include "efx2d/T2DCursor.h"
 #include "og/Screen/MenuMgr.h"
 #include "og/Screen/ScaleMgr.h"
 #include "og/Screen/ogScreen.h"
 #include "og/Sound.h"
-#include "Vector3.h"
-#include "efx2d/T2DCursor.h"
-#include "System.h"
 
 namespace og {
 namespace Screen {
@@ -297,7 +297,7 @@ void MenuMgr::update()
 		break; // nice one ogawa
 
 	case CURSOR_DelayStart:
-		mCursorDelayTimer -= sys->mDeltaTime;
+		mCursorDelayTimer -= sys->getDeltaTime();
 		if (mCursorDelayTimer < 0.0f) {
 			mIsCursorActive   = true;
 			mCursorState      = CURSOR_Start;
@@ -319,7 +319,7 @@ void MenuMgr::update()
 			calcCenter(mRightCursorPanes[mCSelectId], &mSelPosRight);
 		}
 		if (mIsChangingSelect) {
-			mSelectChangeTimer += sys->mDeltaTime;
+			mSelectChangeTimer += sys->getDeltaTime();
 			if (mSelectChangeTimer > 0.2f) {
 				mCursorPos1       = mSelPosLeft;
 				mCursorPos2       = mSelPosRight;
@@ -757,7 +757,7 @@ void MenuMgr::draw(J2DGrafContext* graf)
 	}
 
 	if (mDoScale) {
-		mTimer += sys->mDeltaTime;
+		mTimer += sys->getDeltaTime();
 		if (mTimer > mTimerMax) {
 			mTimer -= mTimerMax;
 		}

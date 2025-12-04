@@ -208,13 +208,13 @@ void PikiCarrotState::init(Piki* piki, StateArg* stateArg)
 void PikiCarrotState::exec(Piki* piki)
 {
 	if (piki->isAlive()) {
-		piki->mTargetVelocity = Vector3f(0.0f);
+		piki->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 		if (mIsPlanted) {
 			piki->setPosition(mPosition, false);
-			piki->mVelocity = Vector3f(0.0f);
+			piki->mVelocity.set(0.0f, 0.0f, 0.0f);
 		}
 
-		mTimeRemaining -= sys->mDeltaTime;
+		mTimeRemaining -= sys->getDeltaTime();
 
 		if (mTimeRemaining <= 0.0f) {
 			Vector3f position = piki->getPosition();
@@ -533,7 +533,7 @@ void PikiHoleinState::exec(Piki* piki)
 	}
 
 	if (mCountdown > 0.0f) {
-		mCountdown -= sys->mDeltaTime;
+		mCountdown -= sys->getDeltaTime();
 		return;
 	}
 
@@ -549,7 +549,7 @@ void PikiHoleinState::exec(Piki* piki)
 
 	piki->setPosition(position, false);
 
-	mTimer += 80.0f * sys->mDeltaTime;
+	mTimer += 80.0f * sys->getDeltaTime();
 	f32 val = mTargetDist * 0.2f;
 	if (mTimer > val) {
 		mScale = (1.5f * mTargetDist - (mTimer - val)) / (mTargetDist * 1.3f);
@@ -864,7 +864,7 @@ lbl_8018AEAC:
 void PikiFountainonState::exec(Piki* piki)
 {
 	if (mCountdown > 0.0f) {
-		mCountdown -= sys->mDeltaTime;
+		mCountdown -= sys->getDeltaTime();
 		if (mCountdown <= 0.0f) {
 			piki->startSound(PSSE_PK_VC_JUMP_INTO_HOLE, 0);
 		}
@@ -883,12 +883,12 @@ void PikiFountainonState::exec(Piki* piki)
 		f32 factor = 50.0f + p2 * p1 * p1 + (mTimer - p1);
 		position   = mPosDiff * p1 + mAvgPosition;
 		position.y += factor;
-		mTimer += sys->mDeltaTime * 400.0f;
+		mTimer += sys->getDeltaTime() * 400.0f;
 
 	} else {
 		position = mPosDiff * mTimer + mAvgPosition;
 		position.y += otherFactor;
-		mTimer += sys->mDeltaTime * 40.0f;
+		mTimer += sys->getDeltaTime() * 40.0f;
 
 		if (mTimer >= mTargetDist * 0.4f) {
 			piki->startSound(PSSE_PK_ESCAPE_HOLE, 0);
@@ -1039,7 +1039,7 @@ void PikiTaneState::init(Piki* piki, StateArg* stateArg)
  */
 void PikiTaneState::exec(Piki* piki)
 {
-	piki->applyAirDrag(sys->mDeltaTime, mHorizontalDrag, mVerticalDrag);
+	piki->applyAirDrag(sys->getDeltaTime(), mHorizontalDrag, mVerticalDrag);
 }
 
 /**
@@ -1070,8 +1070,8 @@ void PikiNukareState::init(Piki* piki, StateArg* stateArg)
 	NukareStateArg* nukareArg = static_cast<NukareStateArg*>(stateArg);
 	P2ASSERTLINE(1166, nukareArg != nullptr);
 
-	piki->mTargetVelocity = Vector3f(0.0f);
-	piki->mFaceDir        = nukareArg->mNavi->getFaceDir();
+	piki->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
+	piki->mFaceDir = nukareArg->mNavi->getFaceDir();
 
 	mNavi       = nukareArg->mNavi;
 	piki->mNavi = nukareArg->mNavi;
@@ -1188,11 +1188,11 @@ void PikiDopeState::init(Piki* piki, StateArg* stateArg)
 {
 	DopeStateArg* dopeArg = static_cast<DopeStateArg*>(stateArg);
 	P2ASSERTLINE(1270, dopeArg != nullptr);
-	mDopeState            = dopeArg->mDopeType;
-	mStartWaitTime        = 0.3f * randFloat();
-	mHasAnimStarted       = false;
-	piki->mTargetVelocity = Vector3f(0.0f);
-	mNavi                 = nullptr;
+	mDopeState      = dopeArg->mDopeType;
+	mStartWaitTime  = 0.3f * randFloat();
+	mHasAnimStarted = false;
+	piki->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
+	mNavi = nullptr;
 }
 
 /**
@@ -1211,7 +1211,7 @@ void PikiDopeState::onFlute(Piki* piki, Navi* navi)
 void PikiDopeState::exec(Piki* piki)
 {
 	if (!mHasAnimStarted) {
-		mStartWaitTime -= sys->mDeltaTime;
+		mStartWaitTime -= sys->getDeltaTime();
 		if (mStartWaitTime <= 0.0f) {
 			mHasAnimStarted = true;
 
@@ -1387,7 +1387,7 @@ inline void PikiPanicState::checkDemo(Piki* piki)
 	}
 
 	if (flag != 0 && !playData->isDemoFlag(flag) && gameSystem->isStoryMode() && gameSystem->isFlag(GAMESYS_IsGameWorldActive)) {
-		mDemoWaitTime -= sys->mDeltaTime;
+		mDemoWaitTime -= sys->getDeltaTime();
 		if (mDemoWaitTime <= 0.0f) {
 			playData->setDemoFlag(flag);
 
@@ -1407,10 +1407,10 @@ inline void PikiPanicState::checkDemo(Piki* piki)
 void PikiPanicState::exec(Piki* piki)
 {
 	if (mPanicType == PIKIPANIC_Panic || mPanicType == PIKIPANIC_Other) {
-		piki->mTargetVelocity = Vector3f(0.0f);
+		piki->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 		switch (mSubState) {
 		case 0:
-			mDramaTimer -= sys->mDeltaTime;
+			mDramaTimer -= sys->getDeltaTime();
 			if (mDramaTimer <= 0.0f) {
 				mSubState = 1;
 				piki->startMotion(IPikiAnims::KIZUKU, IPikiAnims::KIZUKU, piki, nullptr);
@@ -1452,8 +1452,8 @@ void PikiPanicState::panicRun(Piki* piki)
 {
 	Vector3f direction = Vector3f(sinf(mAngle), 0.0f, cosf(mAngle));
 	piki->setSpeed(mSpeed, direction);
-	mDeathTimer -= sys->mDeltaTime;
-	mDramaTimer -= sys->mDeltaTime;
+	mDeathTimer -= sys->getDeltaTime();
+	mDramaTimer -= sys->getDeltaTime();
 
 	if (mDeathTimer < 0.0f) {
 		if (mPanicType == PIKIPANIC_Panic) {
@@ -1518,7 +1518,7 @@ void PikiPanicState::panicLobster(Piki* piki)
 		}
 	}
 
-	mDeathTimer -= sys->mDeltaTime;
+	mDeathTimer -= sys->getDeltaTime();
 
 	if (mDeathTimer < 0.0f) {
 		switch (mPanicType) {
@@ -1669,7 +1669,7 @@ void PikiDyingState::init(Piki* piki, StateArg* stateArg)
 	}
 
 	piki->startMotion(mAnimIdx, mAnimIdx, piki, nullptr);
-	piki->mTargetVelocity = Vector3f(0.0f);
+	piki->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	piki->mSoundObj->startFreePikiSound(PSSE_PK_VC_DEAD1, 0, 0);
 }
 
@@ -1679,7 +1679,7 @@ void PikiDyingState::init(Piki* piki, StateArg* stateArg)
  */
 void PikiDyingState::exec(Piki* piki)
 {
-	piki->mTargetVelocity = Vector3f(0.0f);
+	piki->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	if (!piki->assertMotion(mAnimIdx) && piki->isAlive()) {
 		if (mDoUseKillArg) {
 			PikiKillArg killArg(-CKILL_VsChargePiki);
@@ -1738,9 +1738,9 @@ bool PikiDenkiDyingState::transittable(int stateID)
 void PikiDenkiDyingState::init(Piki* piki, StateArg* stateArg)
 {
 	piki->startMotion(IPikiAnims::DEAD, IPikiAnims::DEAD, piki, nullptr);
-	mWaitTime             = 0.3f;
-	piki->mTargetVelocity = Vector3f(0.0f);
-	piki->mVelocity       = Vector3f(0.0f);
+	mWaitTime = 0.3f;
+	piki->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
+	piki->mVelocity.set(0.0f, 0.0f, 0.0f);
 }
 
 /**
@@ -1749,9 +1749,9 @@ void PikiDenkiDyingState::init(Piki* piki, StateArg* stateArg)
  */
 void PikiDenkiDyingState::exec(Piki* piki)
 {
-	piki->mTargetVelocity = Vector3f(0.0f);
-	piki->mVelocity       = Vector3f(0.0f);
-	mWaitTime -= sys->mDeltaTime;
+	piki->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
+	piki->mVelocity.set(0.0f, 0.0f, 0.0f);
+	mWaitTime -= sys->getDeltaTime();
 
 	if (mWaitTime <= 0.0f) {
 		efx::TPkKanden kandenFx;
@@ -1821,7 +1821,7 @@ void PikiPressedState::exec(Piki* piki)
 
 	piki->mBaseTrMatrix.makeSRT(piki->mScale, rotation, translation);
 
-	mWaitTime -= sys->mDeltaTime;
+	mWaitTime -= sys->getDeltaTime();
 	if (mWaitTime <= 0.0f) {
 		if (piki->isPikmin()) {
 			deathMgr->inc(DeathCounter::COD_Battle);
@@ -1829,8 +1829,8 @@ void PikiPressedState::exec(Piki* piki)
 		piki->kill(nullptr);
 	}
 
-	piki->mVelocity       = Vector3f(0.0f);
-	piki->mTargetVelocity = Vector3f(0.0f);
+	piki->mVelocity.set(0.0f, 0.0f, 0.0f);
+	piki->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 }
 
 /**
@@ -1867,10 +1867,10 @@ void PikiLookAtState::onFlute(Piki* piki, Game::Navi*)
  */
 void PikiLookAtState::exec(Piki* piki)
 {
-	piki->mTargetVelocity = Vector3f(0.0f);
+	piki->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	switch (mSubState) {
 	case 0:
-		mWaitTime -= sys->mDeltaTime;
+		mWaitTime -= sys->getDeltaTime();
 		if (mWaitTime < 0.0f) {
 			mWaitTime = 0.0f;
 			piki->startMotion(IPikiAnims::KIZUKU, IPikiAnims::KIZUKU, this, nullptr);
@@ -1960,7 +1960,7 @@ void PikiAutoNukiState::exec(Piki* piki)
 {
 	switch (mState) {
 	case 0:
-		mTimer -= sys->mDeltaTime;
+		mTimer -= sys->getDeltaTime();
 		if (mTimer < 0.0f) {
 			mTimer = 0.0f;
 			piki->startMotion(IPikiAnims::KAIFUKU2, IPikiAnims::KAIFUKU2, piki, nullptr);
@@ -2235,8 +2235,8 @@ void PikiHangedState::init(Piki* piki, StateArg* stateArg)
 {
 	piki->startSound(PSSE_PK_VC_HANG, false);
 	piki->startMotion(IPikiAnims::HANG, IPikiAnims::HANG, this, nullptr);
-	piki->mVelocity       = Vector3f(0.0f);
-	piki->mTargetVelocity = Vector3f(0.0f);
+	piki->mVelocity.set(0.0f, 0.0f, 0.0f);
+	piki->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	if (piki->mNavi) {
 		piki->startSound(piki->mNavi, PSSE_PK_VC_THROW_WAIT, false);
 	}
@@ -2299,8 +2299,8 @@ void PikiWaterHangedState::init(Piki* piki, StateArg* stateArg)
 
 	piki->startSound(PSSE_PK_VC_HANG, false);
 	piki->startMotion(IPikiAnims::HANG, IPikiAnims::HANG, this, nullptr);
-	piki->mVelocity       = Vector3f(0.0f);
-	piki->mTargetVelocity = Vector3f(0.0f);
+	piki->mVelocity.set(0.0f, 0.0f, 0.0f);
+	piki->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	piki->setAtari(false);
 }
 
@@ -2369,7 +2369,7 @@ void PikiHipDropState::exec(Piki* piki)
 {
 	if (mSubState == 0) {
 		piki->mVelocity.y = 0.0f;
-		mWaitTimer -= sys->mDeltaTime;
+		mWaitTimer -= sys->getDeltaTime();
 		if (mWaitTimer <= 0.0f) {
 			piki->mVelocity.y      = -_aiConstants->mGravity.mData * 0.5f;
 			Creature* closestEnemy = nullptr;
@@ -2414,12 +2414,12 @@ void PikiHipDropState::exec(Piki* piki)
 		}
 
 	} else if (mSubState == 1) {
-		piki->mFaceDir += sys->mDeltaTime * PI / 0.2f;
+		piki->mFaceDir += sys->getDeltaTime() * PI / 0.2f;
 		piki->mFaceDir = roundAng(piki->mFaceDir);
 
 	} else if (mSubState == 2) {
-		piki->mTargetVelocity = Vector3f(0.0f);
-		mWaitTimer -= sys->mDeltaTime;
+		piki->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
+		mWaitTimer -= sys->getDeltaTime();
 		if (mWaitTimer <= 0.0f) {
 			transit(piki, PIKISTATE_Walk, nullptr);
 			if (!piki->invokeAI()) {
@@ -3100,7 +3100,7 @@ bool PikiFallMeckState::becomePikihead(Piki* piki)
 			ItemPikihead::InitArg initArg((EPikiKind)piki->mPikiKind, Vector3f::zero, 1, 0, -1.0f);
 
 			if (mDoAutoPluck) {
-				initArg.mAutopluckTimer = 10.0f + 3.0f * sys->mDeltaTime;
+				initArg.mAutopluckTimer = 10.0f + 3.0f * sys->getDeltaTime();
 			}
 			sprout->init(&initArg);
 			sprout->setPosition(pikiPos, false);
@@ -3608,7 +3608,7 @@ void PikiSuikomiState::execString(Piki* piki)
 	axisVec *= 350.0f;
 
 	piki->mVelocity = axisVec;
-	piki->move(sys->mDeltaTime);
+	piki->move(sys->getDeltaTime());
 
 	if (piki->mClimbingPosition.y >= 1.0f) {
 		piki->endStick();
@@ -3641,7 +3641,7 @@ void PikiSuikomiState::execStomach(Piki* piki)
 
 		EnemyBase* enemy = static_cast<EnemyBase*>(mCreature);
 		if (!enemy->isEvent(0, EB_Bittered) && !(enemy->mHealth <= 0.0f)) {
-			mTimer -= sys->mDeltaTime;
+			mTimer -= sys->getDeltaTime();
 		}
 	}
 
@@ -3870,11 +3870,11 @@ void PikiFlyingState::exec(Piki* piki)
 		piki->mTargetVelocity   = 0.0f;
 		mSlowFallWaitTimer      = 0.0f;
 	} else if (mIsFlowerPiki) {
-		piki->mFaceDir = roundAng(piki->mFaceDir + PI * sys->mDeltaTime / 0.42f);
-		mSlowFallWaitTimer += sys->mDeltaTime;
+		piki->mFaceDir = roundAng(piki->mFaceDir + PI * sys->getDeltaTime() / 0.42f);
+		mSlowFallWaitTimer += sys->getDeltaTime();
 
 		if (mSlowFallWaitTimer < randFloat() - 0.5f) {
-			piki->mVelocity += sys->mDeltaTime;
+			piki->mVelocity += sys->getDeltaTime();
 		}
 	}
 	/*
@@ -4217,7 +4217,7 @@ void PikiFlickState::exec(Piki* piki)
 	}
 
 	if (mState == FLICK_Land) { // piki has landed.
-		mKnockDownTimer -= sys->mDeltaTime;
+		mKnockDownTimer -= sys->getDeltaTime();
 		if (mKnockDownTimer < 0.0f && piki->isAlive()) { // if knock down timer has expired + piki is alive (!), get up.
 			piki->startMotion(IPikiAnims::GETUP, IPikiAnims::GETUP, this, nullptr);
 			mState = FLICK_Stand;
@@ -4228,7 +4228,7 @@ void PikiFlickState::exec(Piki* piki)
 		piki->mVelocity.z = 0.9f * piki->mVelocity.z;
 
 		// set actual velocity to 0.
-		piki->mTargetVelocity = Vector3f(0.0f);
+		piki->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 		return;
 	}
 
@@ -4236,7 +4236,7 @@ void PikiFlickState::exec(Piki* piki)
 	piki->mVelocity.x = 0.9f * piki->mVelocity.x;
 	piki->mVelocity.z = 0.9f * piki->mVelocity.z;
 
-	piki->mTargetVelocity = Vector3f(0.0f);
+	piki->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 }
 
 /**
@@ -4444,11 +4444,11 @@ void PikiKokeDamageState::init(Piki* piki, StateArg* stateArg)
  */
 void PikiKokeDamageState::exec(Piki* piki)
 {
-	piki->mTargetVelocity = Vector3f(0.0f);
-	piki->mVelocity       = Vector3f(0.0f);
+	piki->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
+	piki->mVelocity.set(0.0f, 0.0f, 0.0f);
 
 	if (mState == KOKEDAMAGE_Unk1) {
-		mTimer -= sys->mDeltaTime;
+		mTimer -= sys->getDeltaTime();
 		if (mTimer <= 0.0f) {
 			piki->startMotion(IPikiAnims::GETUP, IPikiAnims::GETUP, piki, nullptr);
 			mState = KOKEDAMAGE_Unk2;
@@ -4578,8 +4578,8 @@ void PikiKokeState::onKeyEvent(Piki* piki, SysShape::KeyEvent const& event)
 		break;
 
 	case KEYEVENT_2:
-		piki->mVelocity       = Vector3f(0.0f);
-		piki->mTargetVelocity = Vector3f(0.0f);
+		piki->mVelocity.set(0.0f, 0.0f, 0.0f);
+		piki->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 		break;
 
 	case KEYEVENT_LOOP_END:
@@ -4620,10 +4620,10 @@ void PikiDrownState::init(Piki* piki, StateArg* stateArg)
 		piki->startMotion(IPikiAnims::OBORERU, IPikiAnims::OBORERU, piki, nullptr);
 	}
 
-	mSizumuAnimDelay      = randInt(2) + 6;
-	piki->mTargetVelocity = Vector3f(0.0f);
-	mUnusedVal            = 0;
-	piki->mTargetVelocity = Vector3f(0.0f);
+	mSizumuAnimDelay = randInt(2) + 6;
+	piki->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
+	mUnusedVal = 0;
+	piki->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 
 	if (piki->isStickTo()) {
 		piki->endStick();
@@ -4716,13 +4716,13 @@ void PikiDrownState::exec(Piki* piki)
 				piki->mVelocity.z = 0.0f;
 				piki->mVelocity.x = 0.0f;
 				if (piki->mVelocity.y < 60.0f) {
-					piki->mVelocity.y += 500.0f * sys->mDeltaTime;
+					piki->mVelocity.y += 500.0f * sys->getDeltaTime();
 				}
 				piki->mTargetVelocity = piki->mVelocity;
 				break;
 
 			case 2:
-				piki->mVelocity       = Vector3f(0.0f);
+				piki->mVelocity.set(0.0f, 0.0f, 0.0f);
 				piki->mVelocity.y     = 60.0f;
 				piki->mTargetVelocity = piki->mVelocity;
 
@@ -4810,10 +4810,10 @@ void PikiDrownState::exec(Piki* piki)
 				speedDiff *= 2.0f;
 			}
 
-			if (speedDiff > speedDiff * sys->mDeltaTime) {
-				piki->mTargetVelocity = newSep * speedDiff * sys->mDeltaTime + oldVel;
+			if (speedDiff > speedDiff * sys->getDeltaTime()) {
+				piki->mTargetVelocity = newSep * speedDiff * sys->getDeltaTime() + oldVel;
 			} else {
-				piki->mTargetVelocity = newSep * sys->mDeltaTime + oldVel;
+				piki->mTargetVelocity = newSep * sys->getDeltaTime() + oldVel;
 			}
 
 			piki->mVelocity.x = piki->mTargetVelocity.x;
@@ -5512,7 +5512,7 @@ void PikiEmotionState::init(Piki* piki, StateArg* stateArg)
  */
 void PikiEmotionState::exec(Piki* piki)
 {
-	piki->mTargetVelocity = Vector3f(0.0f);
+	piki->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	if (!piki->assertMotion(mAnimIdx)) {
 		transit(piki, PIKISTATE_Walk, nullptr);
 	} else if (mEmotionType == 9) {
@@ -5585,9 +5585,9 @@ void PikiAbsorbState::init(Piki* piki, StateArg* stateArg)
  */
 void PikiAbsorbState::exec(Piki* piki)
 {
-	piki->mVelocity.z     = 0.0f;
-	piki->mVelocity.x     = 0.0f;
-	piki->mTargetVelocity = Vector3f(0.0f);
+	piki->mVelocity.z = 0.0f;
+	piki->mVelocity.x = 0.0f;
+	piki->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 
 	if (mState == 1 && mAbsorbingCreature->isAlive() && !mHasAbsorbed) {
 		InteractAbsorb absorb(piki);
@@ -5677,7 +5677,7 @@ void PikiGrowupState::init(Piki* piki, StateArg* stateArg)
  */
 void PikiGrowupState::exec(Piki* piki)
 {
-	piki->mTargetVelocity = Vector3f(0.0f);
+	piki->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	if (!piki->assertMotion(mAnimIdx)) {
 		transit(piki, PIKISTATE_Walk, nullptr);
 	}
@@ -5878,8 +5878,8 @@ void PikiEscapeState::onKeyEvent(Piki* piki, SysShape::KeyEvent const& event)
 
 	case KEYEVENT_2:
 		if (mSubState == 1 || mSubState == 2) {
-			piki->mVelocity       = Vector3f(0.0f);
-			piki->mTargetVelocity = Vector3f(0.0f);
+			piki->mVelocity.set(0.0f, 0.0f, 0.0f);
+			piki->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 		}
 		break;
 
@@ -5887,8 +5887,8 @@ void PikiEscapeState::onKeyEvent(Piki* piki, SysShape::KeyEvent const& event)
 		if (mSubState == 1 || mSubState == 2) {
 			mDoFinishAnim--;
 			if (mDoFinishAnim <= 0) {
-				piki->mAnimator.mSelfAnimator.mFlags |= SysShape::Animator::AnimFinishMotion;
-				piki->mAnimator.mBoundAnimator.mFlags |= SysShape::Animator::AnimFinishMotion;
+				piki->mAnimator.mSelfAnimator.setFlag(SysShape::Animator::AnimFinishMotion);
+				piki->mAnimator.mBoundAnimator.setFlag(SysShape::Animator::AnimFinishMotion);
 			}
 		}
 		break;

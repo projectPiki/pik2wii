@@ -198,7 +198,7 @@ void SingleGame::CaveDayEndState::init(SingleGameSection* game, StateArg* arg)
 	mgr->checkScene();
 	PSSystem::Scene* scene = mgr->mScenes->mChild;
 	if (scene) {
-		scene->stopAllSound(mFadeTimer / sys->mDeltaTime);
+		scene->stopAllSound(mFadeTimer / sys->getDeltaTime());
 	}
 }
 
@@ -211,7 +211,7 @@ void SingleGame::CaveDayEndState::exec(SingleGameSection* section)
 	section->BaseGameSection::doUpdate();
 	section->updateCaveScreen();
 
-	mFadeTimer -= sys->mDeltaTime;
+	mFadeTimer -= sys->getDeltaTime();
 	if (mFadeTimer <= 0.0f) {
 		section->advanceDayCount();
 		gameSystem->mTimeMgr->setStartTime();
@@ -315,7 +315,7 @@ bool SingleGameSection::doUpdate()
 
 		if (!gameSystem->mIsFrozen && !gameSystem->paused()) {
 			if (mTimerEnabled && moviePlayer->mDemoState == DEMOSTATE_Inactive && gameSystem->isFlag(GAMESYS_IsGameWorldActive)) {
-				mTimer -= sys->mDeltaTime;
+				mTimer -= sys->getDeltaTime();
 
 				if (mTimer < 0.0f) {
 					mCurrentState->on_demo_timer(this, mTimerType);

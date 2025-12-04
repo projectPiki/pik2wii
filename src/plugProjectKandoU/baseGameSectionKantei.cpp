@@ -1,14 +1,14 @@
-#include "Game/pelletMgr.h"
-#include "og/Screen/DispMember.h"
-#include "Screen/Game2DMgr.h"
-#include "PSSystem/PSSystemIF.h"
-#include "Game/gamePlayData.h"
-#include "Game/MoviePlayer.h"
-#include "Game/GameLight.h"
-#include "P2JME/P2JME.h"
 #include "Controller.h"
+#include "Game/GameLight.h"
+#include "Game/MoviePlayer.h"
+#include "Game/gamePlayData.h"
+#include "Game/pelletMgr.h"
+#include "P2JME/P2JME.h"
+#include "PSSystem/PSSystemIF.h"
+#include "Screen/Game2DMgr.h"
 #include "Sys/DrawBuffers.h"
 #include "nans.h"
+#include "og/Screen/DispMember.h"
 
 namespace Game {
 
@@ -266,7 +266,7 @@ void BaseGameSection::do_drawOtakaraWindow(Graphics& gfx)
 		return;
 	}
 
-	f32 time = sys->mDeltaTime;
+	f32 time = sys->getDeltaTime();
 	if (mDraw2DCreature && mDraw2DCreature->isPellet()) {
 		Pellet* obj = static_cast<Pellet*>(mDraw2DCreature);
 		if ((obj->getKind() == PelletType::Treasure || obj->getKind() == PelletType::Upgrade) && !Screen::gGame2DMgr->update_Kantei()

@@ -130,7 +130,7 @@ void TinyPikmin::update()
 			mState     = LANDED;
 			mVelocityY = -(randFloat() * 7.0f + 8.5f);
 		} else {
-			mWaitTimer += sys->mDeltaTime;
+			mWaitTimer += sys->getDeltaTime();
 		}
 		break;
 	case INACTIVE:
@@ -167,7 +167,7 @@ void TinyPikmin::update()
 			}
 			mVelocityY = 0.0f;
 			mPositionY = 0.0f;
-			mWaitTimer += sys->mDeltaTime;
+			mWaitTimer += sys->getDeltaTime();
 			if (sTinyPikminMgr->_08 && mWaitTimer > 1.0f) {
 				mState     = FALLING;
 				mVelocityY = randFloat() * -4.0f + 4.0f;
@@ -217,7 +217,7 @@ void TinyPikmin::update()
 		break;
 	}
 
-	mScaleAnimTimer += mTimeScale * sys->mDeltaTime;
+	mScaleAnimTimer += mTimeScale * sys->getDeltaTime();
 	if (mScaleAnimTimer > 1.0f) {
 		mScaleAnimTimer = 0.0f;
 	}
@@ -852,7 +852,7 @@ bool BootSection::doUpdate()
 			}
 			break;
 		case JUTFader::Status_In:
-			mFadeTimer += sys->mDeltaTime;
+			mFadeTimer += sys->getDeltaTime();
 			if (mController->getButtonDown() & Controller::PRESS_A || mFadeTimer > 2.0f) {
 				gPikmin2AramMgr->setLoadPermission(false);
 			}
@@ -875,7 +875,7 @@ bool BootSection::doUpdate()
 			}
 			break;
 		case JUTFader::Status_In:
-			mFadeTimer += sys->mDeltaTime;
+			mFadeTimer += sys->getDeltaTime();
 			if (mController->getButtonDown() & Controller::PRESS_A || mFadeTimer > 2.0f) {
 				gPikmin2AramMgr->setLoadPermission(false);
 			}
@@ -891,11 +891,11 @@ bool BootSection::doUpdate()
 		fader = mDisplay->mFader;
 		switch (fader->mStatus) {
 		case JUTFader::Status_Out:
-			fader->startFadeIn(0.5f / sys->mDeltaTime);
+			fader->startFadeIn(0.5f / sys->getDeltaTime());
 			mFadeTimer = 0.0f;
 			break;
 		case JUTFader::Status_In:
-			mFadeTimer += sys->mDeltaTime;
+			mFadeTimer += sys->getDeltaTime();
 			if (mFadeTimer > 1.0f) {
 				setMode(SID_EndState);
 			}
@@ -1504,7 +1504,7 @@ void BootSection::updateNintendoLogo()
 		sys->dvdLoadUseCallBack(&mThreadCommand, new Delegate<BootSection>(this, &BootSection::load2DResource));
 	}
 
-	mFadeTimer += sys->mDeltaTime;
+	mFadeTimer += sys->getDeltaTime();
 	if (mFadeTimer > 1.5f && !waitLoadResource()) {
 		if (!mProgressiveActive) {
 			mProgressiveActive = true;
@@ -1543,7 +1543,7 @@ void BootSection::updateNintendoLogo()
 void BootSection::updateProgressive()
 {
 	if (mFadeTimer < 10.0f) {
-		mFadeTimer += sys->mDeltaTime;
+		mFadeTimer += sys->getDeltaTime();
 
 		if (mFadeTimer >= 10.0f) {
 			mProgressiveScreen->setDecide();
@@ -1655,7 +1655,7 @@ void BootSection::setMode(int id)
 		mStateID = (StateID)id;
 		switch (mStateID) {
 		case SID_NintendoLogo:
-			mDisplay->mFader->startFadeIn(0.5f / sys->mDeltaTime);
+			mDisplay->mFader->startFadeIn(0.5f / sys->getDeltaTime());
 			mFadeTimer = 0.0f;
 			break;
 		}

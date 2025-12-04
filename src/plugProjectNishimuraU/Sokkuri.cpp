@@ -334,12 +334,10 @@ void Obj::createDownEffect(f32 groundScale, f32 waterScale)
  */
 void Obj::createBubbleEffect()
 {
-	if (mWaterBox) {
-		if (getSubmergedDepth() > 10.0f) {
-			efx::Arg fxArg(this);
-			efx::TJgmBubble bubbleFX;
-			bubbleFX.create(&fxArg);
-		}
+	if (mWaterBox && *mWaterBox->getSeaHeightPtr() - mPosition.y > 10.0f) {
+		efx::Arg fxArg(this);
+		efx::TJgmBubble bubbleFX;
+		bubbleFX.create(&fxArg);
 	}
 }
 

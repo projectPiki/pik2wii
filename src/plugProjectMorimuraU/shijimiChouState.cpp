@@ -41,8 +41,8 @@ StateWait::StateWait(int stateID)
 void StateWait::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	enemy->enableEvent(0, EB_Untargetable);
-	enemy->mTargetVelocity  = Vector3f(0.0f);
-	enemy->mCurrentVelocity = Vector3f(0.0f);
+	enemy->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
+	enemy->mCurrentVelocity.set(0.0f, 0.0f, 0.0f);
 	enemy->startMotion(SHIJIMIANIM_Move, nullptr);
 	enemy->setMotionFrame(enemy->getMotionFrameMax() * randFloat());
 	mWaitTimer = 0;
@@ -198,8 +198,8 @@ void StateDead::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	enemy->setAlive(false);
 	enemy->disableEvent(0, EB_Untargetable);
-	enemy->mTargetVelocity  = Vector3f(0.0f);
-	enemy->mCurrentVelocity = Vector3f(0.0f);
+	enemy->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
+	enemy->mCurrentVelocity.set(0.0f, 0.0f, 0.0f);
 	enemy->enableEvent(0, EB_LeaveCarcass);
 	enemy->deathProcedure();
 	enemy->startMotion(SHIJIMIANIM_Dead, nullptr);
@@ -357,8 +357,8 @@ void StateRest::exec(EnemyBase* enemy)
 			mIsInRest       = true;
 			mNeedFinishRest = true;
 
-			enemy->mCurrentVelocity = Vector3f(0.0f);
-			enemy->mTargetVelocity  = Vector3f(0.0f);
+			enemy->mCurrentVelocity.set(0.0f, 0.0f, 0.0f);
+			enemy->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 			enemy->hardConstraintOn();
 		}
 	}

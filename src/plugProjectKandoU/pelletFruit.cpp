@@ -29,7 +29,7 @@ void Object::do_onInit(CreatureInitArg* initArg)
 void Object::do_update()
 {
 	if (!mSticked && !mCaptureMatrix && getStateID() != PELSTATE_Goal) {
-		mBurstTimer -= sys->mDeltaTime;
+		mBurstTimer -= sys->getDeltaTime();
 		if (mBurstTimer <= 0.0f) {
 			Vector3f fruitPos = getPosition();
 			efx::Arg fxArg(fruitPos);

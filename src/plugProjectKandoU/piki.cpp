@@ -759,10 +759,10 @@ void Piki::setSpeed(f32 multiplier, Vector3f& direction)
 f32 Piki::getSpeed(f32 multiplier, f32 max)
 {
 	f32 speed = getSpeed(multiplier);
-	if (speed * sys->mDeltaTime < max) {
+	if (speed * sys->getDeltaTime() < max) {
 		return speed;
 	} else {
-		return max / sys->mDeltaTime;
+		return max / sys->getDeltaTime();
 	}
 }
 

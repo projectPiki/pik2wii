@@ -25,8 +25,8 @@ Mgr* mgr;
  */
 Weed::Weed()
 {
-	(Vector3f)(*this) = Vector3f(0.0f);
-	mFlockMgr         = nullptr;
+	set(0.0f, 0.0f, 0.0f);
+	mFlockMgr = nullptr;
 }
 
 /**

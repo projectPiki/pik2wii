@@ -43,7 +43,7 @@ void Obj::setParameters()
 	Nest::Obj* nest = mNest;
 	if (mNest) {
 		nest->setScale(C_PROPERPARMS.mNestScale());
-		mNest->mCollTree->mPart->setScale(C_PROPERPARMS.mNestScale());
+		nest->setCollScale(C_PROPERPARMS.mNestScale());
 	}
 }
 
@@ -69,7 +69,7 @@ void Obj::birth(Vector3f& position, f32 faceDirection)
 			nest      = mNest;
 			f32 scale = C_PROPERPARMS.mNestScale();
 			nest->setScale(scale);
-			mNest->mCollTree->mPart->setScale(scale);
+			nest->setCollScale(scale);
 		}
 	}
 }
@@ -550,10 +550,10 @@ void Obj::collisionCallback(CollEvent& event)
 	source = event.mCollidingCreature;
 	if (source && source->isTeki()
 	    && static_cast<EnemyBase*>(event.mCollidingCreature)->getEnemyTypeID() == EnemyTypeID::EnemyID_PanHouse) {
-		mAcceleration = Vector3f(0.0f);
+		mAcceleration.set(0.0f, 0.0f, 0.0f);
 	}
 	if (isEvent(0, EB_Bittered)) {
-		mAcceleration = Vector3f(0.0f);
+		mAcceleration.set(0.0f, 0.0f, 0.0f);
 	}
 	EnemyBase::collisionCallback(event);
 }
@@ -608,7 +608,7 @@ void Obj::damageRumble()
 void Obj::doSimulation(f32 simspeed)
 {
 	if (isStickTo()) {
-		mAcceleration = Vector3f(0.0f);
+		mAcceleration.set(0.0f, 0.0f, 0.0f);
 	}
 
 	mFindNextRouteCounter -= 1;
@@ -1188,7 +1188,7 @@ Pellet* Obj::findNearestPellet()
 			if (absF(y - mPosition.y) > 10.0f) {
 				continue;
 			}
-			f32 angle = getCreatureViewAngle(pelt);
+			f32 angle = getAngDist(pelt);
 			if (absF(angle) <= maxAngle) {
 				s32 id = pelt->getCreatureID();
 				if (pelt->getKind() == PelletType::Carcass && (id == 0 || id == 1)) {
@@ -1285,7 +1285,7 @@ void Obj::checkNearHomeGraphIndex()
 	}
 	f32 turnSpeed    = 1.0f;
 	f32 maxTurnSpeed = 360.0f; // this ends up as tau via the inline lol
-	turnToTarget2(mNextWayPointPosition, turnSpeed, maxTurnSpeed);
+	turnToTarget(mNextWayPointPosition, turnSpeed, maxTurnSpeed);
 }
 
 /**
@@ -1333,7 +1333,7 @@ bool Obj::carryTarget(f32 param)
 		// speed             = mTargetVelocity.z;
 		// Pellet* newPelt  = getCarryTarget();
 		Vector3f peltVel = getCarryTarget()->getVelocity();
-		peltVel          = peltVel + (targetVel - peltVel) * (sys->mDeltaTime / 0.15f);
+		peltVel          = peltVel + (targetVel - peltVel) * (sys->getDeltaTime() / 0.15f);
 		peltVel.y += targetVel.y;
 		peltVel.x = targetVel.x;
 		peltVel.z = targetVel.z;
@@ -1380,7 +1380,7 @@ bool Obj::carryTarget(f32 param)
 			peltVel.z += mPelletCarryVelocity.z;
 		}
 		pelt->mPelletCarry->pull(2, peltVel, mCarryStrength);
-		f32 angle   = getCreatureViewAngle(pelt);
+		f32 angle   = getAngDist(pelt);
 		mFaceDir    = roundAng(mFaceDir + angle);
 		mRotation.y = mFaceDir;
 		pelt->setPanModokiRotation(roundAng((mCarryDir + mCarryRotationOffset) - mAlsoRotationOffset));

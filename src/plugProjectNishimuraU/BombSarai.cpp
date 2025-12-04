@@ -250,7 +250,7 @@ void BombSarai::Obj::setRandTarget()
  */
 void BombSarai::Obj::addPitchRatio()
 {
-	mPitchRatio += C_PROPERPARMS.mPitchRate.mValue * sys->mDeltaTime;
+	mPitchRatio += C_PROPERPARMS.mPitchRate.mValue * sys->getDeltaTime();
 	if (mPitchRatio > TAU) {
 		mPitchRatio -= TAU;
 	}

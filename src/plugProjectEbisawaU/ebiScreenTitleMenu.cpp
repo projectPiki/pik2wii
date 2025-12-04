@@ -180,10 +180,10 @@ void TTitleMenu::doOpenScreen(ArgOpen* arg)
 	case 0:
 		mCategoryPanes[2]->hide();
 		mAnim6.stop();
-		mAnim7.play(sys->mDeltaTime * 60.0f, J3DAA_UNKNOWN_0, true);
+		mAnim7.play(sys->getDeltaTime() * 60.0f, J3DAA_UNKNOWN_0, true);
 		break;
 	case 1:
-		mAnim6.play(sys->mDeltaTime * 60.0f, J3DAA_UNKNOWN_0, true);
+		mAnim6.play(sys->getDeltaTime() * 60.0f, J3DAA_UNKNOWN_0, true);
 		mAnim7.stop();
 		break;
 	}
@@ -215,7 +215,7 @@ void TTitleMenu::doInitWaitState()
 		break;
 	}
 
-	mAnims1[mState][mSelectID].play(sys->mDeltaTime * 60.0f, J3DAA_UNKNOWN_0, true);
+	mAnims1[mState][mSelectID].play(sys->getDeltaTime() * 60.0f, J3DAA_UNKNOWN_0, true);
 	showPika_(mSelectID);
 
 	for (int i = 0; i < 6; i++) {
@@ -228,7 +228,7 @@ void TTitleMenu::doInitWaitState()
 	mObjIcon[mSelectID].start();
 	mObjIcon2[mSelectID].start();
 
-	u32 count            = 30.0f / sys->mDeltaTime;
+	u32 count            = 30.0f / sys->getDeltaTime();
 	mMenuCloseCounter    = count;
 	mMenuCloseCounterMax = count;
 }
@@ -240,11 +240,11 @@ void TTitleMenu::doInitWaitState()
 void TTitleMenu::doCloseScreen(ArgClose*)
 {
 	if (mDoCloseMenu) {
-		u32 count            = 0.2f / sys->mDeltaTime;
+		u32 count            = 0.2f / sys->getDeltaTime();
 		mMenuCloseCounter    = count;
 		mMenuCloseCounterMax = count;
 	} else {
-		u32 count            = 1.0f / sys->mDeltaTime;
+		u32 count            = 1.0f / sys->getDeltaTime();
 		mMenuCloseCounter    = count;
 		mMenuCloseCounterMax = count;
 	}
@@ -297,7 +297,7 @@ bool TTitleMenu::doUpdateStateWait()
 				mSelectID--;
 			}
 		}
-		mAnims1[mState][mSelectID].play(sys->mDeltaTime * 60.0f, J3DAA_UNKNOWN_0, true);
+		mAnims1[mState][mSelectID].play(sys->getDeltaTime() * 60.0f, J3DAA_UNKNOWN_0, true);
 		showPika_(mSelectID);
 		mObjIcon[mSelectID].start();
 		mObjIcon2[mSelectID].start();
@@ -305,7 +305,7 @@ bool TTitleMenu::doUpdateStateWait()
 		mObjIcon[id].stop();
 		mObjIcon2[id].stop();
 		PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_CURSOR, 0);
-		u32 count            = 30.0f / sys->mDeltaTime;
+		u32 count            = 30.0f / sys->getDeltaTime();
 		mMenuCloseCounter    = count;
 		mMenuCloseCounterMax = count;
 	}
@@ -315,7 +315,7 @@ bool TTitleMenu::doUpdateStateWait()
 		} else {
 			hidePika_(mSelectID);
 		}
-		mAnims1[mState][mSelectID].play(sys->mDeltaTime * 60.0f, J3DAA_UNKNOWN_0, true);
+		mAnims1[mState][mSelectID].play(sys->getDeltaTime() * 60.0f, J3DAA_UNKNOWN_0, true);
 	}
 
 	if (mController->getButtonDown() & Controller::PRESS_A || mController->getButtonDown() & Controller::PRESS_START) {

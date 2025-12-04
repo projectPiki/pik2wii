@@ -1,11 +1,11 @@
 #ifndef _GAME_ENTITIES_FROG_H
 #define _GAME_ENTITIES_FROG_H
 
-#include "Game/EnemyStateMachine.h"
 #include "Game/EnemyAnimatorBase.h"
-#include "Game/EnemyParmsBase.h"
-#include "Game/EnemyMgrBase.h"
 #include "Game/EnemyBase.h"
+#include "Game/EnemyMgrBase.h"
+#include "Game/EnemyParmsBase.h"
+#include "Game/EnemyStateMachine.h"
 
 /**
  * --Header for Yellow Wollywog (Frog)--
@@ -82,6 +82,8 @@ struct Obj : public EnemyBase {
 	void createDownEffect(f32);
 	void effectDrawOn();
 	void effectDrawOff();
+
+	inline f32 getAirTimer() { return mAirTimer; }
 
 	// _00 		= VTBL
 	// _00-_2BC	= EnemyBase
@@ -179,10 +181,10 @@ struct FSM : public EnemyStateMachine {
 };
 
 struct State : public EnemyFSMState {
-	inline State(int stateID, char* name)
+	inline State(int stateID, const char* name)
 	    : EnemyFSMState(stateID)
 	{
-		mName = name;
+		setName(name);
 	}
 
 	// _00		= VTBL
@@ -190,8 +192,8 @@ struct State : public EnemyFSMState {
 };
 
 struct StateAttack : public State {
-	inline StateAttack()
-	    : State(FROG_Attack, "attack")
+	inline StateAttack(const char* name)
+	    : State(FROG_Attack, name)
 	{
 	}
 
@@ -204,8 +206,8 @@ struct StateAttack : public State {
 };
 
 struct StateDead : public State {
-	inline StateDead()
-	    : State(FROG_Dead, "dead")
+	inline StateDead(const char* name)
+	    : State(FROG_Dead, name)
 	{
 	}
 
@@ -218,8 +220,8 @@ struct StateDead : public State {
 };
 
 struct StateFail : public State {
-	inline StateFail()
-	    : State(FROG_Fail, "fail")
+	inline StateFail(const char* name)
+	    : State(FROG_Fail, name)
 	{
 	}
 
@@ -232,8 +234,8 @@ struct StateFail : public State {
 };
 
 struct StateFall : public State {
-	inline StateFall()
-	    : State(FROG_Fall, "fall")
+	inline StateFall(const char* name)
+	    : State(FROG_Fall, name)
 	{
 	}
 
@@ -246,8 +248,8 @@ struct StateFall : public State {
 };
 
 struct StateGoHome : public State {
-	inline StateGoHome()
-	    : State(FROG_GoHome, "gohome")
+	inline StateGoHome(const char* name)
+	    : State(FROG_GoHome, name)
 	{
 	}
 
@@ -260,8 +262,8 @@ struct StateGoHome : public State {
 };
 
 struct StateJump : public State {
-	inline StateJump()
-	    : State(FROG_Jump, "jump")
+	inline StateJump(const char* name)
+	    : State(FROG_Jump, name)
 	{
 	}
 
@@ -274,8 +276,8 @@ struct StateJump : public State {
 };
 
 struct StateJumpWait : public State {
-	inline StateJumpWait()
-	    : State(FROG_JumpWait, "jumpwait")
+	inline StateJumpWait(const char* name)
+	    : State(FROG_JumpWait, name)
 	{
 	}
 
@@ -288,8 +290,8 @@ struct StateJumpWait : public State {
 };
 
 struct StateTurn : public State {
-	inline StateTurn()
-	    : State(FROG_Turn, "turn")
+	inline StateTurn(const char* name)
+	    : State(FROG_Turn, name)
 	{
 	}
 
@@ -302,8 +304,8 @@ struct StateTurn : public State {
 };
 
 struct StateTurnToHome : public State {
-	inline StateTurnToHome()
-	    : State(FROG_TurnToHome, "turntohome")
+	inline StateTurnToHome(const char* name)
+	    : State(FROG_TurnToHome, name)
 	{
 	}
 
@@ -316,8 +318,8 @@ struct StateTurnToHome : public State {
 };
 
 struct StateWait : public State {
-	inline StateWait()
-	    : State(FROG_Wait, "wait")
+	inline StateWait(const char* name)
+	    : State(FROG_Wait, name)
 	{
 	}
 

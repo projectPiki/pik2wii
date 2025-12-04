@@ -130,85 +130,86 @@ void JUTGamePad::clear()
  */
 u32 JUTGamePad::read()
 {
-	sRumbleSupported = PADRead(mPadStatus);
+	// sRumbleSupported = PADRead(mPadStatus);
 
-	switch (sClampMode) {
-	case 1:
-		PADClamp(mPadStatus);
-		break;
-	case 2:
-		PADClampCircle(mPadStatus);
-		break;
-	}
+	// switch (sClampMode) {
+	// case 1:
+	// 	PADClamp(mPadStatus);
+	// 	break;
+	// case 2:
+	// 	PADClampCircle(mPadStatus);
+	// 	break;
+	// }
 
-	// Initialize reset mask and iterate over all controllers
-	u32 resetMask = 0;
-	u32 bitTest;
-	for (int i = 0; i < PAD_MAX_CONTROLLERS; i++) {
-		bitTest = 0x80000000 >> i;
-		if (mPadStatus[i].err == 0) {
-			// If no error on the controller, update main and sub sticks and button status
-			u32 mainStick = mPadMStick[i].update(mPadStatus[i].stickX, mPadStatus[i].stickY, sStickMode, STICK_Main, mPadButton[i].mButton)
-			             << 0x18;
-			u32 subStick
-			    = mPadSStick[i].update(mPadStatus[i].substickX, mPadStatus[i].substickY, sStickMode, STICK_Sub, mPadButton[i].mButton)
-			   << 0x10;
+	// // Initialize reset mask and iterate over all controllers
+	// u32 resetMask = 0;
+	// u32 bitTest;
+	// for (int i = 0; i < PAD_MAX_CONTROLLERS; i++) {
+	// 	bitTest = 0x80000000 >> i;
+	// 	if (mPadStatus[i].err == 0) {
+	// 		// If no error on the controller, update main and sub sticks and button status
+	// 		u32 mainStick = mPadMStick[i].update(mPadStatus[i].stickX, mPadStatus[i].stickY, sStickMode, STICK_Main, mPadButton[i].mButton)
+	// 		             << 0x18;
+	// 		u32 subStick
+	// 		    = mPadSStick[i].update(mPadStatus[i].substickX, mPadStatus[i].substickY, sStickMode, STICK_Sub, mPadButton[i].mButton)
+	// 		   << 0x10;
 
-			mainStick |= subStick;
+	// 		mainStick |= subStick;
 
-			mPadButton[i].update(&mPadStatus[i], mainStick);
-		} else if (mPadStatus[i].err == -1) {
-			// If controller error is -1, reset main and sub sticks and button status, and update reset mask if pad reset is not suppressed
-			mPadMStick[i].update(0, 0, sStickMode, STICK_Main, 0);
-			mPadSStick[i].update(0, 0, sStickMode, STICK_Sub, 0);
-			mPadButton[i].update(nullptr, 0);
+	// 		mPadButton[i].update(&mPadStatus[i], mainStick);
+	// 	} else if (mPadStatus[i].err == -1) {
+	// 		// If controller error is -1, reset main and sub sticks and button status, and update reset mask if pad reset is not suppressed
+	// 		mPadMStick[i].update(0, 0, sStickMode, STICK_Main, 0);
+	// 		mPadSStick[i].update(0, 0, sStickMode, STICK_Sub, 0);
+	// 		mPadButton[i].update(nullptr, 0);
 
-			if ((sSuppressPadReset & bitTest) == 0) {
-				resetMask |= bitTest;
-			}
-		} else {
-			// For other errors, reset button down, up, and repeat status
-			mPadButton[i].mButtonDown = 0;
-			mPadButton[i].mButtonUp   = 0;
-			mPadButton[i].mRepeat     = 0;
-		}
-	}
+	// 		if ((sSuppressPadReset & bitTest) == 0) {
+	// 			resetMask |= bitTest;
+	// 		}
+	// 	} else {
+	// 		// For other errors, reset button down, up, and repeat status
+	// 		mPadButton[i].mButtonDown = 0;
+	// 		mPadButton[i].mButtonUp   = 0;
+	// 		mPadButton[i].mRepeat     = 0;
+	// 	}
+	// }
 
-	// Iterate over all pads in the pad list, update their status, and execute virtual_10 function if pad record is active and no error on
-	// the controller
-	JSUListIterator<JUTGamePad> pad(mPadList.getFirst());
-	for (; pad != mPadList.getEnd(); pad++) {
-		if (pad->mPadReplay != nullptr && pad->mPadReplay->mIsActive) {
-			// If pad replay is active, get the current status and update main and sub sticks and button status
-			PADStatus status;
-			pad->mPadReplay->getStatus(&status);
-			u32 mainStick = pad->mMStick.update(status.stickX, status.stickY, sStickMode, STICK_Main, pad->mButton.mButton) << 0x18;
-			u32 subStick  = pad->mSStick.update(status.substickX, status.substickY, sStickMode, STICK_Sub, pad->mButton.mButton) << 0x10;
-			mainStick |= subStick;
-			pad->mButton.update(&status, mainStick);
-		} else {
-			// If pad replay is not active, assign a new port number if invalid and update the pad
-			if (pad->mPortNum == PORT_INVALID) {
-				pad->assign();
-			}
+	// // Iterate over all pads in the pad list, update their status, and execute virtual_10 function if pad record is active and no error
+	// on
+	// // the controller
+	// JSUListIterator<JUTGamePad> pad(mPadList.getFirst());
+	// for (; pad != mPadList.getEnd(); pad++) {
+	// 	if (pad->mPadReplay != nullptr && pad->mPadReplay->mIsActive) {
+	// 		// If pad replay is active, get the current status and update main and sub sticks and button status
+	// 		PADStatus status;
+	// 		pad->mPadReplay->getStatus(&status);
+	// 		u32 mainStick = pad->mMStick.update(status.stickX, status.stickY, sStickMode, STICK_Main, pad->mButton.mButton) << 0x18;
+	// 		u32 subStick  = pad->mSStick.update(status.substickX, status.substickY, sStickMode, STICK_Sub, pad->mButton.mButton) << 0x10;
+	// 		mainStick |= subStick;
+	// 		pad->mButton.update(&status, mainStick);
+	// 	} else {
+	// 		// If pad replay is not active, assign a new port number if invalid and update the pad
+	// 		if (pad->mPortNum == PORT_INVALID) {
+	// 			pad->assign();
+	// 		}
 
-			pad->update();
-		}
+	// 		pad->update();
+	// 	}
 
-		if (pad->mPadRecord != nullptr && pad->mPadRecord->mIsActive) {
-			s16 portNum = pad->mPortNum;
-			if (portNum >= 0 && mPadStatus[portNum].err == 0) {
-				pad->mPadRecord->virtual_10(&mPadStatus[portNum]);
-			}
-		}
-	}
+	// 	if (pad->mPadRecord != nullptr && pad->mPadRecord->mIsActive) {
+	// 		s16 portNum = pad->mPortNum;
+	// 		if (portNum >= 0 && mPadStatus[portNum].err == 0) {
+	// 			pad->mPadRecord->virtual_10(&mPadStatus[portNum]);
+	// 		}
+	// 	}
+	// }
 
-	if (resetMask != 0) {
-		PADReset(resetMask);
-	}
+	// if (resetMask != 0) {
+	// 	PADReset(resetMask);
+	// }
 
-	checkResetSwitch();
-	return sRumbleSupported;
+	// checkResetSwitch();
+	// return sRumbleSupported;
 }
 
 /**

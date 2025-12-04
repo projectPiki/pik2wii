@@ -1,11 +1,11 @@
-#include "Game/Entities/BlackMan.h"
+#include "Game/CameraMgr.h"
 #include "Game/EnemyAnimKeyEvent.h"
 #include "Game/EnemyFunc.h"
-#include "Game/CameraMgr.h"
-#include "Game/rumble.h"
+#include "Game/Entities/BlackMan.h"
 #include "Game/MapMgr.h"
-#include "PSSystem/PSMainSide_ObjSound.h"
+#include "Game/rumble.h"
 #include "PSM/EnemyBoss.h"
+#include "PSSystem/PSMainSide_ObjSound.h"
 #include "nans.h"
 
 namespace Game {
@@ -136,8 +136,8 @@ StateDead::StateDead(int stateID)
  */
 void StateDead::init(EnemyBase* enemy, StateArg* stateArg)
 {
-	enemy->mCurrentVelocity = Vector3f(0.0f);
-	enemy->mTargetVelocity  = Vector3f(0.0f);
+	enemy->mCurrentVelocity.set(0.0f, 0.0f, 0.0f);
+	enemy->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	enemy->startMotion(WRAITHANIM_Dead, nullptr);
 
 	Obj* wraith = OBJ(enemy);
@@ -201,8 +201,8 @@ void StateFreeze::init(EnemyBase* enemy, StateArg* stateArg)
 		enemy->setMotionFrame(3.0f);
 	}
 
-	enemy->mCurrentVelocity = Vector3f(0.0f);
-	enemy->mTargetVelocity  = Vector3f(0.0f);
+	enemy->mCurrentVelocity.set(0.0f, 0.0f, 0.0f);
+	enemy->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 }
 
 /**
@@ -631,8 +631,8 @@ StateTired::StateTired(int stateID)
 void StateTired::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	enemy->startMotion(WRAITHANIM_Wait2, nullptr);
-	enemy->mTargetVelocity = Vector3f(0.0f);
-	_10                    = 0;
+	enemy->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
+	_10 = 0;
 }
 
 /**
@@ -641,8 +641,8 @@ void StateTired::init(EnemyBase* enemy, StateArg* stateArg)
  */
 void StateTired::exec(EnemyBase* enemy)
 {
-	enemy->mTargetVelocity  = Vector3f(0.0f);
-	enemy->mCurrentVelocity = Vector3f(0.0f);
+	enemy->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
+	enemy->mCurrentVelocity.set(0.0f, 0.0f, 0.0f);
 
 	if (enemy->mCurAnim->mIsPlaying) {
 		if ((u32)enemy->mCurAnim->mType == KEYEVENT_END) {

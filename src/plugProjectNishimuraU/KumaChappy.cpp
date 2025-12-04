@@ -53,7 +53,7 @@ void Obj::onInit(CreatureInitArg* arg)
  */
 void Obj::doUpdate()
 {
-	mReviveTimer += sys->mDeltaTime;
+	mReviveTimer += sys->getDeltaTime();
 	updateTargetDistance();
 	mFsm->exec(this);
 	mMouthSlots.update();
@@ -207,7 +207,7 @@ void Obj::doUpdateCarcass()
 {
 	if (mPellet->isAlive()) {
 		if (mReviveTimer < C_PROPERPARMS.mHealthGaugeTimer()) {
-			mReviveTimer += sys->mDeltaTime;
+			mReviveTimer += sys->getDeltaTime();
 			if (lifeGaugeMgr && mReviveTimer >= C_PROPERPARMS.mHealthGaugeTimer()) {
 				lifeGaugeMgr->activeLifeGauge(this, 0.0f);
 			}

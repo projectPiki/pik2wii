@@ -1,8 +1,8 @@
-#include "Controller.h"
-#include "System.h"
 #include "menu.h"
+#include "Controller.h"
 #include "PSSystem/PSSystemIF.h"
 #include "SoundID.h"
+#include "System.h"
 
 /**
  * @note Address: 0x80456184
@@ -123,17 +123,17 @@ Menu* Menu::doUpdate(bool flag)
 	Menu* menu = this;
 
 	mActiveMenu = this;
-	mTimer2 += sys->mDeltaTime * 7.0f;
+	mTimer2 += sys->getDeltaTime() * 7.0f;
 	switch (mState) {
 	case FadeIn:
-		mTimer += sys->mDeltaTime * 8.0f;
+		mTimer += sys->getDeltaTime() * 8.0f;
 		if (mTimer >= 1.0f) {
 			mTimer = 1.0f;
 			mState = Active;
 		}
 		break;
 	case FadeOut:
-		mTimer = -(sys->mDeltaTime * 8.0f - mTimer);
+		mTimer = -(sys->getDeltaTime() * 8.0f - mTimer);
 		if (mTimer < 0.0f) {
 			mTimer = 0.0f;
 			mState = Inactive;
