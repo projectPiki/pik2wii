@@ -5557,11 +5557,11 @@ plugProjectEbisawaU/ebiP2TitleUnit.cpp:
 	.rodata     start:0x805565B0 end:0x80556648
 	.bss        start:0x806393E8 end:0x806393F8
 	.sbss       start:0x8066D058 end:0x8066D060
-	.sdata2     start:0x80674BF0 end:0x80674C2C
+	.sdata2     start:0x80674BF0 end:0x80674C28
 
 plugProjectEbisawaU/ebiUtility.cpp:
 	.text       start:0x80441AF4 end:0x80442368
-	.sdata2     start:0x80674C2C end:0x80674C38
+	.sdata2     start:0x80674C28 end:0x80674C38
 
 plugProjectEbisawaU/ebiP2TitleCamera.cpp:
 	.text       start:0x80442368 end:0x804423E0
@@ -5692,7 +5692,7 @@ plugProjectEbisawaU/ebiScreenFileSelect_Mgr.cpp:
 	.rodata     start:0x80557328 end:0x80557370
 	.data       start:0x805C9ED8 end:0x805CA268
 	.sdata      start:0x8066B678 end:0x8066B680
-	.sdata2     start:0x80674F68 end:0x80674F74
+	.sdata2     start:0x80674F68 end:0x80674F78
 
 plugProjectEbisawaU/ebiFileSelectMgr.cpp:
 	.text       start:0x80466450 end:0x8046755C
@@ -5710,7 +5710,7 @@ plugProjectEbisawaU/ebiP2TitleCoordMgr.cpp:
 	.rodata     start:0x80557490 end:0x805574D0
 	.data       start:0x805CA9C0 end:0x805CA9E8
 	.sdata      start:0x8066B680 end:0x8066B6A0
-	.sdata2     start:0x80674F74 end:0x80674F98
+	.sdata2     start:0x80674F78 end:0x80674F98
 
 plugProjectEbisawaU/ebiP2TitlePikmin.cpp:
 	.text       start:0x804688DC end:0x8046BD5C
