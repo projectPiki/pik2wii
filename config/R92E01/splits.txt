@@ -5480,122 +5480,172 @@ plugProjectMorimuraU/tyre.cpp:
 	.text       start:0x8042C77C end:0x8042EAD4
 	.ctors      start:0x80534F98 end:0x80534F9C
 	.data       start:0x805C6C68 end:0x805C7010
-	.bss        start:0x80639398 end:0x806393B8
+	.bss        start:0x80639398 end:0x806393A8
 	.sbss       start:0x8066D008 end:0x8066D018
 
 plugProjectEbisawaU/efxBase.cpp:
 	.text       start:0x8042EAD4 end:0x80433068
 	.ctors      start:0x80534F9C end:0x80534FA0
+	.rodata     start:0x80555F98 end:0x80555FB0
 	.data       start:0x805C7010 end:0x805C7638
+	.bss        start:0x806393A8 end:0x806393B8
 	.sbss       start:0x8066D018 end:0x8066D020
+	.sdata2     start:0x80674A60 end:0x80674A70
 
 plugProjectEbisawaU/efxEnemy.cpp:
 	.text       start:0x80433068 end:0x80435FF8
+	.rodata     start:0x80555FB0 end:0x805560A0
 	.data       start:0x805C7638 end:0x805C7B18
+	.sdata2     start:0x80674A70 end:0x80674A90
 
 plugProjectEbisawaU/efxObject.cpp:
 	.text       start:0x80435FF8 end:0x80436F04
+	.rodata     start:0x805560A0 end:0x80556148
 	.data       start:0x805C7B18 end:0x805C7C60
+	.sdata2     start:0x80674A90 end:0x80674AA0
 
 plugProjectEbisawaU/efxPikmin.cpp:
 	.text       start:0x80436F04 end:0x804395DC
+	.rodata     start:0x80556148 end:0x80556180
 	.data       start:0x805C7C60 end:0x805C7DD8
+	.sdata2     start:0x80674AA0 end:0x80674AE8
 
 plugProjectEbisawaU/particle2dMgr.cpp:
 	.text       start:0x804395DC end:0x80439D4C
 	.ctors      start:0x80534FA0 end:0x80534FA4
+	.rodata     start:0x80556180 end:0x80556238
 	.data       start:0x805C7DD8 end:0x805C7DF4
 	.bss        start:0x806393B8 end:0x806393C8
 	.sbss       start:0x8066D020 end:0x8066D030
+	.sdata2     start:0x80674AE8 end:0x80674B00
 
 plugProjectEbisawaU/efx2dBase.cpp:
 	.text       start:0x80439D4C end:0x8043A610
+	.rodata     start:0x80556238 end:0x80556260
 	.data       start:0x805C7DF8 end:0x805C7E48
+	.sdata2     start:0x80674B00 end:0x80674B08
 
 plugProjectEbisawaU/efx2dEffect.cpp:
 	.text       start:0x8043A610 end:0x8043B4B0
+	.rodata     start:0x80556260 end:0x805562B8
 	.data       start:0x805C7E48 end:0x805C7FE0
+	.sdata2     start:0x80674B08 end:0x80674B18
 
 plugProjectEbisawaU/particleMgr.cpp:
 	.text       start:0x8043B4B0 end:0x8043CED4
 	.ctors      start:0x80534FA4 end:0x80534FA8
+	.rodata     start:0x805562B8 end:0x80556338
 	.data       start:0x805C7FE0 end:0x805C80D0
 	.bss        start:0x806393C8 end:0x806393D8
 	.sdata      start:0x8066B5C8 end:0x8066B5D8
 	.sbss       start:0x8066D030 end:0x8066D040
+	.sdata2     start:0x80674B18 end:0x80674B20
 
 plugProjectEbisawaU/ebiP2Title.cpp:
 	.text       start:0x8043CED4 end:0x80440C38
 	.ctors      start:0x80534FA8 end:0x80534FAC
+	.rodata     start:0x80556338 end:0x805565B0
 	.data       start:0x805C80D0 end:0x805C84D8
 	.bss        start:0x806393D8 end:0x806393E8
+	.sdata      start:0x8066B5D8 end:0x8066B660
 	.sbss       start:0x8066D040 end:0x8066D058
+	.sdata2     start:0x80674B20 end:0x80674BF0
 
 plugProjectEbisawaU/ebiP2TitleUnit.cpp:
 	.text       start:0x80440C38 end:0x80441AF4
 	.ctors      start:0x80534FAC end:0x80534FB0
+	.rodata     start:0x805565B0 end:0x80556648
 	.bss        start:0x806393E8 end:0x806393F8
 	.sbss       start:0x8066D058 end:0x8066D060
+	.sdata2     start:0x80674BF0 end:0x80674C2C
 
 plugProjectEbisawaU/ebiUtility.cpp:
 	.text       start:0x80441AF4 end:0x80442368
+	.sdata2     start:0x80674C2C end:0x80674C38
 
 plugProjectEbisawaU/ebiP2TitleCamera.cpp:
 	.text       start:0x80442368 end:0x804423E0
 	.ctors      start:0x80534FB0 end:0x80534FB4
 	.bss        start:0x806393F8 end:0x80639408
 	.sbss       start:0x8066D060 end:0x8066D068
+	.sdata2     start:0x80674C38 end:0x80674C48
 
 plugProjectEbisawaU/ebiP2TitleLight.cpp:
 	.text       start:0x804423E0 end:0x80442720
 	.ctors      start:0x80534FB4 end:0x80534FB8
-	.data       start:0x805C84D8 end:0x805C85B0
+	.data       start:0x805C84D8 end:0x805C84F8
 	.bss        start:0x80639408 end:0x80639418
 	.sbss       start:0x8066D068 end:0x8066D070
+	.sdata2     start:0x80674C48 end:0x80674C50
 
 plugProjectEbisawaU/ebiScreenMemoryCard.cpp:
 	.text       start:0x80442720 end:0x804498A0
-	.data       start:0x805C85B0 end:0x805C8600
+	.rodata     start:0x80556648 end:0x805569C8
+	.data       start:0x805C84F8 end:0x805C8600
+	.sdata2     start:0x80674C50 end:0x80674C78
 
 plugProjectEbisawaU/efxTPkEffectMgr.cpp:
 	.text       start:0x804498A0 end:0x8044BDA8
-	.data       start:0x805C8600 end:0x805C8FB0
-	.sbss       start:0x8066D070 end:0x8066D0D0
+	.rodata     start:0x805569C8 end:0x80556A10
+	.data       start:0x805C8600 end:0x805C8648
+	.sbss       start:0x8066D070 end:0x8066D078
 
 plugProjectEbisawaU/efxEnemyGeneral.cpp:
 	.text       start:0x8044BDA8 end:0x8044E2C4
-	.data       start:0x805C8FB0 end:0x805C9288
+	.rodata     start:0x80556A10 end:0x80556A48
+	.data       start:0x805C8648 end:0x805C9250
+	.sdata2     start:0x80674C78 end:0x80674D80
 
 plugProjectEbisawaU/ebi3DGraph.cpp:
 	.text       start:0x8044E2C4 end:0x8044E5A8
+	.rodata     start:0x80556A48 end:0x80556A70
+	.sdata2     start:0x80674D80 end:0x80674D98
 
 plugProjectEbisawaU/ebiGeometry.cpp:
 	.text       start:0x8044E5A8 end:0x8044EA44
+	.sdata2     start:0x80674D98 end:0x80674DA0
 
 plugProjectEbisawaU/ebi2DGraph.cpp:
 	.text       start:0x8044EA44 end:0x8044F3AC
+	.rodata     start:0x80556A70 end:0x80556A98
+	.sdata2     start:0x80674DA0 end:0x80674DA8
 
 plugProjectEbisawaU/ebiScreenOption.cpp:
 	.text       start:0x8044F3AC end:0x80452288
 	.ctors      start:0x80534FB8 end:0x80534FBC
-	.data       start:0x805C9288 end:0x805C92D8
+	.rodata     start:0x80556A98 end:0x80556B78
+	.data       start:0x805C9250 end:0x805C92D8
+	.sdata      start:0x8066B660 end:0x8066B668
+	.sbss       start:0x8066D078 end:0x8066D088
+	.sdata2     start:0x80674DA8 end:0x80674DF8
 
 plugProjectEbisawaU/ebiScreenProgre.cpp:
 	.text       start:0x80452288 end:0x80453E80
 	.ctors      start:0x80534FBC end:0x80534FC0
+	.rodata     start:0x80556B78 end:0x80556C20
+	.sbss       start:0x8066D088 end:0x8066D0B0
+	.sdata2     start:0x80674DF8 end:0x80674E18
 
 plugProjectEbisawaU/ebiOptionMgr.cpp:
-	.text       start:0x80453E80 end:0x804555D8
+	.text       start:0x80453E80 end:0x8045574C
+	.ctors      start:0x80534FC0 end:0x80534FC4
+	.rodata     start:0x80556C20 end:0x80556CA8
 	.data       start:0x805C92D8 end:0x805C94B0
+	.sdata      start:0x8066B668 end:0x8066B670
+	.sbss       start:0x8066D0B0 end:0x8066D0B8
+	.sdata2     start:0x80674E18 end:0x80674E28
 
 plugProjectEbisawaU/ebi2DCallBack.cpp:
-	.text       start:0x804555D8 end:0x804561E0
-	.ctors      start:0x80534FC0 end:0x80534FC4
-	.data       start:0x805C94B0 end:0x805C95F0
+	.text       start:0x8045574C end:0x804561E0
+	.rodata     start:0x80556CA8 end:0x80556CD8
+	.data       start:0x805C94B0 end:0x805C9568
+	.sdata2     start:0x80674E28 end:0x80674E50
 
 plugProjectEbisawaU/ebiCardMgr.cpp:
 	.text       start:0x804561E0 end:0x80457C20
-	.data       start:0x805C95F0 end:0x805C9880
+	.rodata     start:0x80556CD8 end:0x80556D10
+	.data       start:0x805C9568 end:0x805C9880
+	.sdata2     start:0x80674E50 end:0x80674E60
 
 plugProjectEbisawaU/ebiScreenFramework.cpp:
 	.text       start:0x80457C20 end:0x80457EB0
@@ -5603,107 +5653,153 @@ plugProjectEbisawaU/ebiScreenFramework.cpp:
 
 plugProjectEbisawaU/ebiScreenPushStart.cpp:
 	.text       start:0x80457EB0 end:0x804585D0
+	.rodata     start:0x80556D10 end:0x80556EC0
 	.data       start:0x805C98E0 end:0x805C9938
+	.sdata2     start:0x80674E60 end:0x80674E98
 
 plugProjectEbisawaU/ebiScreenFileSelect.cpp:
 	.text       start:0x804585D0 end:0x8045EC44
 	.ctors      start:0x80534FC4 end:0x80534FC8
+	.rodata     start:0x80556EC0 end:0x80557190
 	.data       start:0x805C9938 end:0x805C9B60
+	.sbss       start:0x8066D0B8 end:0x8066D0D0
+	.sdata2     start:0x80674E98 end:0x80674EE8
 
 plugProjectEbisawaU/ebiScreenTitleMenu.cpp:
 	.text       start:0x8045EC44 end:0x804600F8
+	.rodata     start:0x80557190 end:0x80557210
 	.data       start:0x805C9B60 end:0x805C9BB8
+	.sdata2     start:0x80674EE8 end:0x80674F20
 
 plugProjectEbisawaU/ebiSaveMgr.cpp:
 	.text       start:0x804600F8 end:0x80461DC8
+	.rodata     start:0x80557210 end:0x80557258
 	.data       start:0x805C9BB8 end:0x805C9E80
-	.sbss       start:0x8066D0D0 end:0x8066D108
+	.sdata      start:0x8066B670 end:0x8066B678
+	.sbss       start:0x8066D0D0 end:0x8066D0D8
+	.sdata2     start:0x80674F20 end:0x80674F38
 
 plugProjectEbisawaU/ebiScreenSaveMenu.cpp:
 	.text       start:0x80461DC8 end:0x80463D94
 	.ctors      start:0x80534FC8 end:0x80534FCC
+	.rodata     start:0x80557258 end:0x80557328
 	.data       start:0x805C9E80 end:0x805C9ED8
+	.sbss       start:0x8066D0D8 end:0x8066D108
+	.sdata2     start:0x80674F38 end:0x80674F68
 
 plugProjectEbisawaU/ebiScreenFileSelect_Mgr.cpp:
 	.text       start:0x80463D94 end:0x80466450
+	.rodata     start:0x80557328 end:0x80557370
 	.data       start:0x805C9ED8 end:0x805CA268
+	.sdata      start:0x8066B678 end:0x8066B680
+	.sdata2     start:0x80674F68 end:0x80674F74
 
 plugProjectEbisawaU/ebiFileSelectMgr.cpp:
 	.text       start:0x80466450 end:0x8046755C
+	.rodata     start:0x80557370 end:0x80557430
 	.data       start:0x805CA268 end:0x805CA468
 	.sbss       start:0x8066D108 end:0x8066D110
 
 plugProjectEbisawaU/ebiCardMgr_Load.cpp:
 	.text       start:0x8046755C end:0x804684A8
+	.rodata     start:0x80557430 end:0x80557490
 	.data       start:0x805CA468 end:0x805CA9C0
 
 plugProjectEbisawaU/ebiP2TitleCoordMgr.cpp:
 	.text       start:0x804684A8 end:0x804688DC
+	.rodata     start:0x80557490 end:0x805574D0
 	.data       start:0x805CA9C0 end:0x805CA9E8
+	.sdata      start:0x8066B680 end:0x8066B6A0
+	.sdata2     start:0x80674F74 end:0x80674F98
 
 plugProjectEbisawaU/ebiP2TitlePikmin.cpp:
 	.text       start:0x804688DC end:0x8046BD5C
 	.ctors      start:0x80534FCC end:0x80534FD0
-	.data       start:0x805CA9E8 end:0x805CAC40
+	.rodata     start:0x805574D0 end:0x80557600
+	.data       start:0x805CA9E8 end:0x805CAC20
 	.bss        start:0x80639418 end:0x80639428
 	.sbss       start:0x8066D110 end:0x8066D120
+	.sdata2     start:0x80674F98 end:0x80675028
 
 plugProjectEbisawaU/ebiP2TitleKogane.cpp:
 	.text       start:0x8046BD5C end:0x8046D0D4
 	.ctors      start:0x80534FD0 end:0x80534FD4
-	.data       start:0x805CAC40 end:0x805CAD88
+	.rodata     start:0x80557600 end:0x805576A0
+	.data       start:0x805CAC20 end:0x805CAD48
 	.bss        start:0x80639428 end:0x80639438
 	.sbss       start:0x8066D120 end:0x8066D128
+	.sdata2     start:0x80675028 end:0x80675088
 
 plugProjectEbisawaU/ebiP2TitleChappy.cpp:
 	.text       start:0x8046D0D4 end:0x8046E67C
 	.ctors      start:0x80534FD4 end:0x80534FD8
-	.data       start:0x805CAD88 end:0x805CAEA8
+	.rodata     start:0x805576A0 end:0x80557760
+	.data       start:0x805CAD48 end:0x805CAEA8
 	.bss        start:0x80639438 end:0x80639448
 	.sbss       start:0x8066D128 end:0x8066D130
+	.sdata2     start:0x80675088 end:0x80675110
 
 plugProjectEbisawaU/ebiScreenTMBack.cpp:
 	.text       start:0x8046E67C end:0x8046EB9C
+	.rodata     start:0x80557760 end:0x805577E8
 	.data       start:0x805CAEA8 end:0x805CAF60
+	.sdata2     start:0x80675110 end:0x80675128
 
 plugProjectEbisawaU/ebiMainTitleMgr.cpp:
 	.text       start:0x8046EB9C end:0x8046F990
 	.ctors      start:0x80534FD8 end:0x80534FDC
+	.rodata     start:0x805577E8 end:0x80557858
 	.data       start:0x805CAF60 end:0x805CAF90
 	.bss        start:0x80639448 end:0x80639458
+	.sdata      start:0x8066B6A0 end:0x8066B6A8
 	.sbss       start:0x8066D130 end:0x8066D138
+	.sdata2     start:0x80675128 end:0x80675140
 
 plugProjectEbisawaU/ebiP2TitleFog.cpp:
 	.text       start:0x8046F990 end:0x8046FB74
 	.ctors      start:0x80534FDC end:0x80534FE0
 	.bss        start:0x80639458 end:0x80639468
 	.sbss       start:0x8066D138 end:0x8066D140
+	.sdata2     start:0x80675140 end:0x80675148
 
 plugProjectEbisawaU/efxEnemyBoss.cpp:
 	.text       start:0x8046FB74 end:0x80471BE0
+	.rodata     start:0x80557858 end:0x805578C0
 	.data       start:0x805CAF90 end:0x805CB160
+	.sdata2     start:0x80675148 end:0x80675158
 
 plugProjectEbisawaU/ebiCardEReader.cpp:
 	.text       start:0x80471BE0 end:0x80472008
+	.rodata     start:0x805578C0 end:0x80557958
 	.data       start:0x805CB160 end:0x805CB170
-	.sbss       start:0x8066D140 end:0x8066D150
+	.sbss       start:0x8066D140 end:0x8066D148
 
 plugProjectEbisawaU/ebiScreenOmake.cpp:
 	.text       start:0x80472008 end:0x80473960
 	.ctors      start:0x80534FE0 end:0x80534FE4
+	.rodata     start:0x80557958 end:0x805579E0
 	.data       start:0x805CB170 end:0x805CB1D8
+	.sdata      start:0x8066B6A8 end:0x8066B6B0
+	.sbss       start:0x8066D148 end:0x8066D150
+	.sdata2     start:0x80675158 end:0x80675188
 
 plugProjectEbisawaU/ebiOmakeMgr.cpp:
 	.text       start:0x80473960 end:0x80474A48
+	.rodata     start:0x805579E0 end:0x80557A30
 	.data       start:0x805CB1D8 end:0x805CB2F0
+	.sdata2     start:0x80675188 end:0x80675190
 
 plugProjectEbisawaU/ebiScreenOmakeCardE.cpp:
 	.text       start:0x80474A48 end:0x80475324
+	.rodata     start:0x80557A30 end:0x80557AC0
 	.data       start:0x805CB2F0 end:0x805CB348
+	.sdata2     start:0x80675190 end:0x806751A8
 
 plugProjectEbisawaU/ebiScreenOmakeGame.cpp:
 	.text       start:0x80475324 end:0x80476534
+	.rodata     start:0x80557AC0 end:0x80557B78
 	.data       start:0x805CB348 end:0x805CB3A0
+	.sdata2     start:0x806751A8 end:0x806751D0
 
 plugProjectEbisawaU/ebiScreenInfoWindow.cpp:
 	.text       start:0x80476534 end:0x804765A0
