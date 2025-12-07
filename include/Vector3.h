@@ -143,6 +143,14 @@ struct Vector3 {
 	static inline Vector3<T> sub2(const Vector3& a, const Vector3& b) { return Vector3(a.x - b.x, a.y - b.y, a.z - b.z); }
 
 	// Direction Functions
+	static inline Vector3<T> flatDirection(const Vector3& a, const Vector3& b)
+	{
+		Vector3 res = a;
+		res.x -= b.x;
+		res.y = 0.0f;
+		res.z -= b.z;
+		return res;
+	}
 	static inline T getDirectionFromTo(const Vector3& from, Vector3& to);
 	static inline T getFlatDirectionFromTo(Vector3& from, Vector3& to);
 	inline T setDirectionFromTo(const Vector3& from, const Vector3& to);

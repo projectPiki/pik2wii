@@ -72,8 +72,8 @@ extern const SinCosSample gSinCosTbl[];
 f32 SinFIdx(f32 fidx);
 f32 CosFIdx(f32 fidx);
 void SinCosFIdx(f32* pSin, f32* pCos, f32 fidx);
-// f32 AtanFIdx(f32 x);
-// f32 Atan2FIdx(f32 y, f32 x);
+f32 AtanFIdx(f32 x);
+f32 Atan2FIdx(f32 y, f32 x);
 
 ////////////////////////////////////////////////////////
 /////////////////// INLINE FUNCTIONS ///////////////////
@@ -126,24 +126,24 @@ inline void SinCosRad(f32* pSin, f32* pCos, f32 rad)
 }
 
 // Arc-tangent
-// inline f32 AtanDeg(f32 x)
-// {
-// 	return NW4R_MATH_FIDX_TO_DEG(AtanFIdx(x));
-// }
-// inline f32 AtanRad(f32 x)
-// {
-// 	return NW4R_MATH_FIDX_TO_RAD(AtanFIdx(x));
-// }
+inline f32 AtanDeg(f32 x)
+{
+	return NW4R_MATH_FIDX_TO_DEG(AtanFIdx(x));
+}
+inline f32 AtanRad(f32 x)
+{
+	return NW4R_MATH_FIDX_TO_RAD(AtanFIdx(x));
+}
 
 // Arc-tangent (2 arguments)
-// inline f32 Atan2Deg(f32 y, f32 x)
-// {
-// 	return NW4R_MATH_FIDX_TO_DEG(Atan2FIdx(y, x));
-// }
-// inline f32 Atan2Rad(f32 y, f32 x)
-// {
-// 	return NW4R_MATH_FIDX_TO_RAD(Atan2FIdx(y, x));
-// }
+inline f32 Atan2Deg(f32 y, f32 x)
+{
+	return NW4R_MATH_FIDX_TO_DEG(Atan2FIdx(y, x));
+}
+inline f32 Atan2Rad(f32 y, f32 x)
+{
+	return NW4R_MATH_FIDX_TO_RAD(Atan2FIdx(y, x));
+}
 
 ////////////////////////////////////////////////////////
 

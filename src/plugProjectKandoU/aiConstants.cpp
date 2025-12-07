@@ -22,7 +22,7 @@ AIConstants::AIConstants()
 	mDebt.mData        = 10000;
 	mCameraAngle.mData = 180.0f;
 
-	char* fileName = "/user/Kando/aiConstants.txt";
+	char* fileName = "user/Kando/aiConstants.txt";
 	loadFromFile(this, fileName);
 }
 

@@ -242,7 +242,7 @@ u16 ResFontBase::FindGlyphIndex(u16 ch) const
 	}
 	mLastCharCode = ch;
 
-	for (const FontCodeMap* pIt = mFontInfo->pMap; pIt != NULL; pIt = pIt->pNext) {
+	for (const FontCodeMap* pIt = mFontInfo->pMap; pIt != nullptr; pIt = pIt->pNext) {
 
 		if (pIt->ccodeBegin <= ch && ch <= pIt->ccodeEnd) {
 			mLastGlyphIndex = FindGlyphIndex(pIt, ch);
@@ -313,7 +313,7 @@ u16 ResFontBase::FindGlyphIndex(const FontCodeMap* pMap, u16 ch) const
  */
 const CharWidths& ResFontBase::GetCharWidthsFromIndex(u16 index) const
 {
-	for (const FontWidth* pIt = mFontInfo->pWidth; pIt != NULL; pIt = pIt->pNext) {
+	for (const FontWidth* pIt = mFontInfo->pWidth; pIt != nullptr; pIt = pIt->pNext) {
 
 		if (pIt->indexBegin <= index && index <= pIt->indexEnd) {
 			return GetCharWidthsFromIndex(pIt, index);

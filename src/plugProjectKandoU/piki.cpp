@@ -21,6 +21,12 @@
 #include "efx/TPk.h"
 #include "nans.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "piki";
+}
+
 namespace Game {
 
 Color4 Piki::pikiColors[PikiColorCount + 1]
@@ -30,7 +36,6 @@ Color4 Piki::pikiColorsCursor[PikiColorCount + 1]
     = { Color4(0, 50, 255, 255),    Color4(255, 30, 0, 255),  Color4(255, 210, 0, 255), Color4(120, 0, 250, 255),
 	    Color4(255, 230, 255, 255), Color4(255, 140, 0, 255), Color4(255, 255, 255, 0) };
 
-static const int unusedPikiArray[] = { 0, 0, 0 };
 } // namespace Game
 
 namespace Game {

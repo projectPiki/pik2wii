@@ -106,11 +106,19 @@ typedef u16 wchar_t;
 	{                                                  \
 		(__VA_ARGS__);                                 \
 	}
+#define DECOMP_FORCEACTIVE(module, ...)               \
+	void fake_function(...);                          \
+	void CONCAT(FORCEACTIVE##module, __LINE__)(void); \
+	void CONCAT(FORCEACTIVE##module, __LINE__)(void)  \
+	{                                                 \
+		fake_function(__VA_ARGS__);                   \
+	}
 #else
 #define WEAKFUNC
 #define DECL_SECT(name)
 #define ASM
 #define DECOMP_FORCELITERAL(module, ...)
+#define DECOMP_FORCEACTIVE(module, ...)
 #endif
 
 #endif // _TYPES_H

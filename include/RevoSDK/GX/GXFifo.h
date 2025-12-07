@@ -10,7 +10,10 @@ extern "C" {
 #include "RevoSDK/GX/GXEnum.h"
 #include "RevoSDK/GX/GXTypes.h"
 
+////////////////////////////////////////////
 /////////////// FIFO STRUCTS ///////////////
+////////////////////////////////////////////
+
 #define GX_FIFO_MINSIZE  (64 * 1024)
 #define GX_FIFO_OBJ_SIZE (128)
 
@@ -48,6 +51,7 @@ typedef union {
 	s64 s64;
 	f32 f32;
 	f64 f64;
+	void* v;
 } PPCWGPipe;
 
 #ifdef __MWERKS__
@@ -57,8 +61,9 @@ volatile PPCWGPipe GXWGFifo : GXFIFO_ADDR;
 #endif
 
 ////////////////////////////////////////////
-
 //////////// FIFO MACROS/INLINES ///////////
+////////////////////////////////////////////
+
 #define GX_WRITE_U8(val)  (GXWGFifo.u8 = val)
 #define GX_WRITE_U16(val) (GXWGFifo.u16 = val)
 #define GX_WRITE_U32(val) (GXWGFifo.u32 = (u32)val)
@@ -152,8 +157,9 @@ static inline void GXEnd(void)
 }
 
 ////////////////////////////////////////////
-
 //////////// FIFO INIT/SET/SAVE ////////////
+////////////////////////////////////////////
+
 // Init.
 extern void __GXFifoInit();
 extern void GXInitFifoBase(GXFifoObj* obj, void* base, u32 size);
@@ -166,27 +172,38 @@ extern void GXSetGPFifo(GXFifoObj* obj);
 extern void GXSaveCPUFifo(GXFifoObj* obj);
 
 ////////////////////////////////////////////
-
 /////////////// FIFO GETTERS ///////////////
+////////////////////////////////////////////
+
 extern void GXGetGPStatus(GXBool* isOverHi, GXBool* isUnderLo, GXBool* isReadIdle, GXBool* isCmdIdle, GXBool* isHitBrkPt);
 extern GXFifoObj* GXGetCPUFifo();
 extern GXFifoObj* GXGetGPFifo();
 
 ////////////////////////////////////////////
-
 //////////// DISPLAY LIST FUNCS ////////////
+////////////////////////////////////////////
+
 extern void GXBeginDisplayList(void* list, u32 size);
 extern u32 GXEndDisplayList();
 extern void GXCallDisplayList(void* list, u32 numBytes);
 
+static void GXFastCallDisplayList(void* list, u32 size)
+{
+	GXWGFifo.u8  = GX_FIFO_CMD_CALL_DL;
+	GXWGFifo.v   = list;
+	GXWGFifo.u32 = size;
+}
+
+////////////////////////////////////////////
+///////////// BREAKPOINT FUNCS /////////////
 ////////////////////////////////////////////
 
-///////////// BREAKPOINT FUNCS /////////////
 extern GXBreakPtCallback GXSetBreakPtCallback(GXBreakPtCallback callback);
 
 ////////////////////////////////////////////
-
 /////////////// OTHER FUNCS ////////////////
+////////////////////////////////////////////
+
 void __GXSaveCPUFifoAux(GXFifoObj* obj);
 void __GXFifoReadEnable();
 void __GXFifoReadDisable();

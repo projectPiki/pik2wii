@@ -58,6 +58,7 @@ void PSMTXMultVecArraySR(const Mtx, f32*, f32*, f32*);
 
 ///////////  MATRIX44 FUNCTIONS ////////////
 void PSMTX44Copy(Mtx44 src, Mtx44 dest);
+void C_MTXFrustum(Mtx44 m, f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5, f32 arg6);
 void C_MTXPerspective(Mtx44 mtx, f32 fovY, f32 aspect, f32 n, f32 f);
 void C_MTXOrtho(Mtx44 mtx, f32 t, f32 b, f32 l, f32 r, f32 n, f32 f);
 ////////////////////////////////////////////
@@ -65,6 +66,7 @@ void C_MTXOrtho(Mtx44 mtx, f32 t, f32 b, f32 l, f32 r, f32 n, f32 f);
 ///////// CODED C MATRIX FUNCTIONS /////////
 void C_MTXLookAt(Mtx, const Vec*, const Vec*, const Vec*);
 void C_MTXLightPerspective(Mtx mtx, f32 fovY, f32 aspect, f32 scaleS, f32 scaleT, f32 transS, f32 transT);
+void C_MTXLightFrustum(Mtx m, f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5, f32 arg6, f32 arg7, f32 arg8, f32 arg9);
 void C_MTXLightOrtho(Mtx mtx, f32 t, f32 b, f32 l, f32 r, f32 scaleS, f32 scaleT, f32 transS, f32 transT);
 ////////////////////////////////////////////
 

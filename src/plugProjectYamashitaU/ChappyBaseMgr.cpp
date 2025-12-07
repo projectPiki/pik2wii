@@ -1,7 +1,14 @@
-#include "types.h"
 #include "Game/Entities/ChappyBase.h"
 #include "Game/generalEnemyMgr.h"
 #include "JSystem/JUtility/JUTNameTab.h"
+#include "types.h"
+
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "ChappyBaseMgr";
+	*fmt = "チャッピージェネレータ"; // 'chappy generator'
+}
 
 namespace Game {
 namespace ChappyBase {
@@ -13,7 +20,7 @@ namespace ChappyBase {
 Mgr::Mgr(int objLimit, u8 modelType)
     : EnemyMgrBase(objLimit, modelType)
 {
-	mName = "チャッピーベースマネージャ"; // chappybase manager
+	setName("チャッピーベースマネージャ"); // chappybase manager
 }
 
 /**

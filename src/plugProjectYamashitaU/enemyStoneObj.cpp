@@ -1,9 +1,9 @@
-#include "types.h"
 #include "Game/EnemyStone.h"
-#include "Game/generalEnemyMgr.h"
-#include "Game/gamePlayData.h"
 #include "Game/MoviePlayer.h"
+#include "Game/gamePlayData.h"
+#include "Game/generalEnemyMgr.h"
 #include "nans.h"
+#include "types.h"
 
 namespace Game {
 namespace EnemyStone {

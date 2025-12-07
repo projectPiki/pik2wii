@@ -426,7 +426,7 @@ struct J2DPane {
 	JGeometry::TVec2f mOffset;       // _0D4
 	JSUTree<J2DPane> mTree;          // _0DC
 	J2DAnmTransform* mTransform;     // _0F8
-	u8 _0FC[4];                      // _0FC
+	                                 // u8 _0FC[4];                      // _0FC
 };
 
 #endif

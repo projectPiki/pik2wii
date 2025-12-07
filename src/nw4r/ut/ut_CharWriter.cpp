@@ -71,7 +71,7 @@ void CharWriter::SetupGX()
 		return;
 	}
 
-	if (mFont != NULL) {
+	if (mFont != nullptr) {
 		switch (mFont->GetTextureFormat()) {
 		case GX_TF_I4:
 		case GX_TF_I8: {

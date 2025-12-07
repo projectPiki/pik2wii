@@ -2,6 +2,12 @@
 #include "Game/generalEnemyMgr.h"
 #include "JSystem/JUtility/JUTNameTab.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "246-KoganeMgr";
+}
+
 namespace Game {
 namespace Kogane {
 
@@ -12,7 +18,7 @@ namespace Kogane {
 Mgr::Mgr(int objLimit, u8 modelType)
     : EnemyMgrBase(objLimit, modelType)
 {
-	mName = "コガネマネージャ"; // kogane manager
+	setName("コガネマネージャ"); // kogane manager
 }
 
 /**
@@ -37,10 +43,8 @@ void Mgr::loadModelData()
 	}
 
 	EnemyMgrBase::loadModelData();
-	J3DShape* shape;
 	for (u16 j = 0; j < mModelData->getShapeNum(); j++) {
-		shape = mModelData->mShapeTable.mItems[j];
-		shape->setTexMtxLoadType(0x2000);
+		mModelData->getShapeNodePointer(j)->setTexMtxLoadType(0x2000);
 	}
 }
 
@@ -76,10 +80,10 @@ SysShape::Model* Mgr::createModel()
 	SysShape::Model* model = new SysShape::Model(mModelData, J3DMODEL_ShareDL, mMtxBufferSize);
 	P2ASSERTLINE(148, model);
 	for (u16 i = 0; i < mModelData->getMaterialNum(); i++) {
-		const char* name = mModelData->mMaterialTable.mMaterialNames->getName(i);
+		const char* name = mModelData->getMaterialTable().getMaterialName()->getName(i);
 		if (!strcmp(name, "karada")) {
-			model->mJ3dModel->mMatPackets[(u16)i].mShapePacket->newDifferedDisplayList(J3DMDF_TexCoord1 | J3DMDF_DiffTexCoordScale
-			                                                                           | J3DMDF_DiffColorReg);
+			model->getJ3DModel()->getMatPacket(i)->getShapePacket()->newDifferedDisplayList(J3DMDF_TexCoord1 | J3DMDF_DiffTexCoordScale
+			                                                                                | J3DMDF_DiffColorReg);
 		}
 	}
 
@@ -87,7 +91,7 @@ SysShape::Model* Mgr::createModel()
 	Matrixf mtx;
 	PSMTXIdentity(mtx.mMatrix.mtxView);
 	PSMTXCopy(mtx.mMatrix.mtxView, j3dSys.mViewMtx);
-	J3DModel* j3dModel = model->mJ3dModel;
+	J3DModel* j3dModel = model->getJ3DModel();
 	j3dModel->calc();
 	j3dModel->calcMaterial();
 	j3dModel->makeDL();

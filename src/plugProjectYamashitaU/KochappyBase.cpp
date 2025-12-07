@@ -1,6 +1,12 @@
-#include "types.h"
 #include "Game/Entities/KochappyBase.h"
 #include "Game/gamePlayData.h"
+#include "types.h"
+
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "KochappyBase";
+}
 
 namespace Game {
 namespace KochappyBase {
@@ -32,7 +38,9 @@ void Obj::birth(Vector3f& position, f32 p1)
  * @note Address: 0x8012DC98
  * @note Size: 0x4
  */
-void Obj::setInitialSetting(EnemyInitialParamBase*) { }
+void Obj::setInitialSetting(EnemyInitialParamBase*)
+{
+}
 
 /**
  * @note Address: 0x8012DC9C
@@ -64,13 +72,18 @@ void Obj::doUpdate()
  * @note Address: 0x8012DD8C
  * @note Size: 0x4
  */
-void Obj::doDirectDraw(Graphics&) { }
+void Obj::doDirectDraw(Graphics&)
+{
+}
 
 /**
  * @note Address: 0x8012DD90
  * @note Size: 0x20
  */
-void Obj::doDebugDraw(Graphics& gfx) { EnemyBase::doDebugDraw(gfx); }
+void Obj::doDebugDraw(Graphics& gfx)
+{
+	EnemyBase::doDebugDraw(gfx);
+}
 
 /**
  * @note Address: 0x8012DDB0
@@ -82,8 +95,8 @@ void Obj::getShadowParam(ShadowParam& shadowParam)
 	shadowParam.mPosition   = Vector3f(mat->mMatrix.mtxView[0][3], mat->mMatrix.mtxView[1][3], mat->mMatrix.mtxView[2][3]);
 	shadowParam.mPosition.y = 2.0f + mPosition.y;
 
-	shadowParam.mBoundingSphere.mPosition = Vector3f(0.0f, 1.0f, 0.0f);
-	shadowParam.mBoundingSphere.mRadius   = 100.0f;
+	shadowParam.mBoundingSphere.mPosition.set(0.0f, 1.0f, 0.0f);
+	shadowParam.mBoundingSphere.mRadius = 100.0f;
 
 	shadowParam.mSize = 10.0f;
 }
@@ -119,13 +132,18 @@ bool Obj::pressCallBack(Game::Creature* creature, f32 p1, CollPart* collpart)
  * @note Address: 0x8012DF18
  * @note Size: 0x20
  */
-void Obj::doStartStoneState() { EnemyBase::doStartStoneState(); }
+void Obj::doStartStoneState()
+{
+	EnemyBase::doStartStoneState();
+}
 
 /**
  * @note Address: 0x8012DF38
  * @note Size: 0x4
  */
-void Obj::doFinishStoneState() { }
+void Obj::doFinishStoneState()
+{
+}
 
 /**
  * @note Address: 0x8012DF3C
@@ -133,25 +151,18 @@ void Obj::doFinishStoneState() { }
  */
 Vector3f Obj::getOffsetForMapCollision()
 {
-	Vector3f offset;
-	Matrixf* worldMat = mShadowJoint->getWorldMatrix();
-
-	offset.x = worldMat->mMatrix.mtxView[0][3];
-	offset.x -= mPosition.x;
-
-	offset.z = worldMat->mMatrix.mtxView[2][3];
-	offset.z -= mPosition.z;
-
-	offset.y = 0.0f;
-
-	return offset;
+	Vector3f offset = mShadowJoint->getWorldMatrix()->getTranslation();
+	return Vector3f::flatDirection(offset, mPosition);
 }
 
 /**
  * @note Address: 0x8012DFA0
  * @note Size: 0x28
  */
-void Obj::startCarcassMotion() { EnemyBase::startMotion(KOCHAPPYANIM_Carry, nullptr); }
+void Obj::startCarcassMotion()
+{
+	EnemyBase::startMotion(KOCHAPPYANIM_Carry, nullptr);
+}
 
 /**
  * @note Address: 0x8012DFC8
@@ -184,7 +195,10 @@ void Obj::initWalkSmokeEffect()
  * @note Address: 0x8012E0E0
  * @note Size: 0x8
  */
-WalkSmokeEffect::Mgr* Obj::getWalkSmokeEffectMgr() { return &mWalkSmokeMgr; }
+WalkSmokeEffect::Mgr* Obj::getWalkSmokeEffectMgr()
+{
+	return &mWalkSmokeMgr;
+}
 
 } // namespace KochappyBase
 } // namespace Game

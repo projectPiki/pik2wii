@@ -1,12 +1,12 @@
 #ifndef _GAME_ENTITIES_UJIB_H
 #define _GAME_ENTITIES_UJIB_H
 
-#include "Game/EnemyStateMachine.h"
-#include "Game/EnemyAnimatorBase.h"
-#include "Game/EnemyParmsBase.h"
-#include "Game/EnemyMgrBase.h"
-#include "Game/EnemyBase.h"
 #include "Collinfo.h"
+#include "Game/EnemyAnimatorBase.h"
+#include "Game/EnemyBase.h"
+#include "Game/EnemyMgrBase.h"
+#include "Game/EnemyParmsBase.h"
+#include "Game/EnemyStateMachine.h"
 
 #define GET_APPCHECK_VAL(check)      ((u8)check)
 #define GET_APPCHECK_MAX(check)      (check >> 8)
@@ -174,7 +174,7 @@ struct FSM : public EnemyStateMachine {
 };
 
 struct State : public EnemyFSMState {
-	inline State(int stateID, char* name)
+	inline State(int stateID, const char* name)
 	    : EnemyFSMState(stateID)
 	{
 		mName = name;
@@ -184,149 +184,9 @@ struct State : public EnemyFSMState {
 	// _00-_10 	= EnemyFSMState
 };
 
-struct StateAppear : public State {
-	inline StateAppear()
-	    : State(UJIB_Appear, "appear")
-	{
-	}
-
-	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
-	virtual void exec(EnemyBase* enemy);                     // _0C
-	virtual void cleanup(EnemyBase* enemy);                  // _10
-
-	// _00		= VTBL
-	// _00-_10 	= EnemyFSMState
-};
-
-struct StateAttack1 : public State {
-	inline StateAttack1()
-	    : State(UJIB_Attack1, "attack1")
-	{
-	}
-
-	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
-	virtual void exec(EnemyBase* enemy);                     // _0C
-	virtual void cleanup(EnemyBase* enemy);                  // _10
-
-	// _00		= VTBL
-	// _00-_10 	= EnemyFSMState
-};
-
-struct StateAttack2 : public State {
-	inline StateAttack2()
-	    : State(UJIB_Attack2, "attack2")
-	{
-	}
-
-	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
-	virtual void exec(EnemyBase* enemy);                     // _0C
-	virtual void cleanup(EnemyBase* enemy);                  // _10
-
-	// _00		= VTBL
-	// _00-_10 	= EnemyFSMState
-};
-
 struct StateDead : public State {
-	inline StateDead()
-	    : State(UJIB_Dead, "dead")
-	{
-	}
-
-	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
-	virtual void exec(EnemyBase* enemy);                     // _0C
-	virtual void cleanup(EnemyBase* enemy);                  // _10
-
-	// _00		= VTBL
-	// _00-_10 	= EnemyFSMState
-};
-
-struct StateDive : public State {
-	inline StateDive()
-	    : State(UJIB_Dive, "dive")
-	{
-	}
-
-	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
-	virtual void exec(EnemyBase* enemy);                     // _0C
-	virtual void cleanup(EnemyBase* enemy);                  // _10
-
-	// _00		= VTBL
-	// _00-_10 	= EnemyFSMState
-};
-
-struct StateEat : public State {
-	inline StateEat()
-	    : State(UJIB_Eat, "eat")
-	{
-	}
-
-	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
-	virtual void exec(EnemyBase* enemy);                     // _0C
-	virtual void cleanup(EnemyBase* enemy);                  // _10
-
-	// _00		= VTBL
-	// _00-_10 	= EnemyFSMState
-};
-
-struct StateGoHome : public State {
-	inline StateGoHome()
-	    : State(UJIB_GoHome, "gohome")
-	{
-	}
-
-	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
-	virtual void exec(EnemyBase* enemy);                     // _0C
-	virtual void cleanup(EnemyBase* enemy);                  // _10
-
-	// _00		= VTBL
-	// _00-_10 	= EnemyFSMState
-};
-
-struct StateMove : public State {
-	inline StateMove()
-	    : State(UJIB_Move, "move")
-	{
-	}
-
-	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
-	virtual void exec(EnemyBase* enemy);                     // _0C
-	virtual void cleanup(EnemyBase* enemy);                  // _10
-
-	// _00		= VTBL
-	// _00-_10 	= EnemyFSMState
-};
-
-struct StateMoveCentre : public State {
-	inline StateMoveCentre()
-	    : State(UJIB_MoveCentre, "movecentre")
-	{
-	}
-
-	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
-	virtual void exec(EnemyBase* enemy);                     // _0C
-	virtual void cleanup(EnemyBase* enemy);                  // _10
-
-	// _00		= VTBL
-	// _00-_10 	= EnemyFSMState
-};
-
-struct StateMoveSide : public State {
-	inline StateMoveSide()
-	    : State(UJIB_MoveSide, "moveside")
-	{
-	}
-
-	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
-	virtual void exec(EnemyBase* enemy);                     // _0C
-	virtual void cleanup(EnemyBase* enemy);                  // _10
-
-	// _00		= VTBL
-	// _00-_10 	= EnemyFSMState
-};
-
-struct StateMoveTop : public State {
-	inline StateMoveTop()
-	    : State(UJIB_MoveTop, "movetop")
+	inline StateDead(const char* name)
+	    : State(UJIB_Dead, name)
 	{
 	}
 
@@ -339,8 +199,8 @@ struct StateMoveTop : public State {
 };
 
 struct StatePress : public State {
-	inline StatePress()
-	    : State(UJIB_Press, "press")
+	inline StatePress(const char* name)
+	    : State(UJIB_Press, name)
 	{
 	}
 
@@ -353,8 +213,8 @@ struct StatePress : public State {
 };
 
 struct StateStay : public State {
-	inline StateStay()
-	    : State(UJIB_Stay, "stay")
+	inline StateStay(const char* name)
+	    : State(UJIB_Stay, name)
 	{
 	}
 
@@ -365,6 +225,147 @@ struct StateStay : public State {
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
 };
+
+struct StateAppear : public State {
+	inline StateAppear(const char* name)
+	    : State(UJIB_Appear, name)
+	{
+	}
+
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
+
+	// _00		= VTBL
+	// _00-_10 	= EnemyFSMState
+};
+
+struct StateDive : public State {
+	inline StateDive(const char* name)
+	    : State(UJIB_Dive, name)
+	{
+	}
+
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
+
+	// _00		= VTBL
+	// _00-_10 	= EnemyFSMState
+};
+
+struct StateMove : public State {
+	inline StateMove(const char* name)
+	    : State(UJIB_Move, name)
+	{
+	}
+
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
+
+	// _00		= VTBL
+	// _00-_10 	= EnemyFSMState
+};
+
+struct StateMoveSide : public State {
+	inline StateMoveSide(const char* name)
+	    : State(UJIB_MoveSide, name)
+	{
+	}
+
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
+
+	// _00		= VTBL
+	// _00-_10 	= EnemyFSMState
+};
+
+struct StateMoveCentre : public State {
+	inline StateMoveCentre(const char* name)
+	    : State(UJIB_MoveCentre, name)
+	{
+	}
+
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
+
+	// _00		= VTBL
+	// _00-_10 	= EnemyFSMState
+};
+
+struct StateMoveTop : public State {
+	inline StateMoveTop(const char* name)
+	    : State(UJIB_MoveTop, name)
+	{
+	}
+
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
+
+	// _00		= VTBL
+	// _00-_10 	= EnemyFSMState
+};
+
+struct StateGoHome : public State {
+	inline StateGoHome(const char* name)
+	    : State(UJIB_GoHome, name)
+	{
+	}
+
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
+
+	// _00		= VTBL
+	// _00-_10 	= EnemyFSMState
+};
+
+struct StateAttack1 : public State {
+	inline StateAttack1(const char* name)
+	    : State(UJIB_Attack1, name)
+	{
+	}
+
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
+
+	// _00		= VTBL
+	// _00-_10 	= EnemyFSMState
+};
+
+struct StateAttack2 : public State {
+	inline StateAttack2(const char* name)
+	    : State(UJIB_Attack2, name)
+	{
+	}
+
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
+
+	// _00		= VTBL
+	// _00-_10 	= EnemyFSMState
+};
+
+struct StateEat : public State {
+	inline StateEat(const char* name)
+	    : State(UJIB_Eat, name)
+	{
+	}
+
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
+
+	// _00		= VTBL
+	// _00-_10 	= EnemyFSMState
+};
+
 /////////////////////////////////////////////////////////////////
 } // namespace Ujib
 } // namespace Game

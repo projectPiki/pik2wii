@@ -1,8 +1,8 @@
 #ifndef _GAME_ENEMYANIMATORBASE_H
 #define _GAME_ENEMYANIMATORBASE_H
 
-#include "SysShape/Animator.h"
 #include "BitFlag.h"
+#include "SysShape/Animator.h"
 
 namespace Game {
 struct EnemyAnimatorBase {
@@ -22,14 +22,6 @@ struct EnemyAnimatorBase {
 
 	virtual void resetAnimSpeed() { mSpeed = defaultAnimSpeed; } // _20 (weak)
 	virtual u32 getTypeID() { return 'base'; }                   // _24 (weak)
-
-	inline void reset()
-	{
-		mFlags.byteView[0] = 0;
-		mFlags.byteView[1] = 0;
-		mFlags.byteView[2] = 0;
-		mFlags.byteView[3] = 0;
-	}
 
 	static const f32 defaultAnimSpeed;
 
@@ -73,7 +65,10 @@ struct EnemyBlendAnimatorBase : public EnemyAnimatorBase {
 	SysShape::BlendAnimator mAnimator; // _10
 };
 
-inline f32 getReverseAnimSpeed(f32 scale) { return EnemyAnimatorBase::defaultAnimSpeed * -scale; }
+inline f32 getReverseAnimSpeed(f32 scale)
+{
+	return EnemyAnimatorBase::defaultAnimSpeed * -scale;
+}
 
 } // namespace Game
 

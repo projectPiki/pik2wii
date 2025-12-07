@@ -171,10 +171,12 @@ config.asflags = [
     "-I include",
     f"-I build/{config.version}/include",
     f"--defsym BUILD_VERSION={version_num}",
+    "--no-warn",
 ]
 config.ldflags = [
     "-fp hardware",
     "-nodefaults",
+    "-warn off",
 ]
 if args.debug:
     config.ldflags.append("-g")  # Or -gdwarf-2 for Wii linkers
@@ -225,7 +227,7 @@ cflags_base = [
 ]
 
 # Metrowerks library flags
-cflags_runtime = [
+cflags_revo = [
     *cflags_base,
     "-use_lmw_stmw on",
     "-str reuse,readonly",
@@ -291,18 +293,21 @@ config.libs = [
             Object(NonMatching, "System12/system12DvdLoader.cpp"),
             Object(NonMatching, "System12/system12FrameCounter.cpp"),
             Object(NonMatching, "System12/system12Layout.cpp"),
+            # TODO: split another file in between here
             Object(NonMatching, "System12/sys12DebugDrawer.cpp"),
             Object(NonMatching, "System12/system12WPMessage.cpp"),
             Object(NonMatching, "System12/system12WPTagProcessor.cpp"),
             Object(NonMatching, "System12/system12WPWideTextWriter.cpp"),
             Object(NonMatching, "System12/sys12CursorMgr.cpp"),
+            # TODO: split another file in between here
             Object(NonMatching, "System12/sys12DvdErrorMsg.cpp"),
             Object(NonMatching, "System12/system123D.cpp"),
             Object(NonMatching, "System12/sys12Renderer.cpp"),
             Object(NonMatching, "System12/sys12Window.cpp"),
             Object(NonMatching, "System12/system12ResourceMgr.cpp"),
+            # TODO: split another 1-3 files in between here
             Object(NonMatching, "System12/sys12DpdState.cpp"),
-            Object(NonMatching, "System12/eggSafeString.cpp"),
+            Object(NonMatching, "System12/eggSafeString.cpp"),  # TODO: rename this?
             Object(NonMatching, "System12/PSSpkSystem.cpp"),
             Object(NonMatching, "System12/SpkData.cpp"),
             Object(NonMatching, "System12/SpkGadget.cpp"),
@@ -659,7 +664,6 @@ config.libs = [
             Object(NonMatching, "JSystem/JUtility/JUTProcBar.cpp"),
             Object(NonMatching, "JSystem/JUtility/JUTResFont.cpp"),
             Object(Matching, "JSystem/JUtility/JUTResource.cpp"),
-            # Object(NonMatching, "JSystem/JUtility/JUTRomFont.cpp"),
             Object(Matching, "JSystem/JUtility/JUTTexture.cpp"),
             Object(NonMatching, "JSystem/JUtility/JUTVideo.cpp"),
             Object(Matching, "JSystem/JUtility/JUTFontData_Ascfont_fix12.cpp"),
@@ -794,7 +798,7 @@ config.libs = [
     },
     {
         "lib": "TRK_Hollywood_Revolution",
-        "cflags": [*cflags_runtime, "-inline deferred", "-sdata 0", "-sdata2 0"],
+        "cflags": [*cflags_revo, "-inline deferred", "-sdata 0", "-sdata2 0"],
         "mw_version": "GC/1.3.2",
         "progress_category": "sdk",
         "objects": [
@@ -839,20 +843,14 @@ config.libs = [
                 extra_cflags=["-sdata 8"],
             ),
             Object(NonMatching, "RevoSDK/TRK_Hollywood_Revolution/CircleBuffer.c"),
-            # Object(
-            #     Matching,
-            #     "RevoSDK/TRK_Hollywood_Revolution/gdev/main.c",
-            #     extra_cflags=["-sdata 8"],
-            # ),
-            # Object(NonMatching, "RevoSDK/TRK_Hollywood_Revolution/MWTrace.c"),
             Object(
-                NonMatching, "RevoSDK/TRK_Hollywood_Revolution/MWCriticalSection_gc.c"
+                NonMatching, "RevoSDK/TRK_Hollywood_Revolution/MWCriticalSection_gc.cpp"
             ),
         ],
     },
     {
         "lib": "runtime",
-        "cflags": [*cflags_runtime, "-inline deferred"],
+        "cflags": [*cflags_revo, "-inline deferred"],
         "mw_version": "GC/3.0a3p1",
         "progress_category": "sdk",
         "objects": [
@@ -878,11 +876,10 @@ config.libs = [
     },
     {
         "lib": "MSL_C",
-        "cflags": [*cflags_runtime, "-inline deferred -fp_contract off"],
+        "cflags": [*cflags_revo],
         "mw_version": "GC/3.0a3p1",
         "progress_category": "sdk",
         "objects": [
-            # Object(NonMatching, "RevoSDK/MSL_C/PPC_EABI/abort_exit.c"),
             Object(NonMatching, "RevoSDK/MSL_C/MSL_Common/alloc.c"),
             Object(NonMatching, "RevoSDK/MSL_C/MSL_Common/ansi_files.c"),
             Object(
@@ -892,11 +889,9 @@ config.libs = [
             ),
             Object(NonMatching, "RevoSDK/MSL_C/MSL_Common/arith.c"),
             Object(NonMatching, "RevoSDK/MSL_C/MSL_Common/buffer_io.c"),
-            # Object(NonMatching, "RevoSDK/MSL_C/PPC_EABI/critical_regions.gamecube.c"),
             Object(NonMatching, "RevoSDK/MSL_C/MSL_Common/ctype.c"),
             Object(NonMatching, "RevoSDK/MSL_C/MSL_Common/wctype.c"),
             Object(NonMatching, "RevoSDK/MSL_C/MSL_Common/direct_io.c"),
-            # Object(NonMatching, "RevoSDK/MSL_C/MSL_Common/errno.c"),
             Object(NonMatching, "RevoSDK/MSL_C/MSL_Common/file_io.c"),
             Object(NonMatching, "RevoSDK/MSL_C/MSL_Common/FILE_POS.c"),
             Object(
@@ -905,9 +900,9 @@ config.libs = [
                 extra_cflags=["-inline noauto,deferred"],
             ),
             Object(NonMatching, "RevoSDK/MSL_C/MSL_Common/mem.c"),
-            Object(NonMatching, "RevoSDK/MSL_C/MSL_Common/mem_funcs.c"),
+            Object(Matching, "RevoSDK/MSL_C/MSL_Common/mem_funcs.c"),
             Object(NonMatching, "RevoSDK/MSL_C/MSL_Common/math_api.c"),
-            Object(NonMatching, "RevoSDK/MSL_C/MSL_Common/misc_io.c"),
+            Object(Matching, "RevoSDK/MSL_C/MSL_Common/misc_io.c"),
             Object(
                 NonMatching,
                 "RevoSDK/MSL_C/MSL_Common/printf.c",
@@ -986,7 +981,7 @@ config.libs = [
                 "RevoSDK/MSL_C/MSL_Common_Embedded/Math/Double_precision/s_ceil.c",
             ),
             Object(
-                NonMatching,
+                Matching,
                 "RevoSDK/MSL_C/MSL_Common_Embedded/Math/Double_precision/s_copysign.c",
             ),
             Object(
@@ -1006,7 +1001,7 @@ config.libs = [
                 "RevoSDK/MSL_C/MSL_Common_Embedded/Math/Double_precision/s_ldexp.c",
             ),
             Object(
-                NonMatching,
+                Matching,
                 "RevoSDK/MSL_C/MSL_Common_Embedded/Math/Double_precision/s_modf.c",
             ),
             Object(
@@ -1018,50 +1013,50 @@ config.libs = [
                 "RevoSDK/MSL_C/MSL_Common_Embedded/Math/Double_precision/s_tan.c",
             ),
             Object(
-                NonMatching,
+                Matching,
                 "RevoSDK/MSL_C/MSL_Common_Embedded/Math/Double_precision/w_asin.c",
             ),
             Object(
-                NonMatching,
+                Matching,
                 "RevoSDK/MSL_C/MSL_Common_Embedded/Math/Double_precision/w_atan2.c",
             ),
             Object(
-                NonMatching,
+                Matching,
                 "RevoSDK/MSL_C/MSL_Common_Embedded/Math/Double_precision/w_exp.c",
             ),
             Object(
-                NonMatching,
+                Matching,
                 "RevoSDK/MSL_C/MSL_Common_Embedded/Math/Double_precision/w_fmod.c",
             ),
             Object(
-                NonMatching,
+                Matching,
                 "RevoSDK/MSL_C/MSL_Common_Embedded/Math/Double_precision/w_log10.c",
             ),
             Object(
-                NonMatching,
+                Matching,
                 "RevoSDK/MSL_C/MSL_Common_Embedded/Math/Double_precision/w_pow.c",
             ),
             Object(
                 NonMatching,
                 "RevoSDK/MSL_C/MSL_Common_Embedded/Math/Double_precision/e_sqrt.c",
             ),
-            Object(NonMatching, "RevoSDK/MSL_C/PPC_EABI/math_ppc.c"),
             Object(
-                NonMatching,
+                Matching,
                 "RevoSDK/MSL_C/MSL_Common_Embedded/Math/Double_precision/w_sqrt.c",
             ),
+            Object(NonMatching, "RevoSDK/MSL_C/PPC_EABI/math_ppc.c"),
         ],
     },
     {
         "lib": "ai",
-        "cflags": [*cflags_runtime, "-str noreadonly"],
+        "cflags": [*cflags_revo, "-str noreadonly"],
         "mw_version": "GC/3.0a3p1",
         "progress_category": "sdk",
         "objects": [Object(NonMatching, "RevoSDK/ai/ai.c")],
     },
     {
         "lib": "ax",
-        "cflags": [*cflags_runtime, "-str noreadonly"],  # unknown
+        "cflags": [*cflags_revo, "-str noreadonly"],  # unknown
         "mw_version": "GC/3.0a3p1",  # unknown
         "progress_category": "sdk",
         "objects": [
@@ -1078,7 +1073,7 @@ config.libs = [
     },
     {
         "lib": "axfx",
-        "cflags": [*cflags_runtime, "-str noreadonly"],  # unknown
+        "cflags": [*cflags_revo, "-str noreadonly"],  # unknown
         "mw_version": "GC/3.0a3p1",  # unknown
         "progress_category": "sdk",
         "objects": [
@@ -1089,33 +1084,33 @@ config.libs = [
     },
     {
         "lib": "base",
-        "cflags": cflags_runtime,
+        "cflags": cflags_revo,
         "mw_version": "GC/3.0a3p1",
         "progress_category": "sdk",
         "objects": [Object(NonMatching, "RevoSDK/base/PPCArch.c")],
     },
     {
         "lib": "db",
-        "cflags": [*cflags_runtime, "-str noreadonly"],
+        "cflags": [*cflags_revo, "-str noreadonly"],
         "mw_version": "GC/3.0a3p1",
         "progress_category": "sdk",
         "objects": [Object(NonMatching, "RevoSDK/db/db.c")],
     },
     {
         "lib": "dsp",
-        "cflags": [*cflags_runtime, "-str noreadonly"],
+        "cflags": [*cflags_revo, "-str noreadonly"],
         "mw_version": "GC/3.0a3p1",
         "progress_category": "sdk",
         "objects": [
             Object(NonMatching, "RevoSDK/dsp/DSPCode.c"),
             Object(NonMatching, "RevoSDK/dsp/dsp.c"),
-            Object(NonMatching, "RevoSDK/dsp/dsp_debug.c"),
+            Object(Matching, "RevoSDK/dsp/dsp_debug.c"),
             Object(NonMatching, "RevoSDK/dsp/dsp_task.c"),
         ],
     },
     {
         "lib": "dvd",
-        "cflags": [*cflags_runtime, "-str noreadonly"],
+        "cflags": [*cflags_revo, "-str noreadonly"],
         "mw_version": "GC/3.0a3p1",
         "progress_category": "sdk",
         "objects": [
@@ -1133,7 +1128,7 @@ config.libs = [
     },
     {
         "lib": "exi",
-        "cflags": [*cflags_runtime, "-str noreadonly"],
+        "cflags": [*cflags_revo, "-str noreadonly"],
         "mw_version": "GC/3.0a3p1",
         "progress_category": "sdk",
         "objects": [
@@ -1144,17 +1139,17 @@ config.libs = [
     },
     {
         "lib": "gd",
-        "cflags": cflags_runtime,
+        "cflags": [*cflags_revo, "-use_lmw_stmw off"],
         "mw_version": "GC/3.0a3p1",
         "progress_category": "sdk",
         "objects": [
-            Object(NonMatching, "RevoSDK/gd/GDBase.c"),
+            Object(Matching, "RevoSDK/gd/GDBase.c"),
             Object(NonMatching, "RevoSDK/gd/GDGeometry.c"),
         ],
     },
     {
         "lib": "gx",
-        "cflags": [*cflags_runtime, "-str noreadonly", "-fp_contract off"],
+        "cflags": [*cflags_revo, "-str noreadonly", "-fp_contract off"],
         "mw_version": "GC/3.0a3p1",
         "progress_category": "sdk",
         "objects": [
@@ -1176,12 +1171,12 @@ config.libs = [
     },
     {
         "lib": "mtx",
-        "cflags": cflags_runtime,
+        "cflags": cflags_revo,
         "mw_version": "GC/3.0a3p1",
         "progress_category": "sdk",
         "objects": [
             Object(NonMatching, "RevoSDK/mtx/mtx.c"),
-            Object(NonMatching, "RevoSDK/mtx/mtxvec.c"),
+            Object(Matching, "RevoSDK/mtx/mtxvec.c"),
             Object(NonMatching, "RevoSDK/mtx/mtx44.c"),
             Object(NonMatching, "RevoSDK/mtx/mtx44vec.c"),
             Object(NonMatching, "RevoSDK/mtx/vec.c"),
@@ -1189,7 +1184,7 @@ config.libs = [
     },
     {
         "lib": "NdevExi2A",
-        "cflags": [*cflags_runtime, "-inline deferred"],
+        "cflags": [*cflags_revo],
         "mw_version": "GC/3.0a3p1",
         "progress_category": "sdk",
         "objects": [
@@ -1199,7 +1194,7 @@ config.libs = [
     },
     {
         "lib": "os",
-        "cflags": [*cflags_runtime, "-str noreadonly"],
+        "cflags": [*cflags_revo, "-str noreadonly"],
         "mw_version": "GC/3.0a3p1",
         "progress_category": "sdk",
         "objects": [
@@ -1221,7 +1216,6 @@ config.libs = [
             Object(NonMatching, "RevoSDK/os/OSMutex.c"),
             Object(NonMatching, "RevoSDK/os/OSReboot.c"),
             Object(NonMatching, "RevoSDK/os/OSReset.c"),
-            # Object(NonMatching, "RevoSDK/os/OSResetSW.c"),
             Object(NonMatching, "RevoSDK/os/OSRtc.c"),
             Object(NonMatching, "RevoSDK/os/OSSync.c"),
             Object(NonMatching, "RevoSDK/os/OSThread.c"),
@@ -1241,7 +1235,7 @@ config.libs = [
     },
     {
         "lib": "pad",
-        "cflags": [*cflags_runtime, "-fp_contract off", "-str noreadonly"],
+        "cflags": [*cflags_revo, "-fp_contract off", "-str noreadonly"],
         "mw_version": "GC/3.0a3p1",
         "progress_category": "sdk",
         "objects": [
@@ -1251,7 +1245,7 @@ config.libs = [
     },
     {
         "lib": "si",
-        "cflags": [*cflags_runtime, "-str noreadonly"],
+        "cflags": [*cflags_revo, "-str noreadonly"],
         "mw_version": "GC/3.0a3p1",
         "progress_category": "sdk",
         "objects": [
@@ -1261,7 +1255,7 @@ config.libs = [
     },
     {
         "lib": "vi",
-        "cflags": [*cflags_runtime, "-str noreadonly"],
+        "cflags": [*cflags_revo, "-str noreadonly"],
         "mw_version": "GC/2.6",  # should be 3.0a3p1 but vi.c yells about something
         "progress_category": "sdk",
         "objects": [
@@ -1272,7 +1266,7 @@ config.libs = [
     },
     {
         "lib": "thp",
-        "cflags": [*cflags_runtime, "-str noreadonly"],
+        "cflags": [*cflags_revo, "-str noreadonly"],
         "mw_version": "GC/3.0a3p1",
         "progress_category": "sdk",
         "objects": [
@@ -1282,7 +1276,7 @@ config.libs = [
     },
     {
         "lib": "tpl",
-        "cflags": [*cflags_runtime, "-str noreadonly"],  # unknown
+        "cflags": [*cflags_revo, "-str noreadonly"],  # unknown
         "mw_version": "GC/3.0a3p1",  # unknown
         "progress_category": "sdk",
         "objects": [
@@ -1291,7 +1285,7 @@ config.libs = [
     },
     {
         "lib": "usb",
-        "cflags": [*cflags_runtime, "-str noreadonly"],  # unknown
+        "cflags": [*cflags_revo, "-str noreadonly"],  # unknown
         "mw_version": "GC/3.0a3p1",  # unknown
         "progress_category": "sdk",
         "objects": [
@@ -1300,7 +1294,7 @@ config.libs = [
     },
     {
         "lib": "wenc",
-        "cflags": [*cflags_runtime, "-str noreadonly"],  # unknown
+        "cflags": [*cflags_revo, "-str noreadonly"],  # unknown
         "mw_version": "GC/3.0a3p1",  # unknown
         "progress_category": "sdk",
         "objects": [
@@ -1309,7 +1303,7 @@ config.libs = [
     },
     {
         "lib": "wpad",
-        "cflags": [*cflags_runtime, "-str noreadonly"],  # unknown
+        "cflags": [*cflags_revo, "-str noreadonly"],  # unknown
         "mw_version": "GC/3.0a3p1",  # unknown
         "progress_category": "sdk",
         "objects": [
@@ -1321,7 +1315,7 @@ config.libs = [
     },
     {
         "lib": "wud",
-        "cflags": [*cflags_runtime, "-str noreadonly"],  # unknown
+        "cflags": [*cflags_revo, "-str noreadonly"],  # unknown
         "mw_version": "GC/3.0a3p1",  # unknown
         "progress_category": "sdk",
         "objects": [
@@ -1332,7 +1326,7 @@ config.libs = [
     },
     {
         "lib": "arc",
-        "cflags": [*cflags_runtime, "-str noreadonly"],  # unknown
+        "cflags": [*cflags_revo, "-str noreadonly"],  # unknown
         "mw_version": "GC/3.0a3p1",  # unknown
         "progress_category": "sdk",
         "objects": [
@@ -1341,7 +1335,7 @@ config.libs = [
     },
     {
         "lib": "bte",
-        "cflags": [*cflags_runtime, "-str noreadonly"],  # unknown
+        "cflags": [*cflags_revo, "-str noreadonly"],  # unknown
         "mw_version": "GC/3.0a3p1",  # unknown
         "progress_category": "sdk",
         "objects": [
@@ -1392,7 +1386,7 @@ config.libs = [
     },
     {
         "lib": "enc",
-        "cflags": [*cflags_runtime, "-str noreadonly"],  # unknown
+        "cflags": [*cflags_revo, "-str noreadonly"],  # unknown
         "mw_version": "GC/3.0a3p1",  # unknown
         "progress_category": "sdk",
         "objects": [
@@ -1402,7 +1396,7 @@ config.libs = [
     },
     {
         "lib": "euart",
-        "cflags": [*cflags_runtime, "-str noreadonly"],  # unknown
+        "cflags": [*cflags_revo, "-str noreadonly"],  # unknown
         "mw_version": "GC/3.0a3p1",  # unknown
         "progress_category": "sdk",
         "objects": [
@@ -1411,7 +1405,7 @@ config.libs = [
     },
     {
         "lib": "fs",
-        "cflags": [*cflags_runtime, "-str noreadonly"],  # unknown
+        "cflags": [*cflags_revo, "-str noreadonly"],  # unknown
         "mw_version": "GC/3.0a3p1",  # unknown
         "progress_category": "sdk",
         "objects": [
@@ -1420,7 +1414,7 @@ config.libs = [
     },
     {
         "lib": "ipc",
-        "cflags": [*cflags_runtime, "-str noreadonly"],  # unknown
+        "cflags": [*cflags_revo, "-str noreadonly"],  # unknown
         "mw_version": "GC/3.0a3p1",  # unknown
         "progress_category": "sdk",
         "objects": [
@@ -1432,7 +1426,7 @@ config.libs = [
     },
     {
         "lib": "kpad",
-        "cflags": [*cflags_runtime, "-str noreadonly"],  # unknown
+        "cflags": [*cflags_revo, "-str noreadonly"],  # unknown
         "mw_version": "GC/3.0a3p1",  # unknown
         "progress_category": "sdk",
         "objects": [
@@ -1441,7 +1435,7 @@ config.libs = [
     },
     {
         "lib": "mem",
-        "cflags": [*cflags_runtime, "-str noreadonly"],  # unknown
+        "cflags": [*cflags_revo, "-str noreadonly"],  # unknown
         "mw_version": "GC/3.0a3p1",  # unknown
         "progress_category": "sdk",
         "objects": [
@@ -1453,7 +1447,7 @@ config.libs = [
     },
     {
         "lib": "nand",
-        "cflags": [*cflags_runtime, "-str noreadonly"],  # unknown
+        "cflags": [*cflags_revo, "-str noreadonly"],  # unknown
         "mw_version": "GC/3.0a3p1",  # unknown
         "progress_category": "sdk",
         "objects": [
@@ -1466,7 +1460,7 @@ config.libs = [
     },
     {
         "lib": "sc",
-        "cflags": [*cflags_runtime, "-str noreadonly"],  # unknown
+        "cflags": [*cflags_revo, "-str noreadonly"],  # unknown
         "mw_version": "GC/3.0a3p1",  # unknown
         "progress_category": "sdk",
         "objects": [
@@ -1477,71 +1471,13 @@ config.libs = [
     },
     {
         "lib": "esp",
-        "cflags": [*cflags_runtime, "-str noreadonly"],  # unknown
+        "cflags": [*cflags_revo, "-str noreadonly"],  # unknown
         "mw_version": "GC/3.0a3p1",  # unknown
         "progress_category": "sdk",
         "objects": [
             Object(NonMatching, "RevoSDK/esp/esp.c"),
         ],
     },
-    # {
-    #     "lib": "amcstubs",
-    #     "cflags": cflags_runtime,
-    #     "mw_version": "GC/1.2.5n",
-    #     "progress_category" : "game",
-    #     "objects": [Object(NonMatching, "RevoSDK/amcstubs/AmcExi2Stubs.c")],
-    # },
-    # {
-    #     "lib": "ar",
-    #     "cflags": [*cflags_runtime, "-str noreadonly"],
-    #     "mw_version": "GC/1.2.5n",
-    #     "progress_category" : "game",
-    #     "objects": [
-    #         Object(NonMatching, "RevoSDK/ar/ar.c"),
-    #         Object(NonMatching, "RevoSDK/ar/arq.c"),
-    #     ],
-    # },
-    # {
-    #     "lib": "card",
-    #     "cflags": [*cflags_runtime, "-str noreadonly"],
-    #     "mw_version": "GC/1.2.5n",
-    #     "progress_category" : "game",
-    #     "objects": [
-    #         Object(NonMatching, "RevoSDK/card/CARDBios.c"),
-    #         Object(NonMatching, "RevoSDK/card/CARDUnlock.c"),
-    #         Object(NonMatching, "RevoSDK/card/CARDRdwr.c"),
-    #         Object(NonMatching, "RevoSDK/card/CARDBlock.c"),
-    #         Object(NonMatching, "RevoSDK/card/CARDDir.c"),
-    #         Object(NonMatching, "RevoSDK/card/CARDCheck.c"),
-    #         Object(NonMatching, "RevoSDK/card/CARDMount.c"),
-    #         Object(NonMatching, "RevoSDK/card/CARDFormat.c"),
-    #         Object(NonMatching, "RevoSDK/card/CARDOpen.c"),
-    #         Object(NonMatching, "RevoSDK/card/CARDCreate.c"),
-    #         Object(NonMatching, "RevoSDK/card/CARDRead.c"),
-    #         Object(NonMatching, "RevoSDK/card/CARDWrite.c"),
-    #         Object(NonMatching, "RevoSDK/card/CARDStat.c"),
-    #         Object(NonMatching, "RevoSDK/card/CARDNet.c"),
-    #     ],
-    # },
-    # {
-    #     "lib": "odenotstub",
-    #     "cflags": cflags_runtime,
-    #     "mw_version": "GC/1.2.5n",
-    #     "progress_category" : "game",
-    #     "objects": [Object(NonMatching, "RevoSDK/odenotstub/odenotstub.c")],
-    # },
-    # {
-    #     "lib": "gba",
-    #     "cflags": [*cflags_runtime, "-str noreadonly"],
-    #     "mw_version": "GC/1.2.5n",
-    #     "progress_category" : "game",
-    #     "objects": [
-    #         Object(NonMatching, "RevoSDK/gba/GBA.c"),
-    #         Object(NonMatching, "RevoSDK/gba/GBARead.c"),
-    #         Object(NonMatching, "RevoSDK/gba/GBAWrite.c"),
-    #         Object(NonMatching, "RevoSDK/gba/GBAXfer.c"),
-    #     ],
-    # },
     {
         "lib": "plugProjectYamashitaU",
         "cflags": cflags_pikmin,
@@ -1560,7 +1496,7 @@ config.libs = [
             Object(NonMatching, "plugProjectYamashitaU/enemyAction.cpp"),
             Object(NonMatching, "plugProjectYamashitaU/chappy.cpp"),
             Object(Equivalent, "plugProjectYamashitaU/chappyState.cpp"),
-            Object(NonMatching, "plugProjectYamashitaU/chappyAnimator.cpp"),
+            Object(Matching, "plugProjectYamashitaU/chappyAnimator.cpp"),
             Object(NonMatching, "plugProjectYamashitaU/chappyMgr.cpp"),
             Object(NonMatching, "plugProjectYamashitaU/lifeGaugeMgr.cpp"),
             Object(NonMatching, "plugProjectYamashitaU/carryInfoMgr.cpp"),
@@ -1572,13 +1508,13 @@ config.libs = [
             Object(NonMatching, "plugProjectYamashitaU/genEnemy.cpp"),
             Object(NonMatching, "plugProjectYamashitaU/timeMgr.cpp"),
             Object(NonMatching, "plugProjectYamashitaU/pelplantGenerator.cpp"),
-            Object(NonMatching, "plugProjectYamashitaU/enemyInteractActions.cpp"),
+            Object(Matching, "plugProjectYamashitaU/enemyInteractActions.cpp"),
             Object(NonMatching, "plugProjectYamashitaU/enemyAnimatorBase.cpp"),
             Object(NonMatching, "plugProjectYamashitaU/enemyStoneMgr.cpp"),
             Object(NonMatching, "plugProjectYamashitaU/enemyStoenInfo.cpp"),
             Object(NonMatching, "plugProjectYamashitaU/enemyStoneDrawInfo.cpp"),
             Object(NonMatching, "plugProjectYamashitaU/enemyStoneObj.cpp"),
-            Object(NonMatching, "plugProjectYamashitaU/enemyParmsBase.cpp"),
+            Object(Matching, "plugProjectYamashitaU/enemyParmsBase.cpp"),
             Object(NonMatching, "plugProjectYamashitaU/walkSmokeEffect.cpp"),
             Object(NonMatching, "plugProjectYamashitaU/ChappyBaseMgr.cpp"),
             Object(NonMatching, "plugProjectYamashitaU/ChappyBase.cpp"),
@@ -1592,13 +1528,13 @@ config.libs = [
             Object(NonMatching, "plugProjectYamashitaU/YellowKochappyMgr.cpp"),
             Object(NonMatching, "plugProjectYamashitaU/KochappyBaseMgr.cpp"),
             Object(NonMatching, "plugProjectYamashitaU/KochappyBase.cpp"),
-            Object(NonMatching, "plugProjectYamashitaU/enemyBlendAnimatorBase.cpp"),
-            Object(NonMatching, "plugProjectYamashitaU/enemyPelletInfo.cpp"),
+            Object(Matching, "plugProjectYamashitaU/enemyBlendAnimatorBase.cpp"),
+            Object(Matching, "plugProjectYamashitaU/enemyPelletInfo.cpp"),
             Object(NonMatching, "plugProjectYamashitaU/enemyEffectNode.cpp"),
             Object(NonMatching, "plugProjectYamashitaU/enemyMgrBase.cpp"),
             Object(NonMatching, "plugProjectYamashitaU/enemyFSM.cpp"),
             Object(NonMatching, "plugProjectYamashitaU/singleGS_ZukanParms.cpp"),
-            Object(NonMatching, "plugProjectYamashitaU/treasureLightMgr.cpp"),
+            Object(Matching, "plugProjectYamashitaU/treasureLightMgr.cpp"),
             Object(NonMatching, "plugProjectYamashitaU/effectAnimator.cpp"),
         ],
     },
@@ -1608,7 +1544,7 @@ config.libs = [
         "mw_version": "GC/3.0a3p1",
         "progress_category": "game",
         "objects": [
-            Object(NonMatching, "plugProjectKandoU/pikiAnimator.cpp"),
+            Object(Matching, "plugProjectKandoU/pikiAnimator.cpp"),
             Object(NonMatching, "plugProjectKandoU/collinfo.cpp"),
             Object(NonMatching, "plugProjectKandoU/gameDynamics.cpp"),
             Object(NonMatching, "plugProjectKandoU/creature.cpp"),
@@ -1631,7 +1567,7 @@ config.libs = [
             Object(NonMatching, "plugProjectKandoU/pikiState.cpp"),
             Object(NonMatching, "plugProjectKandoU/interactPiki.cpp"),
             Object(NonMatching, "plugProjectKandoU/gameCPlate.cpp"),
-            Object(NonMatching, "plugProjectKandoU/updateMgr.cpp"),
+            Object(Matching, "plugProjectKandoU/updateMgr.cpp"),
             Object(NonMatching, "plugProjectKandoU/aiAction.cpp"),
             Object(NonMatching, "plugProjectKandoU/aiPrimitives.cpp"),
             Object(NonMatching, "plugProjectKandoU/aiFormation.cpp"),
@@ -1681,7 +1617,7 @@ config.libs = [
             Object(NonMatching, "plugProjectKandoU/gameGeneratorCache.cpp"),
             Object(NonMatching, "plugProjectKandoU/itemTreasure.cpp"),
             Object(NonMatching, "plugProjectKandoU/itemDownFloor.cpp"),
-            Object(NonMatching, "plugProjectKandoU/kandoLib.cpp"),
+            Object(Matching, "plugProjectKandoU/kandoLib.cpp"),
             Object(NonMatching, "plugProjectKandoU/itemBarrel.cpp"),
             Object(NonMatching, "plugProjectKandoU/pelletNumber.cpp"),
             Object(NonMatching, "plugProjectKandoU/pelletCarcass.cpp"),
@@ -1708,7 +1644,7 @@ config.libs = [
             Object(NonMatching, "plugProjectKandoU/singleGS_Movie.cpp"),
             Object(NonMatching, "plugProjectKandoU/navi_demoCheck.cpp"),
             Object(NonMatching, "plugProjectKandoU/singleGS_Zukan.cpp"),
-            Object(NonMatching, "plugProjectKandoU/baseHIOparms.cpp"),
+            Object(Matching, "plugProjectKandoU/baseHIOparms.cpp"),
             Object(NonMatching, "plugProjectKandoU/gameResultTexMgr.cpp"),
             Object(NonMatching, "plugProjectKandoU/gamePelletList.cpp"),
             Object(NonMatching, "plugProjectKandoU/vsGS_Title.cpp"),
@@ -1719,7 +1655,7 @@ config.libs = [
             Object(NonMatching, "plugProjectKandoU/cellMgrParms.cpp"),
             Object(NonMatching, "plugProjectKandoU/cellIterator.cpp"),
             Object(NonMatching, "plugProjectKandoU/vsGS_VSGame.cpp"),
-            Object(NonMatching, "plugProjectKandoU/gameSoundEvent.cpp"),
+            Object(Matching, "plugProjectKandoU/gameSoundEvent.cpp"),
             Object(NonMatching, "plugProjectKandoU/aiBattle.cpp"),
             Object(NonMatching, "plugProjectKandoU/gameDeathCount.cpp"),
             Object(NonMatching, "plugProjectKandoU/aiBore.cpp"),
@@ -1730,15 +1666,15 @@ config.libs = [
             Object(NonMatching, "plugProjectKandoU/gameHighscore.cpp"),
             Object(NonMatching, "plugProjectKandoU/gamePlayCommonData.cpp"),
             Object(NonMatching, "plugProjectKandoU/pelletCarry.cpp"),
-            Object(NonMatching, "plugProjectKandoU/gameChallenge2D.cpp"),
-            Object(NonMatching, "plugProjectKandoU/vsTekiMgr.cpp"),
+            Object(Matching, "plugProjectKandoU/gameChallenge2D.cpp"),
+            Object(Matching, "plugProjectKandoU/vsTekiMgr.cpp"),
             Object(NonMatching, "plugProjectKandoU/vsCardMgr.cpp"),
             Object(NonMatching, "plugProjectKandoU/aiRescue.cpp"),
             Object(NonMatching, "plugProjectKandoU/baseGameSectionDraw.cpp"),
             Object(NonMatching, "plugProjectKandoU/singleGS_Load.cpp"),
             Object(NonMatching, "plugProjectKandoU/singleGS_DayEnd.cpp"),
             Object(NonMatching, "plugProjectKandoU/baseGameSectionKantei.cpp"),
-            Object(NonMatching, "plugProjectKandoU/sweepPrune.cpp"),
+            Object(Matching, "plugProjectKandoU/sweepPrune.cpp"),
             Object(NonMatching, "plugProjectKandoU/texCaster.cpp"),
             Object(NonMatching, "plugProjectKandoU/vsCoinOtakaraName.cpp"),
             Object(NonMatching, "plugProjectKandoU/pelletBirthBuffer.cpp"),
@@ -1757,23 +1693,23 @@ config.libs = [
             Object(NonMatching, "plugProjectNishimuraU/ShadowCylinder.cpp"),
             Object(NonMatching, "plugProjectNishimuraU/playCamera.cpp"),
             Object(NonMatching, "plugProjectNishimuraU/shadowMgr.cpp"),
-            Object(NonMatching, "plugProjectNishimuraU/MapUnit.cpp"),
-            Object(NonMatching, "plugProjectNishimuraU/MapNode.cpp"),
-            Object(NonMatching, "plugProjectNishimuraU/EnemyUnit.cpp"),
+            Object(Matching, "plugProjectNishimuraU/MapUnit.cpp"),
+            Object(Matching, "plugProjectNishimuraU/MapNode.cpp"),
+            Object(Matching, "plugProjectNishimuraU/EnemyUnit.cpp"),
             Object(NonMatching, "plugProjectNishimuraU/RandMapMgr.cpp"),
             Object(NonMatching, "plugProjectNishimuraU/RandMapDraw.cpp"),
-            Object(NonMatching, "plugProjectNishimuraU/RandMapChecker.cpp"),
+            Object(Matching, "plugProjectNishimuraU/RandMapChecker.cpp"),
             Object(NonMatching, "plugProjectNishimuraU/RandMapUnit.cpp"),
             Object(NonMatching, "plugProjectNishimuraU/RandEnemyUnit.cpp"),
-            Object(NonMatching, "plugProjectNishimuraU/DoorNode.cpp"),
+            Object(Matching, "plugProjectNishimuraU/DoorNode.cpp"),
             Object(NonMatching, "plugProjectNishimuraU/MapUnitGenerator.cpp"),
-            Object(NonMatching, "plugProjectNishimuraU/MapCreator.cpp"),
+            Object(Matching, "plugProjectNishimuraU/MapCreator.cpp"),
             Object(NonMatching, "plugProjectNishimuraU/RandMapScore.cpp"),
-            Object(NonMatching, "plugProjectNishimuraU/ItemUnit.cpp"),
+            Object(Matching, "plugProjectNishimuraU/ItemUnit.cpp"),
             Object(NonMatching, "plugProjectNishimuraU/RandItemUnit.cpp"),
-            Object(NonMatching, "plugProjectNishimuraU/GateUnit.cpp"),
+            Object(Matching, "plugProjectNishimuraU/GateUnit.cpp"),
             Object(NonMatching, "plugProjectNishimuraU/RandGateUnit.cpp"),
-            Object(NonMatching, "plugProjectNishimuraU/ObjectLayout.cpp"),
+            Object(Matching, "plugProjectNishimuraU/ObjectLayout.cpp"),
             Object(NonMatching, "plugProjectNishimuraU/CameraMgr.cpp"),
             Object(NonMatching, "plugProjectNishimuraU/ContRumble.cpp"),
             Object(NonMatching, "plugProjectNishimuraU/RumbleMgr.cpp"),
@@ -1787,9 +1723,9 @@ config.libs = [
             Object(NonMatching, "plugProjectNishimuraU/Frog.cpp"),
             Object(NonMatching, "plugProjectNishimuraU/UjibMgr.cpp"),
             Object(NonMatching, "plugProjectNishimuraU/Ujib.cpp"),
-            Object(NonMatching, "plugProjectNishimuraU/UjibState.cpp"),
+            Object(Matching, "plugProjectNishimuraU/UjibState.cpp"),
             Object(Matching, "plugProjectNishimuraU/UjibAnimator.cpp"),
-            Object(NonMatching, "plugProjectNishimuraU/KoganeState.cpp"),
+            Object(Matching, "plugProjectNishimuraU/KoganeState.cpp"),
             Object(NonMatching, "plugProjectNishimuraU/KoganeMgr.cpp"),
             Object(NonMatching, "plugProjectNishimuraU/Kogane.cpp"),
             Object(Matching, "plugProjectNishimuraU/KoganeAnimator.cpp"),
@@ -1797,7 +1733,7 @@ config.libs = [
             Object(NonMatching, "plugProjectNishimuraU/QurioneMgr.cpp"),
             Object(NonMatching, "plugProjectNishimuraU/Qurione.cpp"),
             Object(Matching, "plugProjectNishimuraU/QurioneAnimator.cpp"),
-            Object(NonMatching, "plugProjectNishimuraU/RumbleData.cpp"),
+            Object(Matching, "plugProjectNishimuraU/RumbleData.cpp"),
             Object(NonMatching, "plugProjectNishimuraU/MaroFrogMgr.cpp"),
             Object(NonMatching, "plugProjectNishimuraU/MaroFrog.cpp"),
             Object(NonMatching, "plugProjectNishimuraU/RockState.cpp"),
@@ -1961,7 +1897,7 @@ config.libs = [
             Object(NonMatching, "plugProjectNishimuraU/MiniHoudai.cpp"),
             Object(NonMatching, "plugProjectNishimuraU/MiniHoudaiShotGun.cpp"),
             Object(NonMatching, "plugProjectNishimuraU/SokkuriState.cpp"),
-            Object(NonMatching, "plugProjectNishimuraU/SokkuriAnimator.cpp"),
+            Object(Matching, "plugProjectNishimuraU/SokkuriAnimator.cpp"),
             Object(NonMatching, "plugProjectNishimuraU/SokkuriMgr.cpp"),
             Object(NonMatching, "plugProjectNishimuraU/Sokkuri.cpp"),
             Object(NonMatching, "plugProjectNishimuraU/JointShadowBase.cpp"),
@@ -2401,7 +2337,6 @@ config.libs = [
             Object(NonMatching, "sysGCU/moviePlayerAudio.cpp"),
             Object(NonMatching, "sysGCU/illustratedBookMessage.cpp"),
             Object(NonMatching, "sysGCU/sysDrawBuffer.cpp"),
-            # Object(NonMatching, "sysGCU/dvdErrorMessage.cpp"),
             Object(NonMatching, "sysGCU/pikmin2AramMgr.cpp"),
             Object(NonMatching, "sysGCU/messageAnalyzer.cpp"),
             Object(NonMatching, "sysGCU/controller.cpp"),
@@ -2430,7 +2365,7 @@ config.libs = [
     },
     {
         "lib": "egg_gfx",
-        "cflags": [*cflags_egg, "-Cpp_exceptions on"], 
+        "cflags": [*cflags_egg, "-Cpp_exceptions on"],
         "mw_version": "GC/3.0a3p1",  # unknown
         "progress_category": "egg",
         "objects": [
@@ -2452,9 +2387,9 @@ config.libs = [
     },
     {
         "lib": "egg_prim",
-        "cflags": [*cflags_egg, "-Cpp_exceptions on"], 
+        "cflags": [*cflags_egg, "-Cpp_exceptions on"],
         "mw_version": "GC/3.0a3p1",  # unknown
-        "progress_category" : "egg",
+        "progress_category": "egg",
         "objects": [
             Object(NonMatching, "egg/prim/eggAssert.cpp"),
             Object(NonMatching, "egg/prim/eggList.cpp"),
@@ -2462,9 +2397,9 @@ config.libs = [
     },
     {
         "lib": "egg_math",
-        "cflags": [*cflags_egg, "-Cpp_exceptions on"], 
+        "cflags": [*cflags_egg, "-Cpp_exceptions on"],
         "mw_version": "GC/3.0a3p1",  # unknown
-        "progress_category" : "egg",
+        "progress_category": "egg",
         "objects": [
             Object(NonMatching, "egg/math/eggMath.cpp"),
             Object(NonMatching, "egg/math/eggMatrix.cpp"),
@@ -2474,9 +2409,9 @@ config.libs = [
     },
     {
         "lib": "egg_core",
-        "cflags": cflags_egg, 
+        "cflags": cflags_egg,
         "mw_version": "GC/3.0a3p1",  # unknown
-        "progress_category" : "egg",
+        "progress_category": "egg",
         "objects": [
             Object(NonMatching, "egg/core/eggExpHeap.cpp"),
             Object(NonMatching, "egg/core/eggHeap.cpp"),
@@ -2492,6 +2427,7 @@ config.libs = [
             Object(NonMatching, "egg/core/eggLongStopWatch.cpp"),
             Object(NonMatching, "egg/core/eggDecomp.cpp"),
             Object(NonMatching, "egg/core/eggSaveBanner.cpp"),
+            # TODO: one extra function exists here - new file or in eggSaveBanner?
         ],
     },
     {
@@ -2543,22 +2479,22 @@ config.libs = [
         "mw_version": "GC/3.0a3p1",
         "progress_category": "nw4r",
         "objects": [
-            Object(NonMatching, "nw4r/g3d/g3d_rescommon.cpp"),
-            Object(NonMatching, "nw4r/g3d/g3d_resdict.cpp"),
-            Object(NonMatching, "nw4r/g3d/g3d_resfile.cpp"),
-            Object(NonMatching, "nw4r/g3d/g3d_resmdl.cpp"),
-            Object(NonMatching, "nw4r/g3d/g3d_resshp.cpp"),
-            Object(NonMatching, "nw4r/g3d/g3d_restev.cpp"),
+            Object(Matching, "nw4r/g3d/g3d_rescommon.cpp"),
+            Object(Matching, "nw4r/g3d/g3d_resdict.cpp"),
+            Object(Matching, "nw4r/g3d/g3d_resfile.cpp"),
+            Object(Matching, "nw4r/g3d/g3d_resmdl.cpp"),
+            Object(Matching, "nw4r/g3d/g3d_resshp.cpp"),
+            Object(Matching, "nw4r/g3d/g3d_restev.cpp"),
             Object(NonMatching, "nw4r/g3d/g3d_resmat.cpp"),
-            Object(NonMatching, "nw4r/g3d/g3d_resvtx.cpp"),
-            Object(NonMatching, "nw4r/g3d/g3d_restex.cpp"),
+            Object(Matching, "nw4r/g3d/g3d_resvtx.cpp"),
+            Object(Matching, "nw4r/g3d/g3d_restex.cpp"),
             Object(NonMatching, "nw4r/g3d/g3d_resnode.cpp"),
-            Object(NonMatching, "nw4r/g3d/g3d_resanm.cpp"),
-            Object(NonMatching, "nw4r/g3d/g3d_resanmvis.cpp"),
-            Object(NonMatching, "nw4r/g3d/g3d_resanmclr.cpp"),
-            Object(NonMatching, "nw4r/g3d/g3d_resanmtexpat.cpp"),
-            Object(NonMatching, "nw4r/g3d/g3d_resanmtexsrt.cpp"),
-            Object(NonMatching, "nw4r/g3d/g3d_resanmchr.cpp"),
+            Object(Matching, "nw4r/g3d/g3d_resanm.cpp"),
+            Object(Matching, "nw4r/g3d/g3d_resanmvis.cpp"),
+            Object(Matching, "nw4r/g3d/g3d_resanmclr.cpp"),
+            Object(Matching, "nw4r/g3d/g3d_resanmtexpat.cpp"),
+            Object(Matching, "nw4r/g3d/g3d_resanmtexsrt.cpp"),
+            Object(Matching, "nw4r/g3d/g3d_resanmchr.cpp"),
             Object(NonMatching, "nw4r/g3d/g3d_anmvis.cpp"),
             Object(NonMatching, "nw4r/g3d/g3d_anmclr.cpp"),
             Object(NonMatching, "nw4r/g3d/g3d_anmtexpat.cpp"),
@@ -2569,7 +2505,7 @@ config.libs = [
             Object(NonMatching, "nw4r/g3d/g3d_obj.cpp"),
             Object(NonMatching, "nw4r/g3d/g3d_anmobj.cpp"),
             Object(NonMatching, "nw4r/g3d/g3d_gpu.cpp"),
-            Object(NonMatching, "nw4r/g3d/g3d_cpu.cpp"),
+            Object(Matching, "nw4r/g3d/g3d_cpu.cpp"),
             Object(NonMatching, "nw4r/g3d/g3d_state.cpp"),
             Object(NonMatching, "nw4r/g3d/g3d_draw1mat1shp.cpp"),
             Object(NonMatching, "nw4r/g3d/g3d_calcview.cpp"),
@@ -2577,7 +2513,7 @@ config.libs = [
             Object(NonMatching, "nw4r/g3d/g3d_workmem.cpp"),
             Object(NonMatching, "nw4r/g3d/g3d_calcworld.cpp"),
             Object(NonMatching, "nw4r/g3d/g3d_draw.cpp"),
-            Object(NonMatching, "nw4r/g3d/g3d_camera.cpp"),
+            Object(Matching, "nw4r/g3d/g3d_camera.cpp"),
             Object(NonMatching, "nw4r/g3d/g3d_basic.cpp"),
             Object(NonMatching, "nw4r/g3d/g3d_maya.cpp"),
             Object(NonMatching, "nw4r/g3d/g3d_xsi.cpp"),
@@ -2588,7 +2524,7 @@ config.libs = [
             Object(NonMatching, "nw4r/g3d/g3d_scnmdl.cpp"),
             Object(NonMatching, "nw4r/g3d/g3d_calcmaterial.cpp"),
             Object(NonMatching, "nw4r/g3d/g3d_init.cpp"),
-            Object(NonMatching, "nw4r/g3d/g3d_fog.cpp"),
+            Object(Matching, "nw4r/g3d/g3d_fog.cpp"),
             Object(NonMatching, "nw4r/g3d/g3d_light.cpp"),
             Object(NonMatching, "nw4r/g3d/g3d_calcvtx.cpp"),
         ],

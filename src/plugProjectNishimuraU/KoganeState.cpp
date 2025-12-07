@@ -3,6 +3,12 @@
 #include "Game/Entities/Kogane.h"
 #include "efx/TKogane.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "246-KoganeState";
+}
+
 namespace Game {
 namespace Kogane {
 
@@ -13,11 +19,11 @@ namespace Kogane {
 void FSM::init(EnemyBase* enemy)
 {
 	create(KOGANE_Count);
-	registerState(new StateAppear);
-	registerState(new StateDisappear);
-	registerState(new StateMove);
-	registerState(new StateWait);
-	registerState(new StatePress);
+	registerState(new StateAppear("appear"));
+	registerState(new StateDisappear("disappear"));
+	registerState(new StateMove("move"));
+	registerState(new StateWait("wait"));
+	registerState(new StatePress("press"));
 }
 
 /**

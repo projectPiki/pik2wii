@@ -5,6 +5,7 @@
 
 #include <nw4r/math/math_constant.h>
 
+#include <PowerPC_EABI_Support/MSL_C/MSL_Common/math_double.h>
 #include <RevoSDK/os.h>
 
 namespace nw4r {
@@ -58,6 +59,21 @@ inline f32 FSqrt(f32 x)
 	return x <= 0.0f ? 0.0f : x * FrSqrt(x);
 }
 
+inline f32 FModf(f32 x, f32* pY)
+{
+	return modff(x, pY);
+}
+
+inline f32 FCeil(f32 x)
+{
+	return ceilf(x);
+}
+
+inline f32 FFloor(f32 x)
+{
+	return floorf(x);
+}
+
 inline f32 FSelect(register f32 value, register f32 ge_zero, register f32 lt_zero)
 {
 	register f32 ret;
@@ -90,11 +106,12 @@ inline u16 F32ToU16(f32 arg)
 	return ret;
 }
 
-// inline f32 S16ToF32(s16 arg) {
-//     f32 ret;
-//     OSs16tof32(&arg, &ret);
-//     return ret;
-// }
+inline f32 S16ToF32(s16 arg)
+{
+	f32 ret;
+	OSs16tof32(&arg, &ret);
+	return ret;
+}
 
 inline s16 F32ToS16(f32 arg)
 {

@@ -5,10 +5,13 @@
 #include "Viewport.h"
 #include "nans.h"
 
-namespace Game {
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "246-ShadowMgr";
+}
 
-static const u32 padding[]    = { 0, 0, 0 };
-static const char className[] = "246-ShadowMgr";
+namespace Game {
 
 ShadowMgr* shadowMgr;
 
@@ -129,7 +132,7 @@ ShadowMgr::ShadowMgr(int count)
 	mDoCheckCylinderType = 1;
 	mCylinderID          = 0;
 	mUnused0             = 0;
-	mName                = "ShadowMgr";
+	setName("ShadowMgr");
 }
 
 /**
@@ -146,7 +149,7 @@ void ShadowMgr::loadResource()
 	mViewports            = new Viewport*[mViewportNum];
 	mActiveJointShadows   = new JointShadowRootNode;
 	mInactiveJointShadows = new JointShadowRootNode;
-	readShadowParms("/user/Nishimura/Shadow/shadowParms.txt");
+	readShadowParms("user/Nishimura/Shadow/shadowParms.txt");
 }
 
 /**
@@ -328,7 +331,7 @@ void ShadowMgr::createShadow(Creature* owner)
 		}
 	}
 
-	mInactiveShadows->add(new ShadowNode(owner, getViewportCount()));
+	mInactiveShadows->add(new ShadowNode(owner, mViewportNum));
 	mAllocShadowNum++;
 }
 

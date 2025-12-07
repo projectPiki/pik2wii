@@ -15,7 +15,7 @@ namespace Game {
  * @note Size: 0x70
  */
 EnemyBirthArg::EnemyBirthArg()
-    : mPosition(Vector3f(0.0f))
+    : mPosition(0.0f, 0.0f, 0.0f)
     , mFaceDir(0.0f)
     , mTekiBirthType(0)
     , mGenerator(nullptr)

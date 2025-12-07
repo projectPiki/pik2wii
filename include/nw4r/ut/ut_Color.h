@@ -11,7 +11,7 @@ namespace ut {
 //////////////////////// TYPES /////////////////////////
 
 /**
- * @brief TODO
+ * @brief Basic wrapper class over GXColor.
  *
  * @note Size: 0x4.
  */

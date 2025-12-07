@@ -11,7 +11,6 @@ EnemyAnimatorBase::EnemyAnimatorBase()
     : mSpeed(30.0f)
     , mNormalizedTime(1.0f)
 {
-	reset();
 }
 
 /**

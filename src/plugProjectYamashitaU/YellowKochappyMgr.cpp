@@ -1,11 +1,17 @@
 #include "Game/Entities/YellowKochappy.h"
 #include "LoadResource.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "YellowKochappyMgr";
+}
+
 namespace Game {
 namespace YellowKochappy {
 
 namespace {
-static const char* cKochappyChangeTexName = "/enemy/data/YellowKochappy/kochappy_body_s3tc.2.bti";
+static const char* cKochappyChangeTexName = "enemy/data/YellowKochappy/kochappy_body_s3tc.2.bti";
 } // namespace
 
 /**
@@ -15,14 +21,17 @@ static const char* cKochappyChangeTexName = "/enemy/data/YellowKochappy/kochappy
 Mgr::Mgr(int objLimit, u8 modelType)
     : KochappyBase::Mgr(objLimit, modelType)
 {
-	mName = "黄コチャッピーマネージャ"; // yellow kochappy manager
+	setName("黄コチャッピーマネージャ"); // yellow kochappy manager
 }
 
 /**
  * @note Address: 0x8012D634
  * @note Size: 0x48
  */
-void Mgr::doAlloc() { init(new KochappyBase::Parms); }
+void Mgr::doAlloc()
+{
+	init(new KochappyBase::Parms);
+}
 
 /**
  * @note Address: 0x8012D67C

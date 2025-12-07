@@ -2,9 +2,6 @@
 #include "nans.h"
 #include "sysMath.h"
 
-// Fix rodata mismatch with null bytes
-static const char _RODATA_FIX[0xC] = { '\0' };
-
 namespace TreasureLight {
 /**
  * @note Address: 0x8013286C
@@ -81,10 +78,11 @@ void Mgr::set(Matrixf& mtx)
  */
 void Mgr::setCommonProc()
 {
-	f32 rotation_angle  = (mRotationAngle * DEG2RAD) * PI;
-	f32 elevation_angle = (mElevationAngle * DEG2RAD) * PI;
+	f32 rotation_angle, elevation_angle, radius;
+	radius          = 3000.0f;
+	rotation_angle  = (mRotationAngle * DEG2RAD) * PI;
+	elevation_angle = (mElevationAngle * DEG2RAD) * PI;
 
-	f32 radius = 3000.0f;
 	Vector3f rotation;
 	rotation.x = pikmin2_cosf(elevation_angle) * radius * pikmin2_sinf(rotation_angle);
 	rotation.y = pikmin2_sinf(elevation_angle) * -radius;

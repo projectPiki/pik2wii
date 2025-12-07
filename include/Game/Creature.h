@@ -383,6 +383,15 @@ struct Creature : public CellObject {
 		return x * x + y * y + z * z;
 	}
 
+	inline bool isCreatureWithinRange(Creature* c, f32 range)
+	{
+		// subtly wrong - see EnemyBase::isFinishableWaitingBirthTypeDrop
+		f32 x = getPosition().x - c->getPosition().x;
+		f32 z = getPosition().z - c->getPosition().z;
+
+		return SQUARE(x) + SQUARE(z) < SQUARE(range);
+	}
+
 	//////////////////////////////////////////////////////
 	/////// UNCONFIRMED INLINES THAT MIGHT BE FAKE ///////
 	///////         (to confirm or remove)         ///////
@@ -392,15 +401,6 @@ struct Creature : public CellObject {
 	{
 		distanceResult.x = getPosition().x - creature->getPosition().x;
 		distanceResult.y = getPosition().z - creature->getPosition().z;
-	}
-
-	inline bool isCreatureWithinRange(Creature* c, f32 range)
-	{
-		// subtly wrong - see EnemyBase::isFinishableWaitingBirthTypeDrop
-		f32 x = getPosition().x - c->getPosition().x;
-		f32 z = getPosition().z - c->getPosition().z;
-
-		return SQUARE(x) + SQUARE(z) < SQUARE(range);
 	}
 
 	inline f32 getDistanceTo(Creature* target)

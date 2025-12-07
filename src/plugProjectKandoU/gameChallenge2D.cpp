@@ -1,5 +1,11 @@
-#include "types.h"
 #include "Game/gameChallenge2D.h"
+#include "types.h"
+
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "challenge2d";
+}
 
 namespace Game {
 
@@ -54,7 +60,10 @@ Vs2D_TitleInfo::Vs2D_TitleInfo(int count)
  * @note Address: 0x80235214
  * @note Size: 0xC
  */
-Vs2D_TitleInfo::Info::Info() { mIndex = 0; }
+Vs2D_TitleInfo::Info::Info()
+{
+	mIndex = 0;
+}
 
 /**
  * @note Address: 0x80235220

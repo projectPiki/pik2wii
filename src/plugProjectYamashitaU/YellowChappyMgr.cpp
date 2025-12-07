@@ -1,12 +1,18 @@
 #include "Game/Entities/YellowChappy.h"
 #include "LoadResource.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "YellowChappyMgr";
+}
+
 namespace Game {
 namespace YellowChappy {
 
 namespace {
-static const char* cChappyChangeTexName0 = "/enemy/data/YellowChappy/moyou_565.2.bti";
-static const char* cChappyChangeTexName1 = "/enemy/data/YellowChappy/swallow_565.2.bti";
+static const char* cChappyChangeTexName0 = "enemy/data/YellowChappy/moyou_565.2.bti";
+static const char* cChappyChangeTexName1 = "enemy/data/YellowChappy/swallow_565.2.bti";
 } // namespace
 
 /**
@@ -16,7 +22,7 @@ static const char* cChappyChangeTexName1 = "/enemy/data/YellowChappy/swallow_565
 Mgr::Mgr(int objLimit, u8 modelType)
     : ChappyBase::Mgr(objLimit, modelType)
 {
-	mName = "黄チャッピーマネージャ"; // yellow chappy manager
+	setName("黄チャッピーマネージャ"); // yellow chappy manager
 }
 
 /**
@@ -40,7 +46,10 @@ void Mgr::loadTexData()
  * @note Address: 0x8012C0B4
  * @note Size: 0x48
  */
-void Mgr::doAlloc() { init(new ChappyBase::Parms); }
+void Mgr::doAlloc()
+{
+	init(new ChappyBase::Parms);
+}
 
 /**
  * @note Address: 0x8012C0FC

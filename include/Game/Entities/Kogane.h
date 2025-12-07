@@ -2,9 +2,9 @@
 #define _GAME_ENTITIES_KOGANE_H
 
 #include "Game/EnemyAnimatorBase.h"
-#include "Game/EnemyParmsBase.h"
 #include "Game/EnemyBase.h"
 #include "Game/EnemyMgrBase.h"
+#include "Game/EnemyParmsBase.h"
 #include "JSystem/JUtility/JUTNameTab.h"
 
 /**
@@ -191,8 +191,8 @@ struct State : public EnemyFSMState {
 };
 
 struct StateAppear : public State {
-	inline StateAppear()
-	    : State(KOGANE_Appear, "appear")
+	inline StateAppear(const char* name)
+	    : State(KOGANE_Appear, name)
 	{
 	}
 
@@ -205,8 +205,8 @@ struct StateAppear : public State {
 };
 
 struct StateDisappear : public State {
-	inline StateDisappear()
-	    : State(KOGANE_Disappear, "disappear")
+	inline StateDisappear(const char* name)
+	    : State(KOGANE_Disappear, name)
 	{
 	}
 
@@ -219,22 +219,8 @@ struct StateDisappear : public State {
 };
 
 struct StateMove : public State {
-	inline StateMove()
-	    : State(KOGANE_Move, "move")
-	{
-	}
-
-	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
-	virtual void exec(EnemyBase* enemy);                     // _0C
-	virtual void cleanup(EnemyBase* enemy);                  // _10
-
-	// _00		= VTBL
-	// _00-_10 	= EnemyFSMState
-};
-
-struct StatePress : public State {
-	inline StatePress()
-	    : State(KOGANE_Press, "press")
+	inline StateMove(const char* name)
+	    : State(KOGANE_Move, name)
 	{
 	}
 
@@ -247,8 +233,8 @@ struct StatePress : public State {
 };
 
 struct StateWait : public State {
-	inline StateWait()
-	    : State(KOGANE_Wait, "wait")
+	inline StateWait(const char* name)
+	    : State(KOGANE_Wait, name)
 	{
 	}
 
@@ -259,6 +245,21 @@ struct StateWait : public State {
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
 };
+
+struct StatePress : public State {
+	inline StatePress(const char* name)
+	    : State(KOGANE_Press, name)
+	{
+	}
+
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
+
+	// _00		= VTBL
+	// _00-_10 	= EnemyFSMState
+};
+
 /////////////////////////////////////////////////////////////////
 } // namespace Kogane
 } // namespace Game

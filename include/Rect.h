@@ -1,8 +1,8 @@
 #ifndef _RECT_H
 #define _RECT_H
 
-#include "types.h"
 #include "Vector2.h"
+#include "types.h"
 
 template <typename T>
 struct Rect {

@@ -11,6 +11,11 @@ extern "C" {
 #include "RevoSDK/GX/GXTypes.h"
 #include "RevoSDK/mtx.h"
 
+typedef enum {
+	GX_FIELD_EVEN,
+	GX_FIELD_ODD,
+} GXInterlaceField;
+
 /////////// TRANSFORM FUNCTIONS ////////////
 // Matrix and projection functions.
 extern void GXSetProjection(const Mtx44 mtx, GXProjectionType type);

@@ -20,8 +20,8 @@ Obj::Obj()
 void Obj::changeMaterial()
 {
 	J3DModelData* modelData;
-	J3DModel* j3dModel = mModel->mJ3dModel;
-	modelData          = j3dModel->mModelData;
+	J3DModel* j3dModel = mModel->getJ3DModel();
+	modelData          = j3dModel->getModelData();
 	ResTIMG* texture0  = C_MGR->getChangeTexture0();
 	ResTIMG* texture1  = C_MGR->getChangeTexture1();
 

@@ -1,12 +1,12 @@
 #ifndef _GAME_ENEMYSTONE_H
 #define _GAME_ENEMYSTONE_H
 
+#include "BitFlag.h"
 #include "CNode.h"
 #include "Game/StateMachine.h"
 #include "JSystem/J3D/J3DModel.h"
-#include "Viewport.h"
-#include "BitFlag.h"
 #include "Matrixf.h"
+#include "Viewport.h"
 #include "types.h"
 
 namespace Game {

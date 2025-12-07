@@ -10,6 +10,12 @@
 #include "P2Macros.h"
 #include "PikiAI.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "actFree";
+}
+
 namespace PikiAI {
 
 /**

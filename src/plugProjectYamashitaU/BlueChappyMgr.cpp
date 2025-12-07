@@ -1,12 +1,17 @@
 #include "Game/Entities/BlueChappy.h"
 #include "LoadResource.h"
 
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "BlueChappyMgr";
+}
+
 namespace Game {
 namespace BlueChappy {
 
 namespace {
-static const char* cChappyChangeTexName0 = "/enemy/data/BlueChappy/moyou_565.3.bti";
-static const char* cChappyChangeTexName1 = "/enemy/data/BlueChappy/swallow_565.3.bti";
+static const char* cChappyChangeTexName0 = "enemy/data/BlueChappy/moyou_565.3.bti";
+static const char* cChappyChangeTexName1 = "enemy/data/BlueChappy/swallow_565.3.bti";
 } // namespace
 
 /**
@@ -16,7 +21,7 @@ static const char* cChappyChangeTexName1 = "/enemy/data/BlueChappy/swallow_565.3
 Mgr::Mgr(int objLimit, u8 modelType)
     : ChappyBase::Mgr(objLimit, modelType)
 {
-	mName = "青チャッピーマネージャ"; // blue chappy manager
+	setName("青チャッピーマネージャ"); // blue chappy manager
 }
 
 /**
@@ -40,7 +45,10 @@ void Mgr::loadTexData()
  * @note Address: 0x8012B968
  * @note Size: 0x48
  */
-void Mgr::doAlloc() { init(new ChappyBase::Parms); }
+void Mgr::doAlloc()
+{
+	init(new ChappyBase::Parms);
+}
 
 } // namespace BlueChappy
 } // namespace Game

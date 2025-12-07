@@ -765,22 +765,12 @@ bool Obj::moveBridgeTop()
 		return true;
 
 	} else if (dist < 250.0f) {
-		f32 moveSpeed = C_GENERALPARMS.mMoveSpeed();
-		f32 x         = dolsinf(getFaceDir());
-		f32 y         = getTargetVelocity().y;
-		f32 z         = dolcosf(getFaceDir());
-
-		mTargetVelocity = Vector3f(moveSpeed * x, y, moveSpeed * z);
+		setTargetSpeed(C_GENERALPARMS.mMoveSpeed());
 
 		return true;
 
 	} else {
-		f32 moveSpeed = C_GENERALPARMS.mMoveSpeed();
-		f32 x         = dolsinf(getFaceDir());
-		f32 y         = getTargetVelocity().y;
-		f32 z         = dolcosf(getFaceDir());
-
-		mTargetVelocity = Vector3f(moveSpeed * x, y, moveSpeed * z);
+		setTargetSpeed(C_GENERALPARMS.mMoveSpeed());
 	}
 
 	return false;

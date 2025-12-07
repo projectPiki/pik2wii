@@ -8,9 +8,13 @@
 #include "PikiAI.h"
 #include "RevoSDK/rand.h"
 
-namespace PikiAI {
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "actTransport";
+}
 
-static const char unusedName[] = "actTransport";
+namespace PikiAI {
 
 /**
  * @note Address: 0x801A1914
@@ -96,7 +100,7 @@ void ActTransport::emotion_fail()
 int ActTransport::exec()
 {
 	if (mPellet && !mPellet->isAlive()) {
-		P2DEBUG("dead pellet: %d", mParent->getCreatureID());
+		// P2DEBUG("dead pellet: %d", mParent->getCreatureID());
 		return ACTEXEC_Success;
 	}
 

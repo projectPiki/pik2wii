@@ -1,10 +1,10 @@
 #ifndef _P2DSCREEN_H
 #define _P2DSCREEN_H
 
-#include "JSystem/J2D/J2DPicture.h"
-#include "types.h"
 #include "CNode.h"
+#include "JSystem/J2D/J2DPicture.h"
 #include "Vector2.h"
+#include "types.h"
 
 struct Graphics;
 
@@ -47,9 +47,8 @@ struct Mgr : public J2DScreen {
 	void addCallBackPane(J2DPane* pane, Node* node);
 
 	// _00      = VTBL
-	// _00-_118 = J2DScreen
-	Node mScreenNode; // _118
-	u8 _134[4];       // _134
+	// _00-_114 = J2DScreen
+	Node mScreenNode; // _114
 };
 
 // Size: 0x148
@@ -91,11 +90,11 @@ struct Mgr_tuning : public Mgr {
 	}
 
 	// _00      = VTBL
-	// _00-_138 = Mgr
-	f32 mScreenScaleX; // _138
-	f32 mScreenScaleY; // _13C
-	f32 mTranslationX; // _140
-	f32 mTranslationY; // _144
+	// _00-_130 = Mgr
+	f32 mScreenScaleX; // _130
+	f32 mScreenScaleY; // _134
+	f32 mTranslationX; // _138
+	f32 mTranslationY; // _13C
 };
 } // namespace P2DScreen
 

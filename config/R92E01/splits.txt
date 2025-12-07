@@ -1255,7 +1255,7 @@ JSystem/J2D/J2DScreen.cpp:
 	.sdata2     start:0x8066E050 end:0x8066E070
 
 JSystem/J2D/J2DTextBox.cpp:
-	.text       start:0x800A3BD4 end:0x800A5164
+	.text       start:0x800A3BD4 end:0x800A5168
 	.rodata     start:0x8053EBF0 end:0x8053EBF8
 	.data       start:0x80569518 end:0x805695D4
 	.sdata2     start:0x8066E070 end:0x8066E08C
@@ -1677,7 +1677,7 @@ RevoSDK/TRK_Hollywood_Revolution/main.c:
 RevoSDK/TRK_Hollywood_Revolution/CircleBuffer.c:
 	.text       start:0x801038B4 end:0x80103B1C
 
-RevoSDK/TRK_Hollywood_Revolution/MWCriticalSection_gc.c:
+RevoSDK/TRK_Hollywood_Revolution/MWCriticalSection_gc.cpp:
 	.text       start:0x80103B1C end:0x80103B74
 
 RevoSDK/runtime/__mem.c:
@@ -3602,10 +3602,12 @@ plugProjectKandoU/pelletCarry.cpp:
 
 plugProjectKandoU/gameChallenge2D.cpp:
 	.text       start:0x802B913C end:0x802B9390
+	.rodata     start:0x8054CE10 end:0x8054CE48
 
 plugProjectKandoU/vsTekiMgr.cpp:
 	.text       start:0x802B9390 end:0x802B95B0
 	.data       start:0x805A06E0 end:0x805A06F0
+	.sdata2     start:0x80670B78 end:0x80670B90
 
 plugProjectKandoU/vsCardMgr.cpp:
 	.text       start:0x802B95B0 end:0x802BD34C
@@ -3886,7 +3888,7 @@ plugProjectNishimuraU/UjibState.cpp:
 	.text       start:0x802DF440 end:0x802E0DC8
 	.rodata     start:0x8054D7D0 end:0x8054D838
 	.data       start:0x805A24E8 end:0x805A26E0
-	.sdata2     start:0x80671268 end:0x80671280
+	.sdata2     start:0x80671268 end:0x80671278
 
 plugProjectNishimuraU/UjibAnimator.cpp:
 	.text       start:0x802E0DC8 end:0x802E0E20
@@ -3894,14 +3896,18 @@ plugProjectNishimuraU/UjibAnimator.cpp:
 
 plugProjectNishimuraU/KoganeState.cpp:
 	.text       start:0x802E0E20 end:0x802E18A0
+	.rodata     start:0x8054D838 end:0x8054D870
 	.data       start:0x805A2708 end:0x805A27E0
+	.sdata2     start:0x80671278 end:0x80671280
 
 plugProjectNishimuraU/KoganeMgr.cpp:
 	.text       start:0x802E18A0 end:0x802E1C40
+	.rodata     start:0x8054D870 end:0x8054D8C8
 	.data       start:0x805A27E0 end:0x805A28C8
 
 plugProjectNishimuraU/Kogane.cpp:
 	.text       start:0x802E1C40 end:0x802E2F24
+	.rodata     start:0x8054D8C8 end:0x8054D8E8
 	.data       start:0x805A28C8 end:0x805A2C20
 
 plugProjectNishimuraU/KoganeAnimator.cpp:
@@ -6661,6 +6667,7 @@ nw4r/g3d/g3d_restev.cpp:
 
 nw4r/g3d/g3d_resmat.cpp:
 	.text       start:0x8050C7B8 end:0x8050DDE4
+	.sdata2     start:0x80675F90 end:0x80675FC8
 
 nw4r/g3d/g3d_resvtx.cpp:
 	.text       start:0x8050DDE4 end:0x8050E1A4
@@ -6670,25 +6677,31 @@ nw4r/g3d/g3d_restex.cpp:
 
 nw4r/g3d/g3d_resnode.cpp:
 	.text       start:0x8050E340 end:0x8050E644
+	.sdata2     start:0x80675FC8 end:0x80675FD8
 
 nw4r/g3d/g3d_resanm.cpp:
 	.text       start:0x8050E644 end:0x8050E870
+	.sdata2     start:0x80675FD8 end:0x80675FF0
 
 nw4r/g3d/g3d_resanmvis.cpp:
 	.text       start:0x8050E870 end:0x8050E990
+	.sdata2     start:0x80675FF0 end:0x80676000
 
 nw4r/g3d/g3d_resanmclr.cpp:
 	.text       start:0x8050E990 end:0x8050EAFC
+	.sdata2     start:0x80676000 end:0x80676010
 
 nw4r/g3d/g3d_resanmtexpat.cpp:
 	.text       start:0x8050EAFC end:0x8050EE98
 
 nw4r/g3d/g3d_resanmtexsrt.cpp:
 	.text       start:0x8050EE98 end:0x8050F2AC
+	.sdata2     start:0x80676010 end:0x80676018
 
 nw4r/g3d/g3d_resanmchr.cpp:
 	.text       start:0x8050F2AC end:0x80510AF0
 	.rodata     start:0x8055E4E0 end:0x8055E500
+	.sdata2     start:0x80676018 end:0x80676038
 
 nw4r/g3d/g3d_anmvis.cpp:
 	.text       start:0x80510AF0 end:0x80511210
@@ -6737,6 +6750,7 @@ nw4r/g3d/g3d_gpu.cpp:
 
 nw4r/g3d/g3d_cpu.cpp:
 	.text       start:0x805149B0 end:0x80514B54
+	.sdata2     start:0x806760B8 end:0x806760C0
 
 nw4r/g3d/g3d_state.cpp:
 	.text       start:0x80514B54 end:0x80518420
@@ -6771,6 +6785,7 @@ nw4r/g3d/g3d_draw.cpp:
 
 nw4r/g3d/g3d_camera.cpp:
 	.text       start:0x8051D7E0 end:0x8051E374
+	.sdata2     start:0x80676128 end:0x80676158
 
 nw4r/g3d/g3d_basic.cpp:
 	.text       start:0x8051E374 end:0x8051E638
@@ -6817,6 +6832,7 @@ nw4r/g3d/g3d_init.cpp:
 
 nw4r/g3d/g3d_fog.cpp:
 	.text       start:0x8052827C end:0x805283F0
+	.sdata2     start:0x806761C0 end:0x806761C8
 
 nw4r/g3d/g3d_light.cpp:
 	.text       start:0x805283F0 end:0x80528B14

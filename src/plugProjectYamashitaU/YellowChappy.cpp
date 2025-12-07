@@ -1,5 +1,11 @@
 #include "Game/Entities/YellowChappy.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "YellowChappy";
+}
+
 namespace Game {
 namespace YellowChappy {
 
@@ -116,13 +122,18 @@ void Obj::setupEffect()
  * @note Address: 0x8012C820
  * @note Size: 0x28
  */
-void Obj::doStartMovie() { mEfxTest->setGlobalAlpha(0); }
+void Obj::doStartMovie()
+{
+	mEfxTest->setGlobalAlpha(0);
+}
 
 /**
  * @note Address: 0x8012C848
  * @note Size: 0x4
  */
-void Obj::doEndMovie() { }
+void Obj::doEndMovie()
+{
+}
 
 /**
  * @note Address: 0x8012C84C
@@ -131,8 +142,8 @@ void Obj::doEndMovie() { }
 void Obj::changeMaterial()
 {
 	J3DModelData* modelData;
-	J3DModel* j3dModel = mModel->mJ3dModel;
-	modelData          = j3dModel->mModelData;
+	J3DModel* j3dModel = mModel->getJ3DModel();
+	modelData          = j3dModel->getModelData();
 	ResTIMG* texture0  = C_MGR->getChangeTexture0();
 	ResTIMG* texture1  = C_MGR->getChangeTexture1();
 

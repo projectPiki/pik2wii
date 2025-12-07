@@ -1,13 +1,13 @@
-#include "types.h"
-#include "Game/EnemyStone.h"
 #include "Game/EnemyBase.h"
-#include "JSystem/J3D/J3DSys.h"
-#include "JSystem/JKernel/JKRArchive.h"
+#include "Game/EnemyStone.h"
 #include "JSystem/J3D/J3DModelLoader.h"
+#include "JSystem/J3D/J3DSys.h"
 #include "JSystem/J3D/J3DTransform.h"
-#include "SysShape/Joint.h"
+#include "JSystem/JKernel/JKRArchive.h"
 #include "LoadResource.h"
+#include "SysShape/Joint.h"
 #include "System.h"
+#include "types.h"
 
 namespace {
 static const char* sStoneMdlName[2] = { "sekikaobj_large.bmd", "sekikaobj_small.bmd" };
@@ -117,16 +117,16 @@ void Mgr::release(Obj* obj)
 	if (obj->isFlag(STONE_Registered)) {
 		obj->resetFlag(STONE_Registered);
 
-		Obj* currObj = obj;
+		CNode* currObj = &obj->mNodeArray[0];
 		for (int i = 0; i < 2; i++) {
-			DrawInfo* child = (DrawInfo*)currObj->mNodeArray[0].mChild;
+			DrawInfo* child = (DrawInfo*)currObj->mChild;
 			while (child) {
 				DrawInfo* nextChild = (DrawInfo*)child->mNext;
 				child->reset();
 				mDrawInfo.add(child);
 				child = nextChild;
 			}
-			currObj = (Obj*)&currObj->mInfo; // this makes no sense
+			currObj++; // really weird way to do this but fine
 		}
 		obj->del();
 	}

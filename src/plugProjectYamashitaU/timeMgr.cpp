@@ -3,6 +3,12 @@
 #include "System.h"
 #include "stream.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "timeMgr";
+}
+
 namespace Game {
 
 /**

@@ -4,11 +4,14 @@
 namespace Game {
 namespace Chappy {
 
-static const char chappyMgrName[] = "chappyMgr";
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "chappyMgr";
+}
 
 namespace {
 static const char* cChappyChangeTexName0 = "enemy/data/Chappy/moyou_565.1.bti";
-static const char* cChappyChangeTexName1 = "/enemy/data/Chappy/swallow_565.1.bti";
+static const char* cChappyChangeTexName1 = "enemy/data/Chappy/swallow_565.1.bti";
 } // namespace
 
 /**
@@ -18,7 +21,7 @@ static const char* cChappyChangeTexName1 = "/enemy/data/Chappy/swallow_565.1.bti
 Mgr::Mgr(int objLimit, u8 modelType)
     : ChappyBase::Mgr(objLimit, modelType)
 {
-	mName = "赤チャッピーマネージャ"; // chappybase manager
+	setName("赤チャッピーマネージャ"); // chappybase manager
 }
 
 /**

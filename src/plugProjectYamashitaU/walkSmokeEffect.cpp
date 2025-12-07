@@ -1,13 +1,17 @@
-#include "types.h"
 #include "Game/WalkSmokeEffect.h"
-#include "JSystem/JUtility/JUTException.h"
 #include "Game/EnemyBase.h"
 #include "Game/MapMgr.h"
-#include "SysShape/Model.h"
+#include "JSystem/JUtility/JUTException.h"
 #include "SysShape/Joint.h"
+#include "SysShape/Model.h"
 #include "efx/TEnemyWalkSmoke.h"
+#include "types.h"
 
-const char filename[] = "walkSmoke";
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "walkSmoke";
+}
 
 namespace Game {
 namespace WalkSmokeEffect {

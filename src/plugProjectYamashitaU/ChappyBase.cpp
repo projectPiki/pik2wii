@@ -5,6 +5,11 @@
 #include "efx/TEnemyDownWat.h"
 #include "efx/THanacho.h"
 
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "ChappyBase";
+}
+
 namespace Game {
 namespace ChappyBase {
 
@@ -114,9 +119,9 @@ void Obj::getShadowParam(ShadowParam& shadowParam)
 		shadowParam.mPosition = mPosition;
 	}
 
-	shadowParam.mBoundingSphere.mPosition = Vector3f(0.0f, 1.0f, 0.0f);
-	shadowParam.mBoundingSphere.mRadius   = 100.0f;
-	shadowParam.mSize                     = 32.0f;
+	shadowParam.mBoundingSphere.mPosition.set(0.0f, 1.0f, 0.0f);
+	shadowParam.mBoundingSphere.mRadius = 100.0f;
+	shadowParam.mSize                   = 32.0f;
 }
 
 /**
@@ -202,18 +207,8 @@ void Obj::doFinishStoneState()
  */
 Vector3f Obj::getOffsetForMapCollision()
 {
-	Vector3f offset;
-	Matrixf* worldMat = mShadowJoint->getWorldMatrix();
-
-	offset.x = worldMat->mMatrix.mtxView[0][3];
-	offset.x -= mPosition.x;
-
-	offset.z = worldMat->mMatrix.mtxView[2][3];
-	offset.z -= mPosition.z;
-
-	offset.y = 0.0f;
-
-	return offset;
+	Vector3f offset = mShadowJoint->getWorldMatrix()->getTranslation();
+	return Vector3f::flatDirection(offset, mPosition);
 }
 
 /**
@@ -276,8 +271,7 @@ bool Obj::isWakeup()
 
 	switch (getEnemyTypeID()) {
 	case EnemyTypeID::EnemyID_BlueChappy: // Orange bulborb
-		f32 radius = C_PROPERPARMS.mBulborbWakeRadius.mValue;
-		Sys::Sphere detectionSphere(mPosition, radius);
+		Sys::Sphere detectionSphere(mPosition, C_PROPERPARMS.mBulborbWakeRadius());
 
 		CellIteratorArg iterArg(detectionSphere);
 		CellIterator i(iterArg);
@@ -287,8 +281,7 @@ bool Obj::isWakeup()
 
 			// If the creature is an alive navigator or Piki
 			if (c->isAlive() && (c->isNavi() || c->isPiki())) {
-				radius = C_PROPERPARMS.mBulborbWakeRadius.mValue;
-				if (isCreatureWithinRange(c, radius)) {
+				if (isCreatureWithinRange(c, C_PROPERPARMS.mBulborbWakeRadius())) {
 					// And within the private radius, then wakeup
 					shouldWakeup = true;
 					break;

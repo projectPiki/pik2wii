@@ -1,11 +1,11 @@
 #ifndef _EFX_TENEMYHAMON_H
 #define _EFX_TENEMYHAMON_H
 
-#include "types.h"
+#include "Game/enemyInfo.h"
+#include "Vector3.h"
 #include "efx/TBase.h"
 #include "efx/TChasePos.h"
-#include "Vector3.h"
-#include "Game/enemyInfo.h"
+#include "types.h"
 
 namespace efx {
 

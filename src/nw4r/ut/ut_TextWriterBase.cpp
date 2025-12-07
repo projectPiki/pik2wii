@@ -72,7 +72,7 @@ void TextWriterBase<T>::CalcVStringRect(Rect* rect, const T* format, va_list arg
 {
 	T* pBuffer;
 
-	if (mFormatBuffer != NULL) {
+	if (mFormatBuffer != nullptr) {
 		pBuffer = mFormatBuffer;
 	} else {
 		pBuffer = static_cast<T*>(__alloca(mFormatBufferSize));

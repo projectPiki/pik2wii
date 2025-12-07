@@ -1,10 +1,10 @@
 #ifndef _VIEWPORT_H
 #define _VIEWPORT_H
 
-#include "Rect.h"
-#include "types.h"
 #include "CNode.h"
 #include "Camera.h"
+#include "Rect.h"
+#include "types.h"
 
 struct J2DGrafContext;
 struct J2DOrthoGraph;

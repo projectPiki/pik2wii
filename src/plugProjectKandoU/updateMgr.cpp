@@ -1,6 +1,12 @@
 #include "Game/updateMgr.h"
 #include "JSystem/JUtility/JUTException.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "updateMgr";
+}
+
 namespace Game {
 
 UpdateMgr* collisionUpdateMgr;
