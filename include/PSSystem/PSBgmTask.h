@@ -11,22 +11,7 @@
 
 namespace PSSystem {
 
-struct FlagWaitTask : public TaskBase {
-	inline FlagWaitTask()
-	    : TaskBase()
-	    , _1C(-16)
-	{
-	}
 
-	virtual int task(JASTrack& track) // _08
-	{
-		return _1C;
-	}
-
-	// _00     = VTBL
-	// _00-_1C = TaskBase
-	u32 _1C; // _1C
-};
 
 struct IdMaskTask : public TaskBase {
 	inline IdMaskTask()
@@ -62,6 +47,23 @@ struct MuteTask : public TaskBase {
 	// _00     = VTBL
 	// _00-_1C = TaskBase
 	u8 mDoMuteTrack; // _1C
+};
+
+struct FlagWaitTask : public TaskBase {
+	inline FlagWaitTask()
+	    : TaskBase()
+	    , _1C(-16)
+	{
+	}
+
+	virtual int task(JASTrack& track) // _08
+	{
+		return _1C;
+	}
+
+	// _00     = VTBL
+	// _00-_1C = TaskBase
+	u32 _1C; // _1C
 };
 
 struct PitchResetTask : public TaskBase {
@@ -124,12 +126,7 @@ struct TriangleTableModTask : public ModParamWithTableTask {
 	// _00-_28 = ModParamWithTableTask
 };
 
-struct PitchModTask : public TriangleTableModTask {
-	virtual int tableTask(JASTrack&, f32); // _14
 
-	// _00     = VTBL
-	// _00-_28 = ModParamWithTableTask
-};
 
 struct ModParamWithFade : public TaskBase {
 	inline ModParamWithFade()
@@ -188,6 +185,13 @@ struct OuterParamTask : public ModParamWithFade {
 	// _00     = VTBL
 	// _00-_30 = ModParamWithFade
 	int mTaskType; // _30, see JASOuterParamFlag enum
+};
+
+struct PitchModTask : public TriangleTableModTask {
+	virtual int tableTask(JASTrack&, f32); // _14
+
+	// _00     = VTBL
+	// _00-_28 = ModParamWithTableTask
 };
 
 struct TaskEntry_BankRandTask : public TaskEntry {
