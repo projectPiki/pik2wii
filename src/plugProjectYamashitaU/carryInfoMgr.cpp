@@ -497,7 +497,7 @@ void CarryInfoMgr::draw(Graphics& gfx)
 		GXSetZMode(GX_FALSE, GX_LESS, GX_FALSE);
 		GXSetCurrentMtx(GX_PNMTX0);
 		GXSetNumTexGens(1);
-		GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX3X4, GX_TG_TEXCOORD0, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
+		GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX2X4, GX_TG_TEXCOORD0, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
 		Matrixf mtx;
 		PSMTXIdentity(mtx.mMatrix.mtxView);
 		GXLoadTexMtxImm(mtx.mMatrix.mtxView, GX_TEXMTX0, GX_MTX2x4);

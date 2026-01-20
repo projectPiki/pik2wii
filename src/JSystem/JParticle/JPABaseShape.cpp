@@ -444,7 +444,7 @@ void JPACalcColorCopy(JPAEmitterWorkData* work, JPABaseParticle* ptcl)
  */
 void JPAGenTexCrdMtxIdt(JPAEmitterWorkData*)
 {
-	GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX3X4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
+	GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX2X4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
 }
 
 /**
@@ -453,7 +453,7 @@ void JPAGenTexCrdMtxIdt(JPAEmitterWorkData*)
  */
 void JPAGenTexCrdMtxAnm(JPAEmitterWorkData*)
 {
-	GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX3X4, GX_TG_TEX0, GX_TEXMTX0, GX_FALSE, GX_PTIDENTITY);
+	GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX2X4, GX_TG_TEX0, GX_TEXMTX0, GX_FALSE, GX_PTIDENTITY);
 }
 
 /**
@@ -462,7 +462,7 @@ void JPAGenTexCrdMtxAnm(JPAEmitterWorkData*)
  */
 void JPAGenTexCrdMtxPrj(JPAEmitterWorkData*)
 {
-	GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX2X4, GX_TG_POS, GX_TEXMTX0, GX_FALSE, GX_PTIDENTITY);
+	GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX3X4, GX_TG_POS, GX_TEXMTX0, GX_FALSE, GX_PTIDENTITY);
 }
 
 /**
@@ -519,7 +519,7 @@ void JPAGenCalcTexCrdMtxAnm(JPAEmitterWorkData* workData)
 	GXLoadTexMtxImm(transformationMatrix, GX_TEXMTX0, GX_MTX2x4);
 
 	// Set the texture coordinate generation parameters
-	GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX3X4, GX_TG_TEX0, GX_TEXMTX0, false, GX_PTIDENTITY);
+	GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX2X4, GX_TG_TEX0, GX_TEXMTX0, false, GX_PTIDENTITY);
 	/*
 	stwu     r1, -0x70(r1)
 	mflr     r0

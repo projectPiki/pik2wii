@@ -209,7 +209,7 @@ void LifeGaugeList::draw(Graphics& gfx)
 	GXSetZMode(GX_FALSE, GX_LESS, GX_FALSE);
 	GXSetCurrentMtx(GX_PNMTX0);
 	GXSetNumTexGens(1);
-	GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX3X4, GX_TG_TEXCOORD0, GX_IDENTITY, 0, GX_PTIDENTITY);
+	GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX2X4, GX_TG_TEXCOORD0, GX_IDENTITY, 0, GX_PTIDENTITY);
 	Mtx texMtx;
 	PSMTXIdentity(texMtx);
 	GXLoadTexMtxImm(texMtx, GX_TEXMTX0, GX_MTX2x4);

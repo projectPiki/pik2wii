@@ -635,7 +635,7 @@ void JFWDisplay::clearEfb(int xMin, int yMin, int xDelta, int yDelta, _GXColor c
 	GXSetChanCtrl(GX_COLOR0A0, GX_DISABLE, GX_SRC_REG, GX_SRC_REG, GX_LIGHT_NULL, GX_DF_NONE, GX_AF_NONE);
 	GXSetChanCtrl(GX_COLOR1A1, GX_DISABLE, GX_SRC_REG, GX_SRC_REG, GX_LIGHT_NULL, GX_DF_NONE, GX_AF_NONE);
 	GXSetNumTexGens(1);
-	GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX3X4, GX_TG_TEX0, 60, GX_DISABLE, 125);
+	GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX2X4, GX_TG_TEX0, 60, GX_DISABLE, 125);
 	GXLoadTexObj(&clear_z_tobj, GX_TEXMAP0);
 	GXSetNumTevStages(1);
 	GXSetTevColor(GX_TEVREG0, color);

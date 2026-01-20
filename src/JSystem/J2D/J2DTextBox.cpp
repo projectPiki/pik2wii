@@ -360,7 +360,7 @@ void J2DTextBox::draw(f32 x, f32 y)
 		GXSetTevDirect((GXTevStageID)i);
 	}
 	GXSetNumTexGens(1);
-	GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX3X4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
+	GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX2X4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
 	if (mStringPtr) {
 		printer.print(0.0f, 0.0f, mAlpha, "%s", mStringPtr);
 	}
@@ -392,7 +392,7 @@ void J2DTextBox::draw(f32 x, f32 y, f32 p3, J2DTextBoxHBinding hb)
 		GXSetTevDirect((GXTevStageID)i);
 	}
 	GXSetNumTexGens(1);
-	GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX3X4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
+	GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX2X4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
 	if (mStringPtr) {
 		printer.printReturn(mStringPtr, p3, 0.0f, hb, J2DVBIND_Top, 0.0f, -mFontSize.y, mAlpha);
 	}
@@ -473,7 +473,7 @@ void J2DTextBox::drawSelf(f32 x, f32 y, Mtx* mtx)
 		GXSetTevDirect((GXTevStageID)i);
 	}
 	GXSetNumTexGens(1);
-	GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX3X4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
+	GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX2X4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
 	printer.locate(x + mBounds.i.x, y + mBounds.i.y);
 
 	if (mStringPtr) {

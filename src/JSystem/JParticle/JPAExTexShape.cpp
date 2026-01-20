@@ -14,14 +14,14 @@ void JPALoadExTex(JPAEmitterWorkData* work)
 
 	JPAExTexShape* exTexShape = work->mResource->mExTexShape;
 	if (IS_FLAG(exTexShape->mData->mFlags, 1)) {
-		GXSetTexCoordGen2(result, GX_TG_MTX3X4, GX_TG_TEX0, 60, GX_FALSE, 125);
+		GXSetTexCoordGen2(result, GX_TG_MTX2X4, GX_TG_TEX0, 60, GX_FALSE, 125);
 		u8 texIdx = exTexShape->getIndTexIdx() & 0xFF;
 		work->mResourceMgr->load(work->mResource->getTexIdx(texIdx), GX_TEXMAP2);
 		result = GX_TEXCOORD2;
 	}
 
 	if (IS_FLAG(exTexShape->mData->mFlags, 0x100)) {
-		GXSetTexCoordGen2(result, GX_TG_MTX3X4, GX_TG_TEX0, 60, GX_FALSE, 125);
+		GXSetTexCoordGen2(result, GX_TG_MTX2X4, GX_TG_TEX0, 60, GX_FALSE, 125);
 		u8 texIdx = exTexShape->getSecTexIdx() & 0xFF;
 		work->mResourceMgr->load(work->mResource->getTexIdx(texIdx), GX_TEXMAP3);
 	}

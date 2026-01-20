@@ -895,7 +895,7 @@ void J2DPicture::setTevMode()
 	GXSetBlendMode(GX_BM_BLEND, GX_BL_SRCALPHA, GX_BL_INVSRCALPHA, GX_LO_SET);
 
 	for (i = 0; i < mTextureCount; i++) {
-		GXSetTexCoordGen2(GXTexCoordID(i), GX_TG_MTX3X4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
+		GXSetTexCoordGen2(GXTexCoordID(i), GX_TG_MTX2X4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
 	}
 
 	GXSetNumChans(1);

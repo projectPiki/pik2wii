@@ -504,7 +504,7 @@ void ShadowCylinder2::setupTextureFilterGX()
 {
 	GXLoadTexObj(&mTexObj[mTexIdx], GX_TEXMAP0);
 	GXSetNumTexGens(1);
-	GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX3X4, GX_TG_TEX0, 0x3c, GX_FALSE, 0x7d);
+	GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX2X4, GX_TG_TEX0, 0x3c, GX_FALSE, 0x7d);
 	GXSetTevOrder(GX_TEVSTAGE0, GX_TEXCOORD0, GX_TEXMAP0, GX_COLOR0A0);
 
 	GXColor color = {};

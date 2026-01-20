@@ -986,7 +986,7 @@ void JPAResource::setCTev(JPAEmitterWorkData* work)
 	GXSetArray(GX_VA_POS, jpa_pos + pos_offset, 3);
 	GXSetArray(GX_VA_TEX0, jpa_crd, 2);
 	GXSetTevOrder(GX_TEVSTAGE0, GX_TEXCOORD0, GX_TEXMAP1, GX_COLOR_NULL);
-	GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX3X4, GX_TG_TEX0, 0x3C, GX_FALSE, 0x7d);
+	GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX2X4, GX_TG_TEX0, 0x3C, GX_FALSE, 0x7d);
 	GXSetTevDirect(GX_TEVSTAGE0);
 	GXSetNumTevStages(1);
 	GXSetNumIndStages(0);

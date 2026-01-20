@@ -3334,7 +3334,7 @@ void ZukanState::drawLightEffect(SingleGameSection* game, Graphics& gfx)
 		GXSetZMode(GX_FALSE, GX_LESS, GX_FALSE);
 		GXSetCurrentMtx(0);
 		GXSetNumTexGens(1);
-		GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX3X4, GX_TG_TEXCOORD0, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
+		GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX2X4, GX_TG_TEXCOORD0, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
 
 		for (int i = 0; i < 4; i++) {
 			f32 thisFactor = (f32)i / 4;

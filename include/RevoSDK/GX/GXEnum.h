@@ -407,8 +407,8 @@ typedef enum _GXTexCoordID {
 
 // Texture generation types.
 typedef enum _GXTexGenType {
-	GX_TG_MTX2X4 = 0,
-	GX_TG_MTX3X4 = 1,
+	GX_TG_MTX3X4 = 0,
+	GX_TG_MTX2X4 = 1,
 
 	GX_TG_BUMP0 = 2,
 	GX_TG_BUMP1 = 3,

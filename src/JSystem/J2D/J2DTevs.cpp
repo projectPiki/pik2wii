@@ -7,49 +7,49 @@
 
 const J2DTexCoordInfo j2dDefaultTexCoordInfo[8] = {
 	{
-	    GX_TG_MTX3X4,
+	    GX_TG_MTX2X4,
 	    GX_TG_TEX0,
 	    GX_IDENTITY,
 	}, // Tex 0
 	{
-	    GX_TG_MTX3X4,
+	    GX_TG_MTX2X4,
 	    GX_TG_TEX1,
 	    GX_IDENTITY,
 	}, // Tex 1
 	{
-	    GX_TG_MTX3X4,
+	    GX_TG_MTX2X4,
 	    GX_TG_TEX2,
 	    GX_IDENTITY,
 	}, // Tex 2
 	{
-	    GX_TG_MTX3X4,
+	    GX_TG_MTX2X4,
 	    GX_TG_TEX3,
 	    GX_IDENTITY,
 	}, // Tex 3
 	{
-	    GX_TG_MTX3X4,
+	    GX_TG_MTX2X4,
 	    GX_TG_TEX4,
 	    GX_IDENTITY,
 	}, // Tex 4
 	{
-	    GX_TG_MTX3X4,
+	    GX_TG_MTX2X4,
 	    GX_TG_TEX5,
 	    GX_IDENTITY,
 	}, // Tex 5
 	{
-	    GX_TG_MTX3X4,
+	    GX_TG_MTX2X4,
 	    GX_TG_TEX6,
 	    GX_IDENTITY,
 	}, // Tex 6
 	{
-	    GX_TG_MTX3X4,
+	    GX_TG_MTX2X4,
 	    GX_TG_TEX7,
 	    GX_IDENTITY,
 	}, // Tex 7
 };
 
 const J2DTexMtxInfo j2dDefaultTexMtxInfo = {
-	GX_TG_MTX3X4,            // Tex gen type
+	GX_TG_MTX2X4,            // Tex gen type
 	J2DTexMtxInfo::DCC_Maya, // Tex gen DCC
 	0xFFFF,                  // padding
 	{ 0.5f, 0.5f, 0.0f },    // Center
