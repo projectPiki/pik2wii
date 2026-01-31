@@ -820,16 +820,16 @@ bool Triangle::intersect(Edge& edge, f32 cutoff, Vector3f& intersectionPoint)
 	f32 ratio = cutoff / edgeLen;
 
 	// if edge is (close to) perpendicular to triangle, need more checks
-	if (absF(scalarProj) < 0.01f) {
+	if (fabsf(scalarProj) < 0.01f) {
 		// if plane cuts edge below (or at) cutoff
-		if (absF(mTrianglePlane.calcDist(edge.mStartPos)) <= cutoff) {
+		if (fabsf(mTrianglePlane.calcDist(edge.mStartPos)) <= cutoff) {
 			// check each edge plane of triangle
 			for (int i = 0; i < 3; i++) {
 				// project normal onto edge
 				f32 edgePlaneProj = mEdgePlanes[i].mNormal.dot(edgeVec);
 
 				// check that projection isn't vanishingly small
-				if (absF(edgePlaneProj) > 0.01f) {
+				if (fabsf(edgePlaneProj) > 0.01f) {
 					// check we have an intersection point
 					f32 edgePlaneRatio = (mEdgePlanes[i].mOffset - mEdgePlanes[i].mNormal.dot(edge.mStartPos)) / edgePlaneProj;
 					if ((edgePlaneRatio > -ratio) && (edgePlaneRatio < (1 + ratio))) {
@@ -838,7 +838,7 @@ bool Triangle::intersect(Edge& edge, f32 cutoff, Vector3f& intersectionPoint)
 						intersectionPoint = edge.mStartPos + projVec;
 
 						// check intersection point is within cutoff dist on edge
-						if (absF(mTrianglePlane.calcDist(intersectionPoint)) < cutoff) {
+						if (fabsf(mTrianglePlane.calcDist(intersectionPoint)) < cutoff) {
 							return true;
 						}
 					}
@@ -900,16 +900,16 @@ bool Sys::Triangle::intersect(Sys::Edge& edge, f32 cutoff, Vector3f& intersectio
 	f32 ratio = cutoff / edgeLen;
 
 	// if edge is (close to) perpendicular to triangle, need more checks
-	if (absF(scalarProj) < 0.01f) {
+	if (fabsf(scalarProj) < 0.01f) {
 		// if plane cuts edge below (or at) cutoff
-		if (absF(mTrianglePlane.calcDist(edge.mStartPos)) <= cutoff) {
+		if (fabsf(mTrianglePlane.calcDist(edge.mStartPos)) <= cutoff) {
 			// check each edge plane of triangle
 			for (int i = 0; i < 3; i++) {
 				// project normal onto edge
 				f32 edgePlaneProj = mEdgePlanes[i].mNormal.dot(edgeVec);
 
 				// check that projection isn't vanishingly small
-				if (absF(edgePlaneProj) > 0.01f) {
+				if (fabsf(edgePlaneProj) > 0.01f) {
 					// check we have an intersection point
 					f32 edgePlaneRatio = (mEdgePlanes[i].mOffset - mEdgePlanes[i].mNormal.dot(edge.mStartPos)) / edgePlaneProj;
 					if ((edgePlaneRatio > -ratio) && (edgePlaneRatio < (1 + ratio))) {
@@ -919,7 +919,7 @@ bool Sys::Triangle::intersect(Sys::Edge& edge, f32 cutoff, Vector3f& intersectio
 
 						// check intersection point is within cutoff dist on edge
 						f32 intersectDist = mTrianglePlane.calcDist(intersectionPoint);
-						if (absF(intersectDist) < cutoff) {
+						if (fabsf(intersectDist) < cutoff) {
 							distFromCutoff = cutoff - intersectDist;
 							return true;
 						}
@@ -970,7 +970,7 @@ bool Triangle::intersect(Sys::VertexTable& vertTable, Sys::Sphere& ball)
 	f32 t;            // dummy variable for intersection check
 
 	// check we're not too high or low from plane of triangle
-	if (absF(mTrianglePlane.calcDist(ball.mPosition)) > ball.mRadius) {
+	if (fabsf(mTrianglePlane.calcDist(ball.mPosition)) > ball.mRadius) {
 		return false;
 	}
 
@@ -1022,7 +1022,7 @@ bool Triangle::intersect(Sys::VertexTable& vertTable, Sys::Sphere& ball)
  */
 bool Triangle::intersect(Sys::VertexTable& vertTable, Sys::Sphere& ball, Vector3f& intersectPoint)
 {
-	if (absF(mTrianglePlane.calcDist(ball.mPosition)) > ball.mRadius) {
+	if (fabsf(mTrianglePlane.calcDist(ball.mPosition)) > ball.mRadius) {
 		return false;
 	}
 
@@ -3091,8 +3091,8 @@ void GridDivider::create(BoundBox& box, int countX, int countZ, Sys::VertexTable
 	mTriIndexLists = new TriIndexList[arrayDims];
 
 	mBoundingBox = box;
-	mScaleX      = absF(box.mMax.x - box.mMin.x) / countX;
-	mScaleZ      = absF(box.mMax.z - box.mMin.z) / countZ;
+	mScaleX      = fabsf(box.mMax.x - box.mMin.x) / countX;
+	mScaleZ      = fabsf(box.mMax.z - box.mMin.z) / countZ;
 
 	for (int i = 0; i < countX; i++) {
 		for (int j = 0; j < countZ; j++) { }
@@ -3496,9 +3496,9 @@ void GridDivider::read(Stream& stream)
 	mBoundingBox.mMax = mBoundingBox.mMax;
 
 	f32 X   = mBoundingBox.mMax.x - mBoundingBox.mMin.x;
-	mScaleX = absF(X) / (f32)maxVals.x;
+	mScaleX = fabsf(X) / (f32)maxVals.x;
 	f32 Z   = mBoundingBox.mMax.z - mBoundingBox.mMin.z;
-	mScaleZ = absF(Z) / (f32)maxVals.y;
+	mScaleZ = fabsf(Z) / (f32)maxVals.y;
 
 	readIndexList(stream);
 

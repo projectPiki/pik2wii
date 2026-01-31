@@ -49,7 +49,7 @@ void LifeGauge::update(f32 healthRatio)
 
 	// need to update segment count
 	if (mCurrentSegmentNum != (u8)newSegmentNum) {
-		f32 delta = absF(((u8)newSegmentNum - mCurrentSegmentNum) / ((f32)mMaxSegmentNum)) * (sys->getDeltaTime() * 150.0f);
+		f32 delta = fabsf(((u8)newSegmentNum - mCurrentSegmentNum) / ((f32)mMaxSegmentNum)) * (sys->getDeltaTime() * 150.0f);
 
 		// health will update at least every 3 changes, no matter how small said changes are
 		if (delta < 0.4f) {
