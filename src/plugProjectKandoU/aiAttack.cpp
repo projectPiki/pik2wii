@@ -136,7 +136,7 @@ bool ActAttack::applicable()
 
 	calcAttackPos();
 	Vector3f pos = mParent->getPosition();
-	return !(FABS(mAttackSphere.mPosition.y - pos.y) > 20.0f);
+	return !(absF(mAttackSphere.mPosition.y - pos.y) > 20.0f);
 }
 
 /**

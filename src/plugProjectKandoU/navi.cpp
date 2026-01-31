@@ -323,7 +323,7 @@ bool Navi::procActionButton()
 				if (sprout != targetSprout) {
 					Vector3f sproutPos = sprout->getPosition();
 					Vector3f naviPos   = getPosition();
-					f32 heightDiff     = FABS(sproutPos.y - naviPos.y);
+					f32 heightDiff     = absF(sproutPos.y - naviPos.y);
 					f32 sqrXZ          = sqrDistanceXZ(sproutPos, naviPos);
 
 					// sprout has to be pluckable, closer than current/within range, not at massive height difference

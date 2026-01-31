@@ -102,7 +102,7 @@ void OBB::traceMoveTriList_new(Game::MoveInfo& moveInfo, Sys::VertexTable& verte
 		if (sweep.mNormal.y >= moveInfo.mFloorThreshold) {
 			moveInfo.mFloorTriangle = tri;
 			moveInfo.mFloorNormal   = sweep.mNormal;
-		} else if (FABS(sweep.mNormal.y) <= moveInfo.mWallThreshold) {
+		} else if (absF(sweep.mNormal.y) <= moveInfo.mWallThreshold) {
 			moveInfo.mWallTriangle = tri;
 			moveInfo.mWallNormal   = sweep.mNormal;
 		} else {
@@ -426,7 +426,7 @@ void OBB::traceMoveTriList_new_global(Game::MoveInfo& moveInfo, Sys::VertexTable
 		if (sweep.mNormal.y >= moveInfo.mFloorThreshold) {
 			moveInfo.mFloorTriangle = tri;
 			moveInfo.mFloorNormal   = sweep.mNormal;
-		} else if (FABS(sweep.mNormal.y) <= moveInfo.mWallThreshold) {
+		} else if (absF(sweep.mNormal.y) <= moveInfo.mWallThreshold) {
 			moveInfo.mWallTriangle = tri;
 			moveInfo.mWallNormal   = sweep.mNormal;
 		} else {

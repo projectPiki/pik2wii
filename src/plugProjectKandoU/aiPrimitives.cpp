@@ -128,7 +128,7 @@ int ActApproachPos::exec()
 	}
 
 	// if we're checking height and we're *too* far away vertically, fail
-	if (mIsCheck3D && FABS(y) > 20.0f) {
+	if (mIsCheck3D && absF(y) > 20.0f) {
 		return ACTEXEC_Fail;
 	}
 
@@ -161,10 +161,10 @@ int ActApproachPos::exec()
 		mParent->setVelocity(Vector3f::zero);
 
 		// if we're basically facing the goal position, we win (we can stop)
-		if (FABS(angleDist) < PI / 10.0f) {
+		if (absF(angleDist) < PI / 10.0f) {
 			// if we need to check height, make sure we're within 10 units. if not, keep going
 			if (mIsCheck3D) {
-				if (FABS(dir.y) > 10.0f) {
+				if (absF(dir.y) > 10.0f) {
 					return ACTEXEC_Continue;
 				}
 			}
@@ -566,7 +566,7 @@ int ActGotoSlot::exec()
 			}
 
 			// if we're within 6 units and vertically 'close enough', grab the damn pellet
-		} else if (FABS(vec.y) < 20.0f) {
+		} else if (absF(vec.y) < 20.0f) {
 			Vector3f slotPos; // 0x80
 			pellet->calcStickSlotGlobal(0, slotPos);
 
@@ -605,7 +605,7 @@ int ActGotoSlot::exec()
 
 	// direction to goal
 	Vector3f dir = slotPos - pikiPos; // 0x5c
-	f32 absY     = FABS(dir.y);
+	f32 absY     = absF(dir.y);
 	f32 dist     = dir.length();
 	dir.normalise();
 
@@ -3677,11 +3677,11 @@ bool ActPathMove::crMove()
 		lerp = 1.0f;
 	}
 
-	f32 comp = FABS(newDist) / lerp; // f26
+	f32 comp = absF(newDist) / lerp; // f26
 	if (comp < 0.3f) {
 		comp = 0.0f;
 	}
-	if (comp > 2.0f && FABS(newDist) > 130.0f) {
+	if (comp > 2.0f && absF(newDist) > 130.0f) {
 		return true;
 	}
 

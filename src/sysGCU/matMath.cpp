@@ -23,7 +23,7 @@ void Matrixf::makeNaturalPosture(Vector3f& direction)
 void Matrixf::makeNaturalPosture(Vector3f& direction, f32 a1)
 {
 	Vector3f xDir, zDir;
-	if (FABS(direction.x) > FABS(direction.z)) {
+	if (absF(direction.x) > absF(direction.z)) {
 		xDir = Vector3f(sinf(a1), a1, cosf(a1));
 		xDir.normalise();
 		zDir = zDir.cross(xDir);

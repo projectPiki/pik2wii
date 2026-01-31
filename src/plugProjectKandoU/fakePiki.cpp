@@ -216,7 +216,7 @@ void FakePiki::updateWalkAnimation()
 	int otherIdx;
 	JUT_ASSERTLINE(594, !check, "damedayo!\n"); // 'no good!'
 	FakePiki* otherListener = nullptr;
-	f32 faceDir             = FABS(mFaceDir - mFaceDirOffset);
+	f32 faceDir             = absF(mFaceDir - mFaceDirOffset);
 	FakePikiParms* parms    = static_cast<FakePikiParms*>(mParms);
 	if (animSpeed < parms->mFakePikiParms.mStepStartSpeed()) {
 		otherIdx  = IPikiAnims::WAIT;
@@ -733,7 +733,7 @@ void FakePiki::updateLook()
 		mNeckTheta = roundAng(0.2f * angDist(0.0f, mNeckTheta) + mNeckTheta);
 		mNeckPhi   = roundAng(0.2f * angDist(0.0f, mNeckPhi) + mNeckPhi);
 
-		if (FABS(mNeckTheta) < 0.1f && FABS(mNeckPhi) < 0.1f) {
+		if (absF(mNeckTheta) < 0.1f && absF(mNeckPhi) < 0.1f) {
 			mLookAtPosition = nullptr;
 			mNeckPhi        = 0.0f;
 			mNeckTheta      = 0.0f;
@@ -760,13 +760,13 @@ void FakePiki::updateLook()
 		adjustAngle = angDist(horizontalAngle, adjustedHorizontalAngle);
 	}
 
-	if (FABS(adjustAngle) < PI / 20.0f) {
+	if (absF(adjustAngle) < PI / 20.0f) {
 		adjustAngle = 0.0f;
 	}
 
 	adjustAngle *= 0.05f;
 
-	if (FABS(adjustAngle) > PI / 10.0f) {
+	if (absF(adjustAngle) > PI / 10.0f) {
 		if (adjustAngle > 0.0f) {
 			adjustAngle = PI / 10.0f;
 		} else {
@@ -782,13 +782,13 @@ void FakePiki::updateLook()
 	}
 
 	f32 verticalAdjustAngle = angDist(verticalAngle, mNeckPhi);
-	if (FABS(verticalAdjustAngle) < PI / 20.0f) {
+	if (absF(verticalAdjustAngle) < PI / 20.0f) {
 		verticalAdjustAngle = 0.0f;
 	}
 
 	verticalAdjustAngle *= 0.05f;
 
-	if (FABS(verticalAdjustAngle) > PI / 10.0f) {
+	if (absF(verticalAdjustAngle) > PI / 10.0f) {
 		if (verticalAdjustAngle > 0.0f) {
 			verticalAdjustAngle = PI / 10.0f;
 		} else {

@@ -4745,7 +4745,7 @@ void TZukanWindow::update()
 		if (mIconYHeightSin > TAU) {
 			mIconYHeightSin -= TAU;
 		}
-		f32 y = FABS(mScrollPosition);
+		f32 y = absF(mScrollPosition);
 		y     = ((15.0f - y) / 15.0f);
 		if (TZukanBase::mIconMove) {
 			mPaneIcon->setOffset(mCharacterIconXOffset + mPaneIcon->mOffset.x,
@@ -4860,10 +4860,10 @@ void TZukanWindow::moveIcon(f32 x)
 		return;
 	}
 
-	if (FABS(x) < 0.1f) {
+	if (absF(x) < 0.1f) {
 		x = 0.0f;
 	}
-	if (FABS(mScrollPosition) < 1.0f) {
+	if (absF(mScrollPosition) < 1.0f) {
 		mScrollPosition = 0.0f;
 	}
 	if (mScrollPosition == 0.0f && x != 0.0f) {

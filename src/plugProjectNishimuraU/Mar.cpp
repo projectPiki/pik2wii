@@ -442,7 +442,7 @@ Piki* Obj::getSearchedPikmin()
 		Piki* piki = *iPiki;
 		if (piki->isAlive() && piki->isPikmin() && piki->mFloorTriangle && !piki->isStickToMouth() && piki->mSticker != this) {
 			f32 sightDiff = getAngDist(piki);
-			if (FABS(sightDiff) <= FOV) {
+			if (absF(sightDiff) <= FOV) {
 				Vector3f pikiPos2 = piki->getPosition();
 				if (sqrDistanceXZ(mPosition, pikiPos2) < sqrSight) {
 					return piki;

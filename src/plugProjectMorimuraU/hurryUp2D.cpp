@@ -984,7 +984,7 @@ void THurryUp2D::move()
 		mPaneSundown2->show();
 		f32 scale     = mParams[mState].mScale;
 		f32 gscale    = mParams[mState].mGoalScale;
-		int i         = FABS(mPane1Pos.x - mPaneHurry->mOffset.x) / time;
+		int i         = absF(mPane1Pos.x - mPaneHurry->mOffset.x) / time;
 		const f32 mod = mScaleRate;
 		for (i; i > 0; i--) {
 			if (scale < gscale) {

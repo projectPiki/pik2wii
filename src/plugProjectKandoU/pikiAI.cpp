@@ -245,7 +245,7 @@ int Piki::graspSituation_Fast(Game::Creature** outTarget)
 					f32 sphereDist = navi->calcSphereDistance(this);
 					Sys::Sphere naviSphere;
 					navi->getBoundingSphere(naviSphere);
-					f32 heightCheck = FABS(naviSphere.mPosition.y - mPosition.y) - (naviSphere.mRadius + mBoundingSphere.mRadius);
+					f32 heightCheck = absF(naviSphere.mPosition.y - mPosition.y) - (naviSphere.mRadius + mBoundingSphere.mRadius);
 					if (sphereDist < minDist && sphereDist < pikiMgr->mParms->mPikiParms.mEnemySearchRange() && heightCheck < 30.0f) {
 						minDist = sphereDist;
 						target  = navi;
@@ -261,7 +261,7 @@ int Piki::graspSituation_Fast(Game::Creature** outTarget)
 				f32 sphereDist = enemy->calcSphereDistance(this);
 				Sys::Sphere enemySphere;
 				enemy->getBoundingSphere(enemySphere);
-				f32 heightCheck = FABS(enemySphere.mPosition.y - mPosition.y) - (enemySphere.mRadius + mBoundingSphere.mRadius);
+				f32 heightCheck = absF(enemySphere.mPosition.y - mPosition.y) - (enemySphere.mRadius + mBoundingSphere.mRadius);
 				if (sphereDist < minDist && sphereDist < pikiMgr->mParms->mPikiParms.mEnemySearchRange() && heightCheck < 30.0f) {
 					minDist = sphereDist;
 					target  = enemy;
@@ -794,7 +794,7 @@ bool Piki::invokeAI(Game::PlatEvent* event)
 		break;
 
 	case OBJTYPE_Bridge:
-		if (FABS(event->mNormal.y) < 0.2f) {
+		if (absF(event->mNormal.y) < 0.2f) {
 			ItemBridge::Item* bridge = static_cast<ItemBridge::Item*>(item);
 			if (bridge->isAlive() && bridge->workable(mPosition)) {
 				PikiAI::ActBridgeArg bridgeArg;

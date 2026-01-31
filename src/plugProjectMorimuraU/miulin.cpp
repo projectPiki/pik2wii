@@ -180,7 +180,7 @@ bool Obj::isAttackStart()
 	f32 contAtkAngle = PI * (DEG2RAD * (C_PROPERPARMS.mContinuousPressAngle.mValue));
 
 	if (mTargetCreature) {
-		if (FABS(getAngDist(mTargetCreature)) <= contAtkAngle) {
+		if (absF(getAngDist(mTargetCreature)) <= contAtkAngle) {
 			Vector3f pos(mPosition.x, 0.0f, mPosition.z);
 
 			Vector3f targetPos = Vector3f(mTargetCreature->getPosition().x, 0.0f, mTargetCreature->getPosition().z);
@@ -201,7 +201,7 @@ bool Obj::isAttackStart()
 		Piki* piki = *iter;
 
 		if (piki->isSearchable()) {
-			if (FABS(getAngDist(piki)) <= contAtkAngle) {
+			if (absF(getAngDist(piki)) <= contAtkAngle) {
 				Vector3f pos(mPosition.x, 0.0f, mPosition.z);
 
 				Vector3f targetPos = Vector3f(piki->getPosition().x, 0.0f, piki->getPosition().z);
@@ -610,7 +610,7 @@ bool Obj::isFindTarget()
 		Piki* piki = *iter;
 
 		if (piki->isSearchable() && !piki->isStickTo()) {
-			if (FABS(getAngDist(piki)) <= searchAngle) {
+			if (absF(getAngDist(piki)) <= searchAngle) {
 				Vector3f pos(mPosition.x, 0.0f, mPosition.z);
 				Vector3f targetPos = Vector3f(piki->getPosition().x, 0.0f, piki->getPosition().z);
 

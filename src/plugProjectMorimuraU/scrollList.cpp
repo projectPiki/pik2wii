@@ -69,7 +69,7 @@ bool TIndexGroup::downIndex()
 void TIndexGroup::speedUpdate(bool check)
 {
 	if (mRollSpeed > mInitialRollSpeed && !mIsActiveSpeedUp) {
-		if (FABS(mScrollOffset) < 0.7f * mHeight) {
+		if (absF(mScrollOffset) < 0.7f * mHeight) {
 			mRollSpeed *= mSpeedSpeedupFactor;
 		} else {
 			mRollSpeed *= mSpeedSlowdownFactor;

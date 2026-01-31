@@ -150,7 +150,7 @@ Sys::TriIndexList* MapMgr::traceMove_test1203_cylinder(MapCollision& coll, Game:
 					info.mFloorTriangle = tri;
 					info.mFloorNormal   = sweep.mNormal;
 
-				} else if (FABS(sweep.mNormal.y) <= info.mWallThreshold) {
+				} else if (absF(sweep.mNormal.y) <= info.mWallThreshold) {
 					// triangle we're intersecting is vertical enough to be wall
 					info.mWallTriangle = tri;
 					info.mWallNormal   = sweep.mNormal;

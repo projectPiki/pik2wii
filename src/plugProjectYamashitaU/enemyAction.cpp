@@ -393,7 +393,7 @@ Piki* getNearestPikmin(Creature* creature, f32 searchAngle, f32 searchRadius, f3
 		Piki* currPiki = *iter;
 		if (currPiki->isSearchable()) {
 			f32 angleDist = creature->getAngDist(currPiki);
-			if (FABS(angleDist) <= searchAngle) {
+			if (absF(angleDist) <= searchAngle) {
 				// something here
 				Vector3f sep = Vector3f(currPiki->getPosition().x, 0.0f, currPiki->getPosition().z)
 				             - Vector3f(creature->getPosition().x, 0.0f, creature->getPosition().z);
@@ -1187,7 +1187,7 @@ int attackNavi(Creature* creature, f32 searchRadius, f32 searchAngle, f32 damage
 		Navi* navi    = *iter;
 		f32 angleDist = creature->getAngDist(navi);
 
-		if (FABS(angleDist) < searchAngle) {
+		if (absF(angleDist) < searchAngle) {
 			Vector3f naviPos     = navi->getPosition();
 			Vector3f creaturePos = creature->getPosition();
 			f32 dist             = creaturePos.distance(naviPos);

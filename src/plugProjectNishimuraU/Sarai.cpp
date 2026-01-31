@@ -358,7 +358,7 @@ FakePiki* Obj::getAttackableTarget()
 
 			if (c->isAlive() && c->isPikmin() && !c->isStickToMouth() && c->mSticker != this && c->mFloorTriangle) {
 				f32 ang = getAngDist(c);
-				if (FABS(ang) <= maxAngle) {
+				if (absF(ang) <= maxAngle) {
 					Vector3f pos = c->getPosition();
 					if (sqrDistanceXZ(mPosition, pos) < maxDist) {
 						return c;

@@ -3452,7 +3452,7 @@ void TChallengeResult::updateDemo()
 						mOnyonMovePane[i]->mOffset  = Vector2f(mVecUnit[id1]._08.y, -((x - mVecUnit[id1]._08.x) * y2 - x));
 						mOnyonMovePane[i]->mCounter = 1;
 					} else if (id2 == 2) {
-						if (FABS(mpane->getAngDist()) < 0.05f) {
+						if (absF(mpane->getAngDist()) < 0.05f) {
 							if (60.0f / mDemoSpeedUpRate > (f32)mOnyonMovePane[i]->mCounter) {
 								mOnyonMovePane[i]->mState = 1;
 								PSSystem::spSysIF->playSystemSe(PSSE_SY_CHALLENGE_SCORE_S, 0);
@@ -3542,7 +3542,7 @@ void TChallengeResult::updateDemo()
 						mOnyonMovePane[i]->mOffset = Vector2f(mVecUnit[3]._00.x, mVecUnit[3]._00.y + 300.0f);
 					}
 					if (state != 2) {
-						if (FABS(mOnyonMovePane[i]->getAngDist()) > 0.01f) {
+						if (absF(mOnyonMovePane[i]->getAngDist()) > 0.01f) {
 							check = false;
 						}
 					}

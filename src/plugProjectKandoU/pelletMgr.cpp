@@ -120,7 +120,7 @@ void Pellet::getShadowParam(ShadowParam& shadow)
 	Vector3f col;
 	mBaseTrMatrix.getColumn(1, col);
 
-	if (-(SQUARE(FABS(col.y)) - 1.0f) > 0.0f) {
+	if (-(SQUARE(absF(col.y)) - 1.0f) > 0.0f) {
 		col.y = col.y;
 	}
 
@@ -137,12 +137,12 @@ void Pellet::getShadowParam(ShadowParam& shadow)
 		shadowPos          = position + scaledCol;
 	}
 
-	f32 absY = FABS(col.y);
+	f32 absY = absF(col.y);
 	shadowPos.y += 0.2f;
 	shadow.mPosition                 = shadowPos;
 	shadow.mBoundingSphere.mPosition = col;
 	shadow.mBoundingSphere.mRadius   = 90.0f;
-	shadow.mSize                     = pickRadius * FABS(col.y);
+	shadow.mSize                     = pickRadius * absF(col.y);
 }
 
 /**

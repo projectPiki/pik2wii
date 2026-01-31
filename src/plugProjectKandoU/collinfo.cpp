@@ -879,7 +879,7 @@ void CollPart::calcStickLocal(Vector3f& input, Vector3f& localPosition)
 		PSMTXInverse(mtx.mMatrix.mtxView, inv.mMatrix.mtxView);
 
 		f32 len = mtx.getRowLength(0);
-		if (FABS(len) < 0.001f) {
+		if (absF(len) < 0.001f) {
 			localPosition.set(0.0f, 0.0f, 0.0f);
 			return;
 		}

@@ -139,7 +139,7 @@ void Plants::Obj::collisionCallback(CollEvent& collEvent)
 			if (!(creaturePos.y < mPosition.y - 5.0f)) {
 				Vector3f velocity = creature->getVelocity();
 
-				if (FABS(velocity.x) > 1.0f || FABS(velocity.z) > 1.0f) {
+				if (absF(velocity.x) > 1.0f || absF(velocity.z) > 1.0f) {
 					if (creature->isNavi() && !mHasBeenTouched) {
 						mHasBeenTouched = 1;
 						touchedSE(static_cast<Navi*>(creature));

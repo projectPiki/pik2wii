@@ -411,7 +411,7 @@ void OtakaraSensor::calcAngle()
 
 		if (mIsFuefukid) {
 			f32 temp = mRandAngle - mCurrAngle;
-			if (FABS(temp) < 15.0f) {
+			if (absF(temp) < 15.0f) {
 				mRandAngle = randFloat() * 180.0f - 90.0f;
 				temp       = mRandAngle - mCurrAngle;
 			}

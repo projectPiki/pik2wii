@@ -248,7 +248,7 @@ void TUnit::update()
 		mActionID = KOGANEACT_0;
 		if (mControl != nullptr) {
 			f32 stickX = mControl->mSStick.mXPos;
-			if (FABS(stickX) > 0.7f) {
+			if (absF(stickX) > 0.7f) {
 				Vector2f newAng(mAngle.y, -mAngle.x);
 				mAngle = mAngle + newAng * (stickX * mManager->mParams.mTurnRate.mValue);
 

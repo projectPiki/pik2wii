@@ -657,14 +657,14 @@ bool Item::workable(Vector3f& vec)
 	}
 
 	if (z >= 0.0f && z <= rad) {
-		if (FABS(x) >= 75.0f) {
+		if (absF(x) >= 75.0f) {
 			return false;
 		}
 	} else if (z < -100.0f) {
 		return false;
 	}
 
-	if (FABS(x) >= 105.0f) {
+	if (absF(x) >= 105.0f) {
 		return false;
 	}
 

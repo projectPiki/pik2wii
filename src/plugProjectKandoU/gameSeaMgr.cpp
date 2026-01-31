@@ -99,8 +99,8 @@ void AABBWaterBox::attachModel(J3DModelData* modelData, Sys::MatTexAnimation* an
 	mModel               = new SysShape::Model(modelData, 0, 2);
 	mModel->mIsAnimating = true;
 
-	mXzPieceSize.x = FABS(mBounds.mMax.x - mBounds.mMin.x) / scale;
-	mXzPieceSize.y = FABS(mBounds.mMax.z - mBounds.mMin.z) / scale;
+	mXzPieceSize.x = absF(mBounds.mMax.x - mBounds.mMin.x) / scale;
+	mXzPieceSize.y = absF(mBounds.mMax.z - mBounds.mMin.z) / scale;
 
 	mCenterPosition.x = (mBounds.mMin.x + mBounds.mMax.x) * 0.5f;
 	mCenterPosition.z = (mBounds.mMin.z + mBounds.mMax.z) * 0.5f;

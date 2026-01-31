@@ -205,7 +205,7 @@ KumaChappy::Obj* KumaKochappy::Obj::setNearestParent()
 			KumaChappy::Obj* currBear = static_cast<KumaChappy::Obj*>(currEnemy); // necessary for an extra register load
 
 			if (currBear->isAlive()) {
-				if (FABS(getAngDist(currBear)) <= searchAngle) {
+				if (absF(getAngDist(currBear)) <= searchAngle) {
 					Vector3f bearPos = currBear->getPosition();
 					f32 bearDist     = sqrDistanceXZ(mPosition, bearPos);
 					if (bearDist < dist) {

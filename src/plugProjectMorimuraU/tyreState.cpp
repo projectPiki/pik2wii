@@ -58,7 +58,7 @@ void Tyre::StateMove::exec(EnemyBase* enemy)
 	rotationSpeed *= parms->mProperParms.mTyreRotationSpeed.mValue;
 
 	if (parms->mDoUseGlobalJointMgr != 0) {
-		f32 rotation          = 0.2f * FABS(rotationSpeed - tyre->mRotationOffset);
+		f32 rotation          = 0.2f * absF(rotationSpeed - tyre->mRotationOffset);
 		tyre->mRotationOffset = rotation;
 		rotation += tyre->mCurrentRotation;
 		if (rotation > TAU) {

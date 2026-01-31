@@ -344,7 +344,7 @@ void E2DCallBack_AnmBase::playBack(f32 speed, bool doPlayFromEnd)
 	mIsEnabled = true;
 	mPane->setAnimation(mAnim);
 	mFrameCtrl.mAttribute = J3DAA_UNKNOWN_3;
-	mFrameCtrl.mRate      = -FABS(speed);
+	mFrameCtrl.mRate      = -absF(speed);
 	if (doPlayFromEnd) {
 		mFrameCtrl.mFrame = mFrameCtrl.mEnd;
 	}

@@ -1447,7 +1447,7 @@ void BlackMan::Obj::walkFunc()
 		}
 	}
 
-	if (FABS(mTargetPosition.x - mPosition.x) < 100.0f && FABS(mTargetPosition.z - mPosition.z) < 100.0f) {
+	if (absF(mTargetPosition.x - mPosition.x) < 100.0f && absF(mTargetPosition.z - mPosition.z) < 100.0f) {
 
 	} else {
 		_2E4 = 0;

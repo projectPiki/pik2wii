@@ -631,11 +631,11 @@ bool VsGame::CardMgr::SlotMachine::equalTo(int slot)
 {
 	int nextCardBottom = getNextCard(slot);
 
-	f32 distanceToBottom = FABS(nextCardBottom - mSpinProgress);
+	f32 distanceToBottom = absF(nextCardBottom - mSpinProgress);
 
 	int nextCardTop = nextCardBottom + CARD_ID_COUNT;
 
-	f32 distanceToTop = FABS(nextCardTop - mSpinProgress);
+	f32 distanceToTop = absF(nextCardTop - mSpinProgress);
 
 	f32 distance = distanceToBottom;
 	if (distanceToTop < distanceToBottom) {
@@ -718,7 +718,7 @@ void VsGame::CardMgr::SlotMachine::update()
 		break;
 	case SPIN_DECELERATE_END:                                              // on decelerate end
 		_2C += deltaTime;                                                  // wait 3 seconds
-		if (_2C >= 3.0f && FABS(mSpinProgress - mCurrCardIndex) < 0.07f) { // can jump to previous card
+		if (_2C >= 3.0f && absF(mSpinProgress - mCurrCardIndex) < 0.07f) { // can jump to previous card
 			_6C           = 0.0f;
 			_68           = 0.0f;
 			mSelectedSlot = (CARD_ID_COUNT + mCurrCardIndex - 1) % CARD_ID_COUNT;

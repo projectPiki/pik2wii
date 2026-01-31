@@ -249,8 +249,8 @@ void Obj::doAnimationCullingOn()
 	if (mGroupLeader && mGroupLeader != this) {
 		if (mGroupLeader->getStateID() == SHIJIMICHOU_Leave) {
 			kill(nullptr);
-		} else if (FABS(mPosition.x - mHomePosition.x) > 3.0f * C_GENERALPARMS.mTerritoryRadius()
-		           || FABS(mPosition.z - mHomePosition.z) > 3.0f * C_GENERALPARMS.mTerritoryRadius()) {
+		} else if (absF(mPosition.x - mHomePosition.x) > 3.0f * C_GENERALPARMS.mTerritoryRadius()
+		           || absF(mPosition.z - mHomePosition.z) > 3.0f * C_GENERALPARMS.mTerritoryRadius()) {
 			kill(nullptr);
 		}
 	}

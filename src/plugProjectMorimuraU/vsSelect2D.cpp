@@ -505,7 +505,7 @@ void TVsSelectOnyon::posUpdate(f32 rate)
 
 	f32 dist  = mAngleTimer * getAngDist();
 	f32 clamp = TAU;
-	if (FABS(dist) > clamp) {
+	if (absF(dist) > clamp) {
 		if (dist > 0.0f) {
 			dist = clamp;
 		} else {
@@ -4063,7 +4063,7 @@ bool TVsSelect::doUpdate()
 		dist = -30.0f;
 	}
 	mLevelNameYPos += (dist - mLevelNameYPos) * 0.3f;
-	if ((f32)fabs(mLevelNameYPos - dist) < 0.1f) {
+	if ((f32)absF(mLevelNameYPos - dist) < 0.1f) {
 		mLevelNameYPos = dist;
 	}
 	mPaneLevelName->setOffset(0.0f, mLevelNameYPos + -3.0f);

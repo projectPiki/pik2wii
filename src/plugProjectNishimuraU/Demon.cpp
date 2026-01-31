@@ -38,7 +38,7 @@ FakePiki* Obj::getAttackableTarget()
 				}
 
 				f32 ang = getAngDist(navi);
-				if (FABS(ang) <= fov) {
+				if (absF(ang) <= fov) {
 					Vector3f naviPos = navi->getPosition();
 					if (sqrDistanceXZ(pos, naviPos) < max) {
 						return navi;

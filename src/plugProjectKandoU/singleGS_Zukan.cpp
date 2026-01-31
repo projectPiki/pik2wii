@@ -1132,7 +1132,7 @@ lbl_80222460:
  */
 f32 Camera::getFocus()
 {
-	f32 focus = FABS(mFocusLevel);
+	f32 focus = absF(mFocusLevel);
 	if (focus > 0.9f) {
 		focus = 0.9f;
 	}

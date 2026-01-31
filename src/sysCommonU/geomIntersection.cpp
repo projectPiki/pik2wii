@@ -18,7 +18,7 @@ bool Triangle::intersect(Sys::VertexTable& vtxTable, Sys::Triangle::SphereSweep&
 	Vector3f& intersectPoint = sweep.mIntersectionPoint;
 	switch (sweep.mSweepType) {
 	case Triangle::SphereSweep::ST_SphereInsidePlane:
-		if (!(FABS(distSweep) > sweep.mSphere.mRadius)) {
+		if (!(absF(distSweep) > sweep.mSphere.mRadius)) {
 			break;
 		} else {
 			return false;

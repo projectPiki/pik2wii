@@ -821,7 +821,7 @@ bool Game::Rigid::resolveCollision(int configIndex, Vector3f& collisionPoint, Ve
 	}
 
 	// If it's tiny, just set it to 0
-	if (fabs(impulseMagnitude) <= 0.0f) {
+	if (absF(impulseMagnitude) <= 0.0f) {
 		restitutionCoefficient = 1.0f;
 		impulseMagnitude       = 0.0f;
 	}

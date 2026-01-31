@@ -137,7 +137,7 @@ void TChallengePiki::update()
 					}
 					mPosInfo[i].mCurrentPos.x = -(mPosInfo[i].mDeviation.x * sinf(mPosInfo[i].mTimer) - mPosInfo[i].mInitialPos.x);
 					mPosInfo[i].mCurrentPos.y
-					    = (FABS(sinf(mPosInfo[i].mTimer * 2.0f) * mPosInfo[i].mDeviation.y) - mPosInfo[i].mInitialPos.y);
+					    = (absF(sinf(mPosInfo[i].mTimer * 2.0f) * mPosInfo[i].mDeviation.y) - mPosInfo[i].mInitialPos.y);
 				}
 				break;
 			case 1:
@@ -605,7 +605,7 @@ void TChallengeDoping::setLevel(int level)
 void TChallengeDoping::update()
 {
 	f32 diff = mGoalFillLevel - mCurrentFillLevel;
-	if (FABS(diff) > 0.05f) {
+	if (absF(diff) > 0.05f) {
 		diff *= 0.1f;
 	}
 	mCurrentFillLevel += diff;
@@ -764,10 +764,10 @@ void TChallengePanel::update(int index, bool flag)
 	int id  = mIndex;
 	int sel = (index / 5) % 5; // uhhhh something like this
 	if (index != sel) {
-		mXOffset += (1.0f * TChallengeSelect::mPanelMoveVal * FABS(sinf(mTimer)) - mXOffset) * 0.2f;
+		mXOffset += (1.0f * TChallengeSelect::mPanelMoveVal * absF(sinf(mTimer)) - mXOffset) * 0.2f;
 		mYOffset *= 0.9f;
 	} else if (index == id) {
-		mXOffset += (1.0f * TChallengeSelect::mPanelMoveVal * FABS(sinf(mTimer)) - mXOffset) * 0.2f;
+		mXOffset += (1.0f * TChallengeSelect::mPanelMoveVal * absF(sinf(mTimer)) - mXOffset) * 0.2f;
 		mYOffset *= 0.9f;
 	} else if (index == id) {
 		mXOffset *= 0.9f;
@@ -1300,7 +1300,7 @@ void TChallengePlayModeScreen::update()
 	mPane2Pos.y = mScreenObj->search('ir01')->mGlobalMtx[1][3];
 
 	f32 x = mPane1Pos.x - mEfxCursorPos1.x;
-	if (FABS(x) < 2.0f) {
+	if (absF(x) < 2.0f) {
 		mEfxCursorPos1.x = mPane1Pos.x;
 		x                = 0.0f;
 	} else {
@@ -1309,7 +1309,7 @@ void TChallengePlayModeScreen::update()
 	mEfxCursorPos1.x += x;
 
 	f32 x2 = mPane2Pos.x - mEfxCursorPos2.x;
-	if (FABS(x2) < 2.0f) {
+	if (absF(x2) < 2.0f) {
 		mEfxCursorPos2.x = mPane2Pos.x;
 		x2               = 0.0f;
 	} else {
@@ -1328,7 +1328,7 @@ void TChallengePlayModeScreen::update()
 		}
 
 		f32 y = mPane1Pos.y - mEfxCursorPos2.y;
-		if (FABS(y) < 2.0f) {
+		if (absF(y) < 2.0f) {
 			mEfxCursorPos2.y = mPane1Pos.y;
 			y                = 0.0f;
 		} else {
@@ -1354,7 +1354,7 @@ void TChallengePlayModeScreen::update()
 		}
 
 		f32 y = mPane2Pos.y - mEfxCursorPos2.y;
-		if (FABS(y) < 2.0f) {
+		if (absF(y) < 2.0f) {
 			mEfxCursorPos2.y = mPane2Pos.y;
 			y                = 0.0f;
 		} else {
@@ -1377,7 +1377,7 @@ void TChallengePlayModeScreen::update()
 			if (mAngleTimers[i] > TAU) {
 				mAngleTimers[i] -= TAU;
 			}
-			sin = FABS(sinf(mAngleTimers[i]) * 75.0f);
+			sin = absF(sinf(mAngleTimers[i]) * 75.0f);
 		}
 		mPaneList1[i]->setAlpha(255.0f * scale - sin);
 	}

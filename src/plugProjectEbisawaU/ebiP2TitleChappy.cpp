@@ -359,7 +359,7 @@ void Chappy::TUnit::update()
 			angle -= TAU;
 		}
 
-		if (FABS(angle) < 0.09817477f) {
+		if (absF(angle) < 0.09817477f) {
 			startAIState_(CHAPPYAI_Walk);
 		} else if (angle > 0.0f) {
 			stickY       = 0.0f;
@@ -431,7 +431,7 @@ void Chappy::TUnit::update()
 		actionID = CHAPPYACT_0;
 	} else {
 		actionID = CHAPPYACT_0;
-		if (FABS(stickX) > 0.7f) {
+		if (absF(stickX) > 0.7f) {
 			actionID = CHAPPYACT_1;
 		}
 		if (stickY > 0.7f) {
@@ -469,7 +469,7 @@ void Chappy::TUnit::update()
 
 	switch (mActionID) {
 	case CHAPPYACT_1: {
-		f32 constant = (FABS(stickX) > 0.7f) ? stickX : 0.0f;
+		f32 constant = (absF(stickX) > 0.7f) ? stickX : 0.0f;
 		Vector2f newAng(mAngle.y, -mAngle.x);
 		mAngle = mAngle + newAng * (constant * mManager->mParams.mTurnSpeed.mValue);
 		mAngle.normalise();

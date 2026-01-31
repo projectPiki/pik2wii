@@ -72,28 +72,28 @@ f32 AngleMgr::calc()
 		}
 
 		f32 distance = mTargetAngle - mCurrentAngle;
-		if (FABS(distance) > PI) {
+		if (absF(distance) > PI) {
 			// TODO: figure out what f2 is!
-			f32 f2 = TAU - FABS(distance);
+			f32 f2 = TAU - absF(distance);
 			if (distance > 0.0f) {
-				if ((mAngleStep > 0.0f) && (f2 > FABS(mAngleStep * mScale))) {
+				if ((mAngleStep > 0.0f) && (f2 > absF(mAngleStep * mScale))) {
 					mAngleStep = (-mAngleStep * mInterpRate);
 				}
-			} else if ((mAngleStep < 0.0f) && (f2 > FABS(mAngleStep * mScale))) {
+			} else if ((mAngleStep < 0.0f) && (f2 > absF(mAngleStep * mScale))) {
 				mAngleStep = (-mAngleStep * mInterpRate);
 			}
 		} else {
-			f32 f2 = FABS(distance);
+			f32 f2 = absF(distance);
 			if (distance > 0.0f) {
-				if ((mAngleStep < 0.0f) && (f2 > FABS(mAngleStep * mScale))) {
+				if ((mAngleStep < 0.0f) && (f2 > absF(mAngleStep * mScale))) {
 					mAngleStep = (-mAngleStep * mInterpRate);
 				}
-			} else if ((mAngleStep > 0.0f) && (f2 > FABS(mAngleStep * mScale))) {
+			} else if ((mAngleStep > 0.0f) && (f2 > absF(mAngleStep * mScale))) {
 				mAngleStep = (-mAngleStep * mInterpRate);
 			}
 		}
 
-		if (FABS(mAngleStep) < 0.001f) {
+		if (absF(mAngleStep) < 0.001f) {
 			mState        = AGM_Finish;
 			mCurrentAngle = mTargetAngle;
 			mAngleStep    = 0.0f;

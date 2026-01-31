@@ -111,7 +111,7 @@ void StateWalk::init(EnemyBase* enemy, StateArg* stateArg)
 		Vector3f pos       = enemy->getPosition();
 
 		f32 angleToTarget = angDist(angXZ(targetPos.x, targetPos.z, pos), enemy->getFaceDir());
-		if (FABS(angleToTarget) > 3.0f * (PI * (DEG2RAD * CG_PROPERPARMS(OBJ(enemy)).mMaxTurnAngle.mValue))) {
+		if (absF(angleToTarget) > 3.0f * (PI * (DEG2RAD * CG_PROPERPARMS(OBJ(enemy)).mMaxTurnAngle.mValue))) {
 			transit(enemy, MIULIN_Turn, nullptr);
 		}
 	}
@@ -166,7 +166,7 @@ void StateWalk::exec(EnemyBase* enemy)
 
 			Vector3f pos = enemy->getPosition();
 			f32 angle    = angDist(angXZ(x, z, pos), enemy->getFaceDir());
-			if (FABS(angle) > 3.0f * (PI * (DEG2RAD * CG_PROPERPARMS(OBJ(enemy)).mMaxTurnAngle.mValue))) {
+			if (absF(angle) > 3.0f * (PI * (DEG2RAD * CG_PROPERPARMS(OBJ(enemy)).mMaxTurnAngle.mValue))) {
 				enemy->finishMotion();
 				OBJ(enemy)->mNextState = MIULIN_Turn;
 			}

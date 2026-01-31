@@ -166,7 +166,7 @@ void StateMove::exec(EnemyBase* enemy)
 		f32 angleDist = baby->turnToTarget(creature, CG_GENERALPARMS(baby).mTurnSpeed(), CG_GENERALPARMS(baby).mMaxTurnAngle());
 
 		f32 limit   = PI * (DEG2RAD * CG_GENERALPARMS(baby).mMaxAttackAngle());
-		f32 absDist = FABS(angleDist);
+		f32 absDist = absF(angleDist);
 
 		if (absDist <= limit) {
 			baby->setTargetSpeed(CG_GENERALPARMS(baby).mMoveSpeed());

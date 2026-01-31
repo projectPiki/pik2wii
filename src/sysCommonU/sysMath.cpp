@@ -614,7 +614,7 @@ void Quat::slerp(Quat& q1, f32 t, Quat& qout)
 	// work out what the linear interpolation factors should be
 	// if sin_omega is super tiny, just use an approximation
 	f32 a;
-	if (FABS(sinOmega) < 0.00001f) {
+	if (absF(sinOmega) < 0.00001f) {
 		a = 1.0f - t;
 	} else {
 		f32 denom   = (1.0f / sinOmega);

@@ -434,7 +434,7 @@ bool RouteMgr::linkable(WayPoint* wpA, WayPoint* wpB)
 		info.mUpdateOnNewMaxY = false;
 
 		mapMgr->getCurrTri(info);
-		if (FABS(prevFloorHeight - info.mMinY) > 25.0f) {
+		if (absF(prevFloorHeight - info.mMinY) > 25.0f) {
 			return false;
 		}
 		prevFloorHeight = info.mMinY;

@@ -243,7 +243,7 @@ lbl_801226D4:
 void FieldVtxColorMgr::updateFieldVtxColorControl(FieldVtxColorControl* control)
 {
 	FieldVtxColorControlInfo* controlInfo = control->mControlInfo;
-	if (FABS(control->mCurrentPower - control->mPower) < mSmoothingRate) {
+	if (absF(control->mCurrentPower - control->mPower) < mSmoothingRate) {
 		control->mCurrentPower = control->mPower;
 	} else {
 		control->mCurrentPower += (control->mCurrentPower < control->mPower) ? mSmoothingRate : -mSmoothingRate;

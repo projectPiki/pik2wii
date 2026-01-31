@@ -1113,19 +1113,19 @@ void VsGameSection::updateCardGeneration()
 	f32 spawnFactor      = (mRedBlueScore[0] - mRedBlueScore[1]) - (mYellowScore[0] - mYellowScore[1]);
 	f32 factor1          = 0.4f;
 	f32 factor2          = 0.6f;
-	if (FABS(spawnFactor) < 0.2f) {
+	if (absF(spawnFactor) < 0.2f) {
 
-	} else if (0.2f <= FABS(spawnFactor) < 0.4f) {
+	} else if (0.2f <= absF(spawnFactor) < 0.4f) {
 		maxSpawnCherries = 5;
 		isHigh           = true;
 		factor1          = 0.3f;
 		factor2          = 0.5f;
-	} else if (0.4f <= FABS(spawnFactor) < 0.8f) {
+	} else if (0.4f <= absF(spawnFactor) < 0.8f) {
 		maxSpawnCherries = 6;
 		isHigh           = true;
 		factor1          = 0.2f;
 		factor2          = 0.4f;
-	} else if (0.8f <= FABS(spawnFactor)) {
+	} else if (0.8f <= absF(spawnFactor)) {
 		maxSpawnCherries = 7;
 		isHigh           = true;
 		factor1          = 0.2f;
@@ -1142,7 +1142,7 @@ void VsGameSection::updateCardGeneration()
 		f32 absLowFactor;
 		f32 lowFactor = mCherryScore[1] - mCherryScore[0];
 		lowFactor /= 2.0f;
-		absLowFactor = FABS(lowFactor);
+		absLowFactor = absF(lowFactor);
 		if (absLowFactor <= 0.1f) {
 
 		} else {

@@ -1802,7 +1802,7 @@ void StateTurn::exec(EnemyBase* enemy)
 	}
 
 	f32 turnVal = OBJ(enemy)->turnFunc(1.0f);
-	if (FABS(turnVal) < threshold) {
+	if (absF(turnVal) < threshold) {
 		enemy->finishMotion();
 	}
 
