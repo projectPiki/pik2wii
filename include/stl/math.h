@@ -109,9 +109,19 @@ void __mtfsb1(int);
 f64 __setflm(f64);
 
 #define FABS(x) (f32) __fabs(x)
-#define fabs(x) __fabs(x)
+inline f64 fabs(f64 f) {
+    return __fabs(f);
+}
 
 inline f128 fabsl(f128 x) { return __fabs((f64)x); }
+/*
+inline f32 fabsf(f32 f) {
+	f64 newVal = fabs(f);
+	return (f32)newVal;
+}*/
+inline f32 fabsf(f32 f) {
+    return (f32)fabs((f64)f);
+}
 
 /**
  * kludges for emulating inlined f versions of funcs.
@@ -122,6 +132,13 @@ inline f128 fabsl(f128 x) { return __fabs((f64)x); }
 inline f32 tanf_kludge(f32 __x) { return tan((f64)__x); }
 inline f32 sinf_kludge(f32 __x) { return sin((f64)__x); }
 inline f32 cosf_kludge(f32 __x) { return cos((f64)__x); }
+
+
+
+inline f32 nonsqrtf(f32 x) {
+    return sqrt(x);
+}
+
 
 #ifdef __cplusplus
 };
