@@ -47,7 +47,9 @@ f32 cosf(f32);
 f64 sin(f64);
 f32 sinf(f32);
 f64 tan(f64);
-f32 tanf(f32);
+inline f32 tanf(f32 x) {
+    return tan(x);
+}
 
 f64 acos(f64);
 f64 asin(f64);
