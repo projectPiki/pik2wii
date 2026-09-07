@@ -90,11 +90,11 @@ public:
 	}
 
 	TagProcessorBase<T>* GetTagProcessor() const { return mTagProcessor; }
-	void SetTagProcessor(TagProcessorBase<T>* pProcessor)
+	void SetTagProcessor(TagProcessorBase<T>* tagProcessor)
 	{
 		NW4R_ASSERT_PTR(this, 151);
-		NW4R_ASSERT_PTR(&pProcessor, 152);
-		mTagProcessor = pProcessor;
+		NW4R_ASSERT_PTR(tagProcessor, 152);
+		mTagProcessor = tagProcessor;
 	}
 	void ResetTagProcessor() { mTagProcessor = &mDefaultTagProcessor; }
 
@@ -113,11 +113,11 @@ public:
 
 	static int VSNPrintf(T* buffer, u32 count, const T* pStr, va_list args);
 	static T* GetBuffer() { return mFormatBuffer; }
-	static T* SetBuffer(T* pBuffer, u32 size)
+	static T* SetBuffer(T* buffer, u32 size)
 	{
-		NW4R_ASSERT_PTR(pBuffer, 288);
+		NW4R_ASSERT_PTR(buffer, 288);
 		T* pOldBuffer     = mFormatBuffer;
-		mFormatBuffer     = pBuffer;
+		mFormatBuffer     = buffer;
 		mFormatBufferSize = size;
 		return pOldBuffer;
 	}

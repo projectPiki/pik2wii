@@ -31,7 +31,11 @@ public:
 	// unused/inlined:
 
 	void setUserFrameRange(f32, f32);
-	void setupMaxFrames(f32 frame) { mMaxFrames = frame; }
+	void setupMaxFrames(f32 frame)
+	{
+		mMaxFrames = frame;
+		resetUserFrameRange();
+	}
 	f32 getUserMaxFrame() const;
 	f32 getSpeed() const;
 	f32 getCurrentFrame() const { return mCurrentFrame; }

@@ -8,9 +8,10 @@
 namespace System12 {
 
 class Language {
-public:
+
 	EGG_SINGLETON_DECL(Language);
 
+public:
 	Language();
 
 	// _00     = VTBL
@@ -22,8 +23,6 @@ public:
 } // namespace System12
 
 extern "C" void makeLanguagePath(System12::Language*, char*, size_t, const char*, const char*);
-extern "C" void makeLanguageFile(char*, size_t, const char*);
-extern "C" char* getLanguageCode(System12::Language*);
-extern "C" char* getTrueLanguageCode(System12::Language*);
+extern "C" void makeLanguageFile(System12::Language*, char*, size_t, const char*);
 
 #endif
