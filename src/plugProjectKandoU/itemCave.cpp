@@ -1,12 +1,12 @@
 #include "Game/Entities/ItemCave.h"
 #include "Game/Entities/ItemBarrel.h"
-#include "Game/gamePlayData.h"
 #include "Game/Navi.h"
+#include "Game/gamePlayData.h"
 #include "Platform.h"
 #include "Radar.h"
+#include "SoundID.h"
 #include "nans.h"
 #include "utilityU.h"
-#include "SoundID.h"
 
 // TODO: fix this up
 static void __Print(const char** fmt, ...)
@@ -34,37 +34,49 @@ void FSM::init(Item*)
  * @note Address: 0x801EA090
  * @note Size: 0x4
  */
-void NormalState::init(Item*, StateArg*) { }
+void NormalState::init(Item*, StateArg*)
+{
+}
 
 /**
  * @note Address: 0x801EA094
  * @note Size: 0x4
  */
-void NormalState::exec(Item*) { }
+void NormalState::exec(Item*)
+{
+}
 
 /**
  * @note Address: 0x801EA098
  * @note Size: 0x4
  */
-void NormalState::cleanup(Item*) { }
+void NormalState::cleanup(Item*)
+{
+}
 
 /**
  * @note Address: 0x801EA09C
  * @note Size: 0x4
  */
-void OpenState::init(Item*, StateArg*) { }
+void OpenState::init(Item*, StateArg*)
+{
+}
 
 /**
  * @note Address: 0x801EA0A0
  * @note Size: 0x4
  */
-void OpenState::exec(Item*) { }
+void OpenState::exec(Item*)
+{
+}
 
 /**
  * @note Address: 0x801EA0A4
  * @note Size: 0x4
  */
-void OpenState::cleanup(Item*) { }
+void OpenState::cleanup(Item*)
+{
+}
 
 /**
  * @note Address: 0x801EA0A8
@@ -225,7 +237,7 @@ void Item::createLightEvent()
 		arg.mRedScale      = mFogParm.mRed.mValue;
 		arg.mGreenScale    = mFogParm.mGreen.mValue;
 		arg.mBlueScale     = mFogParm.mBlue.mValue;
-		arg.mEventFlag.typeView = (LIGHTEVENT_Unk3 + LIGHTEVENT_Unk4);
+		arg.mEventFlag     = (LIGHTEVENT_Unk3 + LIGHTEVENT_Unk4);
 		arg.mRange         = mFogParm.mDistance.mValue;
 		mLightEventNode    = gameSystem->getLightMgr()->createEventLight(arg);
 	}
@@ -751,13 +763,19 @@ void Mgr::onLoadResources()
  * @note Address: 0x801EB3C8
  * @note Size: 0x74
  */
-void Mgr::setup(BaseItem* item) { item->mModel = new SysShape::Model(getModelData(0), J3DMODEL_CreateNewDL, 2); }
+void Mgr::setup(BaseItem* item)
+{
+	item->mModel = new SysShape::Model(getModelData(0), J3DMODEL_CreateNewDL, 2);
+}
 
 /**
  * @note Address: 0x801EB43C
  * @note Size: 0x38
  */
-GenItemParm* Mgr::generatorNewItemParm() { return new GenCaveParm; }
+GenItemParm* Mgr::generatorNewItemParm()
+{
+	return new GenCaveParm;
+}
 
 /**
  * @note Address: 0x801EB580

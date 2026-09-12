@@ -196,7 +196,7 @@ void GameLightMgrSetting::readOldVersion(ID32 version, Stream& stream)
 
 void GameLightEventNode::start(GameLightEventArg& eventArg)
 {
-	mEventFlag     = eventArg.mEventFlag.typeView;
+	mEventFlag     = eventArg.mEventFlag;
 	mLightTypeFlag = eventArg.mLightTypeFlag;
 
 	mRedScale   = eventArg.mRedScale;

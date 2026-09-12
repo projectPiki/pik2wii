@@ -515,7 +515,11 @@ struct EnemyBase : public Creature, public SysShape::MotionListener, virtual pub
 	// is creature close enough (angle and distance wise) to attack?
 	inline bool isTargetAttackable(Creature* target, f32 angleDiff, f32 attackDist, f32 attackAngle)
 	{
-		return isRadiusWithin(getSqrTargetSeparation(target), attackDist) && isAngleWithin(angleDiff, attackAngle);
+		bool result = false;
+		if (isRadiusWithin(getSqrTargetSeparation(target), attackDist) && (isAngleWithin(angleDiff, attackAngle))) {
+			result = true;
+		}
+		return result;
 	}
 
 	// is stored creature target close enough (angle and distance wise) to attack?

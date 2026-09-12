@@ -34,9 +34,9 @@ enum LightEventTypes {
 
 struct GameLightEventArg {
 	inline GameLightEventArg()
-	    : mLightTypeFlag(0)
+	    : mEventFlag(0)
+	    , mLightTypeFlag(0)
 	{
-		mEventFlag.clear();
 		setEvent(LIGHTEVENT_Unk1 | LIGHTEVENT_Unk2);
 		mLightTypeFlag = 0;
 		setLightType(LIGHTTYPE_Main);
@@ -63,15 +63,15 @@ struct GameLightEventArg {
 		mBlueScale  = 1.25f;
 	}
 
-	inline void setEvent(u32 flag) { mEventFlag.set(flag); }
-	inline void resetEvent(u32 flag) { mEventFlag.unset(flag); }
-	inline bool isEvent(u32 flag) const { return mEventFlag.typeView & flag; }
+	inline void setEvent(u32 flag) { mEventFlag |= flag; }
+	inline void resetEvent(u32 flag) { mEventFlag &= ~flag; }
+	inline bool isEvent(u32 flag) const { return mEventFlag & flag; }
 
 	inline void setLightType(u32 flag) { mLightTypeFlag |= flag; }
 	inline void resetLightType(u32 flag) { mLightTypeFlag &= ~flag; }
 	inline bool isLightType(u32 flag) const { return mLightTypeFlag & flag; }
 
-	BitFlag<u8> mEventFlag; // _00
+	u8 mEventFlag; // _00
 	u8 mLightTypeFlag;      // _01
 	f32 mRedScale;          // _04
 	f32 mGreenScale;        // _08
