@@ -1061,8 +1061,8 @@ void VsGame::CardMgr::drawSlot(Graphics& gfx, Vector3f& place, SlotMachine& mach
 		if (machine._6C > 1.0f) {
 			machine._6C -= 1.0f;
 		}
-		machine._68 += sys->mDeltaTime;
-		machine._6C += sys->mDeltaTime / 2;
+		machine._68 += sys->getDeltaTime();
+		machine._6C += sys->getDeltaTime() / 2;
 
 		// this bunch seems good
 		f32 pos = machine._44;

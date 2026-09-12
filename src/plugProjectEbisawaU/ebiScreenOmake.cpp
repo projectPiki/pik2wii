@@ -1070,7 +1070,7 @@ bool TOmake::doUpdateStateWait()
 				PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_DECIDE, 0);
 				switch (mCurrSel) {
 				case 6:
-					mAnims2.play(sys->mDeltaTime * 60.0f, J3DAA_UNKNOWN_0, true);
+					mAnims2.play(sys->getDeltaTime() * 60.0f, J3DAA_UNKNOWN_0, true);
 					mState2 = 2;
 					break;
 				default:
