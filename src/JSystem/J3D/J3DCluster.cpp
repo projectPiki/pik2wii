@@ -1,11 +1,14 @@
-#include "JSystem/J3D/J3DSkinDeform.h"
 #include "JSystem/J3D/J3DAnmCluster.h"
+#include "JSystem/J3D/J3DSkinDeform.h"
 
 /**
  * @note Address: 0x8006A59C
  * @note Size: 0x24
  */
-void J3DDeformData::deform(J3DModel* model) { deform(model->getVertexBuffer()); }
+void J3DDeformData::deform(J3DModel* model)
+{
+	deform(model->getVertexBuffer());
+}
 
 /**
  * @note Address: 0x8006A5C0
@@ -53,210 +56,44 @@ void J3DDeformer::deform(J3DVertexBuffer* vtxbuffer, u16 index)
  * @note Address: 0x8006A7FC
  * @note Size: 0x26C
  */
-void J3DDeformer::deform_VtxPosF32(J3DVertexBuffer* vtxbuffer, J3DCluster* cluster, J3DClusterKey* key, f32* weights)
+void J3DDeformer::deform_VtxPosF32(J3DVertexBuffer* vtxbuffer, J3DCluster* cluster, J3DClusterKey* i_key, f32* weights)
 {
-	int clusterCount     = cluster->mCount;
-	int clusterSize      = cluster->mSize;
-	f32* vertexPositions = (f32*)(vtxbuffer->getVtxPosArrayPointer(0));
-	Vec* vertexIndices   = (Vec*)mDeformData->getVtxPos(); // r0
-	u16* vertices        = cluster->_18;                   // r10
+	J3DClusterKey* key;
+	int posNum        = cluster->mCount;
+	int keyNum        = cluster->mSize;
+	f32* vtxPosArray  = (f32*)vtxbuffer->getVtxPosArrayPointer(0);
+	f32* deformVtxPos = mDeformData->getVtxPos();
+	u16* iVar9        = cluster->_18;
 
-	for (int i = 0; i < clusterCount; i++) {
-		int vertexIndex = vertices[i] * 3;
-
-		f32* position = &vertexPositions[vertexIndex];
-		position[0]   = 0.0f;
-		position[1]   = 0.0f;
-		position[2]   = 0.0f;
+	for (int i = 0; i < posNum; i++) {
+		int index              = iVar9[i] * 3;
+		vtxPosArray[index]     = 0.0f;
+		vtxPosArray[index + 1] = 0.0f;
+		vtxPosArray[index + 2] = 0.0f;
 	}
 
-	f32 weightModifiers[2] = { 1.0f, -1.0f };
-	for (u16 i = 0; i < clusterCount; i++) {
-		u16* vertices        = cluster->_18; // r10
-		int vertexIndex      = vertices[i] * 3;
-		f32* vertexPositions = (f32*)(vtxbuffer->mVtxPos[vertexIndex]);
+	f32 local_58[2] = { 1.0f, -1.0f };
 
-		for (u16 j = 0; j < clusterSize; j++) {
-			Vec* vec = &vertexIndices[j];
-			vertexPositions[0] += (vec->x * weightModifiers[j]) * weights[j];
-			vertexPositions[1] += (vec->y * weightModifiers[j]) * weights[j];
-			vertexPositions[2] += (vec->z * weightModifiers[j]) * weights[j];
+	for (u16 i = 0; i < posNum; i++) {
+		int index = cluster->_18[i] * 3;
+		for (u16 j = 0; j < keyNum; j++) {
+			int uVar8;
+			int uVar7;
+			key   = &i_key[j];
+			uVar8 = uVar7 = ((u16*)key->_04)[i];
+			uVar7 &= ~0xE000;
+			uVar7 *= 3;
+			f32 deform0 = deformVtxPos[uVar7];
+			f32 deform1 = deformVtxPos[uVar7 + 1];
+			f32 deform2 = deformVtxPos[uVar7 + 2];
+			deform0 *= local_58[(uVar8 >> 15) & 1];
+			deform1 *= local_58[(uVar8 >> 14) & 1];
+			deform2 *= local_58[(uVar8 >> 13) & 1];
+			vtxPosArray[index] += deform0 * weights[j];
+			vtxPosArray[index + 1] += deform1 * weights[j];
+			vtxPosArray[index + 2] += deform2 * weights[j];
 		}
 	}
-	/*
-	.loc_0x0:
-	  stwu      r1, -0x30(r1)
-	  li        r11, 0
-	  stmw      r26, 0x18(r1)
-	  lhz       r8, 0x12(r5)
-	  lwz       r3, 0x0(r3)
-	  cmpwi     r8, 0
-	  lhz       r9, 0x10(r5)
-	  lwz       r4, 0x4(r4)
-	  lwz       r0, 0x18(r3)
-	  lwz       r10, 0x18(r5)
-	  ble-      .loc_0x180
-	  cmpwi     r8, 0x8
-	  subi      r31, r8, 0x8
-	  ble-      .loc_0x140
-	  addi      r12, r31, 0x7
-	  mr        r3, r10
-	  rlwinm    r12,r12,29,3,31
-	  lfs       f0, -0x790C(r2)
-	  mtctr     r12
-	  cmpwi     r31, 0
-	  ble-      .loc_0x140
-
-	.loc_0x54:
-	  lhz       r12, 0x0(r3)
-	  addi      r11, r11, 0x8
-	  mulli     r12, r12, 0x3
-	  rlwinm    r12,r12,2,0,29
-	  add       r12, r4, r12
-	  stfs      f0, 0x0(r12)
-	  stfs      f0, 0x4(r12)
-	  stfs      f0, 0x8(r12)
-	  lhz       r12, 0x2(r3)
-	  mulli     r12, r12, 0x3
-	  rlwinm    r12,r12,2,0,29
-	  add       r12, r4, r12
-	  stfs      f0, 0x0(r12)
-	  stfs      f0, 0x4(r12)
-	  stfs      f0, 0x8(r12)
-	  lhz       r12, 0x4(r3)
-	  mulli     r12, r12, 0x3
-	  rlwinm    r12,r12,2,0,29
-	  add       r12, r4, r12
-	  stfs      f0, 0x0(r12)
-	  stfs      f0, 0x4(r12)
-	  stfs      f0, 0x8(r12)
-	  lhz       r12, 0x6(r3)
-	  mulli     r12, r12, 0x3
-	  rlwinm    r12,r12,2,0,29
-	  add       r12, r4, r12
-	  stfs      f0, 0x0(r12)
-	  stfs      f0, 0x4(r12)
-	  stfs      f0, 0x8(r12)
-	  lhz       r12, 0x8(r3)
-	  mulli     r12, r12, 0x3
-	  rlwinm    r12,r12,2,0,29
-	  add       r12, r4, r12
-	  stfs      f0, 0x0(r12)
-	  stfs      f0, 0x4(r12)
-	  stfs      f0, 0x8(r12)
-	  lhz       r12, 0xA(r3)
-	  mulli     r12, r12, 0x3
-	  rlwinm    r12,r12,2,0,29
-	  add       r12, r4, r12
-	  stfs      f0, 0x0(r12)
-	  stfs      f0, 0x4(r12)
-	  stfs      f0, 0x8(r12)
-	  lhz       r12, 0xC(r3)
-	  mulli     r12, r12, 0x3
-	  rlwinm    r12,r12,2,0,29
-	  add       r12, r4, r12
-	  stfs      f0, 0x0(r12)
-	  stfs      f0, 0x4(r12)
-	  stfs      f0, 0x8(r12)
-	  lhz       r12, 0xE(r3)
-	  addi      r3, r3, 0x10
-	  mulli     r12, r12, 0x3
-	  rlwinm    r12,r12,2,0,29
-	  add       r12, r4, r12
-	  stfs      f0, 0x0(r12)
-	  stfs      f0, 0x4(r12)
-	  stfs      f0, 0x8(r12)
-	  bdnz+     .loc_0x54
-
-	.loc_0x140:
-	  rlwinm    r12,r11,1,0,30
-	  sub       r3, r8, r11
-	  add       r10, r10, r12
-	  lfs       f0, -0x790C(r2)
-	  mtctr     r3
-	  cmpw      r11, r8
-	  bge-      .loc_0x180
-
-	.loc_0x15C:
-	  lhz       r3, 0x0(r10)
-	  addi      r10, r10, 0x2
-	  mulli     r3, r3, 0x3
-	  rlwinm    r3,r3,2,0,29
-	  add       r3, r4, r3
-	  stfs      f0, 0x0(r3)
-	  stfs      f0, 0x4(r3)
-	  stfs      f0, 0x8(r3)
-	  bdnz+     .loc_0x15C
-
-	.loc_0x180:
-	  lwz       r11, -0x7914(r2)
-	  addi      r12, r1, 0x8
-	  lwz       r10, -0x7910(r2)
-	  li        r3, 0
-	  stw       r11, 0x8(r1)
-	  stw       r10, 0xC(r1)
-	  b         .loc_0x254
-
-	.loc_0x19C:
-	  lwz       r10, 0x18(r5)
-	  rlwinm    r30,r3,1,15,30
-	  li        r27, 0
-	  lhzx      r10, r10, r30
-	  mulli     r10, r10, 0x3
-	  rlwinm    r10,r10,2,0,29
-	  add       r29, r4, r10
-	  b         .loc_0x244
-
-	.loc_0x1BC:
-	  rlwinm    r11,r27,0,16,31
-	  rlwinm    r10,r27,2,14,29
-	  mulli     r11, r11, 0xC
-	  lfsx      f1, r7, r10
-	  lfs       f0, 0x0(r29)
-	  addi      r27, r27, 0x1
-	  addi      r11, r11, 0x4
-	  lwzx      r11, r6, r11
-	  lhzx      r26, r30, r11
-	  rlwinm    r11,r26,0,19,15
-	  mulli     r31, r11, 0xC
-	  rlwinm    r11,r26,20,29,29
-	  lfsx      f3, r12, r11
-	  add       r28, r0, r31
-	  rlwinm    r11,r26,21,29,29
-	  rlwinm    r31,r26,19,29,29
-	  lfs       f4, 0x0(r28)
-	  lfsx      f2, r12, r31
-	  lfs       f5, 0x4(r28)
-	  fmuls     f4, f4, f2
-	  lfs       f6, 0x8(r28)
-	  lfsx      f2, r12, r11
-	  fmuls     f5, f5, f3
-	  fmadds    f0, f4, f1, f0
-	  fmuls     f6, f6, f2
-	  stfs      f0, 0x0(r29)
-	  lfsx      f1, r7, r10
-	  lfs       f0, 0x4(r29)
-	  fmadds    f0, f5, f1, f0
-	  stfs      f0, 0x4(r29)
-	  lfsx      f1, r7, r10
-	  lfs       f0, 0x8(r29)
-	  fmadds    f0, f6, f1, f0
-	  stfs      f0, 0x8(r29)
-
-	.loc_0x244:
-	  rlwinm    r10,r27,0,16,31
-	  cmpw      r10, r9
-	  blt+      .loc_0x1BC
-	  addi      r3, r3, 0x1
-
-	.loc_0x254:
-	  rlwinm    r10,r3,0,16,31
-	  cmpw      r10, r8
-	  blt+      .loc_0x19C
-	  lmw       r26, 0x18(r1)
-	  addi      r1, r1, 0x30
-	  blr
-	*/
 }
 
 /**
@@ -359,9 +196,12 @@ void J3DDeformer::deform_VtxNrmF32(J3DVertexBuffer* vtxBuffer, J3DCluster* clust
 			f32 factor = (dotProd - cluster->_04) / (cluster->_00 - cluster->_04);
 			f32* norm  = &vtxNormBuffer[idx3];
 
-			norm[0] = (1.0f - factor) * currVec[0] + factor * vec[0];
-			norm[1] = (1.0f - factor) * currVec[1] + factor * vec[1];
-			norm[2] = (1.0f - factor) * currVec[2] + factor * vec[2];
+			f32 averageX = (1.0f - factor) * vec[0];
+			norm[0]      = factor * currVec[0] + averageX;
+			f32 averageY = (1.0f - factor) * vec[1];
+			norm[1]      = factor * currVec[1] + averageY;
+			f32 averageZ = (1.0f - factor) * vec[2];
+			norm[2]      = factor * currVec[2] + averageZ;
 		}
 	}
 	/*

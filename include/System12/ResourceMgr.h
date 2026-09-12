@@ -16,7 +16,7 @@ public:
 
 	// _00     = VTBL
 	// _00-_10 = EGG::Disposer
-	u32* mPikmin12Font; // _14
+	u8* mPikmin12Font; // _14
 };
 
 } // namespace System12

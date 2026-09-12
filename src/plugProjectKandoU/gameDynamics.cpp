@@ -124,12 +124,11 @@ static f32 getYDegree(Quat& quat, Vector3f& vec)
 	Quat intermediateQuat;
 
 	Quat inverseQuat;
-	// inverseQuat = quat.inverse();
+	inverseQuat = quat.inverse();
 
-	// Issues are here
-	// intermediateQuat = quat * yAxisQuat;
+	intermediateQuat = Quat::multiply(quat, yAxisQuat);
 
-	// intermediateQuat = intermediateQuat * inverseQuat;
+	intermediateQuat = intermediateQuat * inverseQuat;
 
 	vec = intermediateQuat.v;
 
@@ -323,14 +322,14 @@ void Game::Rigid::integrate(f32 timeStep, int configIdx)
 	Quat primaryQ;                                             // 0x160
 	Quat rotatedMomentumQ(0.0f, thisConfig->mRotatedMomentum); // 0x150
 
-	// primaryQ = rotatedMomentumQ * thisConfig->mPrimaryRotation;
+	primaryQ = rotatedMomentumQ * thisConfig->mPrimaryRotation;
 
 	if (mFlags.typeView & 1) {
 		Quat halfTimeQ; // 0x140
-		// halfTimeQ = Quat((0.5f * timeStep) * primaryQ.w, primaryQ.v * (0.5f * timeStep));
+		halfTimeQ = primaryQ * (0.5f * timeStep);
 
 		Quat primaryRotatedQ; // 0x130
-		// primaryRotatedQ = halfTimeQ + thisConfig->mPrimaryRotation;
+		primaryRotatedQ = thisConfig->mPrimaryRotation + halfTimeQ;
 
 		Vector3f vec1; // 0x124
 		f32 yDeg48 = getYDegree(thisConfig->mPrimaryRotation, vec1);
@@ -351,12 +350,12 @@ void Game::Rigid::integrate(f32 timeStep, int configIdx)
 				thisConfig->mPrimaryRotation = primaryRotatedQ;
 			}
 		} else {
-			// thisConfig->mPrimaryRotation = thisConfig->mPrimaryRotation + halfTimeQ;
+			thisConfig->mPrimaryRotation = thisConfig->mPrimaryRotation + halfTimeQ;
 		}
 	} else {
 		Quat q5; // 0x108
-		         // q5                           = Quat((0.5f * timeStep) * primaryQ.w, primaryQ.v * (0.5f * timeStep));
-		         // thisConfig->mPrimaryRotation = thisConfig->mPrimaryRotation + q5;
+		q5                           = primaryQ * (0.5f * timeStep);
+		thisConfig->mPrimaryRotation = thisConfig->mPrimaryRotation + q5;
 	}
 
 	thisConfig->mPrimaryRotation.normalise();
@@ -793,48 +792,47 @@ lbl_8013AB2C:
  */
 bool Game::Rigid::resolveCollision(int configIndex, Vector3f& collisionPoint, Vector3f& collisionNormal, f32 restitutionCoefficient)
 {
-	if (DynamicsParms::mInstance->mMicroCollision.mValue == 1120.0f) {
-#if _DEBUG
-		// Stripped from release build
-		OSReport("rassclaaat");
-#endif
+	if (1120.0f * DynamicsParms::mInstance->mMicroCollision.mValue > 0.0f) {
+		// probably some commented-out/otherwise stripped code here
+		restitutionCoefficient = restitutionCoefficient;
 	}
+	f32 zero = 0.0f;
 
-	RigidConfig* config = &this->mConfigs[configIndex];
+	RigidConfig& config      = mConfigs[configIndex];
+	Vector3f positionDelta   = collisionPoint - config.mPosition;
+	Vector3f scratch         = config.mRotatedMomentum;
+	scratch                  = scratch.cross(positionDelta);
+	Vector3f contactVelocity = config.mVelocity + scratch;
+	contactVelocity.negate2();
 
-	Vector3f positionDelta = collisionPoint - config->mPosition;
+	f32 impulseMagnitude = contactVelocity.dot(collisionNormal);
 
-	Vector3f angularMomentum(config->mRotatedMomentum.z * positionDelta.y - config->mRotatedMomentum.y * positionDelta.z,
-	                         config->mRotatedMomentum.x * positionDelta.z - config->mRotatedMomentum.z * positionDelta.x,
-	                         config->mRotatedMomentum.y * positionDelta.x - config->mRotatedMomentum.x * positionDelta.y);
-
-	config->mRotatedMomentum = angularMomentum;
-
-	Vector3f impulse = angularMomentum + config->mVelocity;
-	impulse.negate2();
-
-	f32 impulseMagnitude = impulse.dot(collisionNormal);
-
-	// If there's a collision
-	if (impulseMagnitude < 0.0f * -0.0f) {
+	if (impulseMagnitude < -zero) {
 		return false;
 	}
 
-	// If it's tiny, just set it to 0
-	if (fabs(impulseMagnitude) <= 0.0f) {
+	if (absF(impulseMagnitude) <= zero) {
 		restitutionCoefficient = 1.0f;
-		impulseMagnitude       = 0.0f;
+		impulseMagnitude       = zero;
 	}
 
-	Vector3f rotatedVelocity = config->mRotatedTransform.mtxMult(positionDelta.cross(collisionNormal));
+	f32 impulseDenominator = mTimeStep;
+	impulseMagnitude       = -(1.0f + restitutionCoefficient) * impulseMagnitude;
+	f32 impulseNumerator   = impulseMagnitude;
 
-	f32 dynamicCoefficient = collisionNormal.dot(rotatedVelocity);
-	f32 scalar             = -(1.0f + restitutionCoefficient) * impulseMagnitude / dynamicCoefficient;
+	scratch = positionDelta;
+	scratch.cross(scratch, collisionNormal);
+	scratch = config.mRotatedTransform.mtxMult(scratch);
+	scratch.cross(scratch, positionDelta);
+	impulseDenominator += collisionNormal.dot(scratch);
+	Vector3f collisionImpulse = collisionNormal;
+	collisionImpulse *= -(impulseNumerator / impulseDenominator);
+	config.mVelocity = config.mVelocity + collisionImpulse * mTimeStep;
 
-	Vector3f collisionImpulse = positionDelta * (collisionNormal * scalar);
-
-	config->mVelocity = config->mVelocity + collisionImpulse;
-	config->setMomentum(positionDelta.cross(collisionImpulse));
+	scratch = positionDelta;
+	scratch.cross(scratch, collisionImpulse);
+	config.mMomentum        = config.mMomentum + scratch;
+	config.mRotatedMomentum = config.mRotatedTransform.mtxMult(config.mMomentum);
 	return true;
 	/*
 	stwu     r1, -0x90(r1)

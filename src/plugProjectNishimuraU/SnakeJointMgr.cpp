@@ -1,5 +1,11 @@
 #include "Game/SnakeJointMgr.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "246-SnakeJointMgr";
+}
+
 namespace Game {
 
 namespace {
@@ -156,8 +162,8 @@ void SnakeJointMgr::makeMatrix()
 
 	for (int i = 0; i < 5; i++) {
 		Vector3f xVec  = mJointMatrices[i + 1]->getColumn(3) - mJointMatrices[i]->getColumn(3); // f0, f1, f2
-		Vector3f nextZ = mJointMatrices[i + 1]->getColumn(2);
-		Vector3f yVec  = cross(xVec, nextZ);
+		Vector3f nextZ = mJointMatrices[i]->getColumn(2);
+		Vector3f yVec  = cross(nextZ, xVec);
 		Vector3f zVec  = cross(xVec, yVec);
 		f32 len        = xVec.normalise();
 		yVec.normalise();

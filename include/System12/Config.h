@@ -13,6 +13,9 @@ class Config : public TagParameters {
 public:
 	Config();
 
+	void setControllerParam();
+	void draw();
+	void calc();
 	void load(char*);
 
 	// _00     = VTBL
@@ -45,6 +48,8 @@ public:
 	PrimTagParm<int> mPikmin1FastFileSelect;      // _180
 	PrimTagParm<int> mPikmin1FastWiiMenu;         // _190
 	StringTagParm mReplayFileName;                // _1A0
+
+	static bool sReady;
 };
 
 } // namespace System12

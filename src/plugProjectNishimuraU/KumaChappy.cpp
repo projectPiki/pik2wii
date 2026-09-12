@@ -401,8 +401,7 @@ void Obj::updateTargetDistance()
 void Obj::updateHomePosition()
 {
 
-	mHomePosition = Vector3f(C_GENERALPARMS.mHomeRadius.mValue * cosf(mFaceDir) + mPosition.x, mPosition.y,
-	                         C_GENERALPARMS.mHomeRadius.mValue * sinf(mFaceDir) + mPosition.z);
+	mHomePosition = getForwardHomePosition();
 	/*
 	stwu     r1, -0x20(r1)
 	lfs      f0, lbl_8051BB68@sda21(r2)

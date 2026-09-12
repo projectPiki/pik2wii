@@ -96,12 +96,9 @@ void Layout::Animator::setup(nw4r::lyt::AnimTransform* anim)
 {
 	_28 = anim;
 	if (anim) {
-		u16 size   = anim->GetFrameSize();
-		mMaxFrames = (size / 1.0f);
-		FrameCounter::resetUserFrameRange();
+		setupMaxFrames(anim->GetFrameSize() / 1.0f);
 	} else {
-		mMaxFrames = 0.0f;
-		FrameCounter::resetUserFrameRange();
+		setupMaxFrames(0.0f);
 	}
 }
 

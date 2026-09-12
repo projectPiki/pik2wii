@@ -9,8 +9,11 @@
 #include "math.h"
 #include "nans.h"
 
-static const int padding[]    = { 0, 0, 0 };
-static const char className[] = "itemWeed";
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "itemWeed";
+}
 
 #define WEED_NECTAR_CHANCE (0.08f)
 #define WEED_MAX_ATTACKERS (5)

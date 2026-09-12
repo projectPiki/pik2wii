@@ -114,52 +114,9 @@ bool Creature::judgeNearWithPlayer(const Vec& pos1, const Vec& pos2, f32 near, f
  */
 bool Creature::isNear(Game::Creature* obj, f32 near)
 {
-	Vec* pos  = (Vec*)mGameObj->getSound_PosPtr();
-	Vec* pos2 = (Vec*)obj->getSound_PosPtr();
+	Vec* pos = (Vec*)mGameObj->getSound_PosPtr();
 
-	return judgeNearWithPlayer(*pos, *pos2, near, near / 2);
-	/*
-	stwu     r1, -0x20(r1)
-	mflr     r0
-	stw      r0, 0x24(r1)
-	stfd     f31, 0x10(r1)
-	psq_st   f31, 24(r1), 0, qr0
-	stw      r31, 0xc(r1)
-	stw      r30, 8(r1)
-	mr       r30, r3
-	fmr      f31, f1
-	lwz      r3, 0x2c(r3)
-	mr       r31, r4
-	lwz      r12, 0(r3)
-	lwz      r12, 0x100(r12)
-	mtctr    r12
-	bctrl
-	mr       r0, r3
-	mr       r3, r31
-	lwz      r12, 0(r31)
-	mr       r31, r0
-	lwz      r12, 0x100(r12)
-	mtctr    r12
-	bctrl
-	lwz      r12, 0x28(r30)
-	mr       r5, r3
-	lfs      f0, lbl_80520C54@sda21(r2)
-	fmr      f1, f31
-	lwz      r12, 0x34(r12)
-	mr       r3, r30
-	fmuls    f2, f31, f0
-	mr       r4, r31
-	mtctr    r12
-	bctrl
-	psq_l    f31, 24(r1), 0, qr0
-	lwz      r0, 0x24(r1)
-	lfd      f31, 0x10(r1)
-	lwz      r31, 0xc(r1)
-	lwz      r30, 8(r1)
-	mtlr     r0
-	addi     r1, r1, 0x20
-	blr
-	*/
+	return judgeNearWithPlayer(*pos, *(Vec*)obj->getSound_PosPtr(), near, near / 2);
 }
 
 /**
@@ -191,7 +148,7 @@ void Creature::loopCalc(FrameCalcArg& arg)
 
 	u8 players = PSSystem::SingletonBase<ObjCalcBase>::sInstance->getPlayerNo(this);
 	PSMTXMultVec(*JAIBasic::msBasic->mCameras[players].mMtx, jai->_24, &pos);
-	dist = pikmin2_sqrtf((pos.x * pos.x) + (pos.y * pos.y) + (pos.z * pos.z));
+	dist = PSMath::calcMagnitude(pos);
 
 	for (u8 i = 0; i < jai->mHandleCount; i++) {
 		JAISound* se = jai->mSounds[i];
@@ -304,7 +261,8 @@ JAISound* Creature::startSoundInner(PSM::StartSoundArg& arg)
 
 	u32 sound            = arg.mSoundID;
 	u32 unk              = arg._08;
-	JAInter::Object* jai = arg.mObj->getJAIObject();
+	Creature* obj        = arg.mObj;
+	JAInter::Object* jai = obj->getJAIObject();
 	JAISound** temp      = nullptr;
 	if (!(sound & 0x800)) {
 		temp = jai->getUseSoundHandlePointer(sound);
@@ -314,7 +272,7 @@ JAISound* Creature::startSoundInner(PSM::StartSoundArg& arg)
 	}
 
 	if (temp) {
-		JAInter::Actor actor(this, jai->_24);
+		JAInter::Actor actor(obj, jai->_24);
 		JAIBasic::msBasic->startSoundActorT(sound, temp, &actor, unk, PSSystem::SingletonBase<ObjCalcBase>::sInstance->getPlayerNo(this));
 		onPlayingSe(sound, *temp);
 		if (*temp) {
@@ -327,14 +285,14 @@ JAISound* Creature::startSoundInner(PSM::StartSoundArg& arg)
 		for (u8 i = 0; i < jai->mHandleCount; i++) {
 			if (!((1 << i) & jai->mUseHandleFlag) && jai->mSounds[i]->mSoundInfo->mPriority <= prio) {
 				id   = i;
-				prio = jai->mSounds[i]->mSoundInfo->mPriority;
+				prio = jai->mSounds[id]->mSoundInfo->mPriority;
 			}
 		}
 
 		if (id != 255 && JAInter::SoundTable::getInfoPointer(sound)->mPriority >= prio) {
 			jai->handleStop(id, 0);
 
-			JAInter::Actor actor(this, jai->_24);
+			JAInter::Actor actor(obj, jai->_24);
 			JAIBasic::msBasic->startSoundActorT(sound, getHandleArea(id), &actor, unk,
 			                                    PSSystem::SingletonBase<ObjCalcBase>::sInstance->getPlayerNo(this));
 			onPlayingSe(sound, *getHandleArea(id));
@@ -711,62 +669,64 @@ void CreatureAnime::setAnime(JAIAnimeSoundData* data, u32 a1, f32 a2, f32 a3)
  */
 void CreatureAnime::playActorAnimSound(JAInter::Actor* actor, f32 pitchmod, u8 a2)
 {
-	JUT_ASSERTLINE(554, mSoundData->mEntryNum < mAnimID, "JAIAnimeSound::playActorAnimSound  dataCounterが異常です。\n");
-	JAIAnimeSoundData* data = &mSoundData[mAnimID];
-	u8 max                  = mHandleCount;
-	for (u8 i = 0; i < max; i++) {
+	u8 i = 0;
+	JUT_ASSERTLINE(554, mAnimID < mSoundData->mEntryNum, "JAIAnimeSound::playActorAnimSound  dataCounterが異常です。\n");
+	JAIAnimeFrameSoundData* data = &mSoundData->mSndEntries[mAnimID];
+	u8 max                       = mHandleCount;
+	while (i < max) {
 		u8* handle = mSoundStatus;
 		if (handle[i]) {
 			JAISound* se = mSounds[i];
 			if (!se) {
 				break;
 			}
-			if (data->_08 != se->mSoundID) {
+			if (data->mSoundID != se->mSoundID) {
+				i++;
 				continue;
 			}
-			if (!(data->_08 & 0xc00)) {
+			if (!(data->mSoundID & 0xc00)) {
 				mAnimID += mSoundFlags;
 				return;
-			} else {
-				break;
 			}
+			break;
 		}
-
-		if (!(mUseHandleFlag & 1 << i)) {
-			JAISound** se = mSounds;
-			if (!se) {
-				break;
-			}
-			if (i != max - 1) {
-				continue;
-			}
-			int maxTime = 0;
-			int useId   = 0;
+		if (mUseHandleFlag & 1 << i) {
+			i++;
+			continue;
+		}
+		JAISound** se = mSounds;
+		if (!se[i]) {
+			break;
+		}
+		if (i == max - 1) {
+			u32 maxTime = 0;
+			u8 useId    = 0;
 			for (u8 j = 0; j < max; j++) {
-				if (!handle[j] && (se[j]->mActiveTimer < maxTime)) {
+				if (!handle[j] && maxTime < se[j]->mActiveTimer) {
 					maxTime = se[j]->mActiveTimer;
 					useId   = j;
 				}
 			}
-
-			// if (a2 != max && (!(data->_10[0] & 8) || _6C == data->_10[7]) && _5C == 1 && (max & 2 == 0) || (_5C == -1 && (max & 1 == 0)))
-			// {
-			JAISound** sound = &mSounds[a2];
-			if (*sound) {
-				handleStop(a2, 0);
-			}
-			startAnimSound(data->_08, sound, actor, a2);
-			if (*sound) {
-				mBasEntries[a2]  = (JAIAnimeFrameSoundData*)data;
-				mSoundStatus[a2] = true;
-				(*sound)->setVolume((f32)data->_08 / 127.0f, 0, SOUNDPARAM_Unk5);
-				(*sound)->setPitch((f32)data->_18 * (1.0f - pitchmod), 0, SOUNDPARAM_Unk5);
-			}
-			//}
-			mAnimID += mSoundFlags;
-			return;
+			i = useId;
+			break;
+		}
+		i++;
+	}
+	if (i != max && (!(data->mPlayFlags & 8) || mFrameTimer == data->mActivationFrame)
+	    && ((mSoundFlags == 1 && !(data->mPlayFlags & 2)) || (mSoundFlags == -1 && !(data->mPlayFlags & 1)))) {
+		JAISound** sound = &mSounds[i];
+		if (*sound) {
+			handleStop(i, 0);
+		}
+		startAnimSound(data->mSoundID, sound, actor, a2);
+		if (*sound) {
+			mBasEntries[i]  = data;
+			mSoundStatus[i] = true;
+			(*sound)->setVolume((f32)data->mVolume / 127.0f, 0, SOUNDPARAM_Unk5);
+			(*sound)->setPitch((f32)data->mPitchScale * (pitchmod - 1.0f) / 32.0f + data->mPitch, 0, SOUNDPARAM_Unk5);
 		}
 	}
+	mAnimID += mSoundFlags;
 	/*
 	stwu     r1, -0x50(r1)
 	mflr     r0
@@ -1026,52 +986,6 @@ void CreatureAnime::onCalcOn()
 
 	setAnimSoundActor(&actor, mGameObj->getSound_CurrAnimFrame(), mGameObj->getSound_CurrAnimSpeed(),
 	                  PSSystem::SingletonBase<ObjCalcBase>::sInstance->getPlayerNo(this));
-	/*
-	stwu     r1, -0x30(r1)
-	mflr     r0
-	stw      r0, 0x34(r1)
-	stfd     f31, 0x28(r1)
-	stw      r31, 0x24(r1)
-	stw      r30, 0x20(r1)
-	or.      r30, r3, r3
-	lwz      r7, 0x54(r3)
-	bne      lbl_8045E204
-	mr       r4, r7
-	b        lbl_8045E208
-
-lbl_8045E204:
-	mr       r4, r30
-
-lbl_8045E208:
-	li       r6, -1
-	li       r5, 0
-	li       r0, 1
-	stw      r4, 8(r1)
-	lwz      r3,
-"sInstance__Q28PSSystem34SingletonBase<Q23PSM11ObjCalcBase>"@sda21(r13) mr r4,
-r30 stw      r7, 0xc(r1) stw      r6, 0x10(r1) stw      r5, 0x14(r1) stb r0,
-0x18(r1) lwz      r12, 0(r3) lwz      r12, 0xc(r12) mtctr    r12 bctrl mr r31,
-r3 lwz      r3, 0x2c(r30) lwz      r12, 0(r3) lwz      r12, 0x10c(r12) mtctr r12
-	bctrl
-	lwz      r3, 0x2c(r30)
-	fmr      f31, f1
-	lwz      r12, 0(r3)
-	lwz      r12, 0x108(r12)
-	mtctr    r12
-	bctrl
-	fmr      f2, f31
-	mr       r5, r31
-	addi     r3, r30, 0x30
-	addi     r4, r1, 8
-	bl       setAnimSoundActor__13JAIAnimeSoundFPQ27JAInter5ActorffUc
-	lwz      r0, 0x34(r1)
-	lfd      f31, 0x28(r1)
-	lwz      r31, 0x24(r1)
-	lwz      r30, 0x20(r1)
-	mtlr     r0
-	addi     r1, r1, 0x30
-	blr
-	*/
 }
 
 /**
@@ -1284,12 +1198,11 @@ bool EnemyBase::calcKehai()
 	{
 		Game::Navi* navi = *iterator;
 		if (navi->mController1) {
-			Vector3f pos = navi->getPosition();
-			volatile Vec pos2;
-			pos2.x = pos.x;
-			pos2.y = pos.y;
-			pos2.z = pos.z;
-			if (judgeNearWithPlayer(enemypos, *(Vec*)&pos, CreaturePrm::cVolZeroDist_Kehai[getCastType() - 2],
+			Vector3f position = navi->getPosition();
+			JGeometry::TVec3f pos;
+			pos.set(position.x, position.y, position.z);
+			Vec naviPosition = pos;
+			if (judgeNearWithPlayer(enemypos, naviPosition, CreaturePrm::cVolZeroDist_Kehai[getCastType() - 2],
 			                        CreaturePrm::cVolZeroDist_InnerSize_Kehai[getCastType() - 2])) {
 				return true;
 			}
@@ -1657,7 +1570,6 @@ void EnemyBoss::onCalcOn()
 {
 	calcDistance();
 	EnemyBase::onCalcOn();
-	FORCE_DONT_INLINE;
 }
 
 /**
@@ -1671,10 +1583,10 @@ void EnemyBoss::calcDistance()
 	CI_LOOP(iterator)
 	{
 		Game::Navi* navi = *iterator;
-		if (navi->isAlive()) {
+		if (navi->mController1) {
 			Vector3f pos     = mGameObj->getPosition();
 			Vector3f navipos = navi->getPosition();
-			f32 cdist        = pos.distance(navipos);
+			f32 cdist        = PSMath::calcDistance(pos, navipos);
 			if (cdist < dist) {
 				dist = cdist;
 			}
@@ -2873,8 +2785,7 @@ JAISound* Navi::startSound(u32 soundID, u32 flag)
 		stopWaitVoice();
 		break;
 	case PSSE_PL_ORIMA_DAMAGE:
-		startSound(getManType() + PSSE_PL_DAMAGE_ORIMA, 0);
-		return;
+		return startSound(getManType() + PSSE_PL_DAMAGE_ORIMA, 0);
 	}
 
 	PSM::StartSoundArg arg(this, soundID, flag);
@@ -2882,6 +2793,7 @@ JAISound* Navi::startSound(u32 soundID, u32 flag)
 	if (soundID >= PSSE_PL_WAIT_JUMP_ORIMA && soundID <= PSSE_PL_WAIT_CHAT_SHACHO) {
 		mCurrSound = se;
 	}
+	return se;
 	/*
 	stwu     r1, -0x30(r1)
 	mflr     r0
@@ -2968,31 +2880,16 @@ lbl_80462D80:
  * @note Address: 0x80462D9C
  * @note Size: 0x28
  */
-int Navi::getManType()
+Navi::ManType Navi::getManType()
 {
 	if (mRappa.mId == 13) {
-		return 0;
+		return ManType_Olimar;
 	}
 	
-	int ret = 2;
 	if (mRappa.mId == 14) {
-		ret = 1;
+		return ManType_Louie;
 	}
-	return ret;
-	/*
-	lwz      r0, 0x88(r3)
-	cmplwi   r0, 0xd
-	bne      lbl_80462DB0
-	li       r3, 0
-	blr
-
-lbl_80462DB0:
-	cmplwi   r0, 0xe
-	li       r3, 2
-	bnelr
-	li       r3, 1
-	blr
-	*/
+	return ManType_President;
 }
 
 /**
@@ -3002,10 +2899,10 @@ lbl_80462DB0:
 JAISound* Navi::playShugoSE()
 {
 	u32 sound;
-	if (getManType() == 0) {
+	if (getManType() == ManType_Olimar) {
 		sound = PSSE_PL_SHUGO;
 	} else {
-		sound = (getManType() - 1 == 1) + 0xa0;
+		sound = PSSE_PL_SYUGO_SHACHO + ((getManType() == ManType_Louie) ? -1 : 0);
 	}
 	return startSound(sound, 0);
 
@@ -3076,10 +2973,10 @@ lbl_80462E40:
 JAISound* Navi::playKaisanSE()
 {
 	u32 sound;
-	if (getManType() == 0) {
+	if (getManType() == ManType_Olimar) {
 		sound = PSSE_PL_KAISAN;
 	} else {
-		sound = ((getManType() - 1) == 1) + PSSE_PL_KAISAN_SHACHO;
+		sound = PSSE_PL_KAISAN_SHACHO + ((getManType() == ManType_Louie) ? -1 : 0);
 	}
 	return startSound(sound, 0);
 	/*

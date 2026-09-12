@@ -1,4 +1,5 @@
 #include "PSM/ObjCalc.h"
+#include "PSMath.h"
 #include "Iterator.h"
 #include "Game/Navi.h"
 
@@ -45,32 +46,16 @@ u8 ObjCalc_2PGame::getPlayerNo(Vec& pos)
 		CI_LOOP(it)
 		{
 			Game::Navi* navi = *it;
-			Vector3f pos     = navi->getPosition();
-			f32 x, y, z;
-			z = pos.z;
-			y = pos.y;
-			x = pos.x;
-			P2ASSERTLINE(65, navi);
+			Vector3f npos    = navi->getPosition();
+			P2ASSERTLINE(65, &npos != 0);
 			P2ASSERTLINE(66, i < 2);
 
-			// this makes the stack line up, but uhhhhh
-			volatile Vector3f v1 = pos;
-			volatile Vector3f v2 = pos;
-			volatile Vector3f v3 = pos;
-			volatile Vector3f v4 = pos;
-			volatile Vector3f v5 = pos;
-			volatile Vector3f v6 = pos;
+			dists[i] = PSMath::calcSquareDistance(pos, npos);
 			i++;
-
-			Vector3f dist;
-			dist.x   = pos.x - x;
-			dist.y   = pos.y - y;
-			dist.z   = pos.z - z;
-			dists[i] = dist.sqrMagnitude();
 		}
 		return !(dists[0] < dists[1]);
 	default:
-		JUT_PANICLINE(77, "P2Assert");
+		P2ASSERTLINE(77, false);
 		return 0;
 	}
 	/*

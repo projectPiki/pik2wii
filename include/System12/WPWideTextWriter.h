@@ -27,7 +27,7 @@ public:
 	void setRPSysTagProcessor(System12::WPTagProcessor* processor)
 	{
 		mTagProcessor2 = processor;
-		nw4r::ut::TextWriterBase<wchar_t>::SetTagProcessor(processor);
+		SetTagProcessor(mTagProcessor2);
 	}
 
 	u32 getPageIdx();

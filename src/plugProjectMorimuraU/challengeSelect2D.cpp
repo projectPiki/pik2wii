@@ -29,12 +29,13 @@ f32 TChallengeSelect::mTimerSpeed        = 0.15f;
 f32 TChallengeSelect::mMoveSpeed         = 12.0f;
 f32 TChallengeSelect::mSelectIconScale   = 1.5f;
 
-int TChallengeSelect::mRightOffset          = 0;
-int TChallengeSelect::mDownOffset           = 0;
-u8 TChallengeSelect::mFrameAnimAlpha        = 0;
-bool TChallengeSelect::mAllCourseOpen       = false;
-bool TChallengeSelect::mForceDemoStart      = false;
-int TChallengeSelect::mDivePikiNum          = 0;
+int TChallengeSelect::mRightOffset     = 0;
+int TChallengeSelect::mDownOffset      = 0;
+u8 TChallengeSelect::mFrameAnimAlpha   = 0;
+bool TChallengeSelect::mAllCourseOpen  = false;
+bool TChallengeSelect::mForceDemoStart = false;
+int TChallengeSelect::mDivePikiNum     = 0;
+TChallengeSelect::StaticValues TChallengeSelect::mMetOffset;
 JKRHeap* TChallengeSelect::mDebugHeapParent = nullptr;
 JKRExpHeap* TChallengeSelect::mDebugHeap    = nullptr;
 
@@ -66,7 +67,7 @@ void TChallengePiki::reset()
 	mGoalYPos = 0.0f;
 	mYOffset  = 0.0f;
 	for (int i = 0; i < 50; i++) {
-		mPosInfo[i].mState = 0;
+		mPosInfo[i].mState = ChallengePiki_Inactive;
 	}
 }
 
@@ -76,17 +77,17 @@ void TChallengePiki::reset()
  */
 void TChallengePiki::jumpStart(f32 time)
 {
-	mVec[0]  = Vector2f(mPanes[0]->getGlbVtx(GLBVTX_BtmLeft).x - mPanes[1]->getGlbVtx(GLBVTX_BtmRight).x,
-	                    mPanes[0]->getGlbVtx(GLBVTX_BtmLeft).y - mPanes[1]->getGlbVtx(GLBVTX_BtmRight).y);
-	mVec[1]  = Vector2f(mPanes[0]->getGlbVtx(GLBVTX_BtmLeft).x - mPanes[2]->getGlbVtx(GLBVTX_BtmLeft).x,
-	                    mPanes[0]->getGlbVtx(GLBVTX_BtmLeft).y - mPanes[2]->getGlbVtx(GLBVTX_BtmLeft).y);
+	mVec[0].set(mPanes[0]->getGlbVtx(GLBVTX_BtmLeft).x - mPanes[1]->getGlbVtx(GLBVTX_BtmRight).x,
+	            mPanes[0]->getGlbVtx(GLBVTX_BtmLeft).y - mPanes[1]->getGlbVtx(GLBVTX_BtmRight).y);
+	mVec[1].set(mPanes[0]->getGlbVtx(GLBVTX_BtmLeft).x - mPanes[2]->getGlbVtx(GLBVTX_BtmLeft).x,
+	            mPanes[0]->getGlbVtx(GLBVTX_BtmLeft).y - mPanes[2]->getGlbVtx(GLBVTX_BtmLeft).y);
 	mYOffset = -500.0f;
 	for (int i = 0; i < 50; i++) {
-		mPosInfo[i].mTimer      = (0.1f * randFloat()) + -(0.1f * (f32)i - time);
-		mPosInfo[i].mCurrentPos = Vector2f(mPanes[0]->getGlbVtx(GLBVTX_BtmLeft).x, mPanes[0]->getGlbVtx(GLBVTX_BtmLeft).y);
-		//	mPosInfo[i].mInitialPos = mPosInfo[i].mCurrentPos;
-		// whole thing wont inline when this is enabled
-		mPosInfo[i]._08 = i % 3;
+		mPosInfo[i].mTimer        = 0.1f * randFloat() + -(0.1f * i - time);
+		mPosInfo[i].mCurrentPos   = Vector2f(mPanes[0]->getGlbVtx(GLBVTX_BtmLeft).x, mPanes[0]->getGlbVtx(GLBVTX_BtmLeft).y);
+		mPosInfo[i].mInitialPos.x = mPosInfo[i].mCurrentPos.x;
+		mPosInfo[i].mInitialPos.y = mPosInfo[i].mCurrentPos.y;
+		mPosInfo[i]._08           = i % 3;
 
 		mPosInfo[i].mDeviation.x = 30.0f * randFloat();
 		if (randFloat() > 0.5f) {
@@ -141,7 +142,7 @@ void TChallengePiki::update()
 					}
 					mPosInfo[i].mCurrentPos.x = -(mPosInfo[i].mDeviation.x * sinf(mPosInfo[i].mTimer) - mPosInfo[i].mInitialPos.x);
 					mPosInfo[i].mCurrentPos.y
-					    = (FABS(sinf(mPosInfo[i].mTimer * 2.0f) * mPosInfo[i].mDeviation.y) - mPosInfo[i].mInitialPos.y);
+					    = (mPosInfo[i].mInitialPos.y - FABS(sinf(mPosInfo[i].mTimer * 2.0f) * mPosInfo[i].mDeviation.y));
 				}
 				break;
 			case 1:
@@ -624,7 +625,7 @@ void TChallengeDoping::update()
 	if (mCurrentFillLevel > 1.0f) {
 		mCurrentFillLevel = 1.0f;
 	}
-	mPaneBase->updateScale(mCurrentFillLevel);
+	mPaneBase->updateScale(1.0f, mCurrentFillLevel);
 
 	f32 calc = mCurrentFillLevel * 3.0f;
 	mBubblePanes[0]->hide();
@@ -773,9 +774,9 @@ void TChallengePanel::update(int index, bool flag)
 	int id = mIndex;
 	// this is wrong, I hate it here
 	int a2 = (index / 5);
-	int a1 = (a2 % 5);
+	int a1 = (index % 5);
 	int a4 = (id / 5);
-	int a3 = (a4 % 5);
+	int a3 = (id % 5);
 
 	if (index != id) {
 		if (a1 == a3) {
@@ -1227,7 +1228,7 @@ TChallengePlayModeScreen::TChallengePlayModeScreen(JKRArchive* arc, int anims)
     : TScreenBase(arc, anims)
 {
 	mSphereTex          = nullptr;
-	mPane5              = nullptr;
+	mPaneLouie          = nullptr;
 	mFuriko             = nullptr;
 	mEfxCursor1         = nullptr;
 	mEfxCursor2         = nullptr;
@@ -1239,11 +1240,11 @@ TChallengePlayModeScreen::TChallengePlayModeScreen(JKRArchive* arc, int anims)
 	mMovePos            = 800.0f;
 	mPaneList0[0]       = nullptr;
 	mScaleMgr[0]        = nullptr;
-	mPane3              = nullptr;
+	mPaneOlimarP1       = nullptr;
 	mAlphaTimer         = 0.0f;
 	mPaneList0[1]       = nullptr;
 	mScaleMgr[1]        = nullptr;
-	mPane4              = nullptr;
+	mPaneOlimarP2       = nullptr;
 	mScale              = 0.0f;
 	for (int i = 0; i < 3; i++) {
 		mPaneList1[i]   = nullptr;
@@ -1299,16 +1300,16 @@ void TChallengePlayModeScreen::create(char const* path, u32 flags)
 	mAnimScreen[0]->mMesgAlpha = 1.0f - mNoControllerTimer;
 	mAnimScreen[3]->mMesgAlpha = mNoControllerTimer;
 
-	mPane3 = mScreenObj->search('P1orima');
-	P2ASSERTLINE(795, mPane3);
+	mPaneOlimarP1 = mScreenObj->search('P1orima');
+	P2ASSERTLINE(795, mPaneOlimarP1);
 	mPaneList1[0] = mScreenObj->search('P1ori_l');
 	P2ASSERTLINE(797, mPaneList1[0]);
-	mPane4 = mScreenObj->search('P2orima');
-	P2ASSERTLINE(800, mPane4);
+	mPaneOlimarP2 = mScreenObj->search('P2orima');
+	P2ASSERTLINE(800, mPaneOlimarP2);
 	mPaneList1[1] = mScreenObj->search('P2ori_l');
 	P2ASSERTLINE(802, mPaneList1[1]);
-	mPane5 = mScreenObj->search('Plui');
-	P2ASSERTLINE(806, mPane5);
+	mPaneLouie = mScreenObj->search('Plui');
+	P2ASSERTLINE(806, mPaneLouie);
 	mPaneList1[2] = mScreenObj->search('P2lui_l');
 	P2ASSERTLINE(808, mPaneList1[2]);
 }
@@ -1496,33 +1497,31 @@ void TChallengePlayModeScreen::draw(Graphics& gfx, J2DPerspGraph* persp)
 		gfx.mOrthoGraph.setPort();
 
 		J2DPicture* pic = mSphereTex;
-		J2DPane* pic2   = mPane3;
-		u32 x1, y1, x2, y2;
-		y2 = pic->getHeight() * pic2->mScale.y * 1.1f;
-		x2 = pic->getWidth() * pic2->mScale.x * 1.1f;
-		y1 = (1.0f - mAlphaTimer) * pic->getHeight() * pic2->mScale.y * 1.1f + TChallengeSelect::mMetOffset._04 + pic2->mGlobalMtx[1][3];
-		x1 = TChallengeSelect::mMetOffset._00 + pic2->mGlobalMtx[0][3];
-		GXSetScissor(x1, y1, x2, y2);
 
+		// player 1 olimar
+		J2DPane* pic2 = mPaneOlimarP1;
+		GXSetScissor(TChallengeSelect::mMetOffset._00 + pic2->mGlobalMtx[0][3],
+		             (1.0f - mAlphaTimer) * (pic->getHeight() * pic2->getScaleY() * 1.1f)
+		                 + (TChallengeSelect::mMetOffset._04 + pic2->mGlobalMtx[1][3]),
+		             pic->getWidth() * pic2->getScaleX() * 1.1f, pic->getHeight() * pic2->getScaleY() * 1.1f);
 		pic  = mSphereTex;
-		pic2 = mPane3;
+		pic2 = mPaneOlimarP1;
 		pic->draw(TChallengeSelect::mMetOffset._00 + pic2->mGlobalMtx[0][3], TChallengeSelect::mMetOffset._04 + pic2->mGlobalMtx[1][3],
-		          pic->getWidth() * pic2->mScale.x * 1.1f, pic->getHeight() * pic2->mScale.y * 1.1f, false, false, false);
+		          pic->getWidth() * pic2->getScaleX() * 1.1f, pic->getHeight() * pic2->getScaleY() * 1.1f, false, false, false);
 		mSphereTex->calcMtx();
 
 		pic  = mSphereTex;
-		pic2 = mPane5;
-		y2   = pic->getHeight() * pic2->mScale.y * 1.1f;
-		x2   = pic->getWidth() * pic2->mScale.x * 1.1f;
-		y1   = (1.0f - mAlphaTimer) * pic->getHeight() * pic2->mScale.y * 1.1f + TChallengeSelect::mMetOffset._04 + pic2->mGlobalMtx[1][3];
-		x1   = TChallengeSelect::mMetOffset._00 + pic2->mGlobalMtx[0][3];
-		GXSetScissor(x1, y1, x2, y2);
-
+		pic2 = mPaneLouie;
+		GXSetScissor(TChallengeSelect::mMetOffset._00 + pic2->mGlobalMtx[0][3],
+		             (1.0f - mScale) * (pic->getHeight() * pic2->getScaleY() * 1.1f)
+		                 + (TChallengeSelect::mMetOffset._04 + pic2->mGlobalMtx[1][3]),
+		             (pic->getWidth() * pic2->getScaleX() * 1.1f) * 0.5f, pic->getHeight() * pic2->getScaleY() * 1.1f);
 		pic  = mSphereTex;
-		pic2 = mPane3;
+		pic2 = mPaneLouie;
 		pic->draw(TChallengeSelect::mMetOffset._00 + pic2->mGlobalMtx[0][3], TChallengeSelect::mMetOffset._04 + pic2->mGlobalMtx[1][3],
-		          pic->getWidth() * pic2->mScale.x * 1.1f, pic->getHeight() * pic2->mScale.y * 1.1f, false, false, false);
+		          pic->getWidth() * pic2->getScaleX() * 1.1f, pic->getHeight() * pic2->getScaleY() * 1.1f, false, false, false);
 		mSphereTex->calcMtx();
+
 		GXSetScissor(0, 0, 640, 480);
 
 		J2DPicture* pane = static_cast<J2DPicture*>(mScreenObj->search('P2orimaF'));
@@ -1533,7 +1532,7 @@ void TChallengePlayModeScreen::draw(Graphics& gfx, J2DPerspGraph* persp)
 		pane->calcMtx();
 		pane->setAlpha(0);
 
-		pane = static_cast<J2DPicture*>(mPane4);
+		pane = static_cast<J2DPicture*>(mPaneOlimarP2);
 		pane->setAlpha(mPaneList0[1]->mAlpha);
 		width = pane->getWidth();
 		pane->draw(pane->getGlbVtx(GLBVTX_BtmLeft).x + width, pane->getGlbVtx(GLBVTX_BtmRight).y, -width, pane->getHeight(), false, false,
@@ -1549,16 +1548,15 @@ void TChallengePlayModeScreen::draw(Graphics& gfx, J2DPerspGraph* persp)
 		pane->calcMtx();
 
 		pic  = mSphereTex;
-		pic2 = mPane5;
-		y2   = pic->getHeight() * pic2->mScale.y * 1.1f;
-		x2   = pic->getWidth() * pic2->mScale.x * 1.1f;
-		y1   = (1.0f - mAlphaTimer) * pic->getHeight() * pic2->mScale.y * 1.1f + TChallengeSelect::mMetOffset._04 + pic2->mGlobalMtx[1][3];
-		x1   = TChallengeSelect::mMetOffset._00 + pic2->mGlobalMtx[0][3];
-		GXSetScissor(x1, y1, x2, y2);
+		pic2 = mPaneLouie;
+		GXSetScissor(TChallengeSelect::mMetOffset._00 + pic2->mGlobalMtx[0][3],
+		             (1.0f - mScale) * (pic->getHeight() * pic2->getScaleY() * 1.1f)
+		                 + (TChallengeSelect::mMetOffset._04 + pic2->mGlobalMtx[1][3]),
+		             (pic->getWidth() * pic2->getScaleX() * 1.1f) * 0.5f, pic->getHeight() * pic2->getScaleY() * 1.1f);
 		pic  = mSphereTex;
-		pic2 = mPane4;
+		pic2 = mPaneOlimarP2;
 		pic->draw(TChallengeSelect::mMetOffset._00 + pic2->mGlobalMtx[0][3], TChallengeSelect::mMetOffset._04 + pic2->mGlobalMtx[1][3],
-		          pic->getWidth() * pic2->mScale.x * 1.1f, pic->getHeight() * pic2->mScale.y * 1.1f, false, false, false);
+		          pic->getWidth() * pic2->getScaleX() * 1.1f, pic->getHeight() * pic2->getScaleY() * 1.1f, false, false, false);
 		mSphereTex->calcMtx();
 
 		GXSetScissor(0, 0, 640, 480);
@@ -2117,6 +2115,19 @@ TChallengeSelect::TChallengeSelect()
 
 /**
  * @note Address: N/A
+ * @note Size:
+ */
+TChallengeSelect::~TChallengeSelect()
+{
+	if (mDebugHeap) {
+		mDisp->mDebugExpHeap->freeAll();
+		mDebugHeap->destroy();
+	}
+	mDebugHeap = nullptr;
+}
+
+/**
+ * @note Address: N/A
  * @note Size: 0x44
  * Probably something like this
  */
@@ -2215,10 +2226,9 @@ void TChallengeSelect::doCreate(JKRArchive* arc)
 	}
 
 	mCurrentSelection = selection;
-	// problem here (THiScore::changePangeInfo does something very similar to this, but here its not working)
-	int offs     = selection / 5;
-	mDownOffset  = offs;
-	mRightOffset = selection - offs * 5;
+	int offs          = selection / 5;
+	mDownOffset       = offs;
+	mRightOffset      = selection % 5;
 
 	u64 tags[2] = { '4901_00', '4910_00' };
 	mOffsMesg   = new TOffsetMsgSet(tags, '4900_00', 2);
@@ -2672,16 +2682,16 @@ bool TChallengeSelect::doUpdate()
 		f32 calc  = 1.0f - mLevelNameMoveTimer;
 		switch (mLevelNameMoveState) {
 		case 0:
-			XGoal = 1.3f;
+			YGoal = 1.3f;
 			break;
 		case 1:
-			XGoal = -1.3f;
+			YGoal = -1.3f;
 			break;
 		case 2:
-			YGoal = 1.25f;
+			XGoal = 1.25f;
 			break;
 		case 3:
-			YGoal = -1.25f;
+			XGoal = -1.25f;
 			break;
 		}
 		mPaneLevelName[i]->addOffset(calc * XGoal * mPaneLevelName[i]->getWidth(), calc * YGoal * mPaneLevelName[i]->getHeight());
@@ -5047,13 +5057,12 @@ void TChallengeSelect::reset()
  */
 void TChallengeSelect::jumpStart()
 {
+	J2DPane* pane = mPanelList[mCurrentSelection]->mPane2;
+	Vector2f pos(pane->mGlobalMtx[0][3], pane->mGlobalMtx[1][3]);
+
 	for (int i = 0; i < 5; i++) {
-		J2DPane* pane = mPanelList[mCurrentSelection]->mPane2;
-		Vector2f pos;
-		pos.x = pane->mGlobalMtx[0][3];
-		pos.y = pane->mGlobalMtx[1][3];
 		mChallengePiki[i]->setGoalPos(pos);
-		mChallengePiki[i]->jumpStart(-0.5f * (f32)i);
+		mChallengePiki[i]->jumpStart(i * -0.5f);
 	}
 }
 
@@ -5066,324 +5075,6 @@ void TChallengeSelect::demoStart()
 	reset();
 	mIsInDemo = true;
 	jumpStart();
-	/*
-	stwu     r1, -0x1a0(r1)
-	mflr     r0
-	stw      r0, 0x1a4(r1)
-	stfd     f31, 0x190(r1)
-	psq_st   f31, 408(r1), 0, qr0
-	stfd     f30, 0x180(r1)
-	psq_st   f30, 392(r1), 0, qr0
-	stfd     f29, 0x170(r1)
-	psq_st   f29, 376(r1), 0, qr0
-	stfd     f28, 0x160(r1)
-	psq_st   f28, 360(r1), 0, qr0
-	stfd     f27, 0x150(r1)
-	psq_st   f27, 344(r1), 0, qr0
-	stfd     f26, 0x140(r1)
-	psq_st   f26, 328(r1), 0, qr0
-	stfd     f25, 0x130(r1)
-	psq_st   f25, 312(r1), 0, qr0
-	stfd     f24, 0x120(r1)
-	psq_st   f24, 296(r1), 0, qr0
-	stfd     f23, 0x110(r1)
-	psq_st   f23, 280(r1), 0, qr0
-	stfd     f22, 0x100(r1)
-	psq_st   f22, 264(r1), 0, qr0
-	stfd     f21, 0xf0(r1)
-	psq_st   f21, 248(r1), 0, qr0
-	stfd     f20, 0xe0(r1)
-	psq_st   f20, 232(r1), 0, qr0
-	stfd     f19, 0xd0(r1)
-	psq_st   f19, 216(r1), 0, qr0
-	stfd     f18, 0xc0(r1)
-	psq_st   f18, 200(r1), 0, qr0
-	stmw     r25, 0xa4(r1)
-	li       r6, 0
-	lfs      f0, lbl_8051EF88@sda21(r2)
-	stb      r6, 0x135(r3)
-	mr       r9, r3
-	stfs     f0, 0x138(r3)
-
-lbl_80392D3C:
-	lwz      r8, 0x9c(r9)
-	li       r7, 0x30
-	mulli    r4, r7, 0x24
-	li       r5, 0
-	stfs     f0, 0xc(r8)
-	subfic   r0, r7, 0x32
-	stfs     f0, 0x10(r8)
-	add      r4, r8, r4
-	stfs     f0, 0x730(r8)
-	stw      r5, 0x24(r8)
-	stw      r5, 0x48(r8)
-	stw      r5, 0x6c(r8)
-	stw      r5, 0x90(r8)
-	stw      r5, 0xb4(r8)
-	stw      r5, 0xd8(r8)
-	stw      r5, 0xfc(r8)
-	stw      r5, 0x120(r8)
-	stw      r5, 0x144(r8)
-	stw      r5, 0x168(r8)
-	stw      r5, 0x18c(r8)
-	stw      r5, 0x1b0(r8)
-	stw      r5, 0x1d4(r8)
-	stw      r5, 0x1f8(r8)
-	stw      r5, 0x21c(r8)
-	stw      r5, 0x240(r8)
-	stw      r5, 0x264(r8)
-	stw      r5, 0x288(r8)
-	stw      r5, 0x2ac(r8)
-	stw      r5, 0x2d0(r8)
-	stw      r5, 0x2f4(r8)
-	stw      r5, 0x318(r8)
-	stw      r5, 0x33c(r8)
-	stw      r5, 0x360(r8)
-	stw      r5, 0x384(r8)
-	stw      r5, 0x3a8(r8)
-	stw      r5, 0x3cc(r8)
-	stw      r5, 0x3f0(r8)
-	stw      r5, 0x414(r8)
-	stw      r5, 0x438(r8)
-	stw      r5, 0x45c(r8)
-	stw      r5, 0x480(r8)
-	stw      r5, 0x4a4(r8)
-	stw      r5, 0x4c8(r8)
-	stw      r5, 0x4ec(r8)
-	stw      r5, 0x510(r8)
-	stw      r5, 0x534(r8)
-	stw      r5, 0x558(r8)
-	stw      r5, 0x57c(r8)
-	stw      r5, 0x5a0(r8)
-	stw      r5, 0x5c4(r8)
-	stw      r5, 0x5e8(r8)
-	stw      r5, 0x60c(r8)
-	stw      r5, 0x630(r8)
-	stw      r5, 0x654(r8)
-	stw      r5, 0x678(r8)
-	stw      r5, 0x69c(r8)
-	stw      r5, 0x6c0(r8)
-	mtctr    r0
-	cmpwi    r7, 0x32
-	bge      lbl_80392E38
-
-lbl_80392E2C:
-	stwu     r5, 0x24(r4)
-	addi     r7, r7, 1
-	bdnz     lbl_80392E2C
-
-lbl_80392E38:
-	addi     r6, r6, 1
-	lwz      r0, 0x108(r9)
-	lwz      r4, 0x9c(r9)
-	cmpwi    r6, 5
-	addi     r9, r9, 4
-	stw      r0, 0x72c(r4)
-	blt      lbl_80392D3C
-	li       r30, 0
-	lis      r4, 0x55555556@ha
-	stw      r30, mDivePikiNum__Q28Morimura16TChallengeSelect@sda21(r13)
-	li       r0, 1
-	mr       r26, r3
-	lfs      f21, lbl_8051EFA8@sda21(r2)
-	stb      r30, 0x144(r3)
-	addi     r25, r4, 0x55555556@l
-	lfd      f28, lbl_8051EFB0@sda21(r2)
-	lis      r31, 0x4330
-	stb      r0, 0x135(r3)
-	lfs      f29, lbl_8051EF90@sda21(r2)
-	lwz      r0, 0xfc(r3)
-	lwz      r3, 0x94(r3)
-	slwi     r0, r0, 2
-	lfs      f30, lbl_8051EF94@sda21(r2)
-	lwzx     r3, r3, r0
-	lfs      f31, lbl_8051EF98@sda21(r2)
-	lwz      r3, 8(r3)
-	lfs      f20, lbl_8051EF9C@sda21(r2)
-	lfs      f0, 0x8c(r3)
-	lfs      f24, 0x9c(r3)
-	fsubs    f25, f0, f21
-	lfs      f22, lbl_8051EFA4@sda21(r2)
-	lfs      f26, lbl_8051F074@sda21(r2)
-	lfs      f27, lbl_8051EF8C@sda21(r2)
-
-lbl_80392EBC:
-	xoris    r0, r30, 0x8000
-	lwz      r4, 0x9c(r26)
-	stw      r0, 0x84(r1)
-	addi     r3, r1, 0x2c
-	li       r5, 1
-	stw      r31, 0x80(r1)
-	stfs     f25, 0xc(r4)
-	lfd      f0, 0x80(r1)
-	stfs     f24, 0x10(r4)
-	fsubs    f0, f0, f28
-	lwz      r28, 0x9c(r26)
-	fmuls    f23, f26, f0
-	lwz      r4, 4(r28)
-	bl       getGlbVtx__7J2DPaneCFUc
-	lfs      f19, 0x30(r1)
-	addi     r3, r1, 0x20
-	lwz      r4, 0(r28)
-	li       r5, 0
-	bl       getGlbVtx__7J2DPaneCFUc
-	lfs      f0, 0x24(r1)
-	addi     r3, r1, 0x14
-	lwz      r4, 4(r28)
-	li       r5, 1
-	fsubs    f18, f0, f19
-	bl       getGlbVtx__7J2DPaneCFUc
-	lfs      f19, 0x14(r1)
-	addi     r3, r1, 8
-	lwz      r4, 0(r28)
-	li       r5, 0
-	bl       getGlbVtx__7J2DPaneCFUc
-	lfs      f0, 8(r1)
-	addi     r3, r1, 0x5c
-	li       r5, 0
-	fsubs    f0, f0, f19
-	stfs     f0, 0x14(r28)
-	stfs     f18, 0x18(r28)
-	lwz      r4, 8(r28)
-	bl       getGlbVtx__7J2DPaneCFUc
-	lfs      f19, 0x60(r1)
-	addi     r3, r1, 0x50
-	lwz      r4, 0(r28)
-	li       r5, 0
-	bl       getGlbVtx__7J2DPaneCFUc
-	lfs      f0, 0x54(r1)
-	addi     r3, r1, 0x44
-	lwz      r4, 8(r28)
-	li       r5, 0
-	fsubs    f18, f0, f19
-	bl       getGlbVtx__7J2DPaneCFUc
-	lfs      f19, 0x44(r1)
-	addi     r3, r1, 0x38
-	lwz      r4, 0(r28)
-	li       r5, 0
-	bl       getGlbVtx__7J2DPaneCFUc
-	lfs      f0, 0x38(r1)
-	mr       r27, r28
-	li       r29, 0
-	fsubs    f0, f0, f19
-	stfs     f0, 0x1c(r28)
-	stfs     f18, 0x20(r28)
-	stfs     f27, 0x730(r28)
-
-lbl_80392FB0:
-	bl       rand
-	xoris    r3, r3, 0x8000
-	xoris    r0, r29, 0x8000
-	stw      r3, 0x84(r1)
-	addi     r3, r1, 0x74
-	li       r5, 0
-	stw      r31, 0x80(r1)
-	lfd      f0, 0x80(r1)
-	stw      r0, 0x8c(r1)
-	fsubs    f0, f0, f28
-	stw      r31, 0x88(r1)
-	fdivs    f1, f0, f29
-	lfd      f0, 0x88(r1)
-	fsubs    f0, f0, f28
-	fnmsubs  f0, f30, f0, f23
-	fmadds   f0, f30, f1, f0
-	stfs     f0, 0x28(r27)
-	lwz      r4, 0(r28)
-	bl       getGlbVtx__7J2DPaneCFUc
-	lfs      f18, 0x78(r1)
-	addi     r3, r1, 0x68
-	lwz      r4, 0(r28)
-	li       r5, 0
-	bl       getGlbVtx__7J2DPaneCFUc
-	lfs      f0, 0x68(r1)
-	mulhw    r3, r25, r29
-	stfs     f0, 0x30(r27)
-	stfs     f18, 0x34(r27)
-	srwi     r0, r3, 0x1f
-	lfs      f0, 0x30(r27)
-	add      r0, r3, r0
-	mulli    r0, r0, 3
-	stfs     f0, 0x38(r27)
-	lfs      f0, 0x34(r27)
-	subf     r0, r0, r29
-	stfs     f0, 0x3c(r27)
-	stw      r0, 0x2c(r27)
-	bl       rand
-	xoris    r0, r3, 0x8000
-	stw      r31, 0x90(r1)
-	stw      r0, 0x94(r1)
-	lfd      f0, 0x90(r1)
-	fsubs    f0, f0, f28
-	fdivs    f0, f0, f29
-	fmuls    f0, f31, f0
-	stfs     f0, 0x40(r27)
-	bl       rand
-	xoris    r0, r3, 0x8000
-	stw      r31, 0x98(r1)
-	stw      r0, 0x9c(r1)
-	lfd      f0, 0x98(r1)
-	fsubs    f0, f0, f28
-	fdivs    f0, f0, f29
-	fcmpo    cr0, f0, f20
-	ble      lbl_8039309C
-	lfs      f1, 0x40(r27)
-	lfs      f0, lbl_8051EFA0@sda21(r2)
-	fmuls    f0, f1, f0
-	stfs     f0, 0x40(r27)
-
-lbl_8039309C:
-	bl       rand
-	xoris    r0, r3, 0x8000
-	addi     r29, r29, 1
-	stw      r0, 0x9c(r1)
-	cmpwi    r29, 0x32
-	li       r0, 2
-	stw      r31, 0x98(r1)
-	lfd      f0, 0x98(r1)
-	fsubs    f0, f0, f28
-	fdivs    f0, f0, f29
-	fmadds   f0, f21, f0, f22
-	stfs     f0, 0x44(r27)
-	stwu     r0, 0x24(r27)
-	blt      lbl_80392FB0
-	addi     r30, r30, 1
-	addi     r26, r26, 4
-	cmpwi    r30, 5
-	blt      lbl_80392EBC
-	psq_l    f31, 408(r1), 0, qr0
-	lfd      f31, 0x190(r1)
-	psq_l    f30, 392(r1), 0, qr0
-	lfd      f30, 0x180(r1)
-	psq_l    f29, 376(r1), 0, qr0
-	lfd      f29, 0x170(r1)
-	psq_l    f28, 360(r1), 0, qr0
-	lfd      f28, 0x160(r1)
-	psq_l    f27, 344(r1), 0, qr0
-	lfd      f27, 0x150(r1)
-	psq_l    f26, 328(r1), 0, qr0
-	lfd      f26, 0x140(r1)
-	psq_l    f25, 312(r1), 0, qr0
-	lfd      f25, 0x130(r1)
-	psq_l    f24, 296(r1), 0, qr0
-	lfd      f24, 0x120(r1)
-	psq_l    f23, 280(r1), 0, qr0
-	lfd      f23, 0x110(r1)
-	psq_l    f22, 264(r1), 0, qr0
-	lfd      f22, 0x100(r1)
-	psq_l    f21, 248(r1), 0, qr0
-	lfd      f21, 0xf0(r1)
-	psq_l    f20, 232(r1), 0, qr0
-	lfd      f20, 0xe0(r1)
-	psq_l    f19, 216(r1), 0, qr0
-	lfd      f19, 0xd0(r1)
-	psq_l    f18, 200(r1), 0, qr0
-	lfd      f18, 0xc0(r1)
-	lmw      r25, 0xa4(r1)
-	lwz      r0, 0x1a4(r1)
-	mtlr     r0
-	addi     r1, r1, 0x1a0
-	blr
-	*/
 }
 
 /**
@@ -5409,7 +5100,5 @@ bool TChallengeSelectScene::doStart(Screen::StartSceneArg* arg)
 	mObject->start(arg);
 	return true;
 }
-
-TChallengeSelect::StaticValues TChallengeSelect::mMetOffset;
 
 } // namespace Morimura

@@ -173,8 +173,7 @@ J2DMaterial* J2DMaterialFactory::create(J2DMaterial* material, int idx, u32 flag
 
 	// set tev colors
 	for (u8 i = 0; i < 4; i++) {
-		J2DTevBlock* block = material->getTevBlock();
-		block->setTevColor(i, newTevColor(idx, i));
+		material->getTevBlock()->setTevColor(i, newTevColor(idx, i));
 	}
 
 	// set swap mode table
@@ -374,56 +373,13 @@ J2DTevOrder J2DMaterialFactory::newTevOrder(int idx, int p2) const
  */
 J2DGXColorS10 J2DMaterialFactory::newTevColor(int idx, int p2) const
 {
-	const J2DGXColorS10 color     = J2DGXColorS10((GXColorS10) { 0 });
+	GXColorS10 color = {0, 0, 0, 0};
+	J2DGXColorS10 retcolor     = color;
 	J2DMaterialInitData& initData = mMaterialInitData[mMatIndexTable[idx]];
 	if (initData.mTevColorIdx[p2] != 0xFFFF) {
 		return mTevColor[initData.mTevColorIdx[p2]];
 	}
-	return color;
-	/*
-	stwu     r1, -0x10(r1)
-	slwi     r0, r6, 1
-	lwz      r7, 8(r4)
-	slwi     r5, r5, 1
-	lwz      r8, lbl_80520E40@sda21(r2)
-	lhzx     r5, r7, r5
-	lwz      r7, lbl_80520E44@sda21(r2)
-	mulli    r5, r5, 0xe8
-	lwz      r6, 4(r4)
-	stw      r8, 8(r1)
-	addi     r5, r5, 0x92
-	stw      r7, 0xc(r1)
-	add      r0, r5, r0
-	lha      r7, 0xa(r1)
-	lhzx     r0, r6, r0
-	lha      r5, 0xc(r1)
-	cmplwi   r0, 0xFFFF
-	lha      r6, 0xe(r1)
-	beq      lbl_800542EC
-	lwz      r4, 0x38(r4)
-	rlwinm   r0, r0, 3, 0xd, 0x1c
-	add      r4, r4, r0
-	lha      r0, 0(r4)
-	sth      r0, 0(r3)
-	lha      r0, 2(r4)
-	sth      r0, 2(r3)
-	lha      r0, 4(r4)
-	sth      r0, 4(r3)
-	lha      r0, 6(r4)
-	sth      r0, 6(r3)
-	b        lbl_80054300
-
-lbl_800542EC:
-	lha      r0, 8(r1)
-	sth      r0, 0(r3)
-	sth      r7, 2(r3)
-	sth      r5, 4(r3)
-	sth      r6, 6(r3)
-
-lbl_80054300:
-	addi     r1, r1, 0x10
-	blr
-	*/
+	return retcolor;
 }
 
 /**

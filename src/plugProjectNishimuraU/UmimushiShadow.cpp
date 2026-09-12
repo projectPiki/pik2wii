@@ -1,5 +1,11 @@
 #include "Game/Entities/UmiMushi.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "246-UmimushiShadow";
+}
+
 namespace Game {
 
 /**
@@ -18,12 +24,20 @@ void UmimushiTubeShadowNode::makeShadowSRT(JointShadowParm& parm, Matrixf* mat, 
 	vec2.y += xVec.y * parm._18 + yVec.y * parm._1C;
 	vec2.z += xVec.z * parm._18 + yVec.z * parm._1C;
 
-	Vector3f diff = vec2 - vec1;
-	// more stuff here
-	diff.normalise();
+	Vector3f halfDelta = (vec2 - vec1) * 0.5f;
+	Vector3f side      = halfDelta.cross(parm.mRotation);
+	side.normalise();
 
-	// more stuff here
-	mMainMtx->setColumn(2, diff);
+	Vector3f position = (vec1 + vec2) * 0.5f;
+	position.y += parm.mPositionMultiplier;
+
+	Vector3f height(0.0f, (position.y - parm.mPosition.y) + 25.0f, 0.0f);
+	side *= parm.mShadowScale;
+
+	mMainMtx->setColumn(0, halfDelta);
+	mMainMtx->setColumn(1, height);
+	mMainMtx->setColumn(2, side);
+	mMainMtx->setColumn(3, position);
 
 	/*
 	.loc_0x0:
@@ -168,8 +182,8 @@ void UmimushiSphereShadowNode::makeShadowSRT(JointShadowParm& parm, Matrixf* mat
 		xVec = mat->getColumn(0) * (parm.mShadowScale + 2.5f);
 		zVec = mat->getColumn(2) * parm.mShadowScale;
 	} else {
-		xVec = Vector3f(parm.mShadowScale, 0.0f, 0.0f);
-		zVec = Vector3f(0.0f, 0.0f, parm.mShadowScale);
+		xVec.set(parm.mShadowScale, 0.0f, 0.0f);
+		zVec.set(0.0f, 0.0f, parm.mShadowScale);
 	}
 
 	Vector3f pos = vec;
@@ -280,7 +294,7 @@ void UmimushiShadowMgr::update()
 	Vector3f vec2;
 
 	parm.mPosition = position;
-	parm.mRotation = Vector3f(0.0f, 1.0f, 0.0f);
+	parm.mRotation.set(0.0f, 1.0f, 0.0f);
 
 	vec1 = mWeakMatrix1->getColumn(3);
 

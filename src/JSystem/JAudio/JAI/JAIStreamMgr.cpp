@@ -563,8 +563,8 @@ void PlayingStream()
 	}
 
 	if (data->mActiveTrackFlag & SOUNDACTIVE_Pan) {
-		f32 panFactor = 1.0f;
-		for (u8 i = 0; i < 20; i++) {
+		f32 panFactor = 0.0f;
+		for (u8 i = 0; i < 7; i++) {
 			MoveParaSet* pan = &param->mPans[i];
 			if (param->mPanFlags & (1 << i)) {
 				if (pan->move() == FALSE) {
@@ -635,7 +635,7 @@ void PlayingStream()
 	}
 
 	if (data->mActiveTrackFlag & SOUNDACTIVE_Fxmix) {
-		f32 fxmixFactor = 1.0f;
+		f32 fxmixFactor = 0.0f;
 		for (u8 i = 0; i < 7; i++) {
 			MoveParaSet* fxmix = &param->mFxmixes[i];
 			if (param->mFxmixFlags & (1 << i)) {
@@ -684,7 +684,7 @@ void PlayingStream()
 	}
 
 	if (data->mActiveTrackFlag & SOUNDACTIVE_Dolby) {
-		f32 dolbyFactor = 1.0f;
+		f32 dolbyFactor = 0.0f;
 		for (u8 i = 0; i < 7; i++) {
 			MoveParaSet* dolby = &param->mDolbys[i];
 			if (param->mDolbyFlags & (1 << i)) {

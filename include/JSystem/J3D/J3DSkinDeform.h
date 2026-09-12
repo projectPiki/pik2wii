@@ -19,8 +19,8 @@ struct J3DDeformData {
 
 	inline J3DCluster* getClusterPointer(u16 i) { return &mClusters[i]; }
 	inline J3DClusterKey* getClusterKeyPointer(u16 i) { return &mClusterKeys[i]; }
-	inline void* getVtxPos() { return mVtxPos; }
-	inline void* getVtxNrm() { return mVtxNorm; }
+	inline f32* getVtxPos() { return mVtxPos; }
+	inline f32* getVtxNrm() { return mVtxNorm; }
 
 	u16 mClusterNum;             // _00
 	u16 mClusterKeyNum;          // _02
@@ -30,8 +30,8 @@ struct J3DDeformData {
 	int _10;                     // _10
 	u16 _14;                     // _14
 	u16 _16;                     // _16
-	void* mVtxPos;               // _18, check type
-	void* mVtxNorm;              // _1C, check type
+	f32* mVtxPos;               // _18, check type
+	f32* mVtxNorm;              // _1C, check type
 	int _20;                     // _20
 	int _24;                     // _24
 };

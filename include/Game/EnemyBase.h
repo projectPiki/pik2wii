@@ -219,7 +219,7 @@ struct EnemyBase : public Creature, public SysShape::MotionListener, virtual pub
 	virtual Vector3f getVelocity() { return mCurrentVelocity; }                                                  // _6C (weak)
 	virtual void getVelocityAt(Vector3f& velSrc, Vector3f& velDest)                                              // _184 (weak)
 	{
-		//velSrc  = mCurrentVelocity;
+		// velSrc  = mCurrentVelocity;
 		velDest = mCurrentVelocity;
 	}
 	virtual bool isTeki() { return true; }                                           // _7C (weak)
@@ -408,6 +408,20 @@ struct EnemyBase : public Creature, public SysShape::MotionListener, virtual pub
 
 	inline void setTargetVelocity(const Vector3f& ref) { mTargetVelocity = ref; }
 
+	inline f32 getForwardHomePositionX()
+	{
+		f32 s = sinf(mFaceDir);
+		return s * E_GENERALPARMS.mHomeRadius() + mPosition.x;
+	}
+
+	inline f32 getForwardHomePositionZ()
+	{
+		f32 c = cosf(mFaceDir);
+		return c * E_GENERALPARMS.mHomeRadius() + mPosition.z;
+	}
+
+	inline Vector3f getForwardHomePosition() { return Vector3f(getForwardHomePositionX(), mPosition.y, getForwardHomePositionZ()); }
+
 	inline void setTargetSpeed(f32 speed)
 	{
 		Vector3f vel;
@@ -441,6 +455,7 @@ struct EnemyBase : public Creature, public SysShape::MotionListener, virtual pub
 		mRotation.y = mFaceDir;
 	}
 
+	// turn toward target creature's position at turnSpeed rate, up to a max of maxTurnAngle
 	inline f32 turnToTarget(Creature* target, f32 turnSpeed, f32 maxTurnAngle)
 	{
 		f32 angleDist = getAngDist(target);
@@ -451,12 +466,14 @@ struct EnemyBase : public Creature, public SysShape::MotionListener, virtual pub
 		return angleDist;
 	}
 
+	// turn toward target creature's position AND check if we're facing within a range of it
 	inline bool turnToTarget(Creature* target, f32 turnSpeed, f32 maxTurnAngle, f32 endAngle)
 	{
 		f32 angleDist = turnToTarget(target, turnSpeed, maxTurnAngle);
 		return isAngleWithin(angleDist, endAngle);
 	}
 
+	// turn toward target position at turnSpeed rate, up to a max of maxTurnAngle
 	inline f32 turnToTarget(Vector3f& targetPos, f32 turnSpeed, f32 maxTurnAngle)
 	{
 		f32 angleDist = getAngDist(targetPos);
@@ -467,14 +484,35 @@ struct EnemyBase : public Creature, public SysShape::MotionListener, virtual pub
 		return angleDist;
 	}
 
+	// turn toward target position AND check if we're facing within a range of it
 	inline bool turnToTarget(Vector3f& targetPos, f32 turnSpeed, f32 maxTurnAngle, f32 endAngle)
 	{
 		f32 angleDist = turnToTarget(targetPos, turnSpeed, maxTurnAngle);
 		return isAngleWithin(angleDist, endAngle);
 	}
-	
+
+	// somehow different to turnToTarget codegen-wise (unfortunately)
+	inline f32 turnToTargetPos(Vector3f& targetPos, f32 turnSpeed, f32 maxTurnAngle)
+	{
+		f32 angleDist = getAngDist2(targetPos);
+		f32 angle     = clamp(angleDist * turnSpeed, TORADIANS(maxTurnAngle));
+		f32 a         = roundAng(angle + getFaceDir());
+		updateFaceDir(a);
+		return angleDist;
+	}
+
+	// somehow different to turnToTarget codegen-wise (unfortunately)
+	inline bool turnToTargetPos(Vector3f& targetPos, f32 turnSpeed, f32 maxTurnAngle, f32 endAngle)
+	{
+		f32 angleDist = getAngDist(targetPos);
+		f32 angle     = clamp(angleDist * turnSpeed, TORADIANS(maxTurnAngle));
+		updateFaceDir(roundAng(angle + getFaceDir()));
+		return isAngleWithin(angleDist, endAngle);
+	}
+
 	inline Creature* getTarget() { return mTargetCreature; }
 
+	// is creature close enough (angle and distance wise) to attack?
 	inline bool isTargetAttackable(Creature* target, f32 angleDiff, f32 attackDist, f32 attackAngle)
 	{
 		bool result = false;
@@ -484,17 +522,25 @@ struct EnemyBase : public Creature, public SysShape::MotionListener, virtual pub
 		return result;
 	}
 
-	inline bool isTargetAttackable(Creature* target, f32 attackDist, f32 attackAngle)
+	// is stored creature target close enough (angle and distance wise) to attack?
+	inline bool isTargetAttackable(f32 angleDiff, f32 attackDist, f32 attackAngle)
 	{
-		f32 angleDiff = getAngDist(target);
-		bool result   = false;
-		return (isRadiusWithin(getSqrTargetSeparation(target), attackDist) && (isAngleWithin(angleDiff, attackAngle)));
-		{
+		bool result      = false;
+		Creature* target = mTargetCreature;
+		f32 separation   = getSqrTargetSeparation(target);
+		if (isRadiusWithin(separation, attackDist) && (isAngleWithin(angleDiff, attackAngle))) {
 			result = true;
 		}
 		return result;
 	}
 
+	// version that auto-calculates the angle difference to target
+	inline bool isTargetAttackable(Creature* target, f32 attackDist, f32 attackAngle)
+	{
+		return isTargetAttackable(target, getAngDist(target), attackDist, attackAngle);
+	}
+
+	// check if target is out of a given angle, distance radius, and eyesight
 	inline bool isTargetOutOfRange(Creature* target, f32 pAngle, f32 pPrivateRadius, f32 pSightRadius, f32 pFov, f32 pViewAngle)
 	{
 		// Calculate the separation between us and target
@@ -512,6 +558,12 @@ struct EnemyBase : public Creature, public SysShape::MotionListener, virtual pub
 		return (distance > privateRadius && (distance > sightRadius && absF(y) < pFov))
 		    // Check if the angle to the target is within the field of view
 		    || !isAngleWithin(pAngle, pViewAngle);
+	}
+
+	// version that auto-calculates angle difference to target
+	inline bool isTargetOutOfRange(Creature* target, f32 pPrivateRadius, f32 pSightRadius, f32 pFov, f32 pViewAngle)
+	{
+		return isTargetOutOfRange(target, getAngDist(target), pPrivateRadius, pSightRadius, pFov, pViewAngle);
 	}
 
 	inline f32 getScaleMod() const { return mScaleModifier; }
@@ -563,7 +615,7 @@ struct EnemyBase : public Creature, public SysShape::MotionListener, virtual pub
 		f32 diffX   = targetX - x;
 		return SQUARE(diffX) + SQUARE(diffZ);
 	}
-	
+
 	inline bool isCreatureIn2DRadius(f32 rad, Vector3f& pos)
 	{
 		Vector3f targetCreaturePos;

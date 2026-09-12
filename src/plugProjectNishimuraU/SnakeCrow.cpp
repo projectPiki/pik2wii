@@ -12,11 +12,14 @@
 #include "RevoSDK/rand.h"
 #include "nans.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "246-SnakeCrow";
+}
+
 namespace Game {
 namespace SnakeCrow {
-
-static const int unusedSnakeCrowArray[] = { 0, 0, 0 };
-static const char unusedSnakeCrowName[] = "246-SnakeCrow";
 
 /**
  * @note Address: 0x80293094
@@ -181,7 +184,7 @@ void Obj::getShadowParam(ShadowParam& shadowParam)
 {
 	shadowParam.mPosition                 = mModel->getJoint("kutijnt1")->getWorldMatrix()->getColumn(3);
 	shadowParam.mPosition.y               = mPosition.y + 2.5f;
-	shadowParam.mBoundingSphere.mPosition = Vector3f(0.0f, 1.0f, 0.0f);
+	shadowParam.mBoundingSphere.mPosition.set(0.0f, 1.0f, 0.0f);
 	shadowParam.mBoundingSphere.mRadius   = 20.0f;
 	shadowParam.mSize                     = 17.5f;
 }

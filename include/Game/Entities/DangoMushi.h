@@ -228,7 +228,7 @@ struct FSM : public EnemyStateMachine {
 };
 
 struct State : public EnemyFSMState {
-	inline State(int stateID, char* name)
+	inline State(int stateID, const char* name)
 	    : EnemyFSMState(stateID)
 	{
 		mName = name;
@@ -239,8 +239,8 @@ struct State : public EnemyFSMState {
 };
 
 struct StateAppear : public State {
-	inline StateAppear()
-	    : State(DANGOMUSHI_Appear, "appear")
+	inline StateAppear(const char* name)
+	    : State(DANGOMUSHI_Appear, name)
 	{
 	}
 
@@ -253,8 +253,8 @@ struct StateAppear : public State {
 };
 
 struct StateAttack : public State {
-	inline StateAttack()
-	    : State(DANGOMUSHI_Attack, "attack")
+	inline StateAttack(const char* name)
+	    : State(DANGOMUSHI_Attack, name)
 	{
 	}
 
@@ -267,8 +267,8 @@ struct StateAttack : public State {
 };
 
 struct StateDead : public State {
-	inline StateDead()
-	    : State(DANGOMUSHI_Dead, "dead")
+	inline StateDead(const char* name)
+	    : State(DANGOMUSHI_Dead, name)
 	{
 	}
 
@@ -281,8 +281,8 @@ struct StateDead : public State {
 };
 
 struct StateFlick : public State {
-	inline StateFlick()
-	    : State(DANGOMUSHI_Flick, "flick")
+	inline StateFlick(const char* name)
+	    : State(DANGOMUSHI_Flick, name)
 	{
 	}
 
@@ -295,8 +295,8 @@ struct StateFlick : public State {
 };
 
 struct StateMove : public State {
-	inline StateMove()
-	    : State(DANGOMUSHI_Move, "move")
+	inline StateMove(const char* name)
+	    : State(DANGOMUSHI_Move, name)
 	{
 	}
 
@@ -309,8 +309,8 @@ struct StateMove : public State {
 };
 
 struct StateRecover : public State {
-	inline StateRecover()
-	    : State(DANGOMUSHI_Recover, "recover")
+	inline StateRecover(const char* name)
+	    : State(DANGOMUSHI_Recover, name)
 	{
 	}
 
@@ -323,8 +323,8 @@ struct StateRecover : public State {
 };
 
 struct StateStay : public State {
-	inline StateStay()
-	    : State(DANGOMUSHI_Stay, "stay")
+	inline StateStay(const char* name)
+	    : State(DANGOMUSHI_Stay, name)
 	{
 	}
 
@@ -337,8 +337,8 @@ struct StateStay : public State {
 };
 
 struct StateTurn : public State {
-	inline StateTurn()
-	    : State(DANGOMUSHI_Turn, "turn")
+	inline StateTurn(const char* name)
+	    : State(DANGOMUSHI_Turn, name)
 	{
 	}
 
@@ -351,8 +351,8 @@ struct StateTurn : public State {
 };
 
 struct StateWait : public State {
-	inline StateWait()
-	    : State(DANGOMUSHI_Wait, "wait")
+	inline StateWait(const char* name)
+	    : State(DANGOMUSHI_Wait, name)
 	{
 	}
 

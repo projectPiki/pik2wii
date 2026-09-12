@@ -3,6 +3,7 @@
 
 #include "types.h"
 #include "Parameters.h"
+#include "Color4.h"
 #include "stream.h"
 #include "BaseParm.h"
 

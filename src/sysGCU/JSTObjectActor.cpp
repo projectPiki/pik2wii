@@ -1,14 +1,17 @@
-#include "Game/P2JST/ObjectActor.h"
+#include "Game/GameSystem.h"
 #include "Game/MoviePlayer.h"
+#include "Game/P2JST/ObjectActor.h"
 #include "JSystem/J3D/J3DAnmLoader.h"
 #include "JSystem/J3D/J3DModelLoader.h"
-#include "Game/GameSystem.h"
 #include "JSystem/JStudio/stb-data-parse.h"
 #include "Viewport.h"
 #include "nans.h"
 
-static const u32 filler[]    = { 0, 0, 0 };
-static const char filename[] = "JSTObjectActor";
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "JSTObjectActor";
+}
 
 namespace Game {
 
@@ -28,15 +31,15 @@ ObjectActor::ObjectActor(char const* name, MoviePlayer* movie)
     , mTranslation(govNAN_)
     , mRotation(govNAN_)
     , mScaling(govNAN_)
-    , mShape(*(u32*)&govNAN_.x) // these should be gu32NAN but it wont cooperate
-    , mAnimation(*(u32*)&govNAN_.x)
     , mAnimFrame(gfNAN_)
     , mAnimFrameMax(gfNAN_)
-    , mModelFileId(*(u32*)&govNAN_.x)
-    , mAnimationFileId(*(u32*)&govNAN_.x)
 {
-
-	mArchive = MoviePlayer::mArchive;
+	u32 invalid      = gu32NAN_.a;
+	mShape           = invalid;
+	mAnimation       = invalid;
+	mModelFileId     = invalid;
+	mAnimationFileId = invalid;
+	mArchive         = MoviePlayer::mArchive;
 }
 
 /**
@@ -321,208 +324,45 @@ void ObjectActor::mountArchive()
  */
 void ObjectActor::parseUserData_(u32 p1, void const* p2)
 {
-	OSReport("data-ID : %u (0x%08x)\n", p1, p2);
-	JStudio::stb::data::TParse_TParagraph_data v1(p2);
-	JStudio::stb::data::TParse_TParagraph_data::TData v2;
-	v1.getData(&v2);
-	if (v2.mStatus == 0) {
+	// OSReport("data-ID : %u (0x%08x)\n", p1, (u32)p2);
+	typedef JGadget::binary::TValueIterator_misaligned<s16> IntIterator;
+	JStudio::stb::TParseData_fixed<0x22, IntIterator> ints(p2);
+	if (ints.isEnd()) {
 		return;
 	}
-	if (v2.mData == 0 || v2.mStatus != 0x22 || v2.mDataBlockEnd == nullptr) {
+	if (!ints.isValid()) {
 		return;
 	}
 
-	OSReport("int16:%d,%d,%d\n");
-	OSReport("char:%d,%c,%c\n");
-
-	JStudio::stb::data::TParse_TParagraph_data v4(p2);
-	JStudio::stb::data::TParse_TParagraph_data::TData v3;
-	v4.getData(&v3);
-	if (v3.mData && v3.isLoaded()) {
-		char* str = (char*)v3.mFileCount;
-		for (int i = 0; i < v3.mDataSize;) {
-			OSReport("string:%u,%s\n", i, str);
-			i++;
-			str = strchr(str, 0) + 1;
-		}
+	IntIterator i(ints.begin());
+	for (; i != ints.end(); ++i) {
+	//	OSReport("int16:%d,%d,%d\n", i - ints.begin(), *i, ints.begin()[i - ints.begin()]);
 	}
-	/*
-	stwu     r1, -0xb0(r1)
-	mflr     r0
-	lis      r3, lbl_8049A158@ha
-	stw      r0, 0xb4(r1)
-	stw      r31, 0xac(r1)
-	addi     r31, r3, lbl_8049A158@l
-	addi     r3, r31, 0x64
-	stw      r30, 0xa8(r1)
-	stw      r29, 0xa4(r1)
-	mr       r29, r5
-	crclr    6
-	bl       OSReport
-	stw      r29, 0x20(r1)
-	addi     r3, r1, 0x20
-	addi     r4, r1, 0x8c
-	bl
-getData__Q47JStudio3stb4data22TParse_TParagraph_dataCFPQ57JStudio3stb4data22TParse_TParagraph_data5TData
-	lbz      r0, 0x8c(r1)
-	cmplwi   r0, 0
-	beq      lbl_8042F448
-	lwz      r4, 0x98(r1)
-	li       r3, 0
-	cmplwi   r4, 0
-	beq      lbl_8042F278
-	cmplwi   r0, 0x22
-	bne      lbl_8042F278
-	lwz      r0, 0x9c(r1)
-	cmplwi   r0, 0
-	beq      lbl_8042F278
-	li       r3, 1
-
-lbl_8042F278:
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_8042F448
-	stw      r4, 0x60(r1)
-	b        lbl_8042F2D8
-
-lbl_8042F288:
-	lwz      r8, 0x60(r1)
-	addi     r3, r31, 0x7c
-	lwz      r4, 0x60(r1)
-	subf     r7, r9, r8
-	stw      r9, 0x58(r1)
-	rlwinm   r0, r7, 0, 0, 0x1e
-	lha      r5, 0(r4)
-	lhax     r6, r9, r0
-	srwi     r4, r7, 1
-	stw      r8, 0x48(r1)
-	stw      r9, 0x44(r1)
-	stw      r9, 0x1c(r1)
-	stw      r8, 0x18(r1)
-	stw      r9, 0x40(r1)
-	stw      r9, 0x3c(r1)
-	crclr    6
-	bl       OSReport
-	lwz      r3, 0x60(r1)
-	addi     r0, r3, 2
-	stw      r0, 0x60(r1)
-
-lbl_8042F2D8:
-	lwz      r0, 0x94(r1)
-	lwz      r9, 0x98(r1)
-	slwi     r3, r0, 1
-	lwz      r0, 0x60(r1)
-	add      r3, r9, r3
-	cmplw    r0, r3
-	stw      r3, 0x54(r1)
-	stw      r3, 0x38(r1)
-	stw      r0, 0x34(r1)
-	bne      lbl_8042F288
-	lwz      r0, 0x60(r1)
-	addi     r3, r1, 0x14
-	addi     r4, r1, 0x78
-	stw      r0, 0x14(r1)
-	bl
-getData__Q47JStudio3stb4data22TParse_TParagraph_dataCFPQ57JStudio3stb4data22TParse_TParagraph_data5TData
-	lbz      r0, 0x78(r1)
-	cmplwi   r0, 0
-	beq      lbl_8042F448
-	lwz      r4, 0x84(r1)
-	li       r3, 0
-	cmplwi   r4, 0
-	beq      lbl_8042F348
-	cmplwi   r0, 0x51
-	bne      lbl_8042F348
-	lwz      r0, 0x88(r1)
-	cmplwi   r0, 0
-	beq      lbl_8042F348
-	li       r3, 1
-
-lbl_8042F348:
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_8042F448
-	stw      r4, 0x5c(r1)
-	b        lbl_8042F3A0
-
-lbl_8042F358:
-	lwz      r7, 0x5c(r1)
-	addi     r3, r31, 0x8c
-	lwz      r5, 0x5c(r1)
-	subf     r4, r8, r7
-	stw      r8, 0x50(r1)
-	lbz      r5, 0(r5)
-	lbzx     r0, r8, r4
-	stw      r8, 0x10(r1)
-	extsb    r5, r5
-	extsb    r6, r0
-	stw      r7, 0xc(r1)
-	stw      r8, 0x30(r1)
-	stw      r8, 0x2c(r1)
-	crclr    6
-	bl       OSReport
-	lwz      r3, 0x5c(r1)
-	addi     r0, r3, 1
-	stw      r0, 0x5c(r1)
-
-lbl_8042F3A0:
-	lwz      r8, 0x84(r1)
-	lwz      r3, 0x80(r1)
-	lwz      r0, 0x5c(r1)
-	add      r3, r8, r3
-	cmplw    r0, r3
-	stw      r3, 0x4c(r1)
-	stw      r3, 0x28(r1)
-	stw      r0, 0x24(r1)
-	bne      lbl_8042F358
-	lwz      r0, 0x5c(r1)
-	addi     r3, r1, 8
-	addi     r4, r1, 0x64
-	stw      r0, 8(r1)
-	bl
-getData__Q47JStudio3stb4data22TParse_TParagraph_dataCFPQ57JStudio3stb4data22TParse_TParagraph_data5TData
-	lbz      r3, 0x64(r1)
-	cmplwi   r3, 0
-	beq      lbl_8042F448
-	lwz      r4, 0x70(r1)
-	li       r0, 0
-	cmplwi   r4, 0
-	beq      lbl_8042F400
-	cmplwi   r3, 0x60
-	bne      lbl_8042F400
-	li       r0, 1
-
-lbl_8042F400:
-	clrlwi.  r0, r0, 0x18
-	beq      lbl_8042F448
-	mr       r30, r4
-	li       r29, 0
-	b        lbl_8042F43C
-
-lbl_8042F414:
-	mr       r4, r29
-	mr       r5, r30
-	addi     r3, r31, 0x9c
-	crclr    6
-	bl       OSReport
-	mr       r3, r30
-	li       r4, 0
-	addi     r29, r29, 1
-	bl       strchr
-	addi     r30, r3, 1
-
-lbl_8042F43C:
-	lwz      r0, 0x6c(r1)
-	cmplw    r29, r0
-	blt      lbl_8042F414
-
-lbl_8042F448:
-	lwz      r0, 0xb4(r1)
-	lwz      r31, 0xac(r1)
-	lwz      r30, 0xa8(r1)
-	lwz      r29, 0xa4(r1)
-	mtlr     r0
-	addi     r1, r1, 0xb0
-	blr
-	*/
+	typedef JGadget::binary::TValueIterator_misaligned<char> CharIterator;
+	JStudio::stb::TParseData_fixed<0x51, CharIterator> chars(i.get());
+	if (chars.isEnd()) {
+		return;
+	}
+	if (!chars.isValid()) {
+		return;
+	}
+	CharIterator c(chars.begin());
+	for (; c != chars.end(); ++c) {
+	//	OSReport("char:%d,%c,%c\n", c - chars.begin(), *c, chars.begin()[c - chars.begin()]);
+	}
+	JStudio::stb::TParseData_string strings(c.get());
+	if (strings.isEnd()) {
+		return;
+	}
+	if (!strings.isValid()) {
+		return;
+	}
+	const char* str = strings.getData();
+	for (u32 n = 0; n < strings.size();) {
+	//	OSReport("string:%u,%s\n", n, str);
+		n++;
+		str = strchr(str, 0) + 1;
+	}
 }
 
 /**

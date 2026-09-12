@@ -445,7 +445,7 @@ void Pikmin::TMgr::updateCalcBoid_()
 			if (curUnit->isCalc()) {
 				Vector2f sep = unit->mPosition - curUnit->mPosition;
 				f32 dist     = sep.length();
-				if (dist < mBoidParamMgr.mCurrBoidColl) {
+				if (dist < mBoidParamMgr.mCurrBoidNeighbor) {
 					vec2 += curUnit->mAngle * curUnit->mParms[0];
 					if (dist < 1.0f) {
 						dist = 1.0f;

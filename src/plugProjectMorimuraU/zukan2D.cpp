@@ -11,7 +11,11 @@
 #include "efx2d/T2DChangesmoke.h"
 #include "nans.h"
 
-static const int unusedArray[] = { 0, 0, 0 };
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "zukan2D";
+}
 
 namespace Morimura {
 s16 TZukanBase::mRequestTimerMax    = 10;
@@ -2980,7 +2984,7 @@ bool TItemZukan::doUpdate()
 			break;
 		}
 	}
-	TZukanBase::doUpdate();
+	return TZukanBase::doUpdate();
 }
 
 /**
@@ -4753,7 +4757,12 @@ void TZukanWindow::update()
 		}
 	}
 
-	JGeometry::TBox2f box(mPaneWinCap->getGlbVtx(GLBVTX_TopRight), mPaneWinCap->getGlbVtx(GLBVTX_BtmLeft));
+	JGeometry::TBox2f box(0.0f, 0.0f, 0.0f, 0.0f);
+	JGeometry::TVec3f bottomLeft;
+	JGeometry::TVec3f topRight;
+	bottomLeft.set(mPaneWinCap->getGlbVtx(GLBVTX_BtmLeft));
+	topRight.set(mPaneWinCap->getGlbVtx(GLBVTX_TopRight));
+	box.set(bottomLeft.x, bottomLeft.y, topRight.x, topRight.y);
 	box.i.x += 10.0f;
 	box.i.y += 5.0f;
 	box.f.x -= 10.0f;

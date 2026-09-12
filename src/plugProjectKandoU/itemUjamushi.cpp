@@ -453,7 +453,7 @@ void Uja::update(BoidParms& parms)
 
 	Iterator<Navi> naviIt(naviMgr);
 	scale               = (scale + 6.0f) + 6.0f;
-	Vector3f naviResult = 0.0f;
+	Vector3f naviResult = Vector3f(0.0f);
 	CI_LOOP(naviIt)
 	{
 		Navi* navi = *naviIt;
@@ -559,7 +559,7 @@ void Uja::update(BoidParms& parms)
 	}
 
 	f32 vel = mVelocity.length();
-	if (mState != 2 && speed > vel) {
+	if (mState != 2 && vel > speed) {
 		f32 inv = (1.0f / vel) * speed;
 		mVelocity *= inv;
 		vel = speed;
@@ -593,20 +593,19 @@ void Uja::update(BoidParms& parms)
 	f32 boundDist      = boundDiff.normalise();
 	f32 radius2        = mFlockMgr->mBoundSphere.mRadius;
 	if (boundDist > 0.0f) {
-		f32 angle = JMAAtan2Radian(boundDiff.x, boundDiff.z);
-		f32 one   = 1.0f;
-		radius2 *= one;
-		if (boundDist > radius2) {
-			f32 diff      = mVelocity.sqrDistance(boundDiff);
-			Vector3f temp = boundDiff * diff;
-			mVelocity     = mVelocity - temp;
+		f32 angle          = JMAAtan2Radian(boundDiff.x, boundDiff.z);
+		f32 boundaryRadius = radius2 * 2.0f;
+		if (boundDist > boundaryRadius) {
+			f32 projection = boundDiff.dot(mVelocity);
+			Vector3f temp  = boundDiff * projection;
+			mVelocity      = mVelocity - temp;
 
-			(Vector3f)* this = boundPos - (boundDiff * boundDist);
+			(Vector3f)* this = boundPos - (boundDiff * boundaryRadius);
 		}
 	}
 
 	f32 minY = mFlockMgr->mBoundSphere.mPosition.y;
-	if (this->y < minY) {
+	if (this->y > minY) {
 		this->y = minY;
 		if (mState == 2) {
 			mState = 0;
@@ -620,8 +619,6 @@ void Uja::update(BoidParms& parms)
 
 	updateScale(alignmentThreshold);
 	makeMatrix();
-
-	FORCE_DONT_INLINE;
 
 	/*
 	stwu     r1, -0x430(r1)

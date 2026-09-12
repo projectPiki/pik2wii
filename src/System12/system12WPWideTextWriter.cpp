@@ -52,7 +52,7 @@ void WPWideTextWriter::calc(f32 time)
 	if (mRunning) {
 		return;
 	}
-	if (!_75) {
+	if (_75) {
 		return;
 	}
 	f32 rate = _7C + time;
@@ -70,7 +70,73 @@ void WPWideTextWriter::calc(f32 time)
 	if (1 < _6C) {
 		return;
 	}
-	_6C = _6C + 1;
+	_6C++;
+}
+
+void WPWideTextWriter::calcBBox(EGG::BoundBox2f* box, const wchar_t* str)
+{
+	wchar_t* buffer = GetBuffer();
+	int size        = GetBufferSize() << 1;
+	EGG_ASSERT(132, buffer);
+	int len = 0;
+
+	mTagProcessor2->PreProcessWithNumWords(str, _6C, buffer, size, &len, 0, mPageIdx);
+	nw4r::ut::Rect rec;
+	CalcStringRect(&rec, buffer, len);
+	box->mMax.y = rec.bottom;
+	box->mMin.x = rec.right;
+	box->mMin.y = rec.top;
+
+	box->mMax.x = rec.left;
+}
+
+void WPWideTextWriter::calcBBoxFullText(EGG::BoundBox2f* box, const wchar_t* str, int p3)
+{
+	wchar_t* buffer = GetBuffer();
+	int size        = GetBufferSize() << 1;
+	EGG_ASSERT(149, buffer);
+	int len = 0;
+	mTagProcessor2->PreProcessWithNumWords(str, 0x00010000, buffer, size, &len, 0, p3);
+	nw4r::ut::Rect rec;
+	CalcStringRect(&rec, buffer, len);
+
+	box->mMin.x = rec.left;
+	box->mMin.y = rec.top;
+	box->mMax.x = rec.right;
+	box->mMax.y = rec.bottom;
+
+	// box->mMin.x = rec.right;
+	// box->mMin.y = rec.top;
+}
+
+f32 WPWideTextWriter::printWithPos(f32 x, f32 y, const wchar_t* str)
+{
+	EGG_ASSERT(167, str);
+	SetCursor(x, y);
+	wchar_t* buffer = GetBuffer();
+	int size        = GetBufferSize() << 1;
+	EGG_ASSERT(175, buffer);
+	int len = 0;
+	EGG_ASSERT_MSG(179, mTagProcessor2, "Maybe, you forgot to Initialize().\n");
+	int process = mTagProcessor2->PreProcessWithNumWords(str, _6C, buffer, size, &len, 0, mPageIdx);
+	switch (process) {
+	case 1:
+		mRunning = true;
+		break;
+	case 2:
+		_75      = true;
+		mRunning = true;
+		break;
+	case 0:
+	case 3:
+	default:
+		break;
+	}
+	if (_6C <= 0) {
+		return 0.0f;
+	} else {
+		return Print(buffer, len);
+	}
 }
 
 } // namespace System12

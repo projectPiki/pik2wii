@@ -1,13 +1,13 @@
+#include "P2JME/messageRendering.h"
+#include "Game/Data.h"
+#include "JSystem/J2D/J2DTextBox.h"
 #include "JSystem/JMessage/TProcessor.h"
 #include "JSystem/JUtility/JUTFont.h"
 #include "JSystem/JUtility/JUTTexture.h"
-#include "P2JME/messageRendering.h"
 #include "P2JME/P2JME.h"
-#include "JSystem/J2D/J2DTextBox.h"
-#include "Game/Data.h"
 #include "P2Macros.h"
-#include "stl/ctype.h"
 #include "System.h"
+#include "stl/ctype.h"
 
 namespace P2JME {
 
@@ -192,11 +192,11 @@ void TRenderingProcessor::setDrawLocateY()
 			}
 		}
 
-		f32 height  = 0.5f * (mTextBoxHeight - totalFontHeight);
-		u8 paraNum  = mParagraphNum;
-		f32 x       = ((mTextBoxHeight * pageInfoNum)
-                 + (0.5f * (mLineHeight - mFontHeight * mMainFont->getHeight()) + (mFontHeight * mMainFont->getAscent() + mLocate.f.y)));
-		f32 y       = (mLineHeight * paraNum + height);
+		f32 height = 0.5f * (mTextBoxHeight - totalFontHeight);
+		u8 paraNum = mParagraphNum;
+		f32 x = ((mTextBoxHeight * pageInfoNum)
+		         + (0.5f * (mLineHeight - mFontHeight * mMainFont->getHeight()) + (mFontHeight * mMainFont->getAscent() + mLocate.f.y)));
+		f32 y = (mLineHeight * paraNum + height);
 		mLocate.i.y = y + x;
 
 		return;
@@ -1617,7 +1617,7 @@ void TRenderingProcessor::resetPageInfo()
 	// UNUSED FUNCTION
 	for (int i = 0; i < 10; i++) {
 		mLineWidthInfos[i].mStartIndex = 0;
-		mLineWidthInfos[i].mEndIndex = 0;
+		mLineWidthInfos[i].mEndIndex   = 0;
 	}
 }
 
@@ -1666,7 +1666,7 @@ void TRenderingProcessor::preProcCenteringPre()
 	resetOnePageLine();
 	resetPageInfo();
 	_B4 = 0.0f;
-	//reset();
+	// reset();
 }
 
 /**
@@ -1676,7 +1676,7 @@ void TRenderingProcessor::preProcCenteringPre()
 void TRenderingProcessor::preProcCenteringPost()
 {
 	// UNUSED FUNCTION
-	//process(nullptr);
+	// process(nullptr);
 	setLineWidth();
 	newParagraph();
 	setOnePageLine();
@@ -1694,8 +1694,8 @@ void TRenderingProcessor::preProcCenteringPost()
 void TRenderingProcessor::preProcCenteringCode(uint p1)
 {
 	preProcCenteringPre();
-	
-	if (setBegin_messageCode(p1 >> 16, p1)){
+
+	if (setBegin_messageCode(p1 >> 16, p1)) {
 		process(nullptr);
 	}
 	preProcCenteringPost();
@@ -1708,7 +1708,7 @@ void TRenderingProcessor::preProcCenteringCode(uint p1)
 void TRenderingProcessor::preProcCenteringID(uint p1, uint p2)
 {
 	preProcCenteringPre();
-	if (setBegin_messageID(p1, p2, nullptr)){
+	if (setBegin_messageID(p1, p2, nullptr)) {
 		process(nullptr);
 	}
 	preProcCenteringPost();
@@ -1761,8 +1761,10 @@ void TRenderingProcessor::setTextBoxInfo(J2DPane* pane)
 	mTextBoxWidth     = text->getWidth();
 	mTextBoxHeight    = text->getHeight();
 
-	mFontWidth  = text->mFontSize.x / mMainFont->getWidth();
-	mFontHeight = text->mFontSize.y / mMainFont->getHeight();
+	f32 fontWidth  = text->mFontSize.x;
+	f32 fontHeight = text->mFontSize.y;
+	mFontWidth     = fontWidth / mMainFont->getWidth();
+	mFontHeight    = fontHeight / mMainFont->getHeight();
 
 	switch ((text->mFlags) >> 2 & 3) {
 	case 0:

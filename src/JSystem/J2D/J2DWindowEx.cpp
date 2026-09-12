@@ -38,11 +38,11 @@ J2DWindowEx::J2DWindowEx(J2DPane* parent, JSURandomInputStream* input, u32 flags
 	colors[3]                   = &mContentsColorD;
 
 	for (int i = 0; i < 4; i++) {
-		_158[i]            = windowData.mContentIds[i];
+		mFrameMaterialIds[i]            = windowData.mContentIds[i];
 		mFrameMaterials[i] = nullptr;
-		if (_158[i] != 0xffff) {
-			mFrameMaterials[i]           = materials + _158[i];
-			(materials + _158[i])->mPane = this;
+		if (mFrameMaterialIds[i] != 0xffff) {
+			mFrameMaterials[i]           = materials + mFrameMaterialIds[i];
+			(materials + mFrameMaterialIds[i])->mPane = this;
 		}
 		_168[i]      = windowData._28[i];
 		*(colors[i]) = JUtility::TColor(windowData.mContentColors[i]);

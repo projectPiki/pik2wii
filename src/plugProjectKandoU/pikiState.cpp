@@ -28,10 +28,13 @@
 #include "nans.h"
 #include "trig.h"
 
-namespace Game {
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "pikiState";
+}
 
-static const int someArray[3] = { 0, 0, 0 };
-static const char fileName[]  = "pikiState";
+namespace Game {
 
 /**
  * @note Address: 0x80189378
@@ -1219,7 +1222,7 @@ bool PikiDenkiDyingState::transittable(int stateID)
 void PikiDenkiDyingState::init(Piki* piki, StateArg* stateArg)
 {
 	piki->startMotion(IPikiAnims::DEAD, IPikiAnims::DEAD, piki, nullptr);
-	mWaitTime             = 0.3f;
+	mWaitTime = 0.3f;
 	piki->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	piki->mVelocity.set(0.0f, 0.0f, 0.0f);
 }
@@ -1867,7 +1870,11 @@ void PikiHipDropState::exec(Piki* piki)
 					Vector3f creaturePos = creature->getPosition();
 					Vector3f pikiPos     = piki->getPosition();
 
-					f32 currDist = creaturePos.distance(pikiPos);
+					f32 diffX = creaturePos.x - pikiPos.x;
+					f32 diffZ = creaturePos.z - pikiPos.z;
+					f32 diffY = creaturePos.y - pikiPos.y;
+					Vector3f separation(diffX, diffY, diffZ);
+					f32 currDist = separation.length();
 
 					if (currDist < minDist) {
 						minDist      = currDist;
@@ -4100,9 +4107,9 @@ void PikiDrownState::init(Piki* piki, StateArg* stateArg)
 		piki->startMotion(IPikiAnims::OBORERU, IPikiAnims::OBORERU, piki, nullptr);
 	}
 
-	mSizumuAnimDelay      = randInt(2) + 6;
+	mSizumuAnimDelay = randInt(2) + 6;
 	piki->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
-	mUnusedVal            = 0;
+	mUnusedVal = 0;
 	piki->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 
 	if (piki->isStickTo()) {
@@ -5060,8 +5067,8 @@ void PikiAbsorbState::init(Piki* piki, StateArg* stateArg)
  */
 void PikiAbsorbState::exec(Piki* piki)
 {
-	piki->mVelocity.z     = 0.0f;
-	piki->mVelocity.x     = 0.0f;
+	piki->mVelocity.z = 0.0f;
+	piki->mVelocity.x = 0.0f;
 	piki->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 
 	if (mState == 1 && mAbsorbingCreature->isAlive() && !mHasAbsorbed) {

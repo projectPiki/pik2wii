@@ -734,7 +734,7 @@ void J3DModel::calcBumpMtx()
 {
 	u32 bumpMtxIdx, materialNum;
 	u16 i;
-	if (getModelData()->checkBumpFlag() != 1) {
+	if (!getModelData()->checkBumpFlag()) {
 		return;
 	}
 

@@ -2728,7 +2728,7 @@ void BigTreasureAttackMgr::startNewElecList()
 		}
 
 		for (int i = 0; i < mAttackData->mElecPlacedNodes; i++) {
-			BigTreasureElecAttack* nextNextNode = elecNode->getNext();
+			BigTreasureElecAttack* nextNextNode = nextNode->getNext();
 			if (nextNextNode && !nextNode->mConnectedNode) {
 				nextNode->mConnectedNode = nextNextNode;
 				if (nextNode->mConnectedNode) {

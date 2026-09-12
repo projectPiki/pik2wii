@@ -565,6 +565,7 @@ struct J3DTevOrder : public J3DTevOrderInfo {
 struct J3DTevSwapModeInfo {
 	u8 mRasSel; // _00
 	u8 mTexSel; // _01
+	u8 _02[2];  // _02
 };
 
 struct J3DTevSwapModeTableInfo {
@@ -863,7 +864,7 @@ void loadNBTScale(J3DNBTScale&);
 
 void loadTexCoordGens(u32, J3DTexCoord*);
 
-inline void loadTexCoordScale(GXTexCoordID coord, const J3DTexCoordScaleInfo& info)
+inline void loadTexCoordScale(GXTexCoordID coord, J3DTexCoordScaleInfo& info)
 {
 	J3DGDSetTexCoordScale2(coord, info.mScaleS, info.mBiasS == 1, 0, info.mScaleT, info.mBiasT == 1, 0);
 }

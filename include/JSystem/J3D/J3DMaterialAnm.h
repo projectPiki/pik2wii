@@ -19,7 +19,12 @@ struct J3DMatColorAnm {
 		mAnm     = anm;
 	}
 
-	J3DMatColorAnm();
+	J3DMatColorAnm()
+	    : mIndex(0)
+	    , mAnmFlag(1)
+	    , mAnm(nullptr)
+	{
+	}
 
 	~J3DMatColorAnm() { }
 
@@ -42,7 +47,12 @@ struct J3DMatColorAnm {
 };
 
 struct J3DTexNoAnm {
-	J3DTexNoAnm();
+	J3DTexNoAnm()
+	    : mIndex(0)
+	    , mAnmFlag(1)
+	    , mAnm(nullptr)
+	{
+	}
 
 	// incredible useless u16 cast needed for match
 	virtual void calc(u16* data) const { getAnmTexPattern()->getTexNo(*(u16*)&mIndex, data); } // _08 (weak)
@@ -75,7 +85,12 @@ struct J3DTexMtxAnm {
 		mAnm     = anm;
 	}
 
-	J3DTexMtxAnm();
+	J3DTexMtxAnm()
+	    : mIndex(0)
+	    , mAnmFlag(1)
+	    , mAnm(nullptr)
+	{
+	}
 
 	~J3DTexMtxAnm() { }
 
@@ -103,7 +118,12 @@ struct J3DTevColorAnm {
 		mAnm     = anm;
 	}
 
-	J3DTevColorAnm();
+	J3DTevColorAnm()
+	    : mIndex(0)
+	    , mAnmFlag(1)
+	    , mAnm(nullptr)
+	{
+	}
 
 	~J3DTevColorAnm() { }
 
@@ -131,7 +151,12 @@ struct J3DTevKColorAnm {
 		mAnm     = anm;
 	}
 
-	J3DTevKColorAnm();
+	J3DTevKColorAnm()
+	    : mIndex(0)
+	    , mAnmFlag(1)
+	    , mAnm(nullptr)
+	{
+	}
 
 	~J3DTevKColorAnm() { }
 

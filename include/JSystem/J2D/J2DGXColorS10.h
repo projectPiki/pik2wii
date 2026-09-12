@@ -46,18 +46,18 @@ struct J2DGXColorS10 : public GXColorS10 {
 	}
 
 	inline operator u64() const { return toUInt64(); }
-	inline u32 toUInt64() const { return *(u64*)&r; }
+	inline u64 toUInt64() const { return (u64)(u16)r << 48 | (u64)(u16)g << 32 | (u64)(u16)b << 16 | (u64)(u16)a; }
 
 	inline operator JUtility::TColor() const { return toTColor(); }
 	inline JUtility::TColor toTColor() const { return JUtility::TColor(r, g, b, a); }
 
-	inline void operator=(const GXColorS10& other)
-	{
-		r = (s16)other.r;
-		g = (s16)other.g;
-		b = (s16)other.b;
-		a = (s16)other.a;
-	}
+	J2DGXColorS10& operator=(const GXColorS10& other) {
+        r = other.r;
+        g = other.g;
+        b = other.b;
+        a = other.a;
+        return *this;
+    }
 
 	inline void operator=(const J2DGXColorS10& other) { (GXColorS10)* this = (GXColorS10)other; }
 

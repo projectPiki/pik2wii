@@ -1024,24 +1024,20 @@ void Obj::windTarget()
 		}
 	}
 
-	f32 radius                   = mWindScaleTimer * C_GENERALPARMS.mAttackRadius.mValue;
-	Vector3f attackStartPosition = mAttackStartPos;                                                  // f16
-	Vector3f attackDirection     = mAttackDirection;                                                 // f29
-	f32 slope                    = (f32)tan(PI * (DEG2RAD * C_GENERALPARMS.mAttackHitAngle.mValue)); // f20
+	f32 radius                   = mWindScaleTimer * C_GENERALPARMS.mAttackRadius();
+	Vector3f attackStartPosition = mAttackStartPos;                                  // f16
+	Vector3f attackDirection     = mAttackDirection;                                 // f29
+	f32 slope                    = tan(TORADIANS(C_GENERALPARMS.mAttackHitAngle())); // f20
 
 	// this is probably a new vector
 	Vector3f attackNormal(-attackDirection.z, 0.0f, attackDirection.x);
 	attackNormal.normalise();
 
-	Vector3f crossVec = attackNormal.cross(attackStartPosition);
+	Vector3f crossVec = attackNormal.cross(attackDirection);
 	crossVec.normalise();
 
-	Vector2f direction2D(attackDirection.x, attackDirection.z);
-	f32 directionLength = direction2D.normalise();
-	if (directionLength > 0.0f) {
-		direction2D.x = (attackDirection.x * (1.0f / directionLength));
-		direction2D.y = (attackDirection.z * (1.0f / directionLength));
-	}
+	Vector3f attackDirection2D = attackDirection;
+	attackDirection2D.toFlatDirection();
 
 	Iterator<Navi> iterNavi(naviMgr);
 	CI_LOOP(iterNavi)
@@ -1050,31 +1046,20 @@ void Obj::windTarget()
 		if (navi->isAlive()) {
 			Vector3f naviPosition     = navi->getPosition();
 			Vector3f separationVector = naviPosition - attackStartPosition;
-			f32 dotProduct            = separationVector.dot(attackDirection);
+			f32 dotProduct            = attackDirection.dot(separationVector);
 
 			if (dotProduct < radius && dotProduct > 0.0f) {
-				f32 slopeAffectedDotProduct   = dotProduct * slope;
-				f32 crossVectorDotSeparation  = crossVec.dot(separationVector);
-				f32 attackNormalDotSeparation = attackNormal.dot(separationVector);
+				f32 attackRadius = dotProduct * slope;
 
-				f32 combinedDotProduct = SQUARE(attackNormalDotSeparation) * SQUARE(crossVectorDotSeparation);
-				if (combinedDotProduct < SQUARE(slopeAffectedDotProduct)) {
-					f32 slideFactor = 0.0f;
-					if (dotProduct > 0.0f) {
-						slideFactor = 1.0f / sqrtf(dotProduct) * dotProduct;
-					}
+				Vector2f dots = Vector2f(attackNormal.dot(separationVector), crossVec.dot(separationVector));
+				if (dots.sqrMagnitude() < SQUARE(attackRadius)) {
+					f32 slideFactor  = dots.length() / attackRadius;
+					f32 windStrength = (1.0f - slideFactor) * 10.0f + slideFactor;
 
-					f32 slideFactorRatio        = slideFactor / slopeAffectedDotProduct;
-					f32 inverseSlideFactorRatio = 1.0f - slideFactor / slopeAffectedDotProduct;
-					f32 attackDamage            = C_GENERALPARMS.mAttackDamage.mValue;
-					f32 windStrength            = 10.0f * inverseSlideFactorRatio + slideFactorRatio;
+					Vector3f windDirection(windStrength * (attackDirection2D.x * dots.y + attackNormal.x * dots.x), 0.0f,
+					                       windStrength * (attackDirection2D.z * dots.y + attackNormal.z * dots.x));
 
-					Vector3f windDirection;
-					windDirection.x = windStrength * (separationVector.dot(attackNormal) + separationVector.dot(crossVec));
-					windDirection.y = 0.0f;
-					windDirection.z = windStrength * (separationVector.dot(attackNormal) + separationVector.dot(crossVec));
-
-					InteractWind wind(this, attackDamage, &windDirection);
+					InteractWind wind(this, C_GENERALPARMS.mAttackDamage(), &windDirection);
 					navi->stimulate(wind);
 				}
 			}
@@ -1085,34 +1070,24 @@ void Obj::windTarget()
 	CI_LOOP(iterPiki)
 	{
 		Piki* piki = *iterPiki;
-		if (piki->isAlive()) {
+		if (piki->isAlive() && piki->isPikmin()) {
 			Vector3f pikiPosition     = piki->getPosition();
 			Vector3f separationVector = pikiPosition - attackStartPosition;
-			f32 dotProduct            = separationVector.dot(attackDirection);
+			f32 dotProduct            = attackDirection.dot(separationVector);
 
 			if (dotProduct < radius && dotProduct > 0.0f) {
-				f32 slopeAffectedDotProduct   = dotProduct * slope;
-				f32 crossVectorDotSeparation  = crossVec.dot(separationVector);
-				f32 attackNormalDotSeparation = attackNormal.dot(separationVector);
+				f32 attackRadius = dotProduct * slope;
 
-				f32 combinedDotProduct = SQUARE(attackNormalDotSeparation) * SQUARE(crossVectorDotSeparation);
-				if (combinedDotProduct < SQUARE(slopeAffectedDotProduct)) {
-					f32 slideFactor = 0.0f;
-					if (dotProduct > 0.0f) {
-						slideFactor = 1.0f / sqrtf(dotProduct) * dotProduct;
-					}
+				Vector2f dots = Vector2f(attackNormal.dot(separationVector), crossVec.dot(separationVector));
+				if (dots.sqrMagnitude() < SQUARE(attackRadius)) {
+					f32 slideFactor = dots.length() / attackRadius;
 
-					f32 slideFactorRatio        = slideFactor / slopeAffectedDotProduct;
-					f32 inverseSlideFactorRatio = 1.0f - slideFactor / slopeAffectedDotProduct;
-					f32 attackDamage            = C_GENERALPARMS.mAttackDamage.mValue;
-					f32 windStrength            = 10.0f * inverseSlideFactorRatio + slideFactorRatio;
+					f32 windStrength = (1.0f - slideFactor) * 15.0f + slideFactor * 1.5f;
+					Vector3f windDirection(windStrength * (attackDirection2D.x * dots.y + attackNormal.x * dots.x),
+					                       (1.0f - slideFactor) * 500.0f + slideFactor * 50.0f,
+					                       windStrength * (attackDirection2D.z * dots.y + attackNormal.z * dots.x));
 
-					Vector3f windDirection;
-					windDirection.x = windStrength * (separationVector.dot(attackNormal) + separationVector.dot(crossVec));
-					windDirection.y = 0.0f;
-					windDirection.z = windStrength * (separationVector.dot(attackNormal) + separationVector.dot(crossVec));
-
-					InteractWind wind(this, attackDamage, &windDirection);
+					InteractWind wind(this, C_GENERALPARMS.mAttackDamage(), &windDirection);
 					piki->stimulate(wind);
 				}
 			}

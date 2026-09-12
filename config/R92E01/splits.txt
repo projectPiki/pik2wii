@@ -73,17 +73,17 @@ System12/sys12Language.cpp:
 	.sbss       start:0x8066B8E8 end:0x8066B8F0
 
 System12/sys12HomeButtonMgr.cpp:
-	.text       start:0x8000FBA4 end:0x80011474
+	.text       start:0x8000FBA4 end:0x80010EE4
 	.rodata     start:0x80536300 end:0x80536508
-	.data       start:0x8055EDB0 end:0x8055EE08
+	.data       start:0x8055EDB0 end:0x8055EDD8
 	.sbss       start:0x8066B8F0 end:0x8066B900
 	.sdata2     start:0x8066D5B8 end:0x8066D630
 
 System12/sys12RenderMode.cpp:
-	.text       start:0x80011474 end:0x800118F0
+	.text       start:0x80010EE4 end:0x800118F0
 	.ctors      start:0x80534C88 end:0x80534C8C
 	.rodata     start:0x80536508 end:0x80536570
-	.data       start:0x8055EE08 end:0x8055F098
+	.data       start:0x8055EDD8 end:0x8055F098
 
 System12/sys12TransparentMgr.cpp:
 	.text       start:0x800118F0 end:0x80012028
@@ -119,13 +119,15 @@ System12/system12Layout.cpp:
 	.text       start:0x80014738 end:0x80017784
 	.ctors      start:0x80534C8C end:0x80534C90
 	.rodata     start:0x80536980 end:0x80536C48
-	.data       start:0x8055F1B0 end:0x8055F580
+	.data       start:0x8055F1B0 end:0x8055F570
 	.sdata      start:0x8066A820 end:0x8066A828
 	.sdata2     start:0x8066D688 end:0x8066D698
 
 System12/sys12DebugDrawer.cpp:
 	.text       start:0x80017E0C end:0x80017FB0
 	.rodata     start:0x80536C48 end:0x80536CB0
+	.data       start:0x8055F570 end:0x8055F580
+	.sbss       start:0x8066B918 end:0x8066B920
 
 System12/system12WPMessage.cpp:
 	.text       start:0x80017FB0 end:0x80018DB8
@@ -200,6 +202,7 @@ System12/PSSpkSystem.cpp:
 	.text       start:0x80026778 end:0x800270F4
 	.rodata     start:0x80538140 end:0x80538198
 	.data       start:0x805600D0 end:0x805600F0
+	.sdata      start:0x8066A868 end:0x8066A870
 	.sbss       start:0x8066B970 end:0x8066B998
 	.sdata2     start:0x8066D8C8 end:0x8066D8D0
 
@@ -4930,7 +4933,7 @@ plugProjectNishimuraU/SnakeWhole.cpp:
 
 plugProjectNishimuraU/SnakeJointMgr.cpp:
 	.text       start:0x8034DF84 end:0x8034E554
-	.rodata     start:0x8054F978 end:0x8054F990
+	.rodata     start:0x8054F978 end:0x8054F9F0
 	.sbss       start:0x8066CD60 end:0x8066CD68
 	.sdata2     start:0x806726B0 end:0x806726C0
 
@@ -5708,6 +5711,7 @@ plugProjectMorimuraU/dayEndCount.cpp:
 	.data       start:0x805BB4D8 end:0x805BB758
 	.sdata      start:0x8066B498 end:0x8066B4C0
 	.sbss       start:0x8066CEB0 end:0x8066CEB8
+	.sdata2     start:0x806739D8 end:0x80673A40
 
 plugProjectMorimuraU/hurryUp2D.cpp:
 	.text       start:0x803C448C end:0x803C63DC
@@ -5721,13 +5725,15 @@ plugProjectMorimuraU/hurryUp2D.cpp:
 
 plugProjectMorimuraU/gameOver2D.cpp:
 	.text       start:0x803C63DC end:0x803C73B4
-	.rodata     start:0x80552DE0 end:0x80552E28
+	.rodata     start:0x80552DE0 end:0x80552FA8
 	.data       start:0x805BB920 end:0x805BBD58
+	.sdata2     start:0x80673AB8 end:0x80673AD0
 
 plugProjectMorimuraU/testBase.cpp:
 	.text       start:0x803C73B4 end:0x803C75D4
 	.data       start:0x805BBD58 end:0x805BBDD8
 	.sbss       start:0x8066CEC0 end:0x8066CEC8
+	.sdata2     start:0x80673AD0 end:0x80673AE0
 
 plugProjectMorimuraU/bombState.cpp:
 	.text       start:0x803C75D4 end:0x803C7ED8

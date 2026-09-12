@@ -1,12 +1,12 @@
 #include "JSystem/JAudio/JAI/JAIBasic.h"
 #include "JSystem/JAudio/JAI/JAIConst.h"
 #include "JSystem/JAudio/JAI/JAIGlobalParameter.h"
+#include "JSystem/JAudio/JAI/JAISe.h"
+#include "JSystem/JAudio/JAI/JAISequence.h"
 #include "JSystem/JAudio/JAI/JAISound.h"
 #include "JSystem/JAudio/JAI/JAInter.h"
 #include "JSystem/JAudio/JAI/JAInter/MoveParaSet.h"
 #include "JSystem/JAudio/JAI/JAInter/SeMgr.h"
-#include "JSystem/JAudio/JAI/JAISe.h"
-#include "JSystem/JAudio/JAI/JAISequence.h"
 #include "JSystem/JSupport/JSUList.h"
 #include "types.h"
 
@@ -129,7 +129,7 @@ void checkNextFrameSe()
 	SeHelper helpers[16];
 
 	for (u32 i = 0; i < JAIGlobalParameter::getParamSeCategoryMax(); i++) {
-		for (u8 j = 0; j < categoryInfoTable[seScene][i]; j++) {
+		for (u8 j = 0; j < categoryInfoTable[seScene][i * 2]; j++) {
 			helpers[j]._04    = 0x7FFFFFFF;
 			helpers[j].mState = 0xFF;
 			helpers[j].mSound = nullptr;
@@ -161,7 +161,7 @@ void checkNextFrameSe()
 					soundObj->mDistance = 0.0f;
 				} else if (sound->mIsPlayingWithActor == false) {
 					soundObj->_0C = soundObj->mPosition;
-					u8 camID       = sound->mCameraIndex;
+					u8 camID      = sound->mCameraIndex;
 					if (camID == 4) {
 						camID = 0;
 					}
@@ -176,9 +176,9 @@ void checkNextFrameSe()
 					prio += sound->mAdjustPriority;
 					if (prio < 0) {
 						prio = 0;
+					} else if (prio > 255) {
+						prio = 255;
 					}
-				} else if (prio > 255) {
-					prio = 255;
 				}
 				sound->_24 = (u32)(soundObj->mDistance / dist) + (u32)((f32)((int)((255 - prio) * 76)) / dist);
 				if (soundObj->mPosition.z > 0.0f) {
@@ -216,7 +216,7 @@ void checkNextFrameSe()
 					for (u8 j = 0; j < max; j++) {
 						SeHelper* helper = &helpers[j];
 						if (sound->_24 < helper->_04 || (helper->_04 == sound->_24 && helper->mState >= sound->mState)) {
-							if (val < (u32)(max - 1)) {
+							if (val < max) {
 								val = val + 1;
 							}
 							for (u8 k = max - 1; k > j; k--) {
@@ -1562,7 +1562,10 @@ void checkPlayingSeUpdateAddition(JAISe* se, JAInter::SeqUpdateData* seqData, f3
  * @note Address: 0x800AF84C
  * @note Size: 0x8
  */
-u8 changeIDToCategory(u32 id) { return id >> 0xC; }
+u8 changeIDToCategory(u32 id)
+{
+	return id >> 0xC;
+}
 
 /**
  * @note Address: 0x800AF854
@@ -1805,62 +1808,63 @@ void storeSeBuffer(JAISe** soundHandlePtr, JAInter::Actor* actor, u32 soundID, u
 			return;
 		}
 
-		if (soundInfo->mPriority != seBuffer[0]->getInfoPriority() || seBuffer[0]->mState != SOUNDSTATE_Fadeout) {
-			releaseSeRegist(seBuffer[0]);
-			JAISe* se = static_cast<JAISe*>(seRegist[idx].getSound());
-			if (!se) {
-				JAISe* newSe = nullptr;
-				f32 maxDist  = 0.0f;
-				for (JSULink<JAISound>* link = seRegist[idx].mUsedList->getFirst(); link; link = link->getNext()) {
-					JAISe* currSe = static_cast<JAISe*>(link->getObject());
-					if (maxDist <= currSe->getSoundObj()->mDistance) {
-						maxDist = currSe->getSoundObj()->mDistance;
-						newSe   = currSe;
-					}
-				}
-				if (newSe && newSe->getInfoPriority() <= soundInfo->mPriority) {
-					newSe->stop(0);
-					se = static_cast<JAISe*>(seRegist[idx].getSound());
-				} else {
-					if (soundHandlePtr) {
-						*soundHandlePtr = nullptr;
-					}
-					return;
-				}
-			}
-
-			SeParameter* param = &se->mSeParam;
-			f32 center         = JAIGlobalParameter::getParamSeDolbyCenterValue() / 127.0f;
-			for (u32 i = 0; i < 8; i++) {
-				param->mVolumes[i] = MoveParaSet();
-				param->mPans[i]    = MoveParaSetInitHalf();
-				param->mPitches[i] = MoveParaSet();
-				param->mFxmixes[i] = MoveParaSetInitZero();
-				param->_324[i]     = MoveParaSetInitZero();
-				param->mDolbys[i]  = MoveParaSet(center);
-			}
-
-			param->mVolumes[7] = MoveParaSet(-1.0f);
-			param->mPans[7]    = MoveParaSetInitHalf(-1.0f);
-			param->mPitches[7] = MoveParaSet(-1.0f);
-			param->mFxmixes[7] = MoveParaSetInitZero(-1.0f);
-			param->_324[7]     = MoveParaSetInitZero(-1.0f);
-			param->mDolbys[7]  = MoveParaSet(-1.0f);
-			param->_424        = nullptr;
-			param->_428        = nullptr;
-			param->_42C        = nullptr;
-			param->_430        = nullptr;
-			param->_434        = 0;
-			param->_438        = nullptr;
-			param->_20         = 0;
-			se->mState         = SOUNDSTATE_Stored;
-			se->_14            = 0xFF;
-
-			se->initParameter(soundHandlePtr, usableActor, soundID, fadeTime, camId, soundInfo);
-			if (soundHandlePtr) {
-				*soundHandlePtr = se;
+		if (soundInfo->mPriority == seBuffer[0]->getInfoPriority() && seBuffer[0]->mState == SOUNDSTATE_Fadeout) {
+			return;
+		}
+		releaseSeRegist(seBuffer[0]);
+	}
+	JAISe* se = static_cast<JAISe*>(seRegist[idx].getSound());
+	if (!se) {
+		JAISe* newSe = nullptr;
+		f32 maxDist  = 0.0f;
+		for (JSULink<JAISound>* link = seRegist[idx].mUsedList->getFirst(); link; link = link->getNext()) {
+			JAISe* currSe = static_cast<JAISe*>(link->getObject());
+			if (maxDist <= currSe->getSoundObj()->mDistance) {
+				maxDist = currSe->getSoundObj()->mDistance;
+				newSe   = currSe;
 			}
 		}
+		if (newSe && newSe->getInfoPriority() <= soundInfo->mPriority) {
+			newSe->stop(0);
+			se = static_cast<JAISe*>(seRegist[idx].getSound());
+		} else {
+			if (soundHandlePtr) {
+				*soundHandlePtr = nullptr;
+			}
+			return;
+		}
+	}
+
+	SeParameter* param = &se->mSeParam;
+	f32 center         = JAIGlobalParameter::getParamSeDolbyCenterValue() / 127.0f;
+	for (u32 i = 0; i < 8; i++) {
+		param->mVolumes[i] = MoveParaSet();
+		param->mPans[i]    = MoveParaSetInitHalf();
+		param->mPitches[i] = MoveParaSet();
+		param->mFxmixes[i] = MoveParaSetInitZero();
+		param->_324[i]     = MoveParaSetInitZero();
+		param->mDolbys[i]  = MoveParaSet(center);
+	}
+
+	param->mVolumes[7] = MoveParaSet(-1.0f);
+	param->mPans[7]    = MoveParaSetInitHalf(-1.0f);
+	param->mPitches[7] = MoveParaSet(-1.0f);
+	param->mFxmixes[7] = MoveParaSetInitZero(-1.0f);
+	param->_324[7]     = MoveParaSetInitZero(-1.0f);
+	param->mDolbys[7]  = MoveParaSet(-1.0f);
+	param->_424        = nullptr;
+	param->_428        = nullptr;
+	param->_42C        = nullptr;
+	param->_430        = nullptr;
+	param->_434        = 0;
+	param->_438        = nullptr;
+	param->_20         = 0;
+	se->mState         = SOUNDSTATE_Stored;
+	se->_14            = 0xFF;
+
+	se->initParameter(soundHandlePtr, usableActor, soundID, fadeTime, camId, soundInfo);
+	if (soundHandlePtr) {
+		*soundHandlePtr = se;
 	}
 	/*
 	.loc_0x0:
@@ -2563,6 +2567,9 @@ lbl_800B031C:
  * @note Address: 0x800B0338
  * @note Size: 0x8
  */
-void setSeSequenceStartCallback(StartCallback callback) { seStartCallback = callback; }
+void setSeSequenceStartCallback(StartCallback callback)
+{
+	seStartCallback = callback;
+}
 } // namespace SeMgr
 } // namespace JAInter

@@ -62,25 +62,26 @@ void DirectorMgr_Scene::initTrackMap(PSSystem::DirectedBgm& bgm)
 
 	// Determine what trackMap file to load, depending on bms/cnd file name
 	if (IS_SAME_STRING(bms, "caveglass.bms") || (IS_SAME_STRING(bms, "caverelax.bms"))) {
-		path = "/user/Totaka/trackMap_Seq_T.txt";
+		path = "user/Totaka/trackMap_Seq_T.txt";
 	} else if (IS_SAME_STRING(bms, "caveconc.bms")) {
-		path = "/user/Totaka/trackMap_Cond_T.txt";
+		path = "user/Totaka/trackMap_Cond_T.txt";
 		P2ASSERTLINE(116, bgm.getCastType() == PSSystem::SeqBase::TYPE_AutoBgm);
 		bms = static_cast<PSAutoBgm::AutoBgm*>(&bgm)->mConductorFilePath;
 	} else if (IS_SAME_STRING_N("new_", bms, strlen("new_"))) {
-		path = "/user/Totaka/trackMap_Cond_T.txt";
+		path = "user/Totaka/trackMap_Cond_T.txt";
 		P2ASSERTLINE(126, bgm.getCastType() == PSSystem::SeqBase::TYPE_AutoBgm);
 		bms = static_cast<PSAutoBgm::AutoBgm*>(&bgm)->mConductorFilePath;
 	} else if (IS_SAME_STRING(bms, "cavesoil.bms") || (IS_SAME_STRING(bms, "cavemetal.bms"))) {
-		path = "/user/Wakai/trackMap_Cond_W.txt";
+		path = "user/Wakai/trackMap_Cond_W.txt";
 		P2ASSERTLINE(139, bgm.getCastType() == PSSystem::SeqBase::TYPE_AutoBgm);
 		bms = static_cast<PSAutoBgm::AutoBgm*>(&bgm)->mConductorFilePath;
 	} else {
-		path = "/user/Wakai/trackMap_Seq_W.txt";
+		path = "user/Wakai/trackMap_Seq_W.txt";
 	}
 
 	file.onlyLoad(path, JKRDvdRipper::ALLOC_DIR_BOTTOM);
-	// mBgmTrackMap = file.readTrackMap(bms);
+	BgmTrackMap* map = &file.readTrackMap(bms);
+	mBgmTrackMap = *map;
 }
 
 /**
@@ -105,7 +106,7 @@ PSSystem::DirectorBase* DirectorMgr_Scene::newDirector(u8 type, PSSystem::Direct
 		break;
 	}
 	case Director_EnemyNear: {
-		actor = new ActorDirector_Kehai("kehaiD   ", trackMap.mKehaiTrackCount, 100, 100, 100);
+		actor = new ActorDirector_Kehai(trackMap.mKehaiTrackCount, 100, 100, 100);
 		P2ASSERTLINE(188, actor);
 		for (u8 i = 0; i < (int)trackMap.mKehaiTrackCount; i++) {
 			actor->setTrack(i,
@@ -114,7 +115,7 @@ PSSystem::DirectorBase* DirectorMgr_Scene::newDirector(u8 type, PSSystem::Direct
 		break;
 	}
 	case Director_Battle: {
-		actor = new ActorDirector_Battle("battleD  ", trackMap.mBattleTrackCount, 100, 100, 100);
+		actor = new ActorDirector_Battle(trackMap.mBattleTrackCount, 100, 100, 100);
 		P2ASSERTLINE(206, actor);
 		for (u8 i = 0; i < (int)trackMap.mBattleTrackCount; i++) {
 			actor->setTrack(i, bgm.getChildTrack(i
@@ -311,8 +312,7 @@ PSSystem::DirectorBase* DirectorMgr_Battle::newDirector(u8 flag, PSSystem::Direc
 	P2ASSERTLINE(497, director);
 
 	for (u8 i = 0; i < trackNum; i++) {
-		int index = trackID + i;
-		director->setTrack(i, bgm.getChildTrack(index));
+		director->setTrack(i, bgm.getChildTrack(trackID + i));
 	}
 	return director;
 }
@@ -344,7 +344,7 @@ PSSystem::DirectorBase* DirectorMgr_2PBattle::newDirector(u8 type, PSSystem::Dir
 		break;
 	}
 	case Director2P_EnemyNear: {
-		actor = new ActorDirector_Kehai("kehaiD   ", 1, 100, 100, 100);
+		actor = new ActorDirector_Kehai(1, 100, 100, 100);
 		P2ASSERTLINE(627, actor);
 		for (u8 i = 0; i < 1; i++) {
 			actor->setTrack(i, bgm.getChildTrack(i + 9));
@@ -353,7 +353,7 @@ PSSystem::DirectorBase* DirectorMgr_2PBattle::newDirector(u8 type, PSSystem::Dir
 		break;
 	}
 	case Director2P_Battle: {
-		actor = new ActorDirector_Battle("battleD  ", 1, 100, 100, 100);
+		actor = new ActorDirector_Battle(1, 100, 100, 100);
 		P2ASSERTLINE(639, actor);
 		for (u8 i = 0; i < 1; i++) {
 			actor->setTrack(i, bgm.getChildTrack(i + 10));

@@ -33,7 +33,7 @@ static void __Print(const char** fmt, ...)
 	*fmt = "SingleGS_Zukan";
 }
 
-int sParentHeapFreeSize;
+static int sParentHeapFreeSize;
 
 static int unusedArray2[] = { 1, 2, 3, 0 };
 
@@ -350,7 +350,7 @@ void Camera::doUpdate()
 	if (dist > 0.0001f) {
 		sep *= 1.0f / dist;
 	} else {
-		sep = Vector3f(0.0f, -1.0f, 0.0f);
+		sep = Vector3f(0.0f, 0.0f, -1.0f);
 	}
 
 	Vector3f vec2(mCurrentShakeMagnitude.x + mHorizontalInputDampened, mCurrentShakeMagnitude.y + mVerticalInputDampened,

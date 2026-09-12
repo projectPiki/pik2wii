@@ -877,9 +877,18 @@ void JAISequence::setTrackPortData(u8 p1, u8 p2, u16 p3)
  * @note Address: N/A
  * @note Size: 0x114
  */
-void JAISe::setSeInterRandomPara(f32*, u32, f32, f32)
+void JAISe::setSeInterRandomPara(f32* value, u32 amplitude, f32 min, f32 max)
 {
-	// UNUSED FUNCTION
+	u32 radius = amplitude * 1000 / 127;
+	u32 sample = (u32)(4.2949673E9f * JAInter::Const::random.nextFloat_0_1());
+	f32 offset = ((f32)(sample % (radius * 2) + 1) - (f32)radius) / 1000.0f;
+	if (*value + offset > max) {
+		*value = max;
+	} else if (*value < min - offset) {
+		*value = min;
+	} else {
+		*value += offset;
+	}
 }
 
 /**
@@ -889,113 +898,9 @@ void JAISe::setSeInterRandomPara(f32*, u32, f32, f32)
 void JAISe::setSeInterVolume(u8 type, f32 value, u32 moveTime, u8 p4)
 {
 	if (p4) {
-		// these need tweaking a bit
-		f32 val  = (u32)(4.2949673E9f * JAInter::Const::random.nextFloat_0_1()) + value;
-		f32 val2 = (1.0f + val) / 1000.0f;
-
-		if (val + val2 > 1.0f) {
-			value = 1.0f;
-		} else if (value < (0.0f - val2)) {
-			value = 0.0f;
-		} else {
-			value += val2;
-		}
+		setSeInterRandomPara(&value, p4, 0.0f, 1.0f);
 	}
 	mSeParam.mVolumes[type].set(value, moveTime);
-	/*
-	stwu     r1, -0x40(r1)
-	mflr     r0
-	stw      r0, 0x44(r1)
-	stfd     f31, 0x30(r1)
-	psq_st   f31, 56(r1), 0, qr0
-	stw      r31, 0x2c(r1)
-	stw      r30, 0x28(r1)
-	stw      r29, 0x24(r1)
-	stw      r28, 0x20(r1)
-	clrlwi.  r6, r6, 0x18
-	fmr      f31, f1
-	mr       r29, r3
-	mr       r30, r4
-	mr       r31, r5
-	beq      lbl_800B4774
-	lis      r3, 0x0019660D@ha
-	lwz      r4, random__Q27JAInter5Const@sda21(r13)
-	addi     r0, r3, 0x0019660D@l
-	lis      r5, 0x02040811@ha
-	mullw    r3, r4, r0
-	lfs      f0, lbl_80516FE0@sda21(r2)
-	addi     r4, r5, 0x02040811@l
-	lfs      f2, lbl_80517024@sda21(r2)
-	addis    r3, r3, 0x3c6f
-	addi     r0, r3, -3233
-	mulli    r3, r6, 0x3e8
-	stw      r0, random__Q27JAInter5Const@sda21(r13)
-	srwi     r0, r0, 9
-	oris     r0, r0, 0x3f80
-	stw      r0, 8(r1)
-	mulhwu   r4, r4, r3
-	lfs      f1, 8(r1)
-	fsubs    f0, f1, f0
-	subf     r0, r4, r3
-	srwi     r0, r0, 1
-	fmuls    f1, f2, f0
-	add      r0, r0, r4
-	srwi     r28, r0, 6
-	bl       __cvt_fp2unsigned
-	slwi     r5, r28, 1
-	lis      r0, 0x4330
-	divwu    r4, r3, r5
-	stw      r0, 0x10(r1)
-	lfd      f4, lbl_80517018@sda21(r2)
-	stw      r28, 0x1c(r1)
-	lfs      f1, lbl_80517028@sda21(r2)
-	stw      r0, 0x18(r1)
-	mullw    r0, r4, r5
-	lfd      f2, 0x18(r1)
-	lfs      f0, lbl_80516FE0@sda21(r2)
-	fsubs    f2, f2, f4
-	subf     r3, r0, r3
-	addi     r0, r3, 1
-	stw      r0, 0x14(r1)
-	lfd      f3, 0x10(r1)
-	fsubs    f3, f3, f4
-	fsubs    f2, f3, f2
-	fdivs    f2, f2, f1
-	fadds    f1, f31, f2
-	fcmpo    cr0, f1, f0
-	ble      lbl_800B4758
-	fmr      f31, f0
-	b        lbl_800B4774
-
-lbl_800B4758:
-	lfs      f1, lbl_80516FE4@sda21(r2)
-	fsubs    f0, f1, f2
-	fcmpo    cr0, f31, f0
-	bge      lbl_800B4770
-	fmr      f31, f1
-	b        lbl_800B4774
-
-lbl_800B4770:
-	fadds    f31, f31, f2
-
-lbl_800B4774:
-	rlwinm   r3, r30, 4, 0x14, 0x1b
-	fmr      f1, f31
-	addi     r3, r3, 0x16c
-	mr       r4, r31
-	add      r3, r29, r3
-	bl       set__Q27JAInter11MoveParaSetFfUl
-	psq_l    f31, 56(r1), 0, qr0
-	lwz      r0, 0x44(r1)
-	lfd      f31, 0x30(r1)
-	lwz      r31, 0x2c(r1)
-	lwz      r30, 0x28(r1)
-	lwz      r29, 0x24(r1)
-	lwz      r28, 0x20(r1)
-	mtlr     r0
-	addi     r1, r1, 0x40
-	blr
-	*/
 }
 
 /**
@@ -1005,113 +910,9 @@ lbl_800B4774:
 void JAISe::setSeInterPan(u8 type, f32 value, u32 moveTime, u8 p4)
 {
 	if (p4) {
-		// these need tweaking a bit
-		f32 val  = (u32)(4.2949673E9f * JAInter::Const::random.nextFloat_0_1()) + value;
-		f32 val2 = (1.0f + val) / 1000.0f;
-
-		if (val + val2 > 1.0f) {
-			value = 1.0f;
-		} else if (value < (0.0f - val2)) {
-			value = 0.0f;
-		} else {
-			value += val2;
-		}
+		setSeInterRandomPara(&value, p4, 0.0f, 1.0f);
 	}
 	mSeParam.mPans[type].set(value, moveTime);
-	/*
-	stwu     r1, -0x40(r1)
-	mflr     r0
-	stw      r0, 0x44(r1)
-	stfd     f31, 0x30(r1)
-	psq_st   f31, 56(r1), 0, qr0
-	stw      r31, 0x2c(r1)
-	stw      r30, 0x28(r1)
-	stw      r29, 0x24(r1)
-	stw      r28, 0x20(r1)
-	clrlwi.  r6, r6, 0x18
-	fmr      f31, f1
-	mr       r29, r3
-	mr       r30, r4
-	mr       r31, r5
-	beq      lbl_800B48CC
-	lis      r3, 0x0019660D@ha
-	lwz      r4, random__Q27JAInter5Const@sda21(r13)
-	addi     r0, r3, 0x0019660D@l
-	lis      r5, 0x02040811@ha
-	mullw    r3, r4, r0
-	lfs      f0, lbl_80516FE0@sda21(r2)
-	addi     r4, r5, 0x02040811@l
-	lfs      f2, lbl_80517024@sda21(r2)
-	addis    r3, r3, 0x3c6f
-	addi     r0, r3, -3233
-	mulli    r3, r6, 0x3e8
-	stw      r0, random__Q27JAInter5Const@sda21(r13)
-	srwi     r0, r0, 9
-	oris     r0, r0, 0x3f80
-	stw      r0, 8(r1)
-	mulhwu   r4, r4, r3
-	lfs      f1, 8(r1)
-	fsubs    f0, f1, f0
-	subf     r0, r4, r3
-	srwi     r0, r0, 1
-	fmuls    f1, f2, f0
-	add      r0, r0, r4
-	srwi     r28, r0, 6
-	bl       __cvt_fp2unsigned
-	slwi     r5, r28, 1
-	lis      r0, 0x4330
-	divwu    r4, r3, r5
-	stw      r0, 0x10(r1)
-	lfd      f4, lbl_80517018@sda21(r2)
-	stw      r28, 0x1c(r1)
-	lfs      f1, lbl_80517028@sda21(r2)
-	stw      r0, 0x18(r1)
-	mullw    r0, r4, r5
-	lfd      f2, 0x18(r1)
-	lfs      f0, lbl_80516FE0@sda21(r2)
-	fsubs    f2, f2, f4
-	subf     r3, r0, r3
-	addi     r0, r3, 1
-	stw      r0, 0x14(r1)
-	lfd      f3, 0x10(r1)
-	fsubs    f3, f3, f4
-	fsubs    f2, f3, f2
-	fdivs    f2, f2, f1
-	fadds    f1, f31, f2
-	fcmpo    cr0, f1, f0
-	ble      lbl_800B48B0
-	fmr      f31, f0
-	b        lbl_800B48CC
-
-lbl_800B48B0:
-	lfs      f1, lbl_80516FE4@sda21(r2)
-	fsubs    f0, f1, f2
-	fcmpo    cr0, f31, f0
-	bge      lbl_800B48C8
-	fmr      f31, f1
-	b        lbl_800B48CC
-
-lbl_800B48C8:
-	fadds    f31, f31, f2
-
-lbl_800B48CC:
-	rlwinm   r3, r30, 4, 0x14, 0x1b
-	fmr      f1, f31
-	addi     r3, r3, 0x1ec
-	mr       r4, r31
-	add      r3, r29, r3
-	bl       set__Q27JAInter11MoveParaSetFfUl
-	psq_l    f31, 56(r1), 0, qr0
-	lwz      r0, 0x44(r1)
-	lfd      f31, 0x30(r1)
-	lwz      r31, 0x2c(r1)
-	lwz      r30, 0x28(r1)
-	lwz      r29, 0x24(r1)
-	lwz      r28, 0x20(r1)
-	mtlr     r0
-	addi     r1, r1, 0x40
-	blr
-	*/
 }
 
 /**
@@ -1148,113 +949,9 @@ void JAISe::setSeInterFir(u8, u8, u32, u8)
 void JAISe::setSeInterDolby(u8 type, f32 value, u32 moveTime, u8 p4)
 {
 	if (p4) {
-		// these need tweaking a bit
-		f32 val  = (u32)(4.2949673E9f * JAInter::Const::random.nextFloat_0_1()) + value;
-		f32 val2 = (1.0f + val) / 1000.0f;
-
-		if (val + val2 > 1.0f) {
-			value = 1.0f;
-		} else if (value < (0.0f - val2)) {
-			value = 0.0f;
-		} else {
-			value += val2;
-		}
+		setSeInterRandomPara(&value, p4, 0.0f, 1.0f);
 	}
 	mSeParam.mDolbys[type].set(value, moveTime);
-	/*
-	stwu     r1, -0x40(r1)
-	mflr     r0
-	stw      r0, 0x44(r1)
-	stfd     f31, 0x30(r1)
-	psq_st   f31, 56(r1), 0, qr0
-	stw      r31, 0x2c(r1)
-	stw      r30, 0x28(r1)
-	stw      r29, 0x24(r1)
-	stw      r28, 0x20(r1)
-	clrlwi.  r6, r6, 0x18
-	fmr      f31, f1
-	mr       r29, r3
-	mr       r30, r4
-	mr       r31, r5
-	beq      lbl_800B4A24
-	lis      r3, 0x0019660D@ha
-	lwz      r4, random__Q27JAInter5Const@sda21(r13)
-	addi     r0, r3, 0x0019660D@l
-	lis      r5, 0x02040811@ha
-	mullw    r3, r4, r0
-	lfs      f0, lbl_80516FE0@sda21(r2)
-	addi     r4, r5, 0x02040811@l
-	lfs      f2, lbl_80517024@sda21(r2)
-	addis    r3, r3, 0x3c6f
-	addi     r0, r3, -3233
-	mulli    r3, r6, 0x3e8
-	stw      r0, random__Q27JAInter5Const@sda21(r13)
-	srwi     r0, r0, 9
-	oris     r0, r0, 0x3f80
-	stw      r0, 8(r1)
-	mulhwu   r4, r4, r3
-	lfs      f1, 8(r1)
-	fsubs    f0, f1, f0
-	subf     r0, r4, r3
-	srwi     r0, r0, 1
-	fmuls    f1, f2, f0
-	add      r0, r0, r4
-	srwi     r28, r0, 6
-	bl       __cvt_fp2unsigned
-	slwi     r5, r28, 1
-	lis      r0, 0x4330
-	divwu    r4, r3, r5
-	stw      r0, 0x10(r1)
-	lfd      f4, lbl_80517018@sda21(r2)
-	stw      r28, 0x1c(r1)
-	lfs      f1, lbl_80517028@sda21(r2)
-	stw      r0, 0x18(r1)
-	mullw    r0, r4, r5
-	lfd      f2, 0x18(r1)
-	lfs      f0, lbl_80516FE0@sda21(r2)
-	fsubs    f2, f2, f4
-	subf     r3, r0, r3
-	addi     r0, r3, 1
-	stw      r0, 0x14(r1)
-	lfd      f3, 0x10(r1)
-	fsubs    f3, f3, f4
-	fsubs    f2, f3, f2
-	fdivs    f2, f2, f1
-	fadds    f1, f31, f2
-	fcmpo    cr0, f1, f0
-	ble      lbl_800B4A08
-	fmr      f31, f0
-	b        lbl_800B4A24
-
-lbl_800B4A08:
-	lfs      f1, lbl_80516FE4@sda21(r2)
-	fsubs    f0, f1, f2
-	fcmpo    cr0, f31, f0
-	bge      lbl_800B4A20
-	fmr      f31, f1
-	b        lbl_800B4A24
-
-lbl_800B4A20:
-	fadds    f31, f31, f2
-
-lbl_800B4A24:
-	rlwinm   r3, r30, 4, 0x14, 0x1b
-	fmr      f1, f31
-	addi     r3, r3, 0x3ec
-	mr       r4, r31
-	add      r3, r29, r3
-	bl       set__Q27JAInter11MoveParaSetFfUl
-	psq_l    f31, 56(r1), 0, qr0
-	lwz      r0, 0x44(r1)
-	lfd      f31, 0x30(r1)
-	lwz      r31, 0x2c(r1)
-	lwz      r30, 0x28(r1)
-	lwz      r29, 0x24(r1)
-	lwz      r28, 0x20(r1)
-	mtlr     r0
-	addi     r1, r1, 0x40
-	blr
-	*/
 }
 
 /**
@@ -1330,10 +1027,8 @@ void JAISe::setSeDistancePitch(u8 moveTime)
 {
 	f32 pitch = 1.0f;
 	if (checkSwBit(0x10) != 0) {
-		// pitch = 1.0f - ((JAInter::Const::random.nextFloat_0_1() * 16.0f) / 192.0f;
-		// pitch = 1.0f - ((JAInter::Const::random.idkanymore() & 0xF) ^ 0x80000000) / 192.0f;
-		// pitch = 1.0f - JAInter::Const::random.idkanymore() / 192.0f;
-		pitch = JAInter::Const::random.idkanymore();
+		s32 sample = JAInter::Const::random.nextFloat_0_1() * 16.0f;
+		pitch      = 1.0f - (sample & 0xF) / 192.0f;
 	}
 	if (checkSwBit(0x4000) != 0) {
 		if (checkSwBit(0x2) == 0 && checkSwBit(0x100 | 0x200) == 0) {
@@ -1350,94 +1045,6 @@ void JAISe::setSeDistancePitch(u8 moveTime)
 		pitch += mRandPitchModifier / 192.0f;
 	}
 	mSeParam.mPitches[SOUNDPARAM_Distance].set(pitch, moveTime);
-	/*
-	stwu     r1, -0x20(r1)
-	mflr     r0
-	lfs      f1, lbl_80516FE0@sda21(r2)
-	stw      r0, 0x24(r1)
-	lwz      r5, 0x44(r3)
-	lwz      r0, 0(r5)
-	rlwinm.  r0, r0, 0, 0x1b, 0x1b
-	beq      lbl_800B4D34
-	lis      r5, 0x0019660D@ha
-	lwz      r6, random__Q27JAInter5Const@sda21(r13)
-	addi     r5, r5, 0x0019660D@l
-	lis      r0, 0x4330
-	mullw    r5, r6, r5
-	stw      r0, 0x18(r1)
-	lfs      f4, lbl_8051702C@sda21(r2)
-	lfd      f3, lbl_80516FF0@sda21(r2)
-	lfs      f0, lbl_80517030@sda21(r2)
-	addis    r5, r5, 0x3c6f
-	addi     r5, r5, -3233
-	srwi     r0, r5, 9
-	stw      r5, random__Q27JAInter5Const@sda21(r13)
-	oris     r0, r0, 0x3f80
-	stw      r0, 8(r1)
-	lfs      f2, 8(r1)
-	fsubs    f2, f2, f1
-	fmuls    f2, f4, f2
-	fctiwz   f2, f2
-	stfd     f2, 0x10(r1)
-	lwz      r0, 0x14(r1)
-	clrlwi   r0, r0, 0x1c
-	xoris    r0, r0, 0x8000
-	stw      r0, 0x1c(r1)
-	lfd      f2, 0x18(r1)
-	fsubs    f2, f2, f3
-	fdivs    f0, f2, f0
-	fsubs    f1, f1, f0
-
-lbl_800B4D34:
-	lwz      r5, 0x44(r3)
-	lwz      r6, 0(r5)
-	rlwinm.  r0, r6, 0, 0x11, 0x11
-	beq      lbl_800B4D90
-	rlwinm.  r0, r6, 0, 0x1e, 0x1e
-	bne      lbl_800B4D90
-	rlwinm.  r0, r6, 0, 0x16, 0x17
-	bne      lbl_800B4D90
-	lwz      r0, audioCameraMax__18JAIGlobalParameter@sda21(r13)
-	cmplwi   r0, 1
-	bne      lbl_800B4D90
-	lwz      r5, 0x34(r3)
-	lfs      f0, distanceMax__18JAIGlobalParameter@sda21(r13)
-	lfs      f2, 0x18(r5)
-	fcmpo    cr0, f2, f0
-	cror     2, 1, 2
-	bne      lbl_800B4D84
-	lfs      f0, seDistancepitchMax__18JAIGlobalParameter@sda21(r13)
-	fadds    f1, f1, f0
-	b        lbl_800B4D90
-
-lbl_800B4D84:
-	fdivs    f0, f2, f0
-	lfs      f2, seDistancepitchMax__18JAIGlobalParameter@sda21(r13)
-	fmadds   f1, f2, f0, f1
-
-lbl_800B4D90:
-	rlwinm.  r0, r6, 0, 0x18, 0x19
-	beq      lbl_800B4DC0
-	lbz      r5, 0x17(r3)
-	lis      r0, 0x4330
-	stw      r0, 0x18(r1)
-	lfd      f3, lbl_80517018@sda21(r2)
-	stw      r5, 0x1c(r1)
-	lfs      f0, lbl_80517030@sda21(r2)
-	lfd      f2, 0x18(r1)
-	fsubs    f2, f2, f3
-	fdivs    f0, f2, f0
-	fadds    f1, f1, f0
-
-lbl_800B4DC0:
-	addi     r3, r3, 0x2ac
-	clrlwi   r4, r4, 0x18
-	bl       set__Q27JAInter11MoveParaSetFfUl
-	lwz      r0, 0x24(r1)
-	mtlr     r0
-	addi     r1, r1, 0x20
-	blr
-	*/
 }
 
 /**

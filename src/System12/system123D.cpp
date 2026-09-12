@@ -1,19 +1,19 @@
+#include "RevoSDK/os.h"
 #include "System12/3D.h"
-#include "egg/prim/eggAssert.h"
 #include "egg/core/eggAllocator.h"
 #include "egg/core/eggThread.h"
-#include "RevoSDK/os.h"
+#include "egg/prim/eggAssert.h"
+
 
 namespace System12 {
 
-
-Model::Model() 
-	: mModel(nullptr)
+Model::Model()
+    : mModel(nullptr)
 {
-	_04 = nullptr;
-	mAnimMgrBase = nullptr;
-	mResAnmChr = nullptr;
-	mAnmObjVisRes = nullptr;
+	_04              = nullptr;
+	mAnimMgrBase     = nullptr;
+	mResAnmChr       = nullptr;
+	mAnmObjVisRes    = nullptr;
 	mAnmObjMatClrRes = nullptr;
 }
 
@@ -29,19 +29,19 @@ void RootScene::construct(u32 maxScnObj, u32 numLightObj, EGG::Heap* heap)
 		}
 	}
 	EGG::Allocator allocator(heap, 32);
-	
-	mRootScene = nw4r::g3d::ScnRoot::Construct(&allocator, &allocator.mAlign, maxScnObj, numLightObj, 128, 128);
+
+	mRoot = nw4r::g3d::ScnRoot::Construct(&allocator, &allocator.mAlign, maxScnObj, numLightObj, 128, 128);
 }
 
 bool Model::construct(ConstructArg& arg)
 {
-	
+
 	nw4r::g3d::ResFile p = arg.mResFile;
 	p.Init();
 	bool success = p.Bind();
-	if (success){
+	if (success) {
 		EGG::Thread* thread = EGG::Thread::findThread(OSGetCurrentThread());
-		EGG::Heap* heap = arg.mHeap;
+		EGG::Heap* heap     = arg.mHeap;
 		if (heap == nullptr) {
 			if (thread != nullptr) {
 				heap = thread->mAllocatableHeap;
@@ -50,19 +50,18 @@ bool Model::construct(ConstructArg& arg)
 				heap = EGG::Heap::getCurrentHeap();
 			}
 		}
-	
-	
+
 		EGG::Allocator allocator(heap, 32);
 		nw4r::g3d::ResMdl model;
-	
+
 		if (arg.mModelName) {
 			model = p.GetResMdl(arg.mModelName);
 		} else {
 			model = p.GetResMdl(arg.mIndex);
 		}
-	
+
 		mModel = nw4r::g3d::ScnMdl::Construct(&allocator, &allocator.mAlign, model, arg.mBufferOption, arg.mNumView);
-		
+
 		if (arg._24) {
 			construct_animations(p, arg);
 		}
@@ -87,7 +86,7 @@ bool Model::construct(ConstructArg& arg)
 void Model::construct_vis_animations(const nw4r::g3d::ResFile& file, ConstructArg& arg)
 {
 	EGG::Thread* thread = EGG::Thread::findThread(OSGetCurrentThread());
-	EGG::Heap* heap = nullptr;
+	EGG::Heap* heap     = nullptr;
 	if (heap == nullptr) {
 		if (thread != nullptr) {
 			heap = thread->mAllocatableHeap;
@@ -96,7 +95,7 @@ void Model::construct_vis_animations(const nw4r::g3d::ResFile& file, ConstructAr
 			heap = EGG::Heap::getCurrentHeap();
 		}
 	}
-	
+
 	EGG::Allocator allocator(heap, 32);
 
 	mAnmObjVisRes = nw4r::g3d::AnmObjVisRes::Construct(&allocator, &allocator.mAlign, file.GetResAnmVis(0), mModel->GetResMdl());
@@ -107,7 +106,7 @@ void Model::construct_vis_animations(const nw4r::g3d::ResFile& file, ConstructAr
 void Model::construct_clr_animations(const nw4r::g3d::ResFile& file, ConstructArg& arg)
 {
 	EGG::Thread* thread = EGG::Thread::findThread(OSGetCurrentThread());
-	EGG::Heap* heap = nullptr;
+	EGG::Heap* heap     = nullptr;
 	if (heap == nullptr) {
 		if (thread != nullptr) {
 			heap = thread->mAllocatableHeap;
@@ -118,16 +117,17 @@ void Model::construct_clr_animations(const nw4r::g3d::ResFile& file, ConstructAr
 	}
 
 	EGG::Allocator allocator(heap, 32);
-	
-	mAnmObjMatClrRes = nw4r::g3d::AnmObjMatClrRes::Construct(&allocator, &allocator.mAlign, file.GetResAnmClr(0), mModel->GetResMdl(), false);
+
+	mAnmObjMatClrRes
+	    = nw4r::g3d::AnmObjMatClrRes::Construct(&allocator, &allocator.mAlign, file.GetResAnmClr(0), mModel->GetResMdl(), false);
 	mAnmObjMatClrRes->Bind(mModel->GetResMdl());
 	mModel->SetAnmObj(mAnmObjMatClrRes, nw4r::g3d::ScnMdlSimple::ANMOBJTYPE_NOT_SPECIFIED);
 }
 
 void Model::setVisible(bool visible)
 {
-	if (mModel){
-        mModel->SetScnObjOption(nw4r::g3d::ScnObj::OPTID_DISABLE_GATHER_SCNOBJ | 0x10000, !visible);
+	if (mModel) {
+		mModel->SetScnObjOption(nw4r::g3d::ScnObj::OPTID_DISABLE_GATHER_SCNOBJ | 0x10000, !visible);
 	}
 }
 
@@ -138,9 +138,7 @@ void Animation::attachAnimation(nw4r::g3d::AnmObjChrRes* res, Model* model)
 	mAnimObjChr->SetUpdateRate(0.0f);
 	mAnimObjChr->SetFrame(0.0f);
 	mAnimObjChr->SetPlayPolicy(nw4r::g3d::PlayPolicy_Onetime);
-	nw4r::g3d::ResAnmChr chr = mAnimObjChr->GetResAnm();
-	mMaxFrames = (chr.GetNumFrame() / 1.0f);
-	resetUserFrameRange();
+	setupMaxFrames(mAnimObjChr->GetResAnm().GetNumFrame() / 1.0f);
 }
 
 void Animation::play(FrameCounter::eType type, f32 f)
@@ -167,14 +165,14 @@ void Animation::setCurrentFrame(f32 frame)
 	mAnimObjChr->SetFrame(mCurrentFrame);
 }
 
-AnimMgrBase::AnimMgrBase() 
+AnimMgrBase::AnimMgrBase()
 {
 	mModel = nullptr;
 }
 
-void AnimMgrBase::allocate(Model* model, int i) 
+void AnimMgrBase::allocate(Model* model, int i)
 {
 	mModel = model;
 	mBuffer.allocate(i, 0);
 }
-}
+} // namespace System12

@@ -3,6 +3,12 @@
 #include "RevoSDK/rand.h"
 #include "efx/TUjinko.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "246-Imomushi";
+}
+
 namespace Game {
 namespace Imomushi {
 
@@ -91,8 +97,8 @@ void Obj::doAnimationStick()
 
 		mClimbDirection += sep;
 
-		crossVec       = cross(mClimbDirection, mClimbRotation);
-		mClimbRotation = cross(crossVec, mClimbDirection);
+		crossVec       = mClimbRotation.cross(mClimbDirection);
+		mClimbRotation = mClimbDirection.cross(crossVec);
 	}
 
 	mClimbDirection.normalise();
@@ -531,7 +537,7 @@ void Obj::getShadowParam(ShadowParam& param)
 {
 	param.mPosition = mModel->getJoint("koshi1jnt")->getWorldMatrix()->getColumn(3);
 	param.mPosition.y -= 5.0f;
-	param.mBoundingSphere.mPosition = Vector3f(0.0f, 1.0f, 0.0f);
+	param.mBoundingSphere.mPosition.set(0.0f, 1.0f, 0.0f);
 	if (isStickTo()) {
 		param.mBoundingSphere.mRadius = 0.1f;
 		param.mSize                   = 0.1f;

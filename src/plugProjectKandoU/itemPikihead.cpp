@@ -12,11 +12,14 @@
 #include "efx/TEnemyDive.h"
 #include "nans.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "itemPikihead";
+}
+
 namespace Game {
 namespace ItemPikihead {
-
-static const int unusedArray[] = { 0, 0, 0 };
-static const char unusedName[] = "itemPikihead";
 
 Mgr* mgr;
 
