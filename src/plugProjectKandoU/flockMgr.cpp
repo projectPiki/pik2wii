@@ -8,6 +8,12 @@
 #include "JSystem/J3D/J3DSys.h"
 #include "nans.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "flockMgr";
+}
+
 namespace Game {
 /**
  * @note Address: 0x8020EADC
@@ -104,8 +110,8 @@ void BaseFlockMgr::resolveCollision(f32 p1)
 					TFlock* flock1 = getFlock(j); // r31
 					TFlock* flock2 = getFlock(k); // r3
 					Vector3f sep   = *flock1 - *flock2;
-					sep.y          = 0.0f;
 					if (sep.length2D() < p1) {
+						sep.y = 0.0f; // lol
 						sep.normalise();
 						sep *= halfVal;
 						(Vector3f)* flock1 = *flock1 - sep;

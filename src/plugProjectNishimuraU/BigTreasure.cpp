@@ -15,13 +15,14 @@
 #include "RevoSDK/rand.h"
 #include "nans.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "246-BigTreasure";
+}
+
 namespace Game {
 namespace BigTreasure {
-
-#if MATCHING
-static const int unusedBigTreasureArray[] = { 0, 0, 0 };
-static const char bigTreasureName[]       = "246-BigTreasure";
-#endif
 
 /**
  * @note Address: 0x802DBBB4
@@ -148,8 +149,7 @@ void Obj::doUpdateCommon()
 void Obj::doAnimationUpdateAnimator()
 {
 	SysShape::BlendLinearFun linearBlend;
-	f32 animTime = EnemyAnimatorBase::defaultAnimSpeed * sys->getDeltaTime();
-	static_cast<ProperAnimator*>(mAnimator)->animate(&linearBlend, 60.0f * sys->getDeltaTime(), animTime, animTime);
+	static_cast<ProperAnimator*>(mAnimator)->animate(&linearBlend, 60.0f * sys->getDeltaTime(), EnemyAnimatorBase::defaultAnimSpeed * sys->getDeltaTime(), EnemyAnimatorBase::defaultAnimSpeed * sys->getDeltaTime());
 	static_cast<ProperAnimator*>(mAnimator)->mAnimator.setModelCalc(mModel, 0);
 }
 
@@ -236,7 +236,7 @@ void Obj::setFSM(FSM* fsm)
 void Obj::getShadowParam(ShadowParam& param)
 {
 	param.mPosition                 = mPosition;
-	param.mBoundingSphere.mPosition = Vector3f(0.0f, 1.0f, 0.0f);
+	param.mBoundingSphere.mPosition.set(0.0f, 1.0f, 0.0f);
 	param.mBoundingSphere.mRadius   = 0.1f;
 	param.mSize                     = 0.1f;
 }
@@ -356,8 +356,8 @@ void Obj::resetAttackLimitTimer()
 bool Obj::isAttackLimitTime()
 {
 	bool check         = false;
-	f32 incTime        = sys->getDeltaTime();
 	f32 extendedTime   = 3.0f * sys->getDeltaTime();
+	f32 incTime        = sys->getDeltaTime();
 	f32 treasureFactor = 2.0f * (f32)getCapturedTreasureNum() + 4.0f;
 
 	Sys::Sphere sphere(mPosition, 300.0f);
@@ -429,7 +429,7 @@ void Obj::getTargetPosition()
 			mTargetPosition.z = randDist * cosf(randAngle) + mHomePosition.z;
 		}
 	} else {
-		mTargetPosition = mHomePosition;
+		mTargetPosition.set(mHomePosition);
 	}
 
 	setIKSystemTargetPosition(mTargetPosition);
@@ -667,7 +667,7 @@ void Obj::setupCollision()
  * @note Address: N/A
  * @note Size: 0x13C
  */
-void Obj::setupBigTreasureCollision()
+void Obj::setBigTreasureCollision()
 {
 	bool treasureCheck = true;
 	for (int i = 0; i < 4; i++) {
@@ -736,7 +736,7 @@ void Obj::setupTreasure()
 		}
 	}
 
-	setupBigTreasureCollision();
+	setBigTreasureCollision();
 
 	mAttackIndex = -1;
 }
@@ -799,7 +799,7 @@ void Obj::dropTreasure()
 
 	if (dropCheck) {
 		startBossItemDropBGM();
-		setupBigTreasureCollision();
+		setBigTreasureCollision();
 	}
 }
 
@@ -1415,35 +1415,32 @@ void Obj::updateMaterialColor()
 	// body
 	const int& targetRed = getTargetBodyRed();
 	const int& currRed   = getCurrentBodyRed();
-	mCurrMatBodyColor.r  = adjustValInt(currRed, targetRed, 5);
+	mCurrMatBodyColor.r  = approach(currRed, targetRed, 5);
 
 	const int& targetGreen = getTargetBodyGreen();
 	const int& currGreen   = getCurrentBodyGreen();
-	mCurrMatBodyColor.g    = adjustValInt(currGreen, targetGreen, 5);
+	mCurrMatBodyColor.g    = approach(currGreen, targetGreen, 5);
 
 	const int& targetBlue = getTargetBodyBlue();
 	const int& currBlue   = getCurrentBodyBlue();
-	mCurrMatBodyColor.b   = adjustValInt(currBlue, targetBlue, 5);
+	mCurrMatBodyColor.b   = approach(currBlue, targetBlue, 5);
 
 	const int& targetAlpha = getTargetBodyAlpha();
 	const int& currAlpha   = getCurrentBodyAlpha();
-	mCurrMatBodyColor.a    = adjustValInt(currAlpha, targetAlpha, 5);
+	mCurrMatBodyColor.a    = approach(currAlpha, targetAlpha, 5);
 
 	// cluster eyes
 	mCurrClusterEyeColor.mRgb[0]
-	    = adjustVal(mCurrClusterEyeColor.mRgb[0], mTargetClusterEyeColor[mTargetEyeColorIdx].mRgb[0], mClusterEyeAnimSpeeds[0]);
+	    = approach(mCurrClusterEyeColor.mRgb[0], mTargetClusterEyeColor[mTargetEyeColorIdx].mRgb[0], mClusterEyeAnimSpeeds[0]);
 	mCurrClusterEyeColor.mRgb[1]
-	    = adjustVal(mCurrClusterEyeColor.mRgb[1], mTargetClusterEyeColor[mTargetEyeColorIdx].mRgb[1], mClusterEyeAnimSpeeds[1]);
+	    = approach(mCurrClusterEyeColor.mRgb[1], mTargetClusterEyeColor[mTargetEyeColorIdx].mRgb[1], mClusterEyeAnimSpeeds[1]);
 	mCurrClusterEyeColor.mRgb[2]
-	    = adjustVal(mCurrClusterEyeColor.mRgb[2], mTargetClusterEyeColor[mTargetEyeColorIdx].mRgb[2], mClusterEyeAnimSpeeds[2]);
+	    = approach(mCurrClusterEyeColor.mRgb[2], mTargetClusterEyeColor[mTargetEyeColorIdx].mRgb[2], mClusterEyeAnimSpeeds[2]);
 
 	// side eyes
-	mCurrSideEyeColor.mRgb[0]
-	    = adjustVal(mCurrSideEyeColor.mRgb[0], mTargetSideEyeColor[mTargetEyeColorIdx].mRgb[0], mSideEyeAnimSpeeds[0]);
-	mCurrSideEyeColor.mRgb[1]
-	    = adjustVal(mCurrSideEyeColor.mRgb[1], mTargetSideEyeColor[mTargetEyeColorIdx].mRgb[1], mSideEyeAnimSpeeds[1]);
-	mCurrSideEyeColor.mRgb[2]
-	    = adjustVal(mCurrSideEyeColor.mRgb[2], mTargetSideEyeColor[mTargetEyeColorIdx].mRgb[2], mSideEyeAnimSpeeds[2]);
+	mCurrSideEyeColor.mRgb[0] = approach(mCurrSideEyeColor.mRgb[0], mTargetSideEyeColor[mTargetEyeColorIdx].mRgb[0], mSideEyeAnimSpeeds[0]);
+	mCurrSideEyeColor.mRgb[1] = approach(mCurrSideEyeColor.mRgb[1], mTargetSideEyeColor[mTargetEyeColorIdx].mRgb[1], mSideEyeAnimSpeeds[1]);
+	mCurrSideEyeColor.mRgb[2] = approach(mCurrSideEyeColor.mRgb[2], mTargetSideEyeColor[mTargetEyeColorIdx].mRgb[2], mSideEyeAnimSpeeds[2]);
 
 	// if both cluster and side eyes are within 0.01f of the target color (for R, G, and B), swap target (light->dark or dark->light)
 	bool check = true;

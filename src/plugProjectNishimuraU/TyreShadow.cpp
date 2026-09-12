@@ -1,6 +1,12 @@
 #include "Game/Entities/Tyre.h"
 #include "Game/MapMgr.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "246-TyreShadow";
+}
+
 namespace Game {
 
 /**
@@ -10,15 +16,14 @@ namespace Game {
 void TyreTubeShadowNode::makeShadowSRT(JointShadowParm& shadowParm, Matrixf* mat)
 {
 	Vector3f matVecs[4];
-	matVecs[0] = Vector3f(mat->getColumn(0));
+	matVecs[0].set(mat->getColumn(0));
 	matVecs[3] = mat->getColumn(3);
 
 	Vector3f xVec = Vector3f(mat->getColumn(0));
 	xVec.normalise();
-	xVec       = xVec * shadowParm._18;
-	matVecs[0] = xVec;
+	matVecs[0] = xVec * shadowParm._18;
 
-	matVecs[2] = cross(matVecs[0], shadowParm.mRotation);
+	matVecs[2] = cross(xVec, shadowParm.mRotation);
 	matVecs[2].normalise();
 	matVecs[2].x = matVecs[2].x * shadowParm._1C;
 	matVecs[2].y = matVecs[2].y * shadowParm._1C;

@@ -6,7 +6,7 @@
 #include "PSM/Scene.h"
 
 namespace PSSystem {
-inline PSM::SceneBase* checkGameScene(Scene* scene) { P2ASSERTLINE(375, scene->toSceneBase()->isGameScene()); }
+inline PSM::SceneBase* checkGameScene(Scene* scene) { P2ASSERTLINE(395, scene->toSceneBase()->isGameScene()); }
 }; // namespace PSSystem
 
 #endif

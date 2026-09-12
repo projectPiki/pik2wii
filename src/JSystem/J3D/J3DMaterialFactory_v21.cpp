@@ -62,26 +62,21 @@ u32 J3DMaterialFactory_v21::countTexGens(int index) const {
 
 u32 J3DMaterialFactory_v21::countStages(int index) const {
     J3DMaterialInitData_v21* data = &mInitData[mMatRemapTable[index]];
-    u32 count1 = 0;
-    u32 count2 = 0;
-    if (data->mNumTevStagesIndex != 255) {
-        count2 = mTevStageNums[data->mNumTevStagesIndex];
-    }
-    for (int i = 0; i < 8; i++) {
-        if (mInitData->mTextureIndex[i] != 0xffff) {
-            count1++;
-        }
-    }
-    if (count2 != count1 && count1 != 0) {
-        u32 count3;
-        if (count2 > count1) {
-            count3 = count2;
-        } else {
-            count3 = count1;
-        }
-        return count3;
-    }
-    return count2;
+	u32 texNum                    = 0;
+	u32 tevID                     = 0;
+	if (data->mNumTevStagesIndex != 255) {
+		tevID = mTevStageNums[data->mNumTevStagesIndex];
+	}
+	for (int i = 0; i < 8; i++) {
+		if (data->mTextureIndex[i] != 0xffff) {
+			texNum++;
+		}
+	}
+	if (tevID != texNum && texNum != 0) {
+		return tevID > texNum ? tevID : texNum;
+	} else {
+		return tevID;
+	}
 }
 
 /**
@@ -108,7 +103,7 @@ J3DMaterial* J3DMaterialFactory_v21::create(J3DMaterial* mat, int index, u32 fla
 	u32 IndFlag    = (flags >> 0x18) & 1;
 
 	if (mat == nullptr) {
-		mat = new J3DMaterial;
+		mat = new J3DMaterial();
 	}
 	mat->mColorBlock   = mat->createColorBlock(colorFlag);
 	mat->mTexGenBlock  = mat->createTexGenBlock(texGenFlag);
@@ -858,7 +853,7 @@ J3DColorChan J3DMaterialFactory_v21::newColorChan(int matID, int colID) const
  * @note Address: 0x800856C0
  * @note Size: 0x38
  */
-u8 J3DMaterialFactory_v21::newTexGenNum(int matID) const
+u32 J3DMaterialFactory_v21::newTexGenNum(int matID) const
 {
 	u8 id = getMaterialInitData(matID).mNumTexGensIndex;
 	if (id != 255) {

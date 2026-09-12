@@ -212,7 +212,7 @@ struct Obj : public EnemyBase {
 	void subShadowScale();
 	bool startBigTreasureBootUpDemo();
 
-	void setupBigTreasureCollision();
+	void setBigTreasureCollision();
 
 	inline int getCurrentBodyRed() { return mCurrMatBodyColor.r; }
 

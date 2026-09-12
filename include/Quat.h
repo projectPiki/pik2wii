@@ -1,10 +1,10 @@
 #ifndef _QUAT_H
 #define _QUAT_H
 
-#include "types.h"
-#include "Vector3.h"
-#include "Matrixf.h"
 #include "Matrix3f.h"
+#include "Matrixf.h"
+#include "Vector3.h"
+#include "types.h"
 
 /**
  * @struct RPY
@@ -29,7 +29,7 @@ struct Quat {
 	 * @brief Copy constructor.
 	 * @param other The quaternion to copy from.
 	 */
-	Quat(Quat& other);
+	Quat(const Quat& other);
 
 	/**
 	 * @brief Constructor that initializes the quaternion with a scalar and a vector.
@@ -133,15 +133,7 @@ struct Quat {
 	 * @param other The scalar to multiply by.
 	 * @return The resulting quaternion.
 	 */
-	inline Quat operator*(f32 scale)
-	{
-		Quat result;
-		result.w   = scale * w;
-		result.v.x = scale * v.x;
-		result.v.y = scale * v.y;
-		result.v.z = scale * v.z;
-		return result;
-	}
+	inline Quat operator*(f32 scale) { return Quat(scale * w, v * scale); }
 
 	inline Quat operator+(const Quat& other)
 	{
@@ -157,6 +149,21 @@ struct Quat {
 		v = other.v;
 	}
 
+	/**
+	 * @brief Returns the Hamilton product of two quaternions.
+	 * @param q1 Left quaternion.
+	 * @param q2 Right quaternion.
+	 * @return The product q1 * q2.
+	 */
+	static inline Quat multiply(Quat& q1, Quat& q2)
+	{
+		Quat result;
+		f32 newW = q1.w * q2.w - q1.v.dot(q2.v);
+		result.v = q1.v.cross(q2.v) + q2.v * q1.w + q1.v * q2.w;
+		result.w = newW;
+		return Quat(result.w, result.v);
+	}
+
 	f32 w;      // _00
 	Vector3f v; // _04
 };
@@ -166,7 +173,7 @@ inline Quat operator*(Quat& q1, Quat& q2)
 	Quat result;
 	result.w = q1.w * q2.w - q1.v.dot(q2.v);
 	result.v = q1.v.cross(q2.v) + q2.v * q1.w + q1.v * q2.w;
-	return result;
+	return Quat(result.w, result.v);
 }
 
 #endif

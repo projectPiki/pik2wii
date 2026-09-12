@@ -1,5 +1,11 @@
 #include "Game/FieldVtxColorMgr.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "vtxAnm";
+}
+
 namespace Game {
 
 /**
@@ -276,7 +282,10 @@ void FieldVtxColorMgr::initVtxColor()
 		mInfo[i].mAlpha = 0;
 	}
 
-	FOREACH_NODE(FieldVtxColorControl, mControl, currControl) { updateFieldVtxColorControl(currControl); }
+	FOREACH_NODE(FieldVtxColorControl, mControl, currControl)
+	{
+		updateFieldVtxColorControl(currControl);
+	}
 
 	GXColor newColor;
 	newColor.b     = 255;
@@ -457,7 +466,10 @@ void FieldVtxColorMgr::calc(J3DVertexBuffer* buffer)
 			mInfo[i].mAlpha = 0;
 		}
 
-		FOREACH_NODE(FieldVtxColorControl, mControl, currControl) { updateFieldVtxColorControl(currControl); }
+		FOREACH_NODE(FieldVtxColorControl, mControl, currControl)
+		{
+			updateFieldVtxColorControl(currControl);
+		}
 
 		for (int i = 0; i < mInfoCount; i++) {
 			int idx  = mInfo[i].mColorIdx;
@@ -715,9 +727,30 @@ lbl_80122B3C:
  * @note Address: N/A
  * @note Size: 0xA4
  */
-void FieldVtxColorMgr::setupFieldVtxColorInfoFromFan(void*, int, int, int, int)
+void FieldVtxColorMgr::setupFieldVtxColorInfoFromFan(void* fan, int p1, int p2, int p3, int p4)
 {
-	// UNUSED FUNCTION
+	u8* vertex        = static_cast<u8*>(fan);
+	u16 positionIndex = *reinterpret_cast<u16*>(vertex + p1);
+	u16 colorIndex    = *reinterpret_cast<u16*>(vertex + p2);
+	if (mInfo[positionIndex].mColorIdx == 0xFFFF) {
+		mInfo[positionIndex].mColorIdx = colorIndex;
+	}
+
+	vertex        = vertex + p3;
+	positionIndex = *reinterpret_cast<u16*>(vertex + p1);
+	colorIndex    = *reinterpret_cast<u16*>(vertex + p2);
+	if (mInfo[positionIndex].mColorIdx == 0xFFFF) {
+		mInfo[positionIndex].mColorIdx = colorIndex;
+	}
+
+	for (int j = 2; j < p4; j++) {
+		vertex        = vertex + j * p3;
+		positionIndex = *reinterpret_cast<u16*>(vertex + p1);
+		colorIndex    = *reinterpret_cast<u16*>(vertex + p2);
+		if (mInfo[positionIndex].mColorIdx == 0xFFFF) {
+			mInfo[positionIndex].mColorIdx = colorIndex;
+		}
+	}
 }
 
 /**
@@ -726,62 +759,17 @@ void FieldVtxColorMgr::setupFieldVtxColorInfoFromFan(void*, int, int, int, int)
  */
 void FieldVtxColorMgr::setupFieldVtxColorInfoFromStrip(void* strip, int p1, int p2, int p3, int p4)
 {
-	u16* ptr1 = (u16*)((u16*)strip + p1);
-	u16* ptr2 = (u16*)((u16*)strip + p1 * 2);
-
-	u16 val1 = ptr1[p2];          // r11
-	u16 val2 = ptr2[p2];          // r12
-	u16 val3 = ((u16*)strip)[p2]; // r0
-
-	u16 val4 = ((u16*)strip)[p3]; // r31
-	u16 val5 = ptr1[p3];          // r9
-	u16 val6 = ptr2[p3];          // r10
-
-	if (p4 <= 3) {
-		switch (mInfo[val3].mColorIdx) {
-		case 0xFFFF:
-			((FieldVtxColorInfo*)strip)[val3].mColorIdx = val4;
+	u8* vertices      = static_cast<u8*>(strip);
+	int triangleCount = (p4 <= 3) ? 1 : p4 - 2;
+	for (int i = 0; i < triangleCount; i++) {
+		for (int j = 0; j < 3; j++) {
+			u8* vertex        = vertices + (i + j) * p1;
+			u16 positionIndex = *reinterpret_cast<u16*>(vertex + p2);
+			u16 colorIndex    = *reinterpret_cast<u16*>(vertex + p3);
+			if (mInfo[positionIndex].mColorIdx == 0xFFFF) {
+				mInfo[positionIndex].mColorIdx = colorIndex;
+			}
 		}
-
-		switch (mInfo[val1].mColorIdx) {
-		case 0xFFFF:
-			((FieldVtxColorInfo*)strip)[val1].mColorIdx = val5;
-		}
-
-		switch (mInfo[val2].mColorIdx) {
-		case 0xFFFF:
-			((FieldVtxColorInfo*)strip)[val2].mColorIdx = val6;
-		}
-		return;
-	}
-
-	for (int i = 0, j = 0; i < p4 - 2; i++, j++) {
-		u16* ptr1 = (u16*)((u16*)strip + p1);
-		u16* ptr2 = (u16*)((u16*)strip + p1 * 2);
-
-		u16 val1 = ptr1[p2];          // r11
-		u16 val2 = ptr2[p2];          // r12
-		u16 val3 = ((u16*)strip)[p2]; // r0
-
-		u16 val4 = ((u16*)strip)[p3]; // r31
-		u16 val5 = ptr1[p3];          // r9
-		u16 val6 = ptr2[p3];          // r10
-
-		switch (mInfo[val3].mColorIdx) {
-		case 0xFFFF:
-			((FieldVtxColorInfo*)strip)[val3].mColorIdx = val4;
-		}
-
-		switch (mInfo[val1].mColorIdx) {
-		case 0xFFFF:
-			((FieldVtxColorInfo*)strip)[val1].mColorIdx = val5;
-		}
-
-		switch (mInfo[val2].mColorIdx) {
-		case 0xFFFF:
-			((FieldVtxColorInfo*)strip)[val2].mColorIdx = val6;
-		}
-		return;
 	}
 	/*
 	.loc_0x0:
@@ -936,21 +924,19 @@ void FieldVtxColorMgr::setupFieldVtxColorInfo(J3DShape* shape)
 	for (u16 i = 0; i < shape->getMtxGroupNum(); i++) {
 		u8* dispList = const_cast<u8*>(shape->getShapeDraw(i)->mDisplayList);
 		u8* ptr      = dispList;
-		while ((u32)dispList - (u32)ptr < shape->getShapeDraw(i)->mDlSize) {
+		while ((u32)ptr - (u32)dispList < shape->getShapeDraw(i)->mDlSize) {
 			if (ptr[0] == 0) {
 				return;
 			}
 
-			int val = (s16)(ptr[1]);
+			u16 val = *reinterpret_cast<u16*>(ptr + 1);
 			if (ptr[0] == 152) {
 				setupFieldVtxColorInfoFromStrip(&ptr[3], p3, p1, p2, val);
 
+			} else if (ptr[0] == 160) {
+				setupFieldVtxColorInfoFromFan(&ptr[3], p3, p1, p2, val);
 			} else {
-				if (ptr[0] != 160) {
-					return;
-				}
-
-				// probably setupFieldVtxColorInfoFromFan
+				return;
 			}
 			ptr += p3 * val;
 			ptr += 3;

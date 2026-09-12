@@ -23,7 +23,7 @@ struct Caster : public CNode {
 	// unused/inlined:
 	void show();
 	void fadeout(f32);
-	inline void makeDL();
+	void makeDL();
 	void update();
 	void draw(Graphics&);
 	void drawLine(Graphics&);
@@ -35,7 +35,7 @@ struct Caster : public CNode {
 	Vector3f* mVertices;         // _2C
 	u8* mDisplayList;            // _30
 	int mDisplayListSize;        // _34
-	f32** mTexturePositions;     // _38, array of floats of size _28 * 6
+	f32* mTexturePositions;     // _38, array of floats of size _28 * 6
 	u8 mStatus;                  // _3C
 	f32 mColor;                  // _40
 	f32 mChangeRate;             // _44

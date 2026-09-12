@@ -43,12 +43,12 @@ struct J2DWindow : public J2DPane {
 	J2DWindow(J2DPane* parent, JSURandomInputStream* input, JKRArchive* archive);
 	J2DWindow(J2DPane* parent, JSURandomInputStream* input, J2DMaterial* materials);
 
-	virtual ~J2DWindow();                                                  // _08
-	virtual u16 getTypeID() const { return PANETYPE_Window; }              // _0C (weak)
-	virtual void resize(f32, f32);                                         // _18
-	virtual void drawSelf(f32, f32);                                       // _34
-	virtual void drawSelf(f32, f32, Mtx*);                                 // _38
-	virtual bool isUsed(const ResTIMG* resource);                          // _4C
+	virtual ~J2DWindow();                                     // _08
+	virtual u16 getTypeID() const { return PANETYPE_Window; } // _0C (weak)
+	virtual void resize(f32, f32);                            // _18
+	virtual void drawSelf(f32, f32);                          // _34
+	virtual void drawSelf(f32, f32, Mtx*);                    // _38
+
 	virtual void draw(const JGeometry::TBox2f&);                           // _94
 	virtual void draw(const JGeometry::TBox2f&, const JGeometry::TBox2f&); // _98
 	virtual void draw(f32 x0, f32 y0, f32 width, f32 height)               // _9C (weak)
@@ -89,6 +89,7 @@ struct J2DWindow : public J2DPane {
 	virtual J2DMaterial* getFrameMaterial(u8 index) const { return nullptr; }          // _C0 (weak)
 	virtual J2DMaterial* getContentsMaterial() const { return nullptr; }               // _C4 (weak)
 	virtual void drawContents(const JGeometry::TBox2f&);                               // _C8
+	virtual bool isUsed(const ResTIMG* resource);                                      // _4C
 	virtual bool isUsed(const ResFONT* resource) { return J2DPane::isUsed(resource); } // _50 (weak)
 	virtual void rewriteAlpha() { }                                                    // _58 (weak)
 
@@ -201,7 +202,7 @@ struct J2DWindowEx : public J2DWindow {
 	// _000      = VTBL
 	// _000-_148 = J2DWindow
 	J2DMaterial* mFrameMaterials[4];      // _148
-	u16 _158[4];                          // _158
+	u16 mFrameMaterialIds[4];             // _158
 	J2DMaterial* mContentsMaterial;       // _160
 	u16 mMaterialID;                      // _164
 	u16 _166;                             // _166

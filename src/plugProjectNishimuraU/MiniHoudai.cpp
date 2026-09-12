@@ -6,6 +6,12 @@
 #include "LifeGaugeMgr.h"
 #include "RevoSDK/rand.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "246-MiniHoudai";
+}
+
 namespace Game {
 namespace MiniHoudai {
 /**
@@ -140,7 +146,7 @@ void Obj::getShadowParam(ShadowParam& param)
 		param.mPosition.y = minHeight;
 	}
 
-	param.mBoundingSphere.mPosition = Vector3f(0.0f, 1.0f, 0.0f);
+	param.mBoundingSphere.mPosition.set(0.0f, 1.0f, 0.0f);
 
 	// null, dead, rebirth
 	if (getStateID() <= MINIHOUDAI_Rebirth) {
@@ -481,8 +487,7 @@ void Obj::updateTargetDistance()
  */
 void Obj::updateHomePosition()
 {
-	mHomePosition = Vector3f(sinf(mFaceDir) * C_GENERALPARMS.mHomeRadius.mValue + mPosition.x, mPosition.y,
-	                         cosf(mFaceDir) * C_GENERALPARMS.mHomeRadius.mValue + mPosition.z);
+	mHomePosition = getForwardHomePosition();
 	/*
 	stwu     r1, -0x20(r1)
 	lfs      f0, lbl_8051CF8C@sda21(r2)

@@ -93,7 +93,7 @@ System::ERenderMode System::mRenderMode;
 System* sys;
 System::GXVerifyArg System::sVerifyArg;
 
-bool sUseABXCommand = true;
+static bool sUseABXCommand = true;
 
 static JUTException::ExCallbackObject exCallbackObject;
 
@@ -434,7 +434,7 @@ System::~System()
 	// UNUSED FUNCTION
 }
 
-char* cMapFileName = "/pikmin2UP.map"; // !!
+static char* cMapFileName = "/pikmin2UP.map"; // !!
 
 /**
  * @note Address: 0x80422504

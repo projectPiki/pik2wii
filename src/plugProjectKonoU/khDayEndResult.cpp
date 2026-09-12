@@ -13,15 +13,15 @@
 #include "og/Screen/ogScreen.h"
 #include "og/newScreen/ogUtil.h"
 
-namespace kh {
-namespace Screen {
-
-u64 arrow[6] = { 'Nyaji01', 'Nyaji02', 'Nyaji03', 'Nyaji04', 'Nyaji05', 'Nyaji06' };
-
 static void _Printf(char* format)
 {
 	OSReport(format, __FILE__);
 }
+
+namespace kh {
+namespace Screen {
+
+static u64 arrow[6] = { 'Nyaji01', 'Nyaji02', 'Nyaji03', 'Nyaji04', 'Nyaji05', 'Nyaji06' };
 
 /**
  * @note Address: 0x8040284C
@@ -2221,7 +2221,7 @@ void ObjDayEndResultTitl::doCreate(JKRArchive* arc)
 	mScreenMain->setAnimation(mMainAnimSRT);
 	setInfAlpha(mScreenMain);
 
-	J2DBlend info(1, 7, 6, 0);
+	J2DBlend info(GX_BM_BLEND, GX_BL_INVDSTALPHA, GX_BL_DSTALPHA, GX_LO_CLEAR);
 	u64 tags[4] = { 'nuki_tex', 'efect_00', 'efect_01', 0 };
 	mScreenMain->setBlendInfo(info, tags);
 }

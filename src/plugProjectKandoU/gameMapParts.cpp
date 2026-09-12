@@ -2525,8 +2525,9 @@ void RoomMapMgr::createGlobalCollision()
 		triTable->addOne(tri);
 	}
 
-	int count21 = 0;
-	int count20 = 0;
+	int count21  = 0;
+	int count20  = 0;
+	int triIndex = 0;
 
 	Iterator<MapRoom> iterCreate(&mRoomMgr);
 	CI_LOOP(iterCreate)
@@ -2542,16 +2543,16 @@ void RoomMapMgr::createGlobalCollision()
 			count21++;
 		}
 
-		for (int i = 0; i < tris->getNum(); i++) {
+		for (int i = 0; i < tris->getNum(); i++, triIndex++) {
 			Sys::Triangle* preTri  = tris->getTriangle(i);
-			Sys::Triangle* postTri = triTable->getTriangle(i);
+			Sys::Triangle* postTri = triTable->getTriangle(triIndex);
 			postTri->mVertices[0]  = preTri->mVertices[0] + count20;
 			postTri->mVertices[1]  = preTri->mVertices[1] + count20;
 			postTri->mVertices[2]  = preTri->mVertices[2] + count20;
 			postTri->mCode         = preTri->mCode;
 			postTri->makePlanes(*vertTable);
 			postTri->createSphere(*vertTable);
-			mRoomTriIndices[i] = room->mIndex;
+			mRoomTriIndices[triIndex] = room->mIndex;
 		}
 		count20 = count21;
 	}

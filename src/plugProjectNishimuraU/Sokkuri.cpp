@@ -4,6 +4,12 @@
 #include "RevoSDK/rand.h"
 #include "efx/TJgm.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "246-Sokkuri";
+}
+
 namespace Game {
 namespace Sokkuri {
 
@@ -87,7 +93,7 @@ void Obj::getShadowParam(ShadowParam& param)
 	if (isAlive() && !isUnderground() && getStateID() != SOKKURI_Appear) {
 		param.mPosition = mPosition;
 		param.mPosition.y += 2.5f;
-		param.mBoundingSphere.mPosition = Vector3f(0.0f, 1.0f, 0.0f);
+		param.mBoundingSphere.mPosition.set(0.0f, 1.0f, 0.0f);
 
 		if (isEvent(1, EB2_Earthquake)) {
 			param.mBoundingSphere.mRadius = 50.0f;
@@ -98,7 +104,7 @@ void Obj::getShadowParam(ShadowParam& param)
 		param.mSize = 10.0f;
 	} else {
 		param.mPosition                 = mPosition;
-		param.mBoundingSphere.mPosition = Vector3f(0.0f, 1.0f, 0.0f);
+		param.mBoundingSphere.mPosition.set(0.0f, 1.0f, 0.0f);
 		param.mBoundingSphere.mRadius   = 0.1f;
 		param.mSize                     = 0.1f;
 	}
@@ -278,10 +284,10 @@ void Obj::updateMoveState()
 		newVelocity.y += 5.0f;
 		setVelocity(newVelocity);
 
-		mMoveVelocity = adjustVal(mMoveVelocity, C_PROPERPARMS.mUnderwaterMoveSpeed.mValue, 10.0f);
+		mMoveVelocity = approach(mMoveVelocity, C_PROPERPARMS.mUnderwaterMoveSpeed.mValue, 10.0f);
 
 	} else {
-		mMoveVelocity = adjustVal(mMoveVelocity, C_GENERALPARMS.mMoveSpeed.mValue, 25.0f);
+		mMoveVelocity = approach(mMoveVelocity, C_GENERALPARMS.mMoveSpeed.mValue, 25.0f);
 	}
 }
 

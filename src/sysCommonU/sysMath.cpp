@@ -349,7 +349,7 @@ void Matrix3f::calcEigenMatrix(Matrix3f& diagMtx, Matrix3f& eigenMtx)
 				f32 secantTheta = pikmin2_sqrtf(tangentTheta * tangentTheta + 1.0f);
 
 				f32 cosTheta = 1.0f / secantTheta;
-				f32 sinTheta = tangentTheta * secantTheta;
+				f32 sinTheta = tangentTheta * cosTheta;
 
 				jacobiMtx.makeIdentity();
 				jacobiMtx.updateJacobiOffDiagonal(row, col, sinTheta);
@@ -468,7 +468,7 @@ void Quat::set(RPY&)
  * @note Address: 0x80412760
  * @note Size: 0x24
  */
-Quat::Quat(Quat& quat)
+Quat::Quat(const Quat& quat)
 {
 	w   = quat.w;
 	v.x = quat.v.x;

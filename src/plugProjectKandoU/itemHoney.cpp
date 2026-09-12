@@ -5,9 +5,6 @@
 #include "RevoSDK/rand.h"
 #include "efx/THoneydown.h"
 
-namespace Game {
-namespace ItemHoney {
-
 /**
  * @note Address: N/A
  * @note Size: 0xE4
@@ -16,6 +13,9 @@ static void _Printf(char* format)
 {
 	OSReport(format, "itemHoney");
 }
+
+namespace Game {
+namespace ItemHoney {
 
 Mgr* mgr;
 

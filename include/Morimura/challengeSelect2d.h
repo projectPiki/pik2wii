@@ -1,13 +1,13 @@
 #ifndef _MORIMURA_CHALLENGESELECT_H
 #define _MORIMURA_CHALLENGESELECT_H
 
-#include "og/Screen/ogScreen.h"
-#include "Morimura/mrUtil.h"
-#include "Morimura/Window.h"
-#include "efx2d/T2DCursor.h"
-#include "efx2d/T2DChalDive.h"
 #include "Game/ChallengeGame.h"
+#include "Morimura/Window.h"
+#include "Morimura/mrUtil.h"
 #include "Screen/Game2DMgr.h"
+#include "efx2d/T2DChalDive.h"
+#include "efx2d/T2DCursor.h"
+#include "og/Screen/ogScreen.h"
 
 namespace og {
 namespace Screen {
@@ -68,9 +68,9 @@ struct TChallengePlayModeScreen : public TScreenBase {
 	// _00-_18 = TScreenBase
 	J2DPane* mPaneList0[2];                      // _18
 	J2DPicture* mSphereTex;                      // _20
-	J2DPane* mPane3;                             // _24
-	J2DPane* mPane4;                             // _28
-	J2DPane* mPane5;                             // _2C
+	J2DPane* mPaneOlimarP1;                      // _24
+	J2DPane* mPaneOlimarP2;                      // _28
+	J2DPane* mPaneLouie;                         // _2C
 	J2DPane* mPaneList1[3];                      // _30
 	og::Screen::ScaleMgr* mScaleMgr[2];          // _3C
 	og::Screen::AnimText_Screen* mAnimScreen[4]; // _44
@@ -113,14 +113,7 @@ struct TChallengeSelect : public TTestBase {
 		int mScore2;      // _28
 	};
 
-	virtual ~TChallengeSelect()
-	{
-		if (mDebugHeap) {
-			mDisp->mDebugExpHeap->freeAll();
-			mDebugHeap->destroy();
-		}
-		mDebugHeap = nullptr;
-	}                                                                                                        // _08 (weak)
+	virtual ~TChallengeSelect();                                                                             // _08 (weak)
 	virtual void doCreate(JKRArchive*);                                                                      // _4C
 	virtual bool doUpdate();                                                                                 // _58
 	virtual void doUpdateFadeoutFinish();                                                                    // _64
@@ -219,10 +212,10 @@ struct TChallengeSelect : public TTestBase {
 
 struct TChallengeSelectScene : public THIOScene {
 	TChallengeSelectScene() { mConfirmEndWindow = nullptr; }
+	virtual const char* getResName() const { return "res_challengeSelect.szs"; } // _1C (weak)
 	virtual SceneType getSceneType() { return SCENE_CHALLENGE_SELECT; }          // _08 (weak)
 	virtual ScreenOwnerID getOwnerID() { return OWNER_MRMR; }                    // _0C (weak)
 	virtual ScreenMemberID getMemberID() { return MEMBER_CHALLENGE_SELECT; }     // _10 (weak)
-	virtual const char* getResName() const { return "res_challengeSelect.szs"; } // _1C (weak)
 	virtual void doCreateObj(JKRArchive*);                                       // _20 (weak)
 	virtual bool doStart(Screen::StartSceneArg*);                                // _3C
 

@@ -485,9 +485,9 @@ void Obj::getShadowParam(ShadowParam& param)
 		mMapMinY = mapMgr->getMinY(param.mPosition);
 	}
 
-	param.mPosition.y               = 2.0f + mMapMinY;
+	param.mPosition.y = 2.0f + mMapMinY;
 	param.mBoundingSphere.mPosition.set(0.0f, 1.0f, 0.0f);
-	param.mBoundingSphere.mRadius   = 20.0f;
+	param.mBoundingSphere.mRadius = 20.0f;
 
 	// adjust shadow size based on how much above/below home position we are
 	f32 sizeFactor     = 1.0f;
@@ -596,18 +596,19 @@ void Obj::fly()
 			mYawRate -= 360.0f;
 		}
 
-		f32 sinVal = (f32)sin(mYawRate);
-		sinVal *= C_PARMS->mRotateFaceDirFactor;
+		f32 sinVal        = (f32)sin(mYawRate);
+		sinVal            = C_PARMS->mRotateFaceDirFactor * sinVal;
 		f32 faceDirOffset = TORADIANS(sinVal);
 		mFaceDir          = mTargetFaceDir;
 		turnToTarget(mGoalPosition, rotAccel, rotSpeed);
 
 		f32 angle = mFaceDir + faceDirOffset;
-		f32 x     = moveSpeed * sinf(angle);
-		f32 y     = getTargetVelocity().y;
-		f32 z     = moveSpeed * cosf(angle);
+		Vector3f velocity;
+		velocity.x = moveSpeed * sinf(angle);
+		velocity.y = getTargetVelocity().y;
+		velocity.z = moveSpeed * cosf(angle);
 
-		mTargetFaceDir = angle;
+		mTargetFaceDir = mFaceDir;
 		if (absF(faceDirOffset) > rotSpeed) {
 			if (faceDirOffset > 0.0f) {
 				faceDirOffset = rotSpeed;
@@ -617,7 +618,7 @@ void Obj::fly()
 		}
 		updateFaceDir(mFaceDir + roundAng(faceDirOffset));
 
-		mTargetVelocity.set(x, y, z);
+		mTargetVelocity = velocity;
 	}
 
 	mPosition.y += 0.01f * (mGoalPosition.y - mPosition.y);
@@ -951,18 +952,16 @@ bool Obj::checkRestOn()
 	Sys::Sphere collSphere;
 	static_cast<CollPart*>(mSpawningEnemy->mCollTree->mPart->mChild)->getSphere(collSphere);
 
+	f32 rad = collSphere.mRadius;
+
+	Vector3f positionSep = mPosition;
+	positionSep.sub(collSphere.mPosition);
+
+	f32 dist             = positionSep.sqrMagnitude();
 	mRestEnemyCollSphere = collSphere;
-	f32 rad              = collSphere.mRadius;
-	f32 adjRad           = 1.2f * rad;
-	adjRad *= adjRad;
-	f32 dist = Vector3f(mPosition - collSphere.mPosition).sqrMagnitude();
-	if (dist < adjRad) {
-		mTargetVelocity.x *= 0.0f;
-		mTargetVelocity.y *= 0.0f;
-		mTargetVelocity.z *= 0.0f;
-		mCurrentVelocity.x *= 0.0f;
-		mCurrentVelocity.y *= 0.0f;
-		mCurrentVelocity.z *= 0.0f;
+	if (dist < SQUARE(1.2f * rad)) {
+		mTargetVelocity *= 0.0f;
+		mCurrentVelocity *= 0.0f;
 		hardConstraintOn();
 
 		if (dist > SQUARE(rad)) {
@@ -971,12 +970,34 @@ bool Obj::checkRestOn()
 
 			mPosition += collSphere.mPosition;
 			// more float math
+		}
+
+		f32 xRotVelocity = PI * ((collSphere.mPosition.y + collSphere.mRadius) - mPosition.y) / (-collSphere.mRadius * 2.0f);
+
+		if (collSphere.mPosition.y + collSphere.mRadius < mPosition.y) {
+			xRotVelocity = 0.0f;
+		}
+
+		if (collSphere.mPosition.y - collSphere.mRadius > mPosition.y) {
+			xRotVelocity = PI;
+		}
+
+		mRotation.x += 0.3f * (xRotVelocity - mRotation.x);
+
+		if (dist < SQUARE(rad) && FABS(xRotVelocity - mRotation.x) < 0.01f) {
+			if (mRotation.x > TAU) {
+				mRotation.x -= TAU;
+			}
+
+			if (mRotation.x < 0.0f) {
+				mRotation.x += TAU;
+			}
 
 			return true;
 		}
 
 		f32 angleDist = getAngDist(collSphere.mPosition);
-		updateFaceDir(roundAng(0.3f * angleDist + mFaceDir));
+		updateFaceDir(roundAng(angleDist * 0.3f + mFaceDir));
 	}
 
 	return false;

@@ -27,10 +27,13 @@
 #include "nans.h"
 #include "utilityU.h"
 
-int unusedNaviStateArray[] = { 1, 2, 3, 0 }; // ?
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "naviState";
+}
 
-static const int unusedNaviStateArray2[] = { 0, 0, 0 };
-static const char unusedNaviStateName[]  = "naviState";
+int unusedNaviStateArray[] = { 1, 2, 3, 0 }; // ?
 
 namespace {
 SoundID se_taisos[3]    = { PSSE_PL_WAIT_TAISO_ORIMA, PSSE_PL_WAIT_TAISO_LUGI, PSSE_PL_WAIT_TAISO_SHACHO };
@@ -4317,8 +4320,8 @@ void NaviDeadState::init(Navi* navi, StateArg* stateArg)
  */
 void NaviDeadState::exec(Navi* navi)
 {
-	navi->mTargetVelocity = 0.0f;
-	navi->mVelocity       = 0.0f;
+	navi->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
+	navi->mVelocity.set(0.0f, 0.0f, 0.0f);
 }
 
 /**

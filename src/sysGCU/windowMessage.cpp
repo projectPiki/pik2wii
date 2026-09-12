@@ -6,8 +6,6 @@
 #include "System.h"
 #include "nans.h"
 
-static const char idk[] = "\0\0\0\0\0\0\0\0\0";
-
 namespace P2JME {
 namespace Window {
 /**

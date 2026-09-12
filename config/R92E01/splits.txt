@@ -4933,7 +4933,7 @@ plugProjectNishimuraU/SnakeWhole.cpp:
 
 plugProjectNishimuraU/SnakeJointMgr.cpp:
 	.text       start:0x8034DF84 end:0x8034E554
-	.rodata     start:0x8054F978 end:0x8054F990
+	.rodata     start:0x8054F978 end:0x8054F9F0
 	.sbss       start:0x8066CD60 end:0x8066CD68
 	.sdata2     start:0x806726B0 end:0x806726C0
 
@@ -5711,6 +5711,7 @@ plugProjectMorimuraU/dayEndCount.cpp:
 	.data       start:0x805BB4D8 end:0x805BB758
 	.sdata      start:0x8066B498 end:0x8066B4C0
 	.sbss       start:0x8066CEB0 end:0x8066CEB8
+	.sdata2     start:0x806739D8 end:0x80673A40
 
 plugProjectMorimuraU/hurryUp2D.cpp:
 	.text       start:0x803C448C end:0x803C63DC
@@ -5724,13 +5725,15 @@ plugProjectMorimuraU/hurryUp2D.cpp:
 
 plugProjectMorimuraU/gameOver2D.cpp:
 	.text       start:0x803C63DC end:0x803C73B4
-	.rodata     start:0x80552DE0 end:0x80552E28
+	.rodata     start:0x80552DE0 end:0x80552FA8
 	.data       start:0x805BB920 end:0x805BBD58
+	.sdata2     start:0x80673AB8 end:0x80673AD0
 
 plugProjectMorimuraU/testBase.cpp:
 	.text       start:0x803C73B4 end:0x803C75D4
 	.data       start:0x805BBD58 end:0x805BBDD8
 	.sbss       start:0x8066CEC0 end:0x8066CEC8
+	.sdata2     start:0x80673AD0 end:0x80673AE0
 
 plugProjectMorimuraU/bombState.cpp:
 	.text       start:0x803C75D4 end:0x803C7ED8

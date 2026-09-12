@@ -26,9 +26,8 @@
 #include "Game/PikiMgr.h"
 #include "Game/CameraMgr.h"
 #include "nans.h"
+#include "PSMath.h"
 #include "utilityU.h"
-
-static const u32 padding[] = { 0, 0, 0 };
 
 namespace PSM {
 
@@ -42,7 +41,7 @@ SceneBase::SceneBase(u8 p1, PSGame::SceneInfo* info)
     : PSGame::PikScene(p1)
     , mSceneInfoA(info)
 {
-	P2ASSERTLINE(36, info);
+	P2ASSERTLINE(41, info);
 	becomeSceneCamera();
 }
 
@@ -58,7 +57,7 @@ f32 SceneBase::getSceneFx() { return 0.08f; }
  */
 void SceneBase::becomeSceneCamera()
 {
-	P2ASSERTLINE(49, mSceneInfoA);
+	P2ASSERTLINE(54, mSceneInfoA);
 	mSceneInfoA->setStageCamera();
 }
 
@@ -68,7 +67,7 @@ void SceneBase::becomeSceneCamera()
  */
 PSGame::SceneInfo* SceneBase::getSceneInfoA()
 {
-	P2ASSERTLINE(56, mSceneInfoA);
+	P2ASSERTLINE(61, mSceneInfoA);
 	return mSceneInfoA;
 }
 
@@ -130,8 +129,8 @@ f32 Scene_Global::getCamDistVol(u8) { return 0.0f; }
 PSSystem::StreamBgm* Scene_Global::getGlobalStream()
 {
 	PSSystem::SeqBase* seq = mSeqMgr.getSeq(1);
-	P2ASSERTLINE(114, seq);
-	P2ASSERTLINE(115, seq->getCastType() == PSSystem::SeqBase::TYPE_StreamBgm);
+	P2ASSERTLINE(122, seq);
+	P2ASSERTLINE(123, seq->getCastType() == PSSystem::SeqBase::TYPE_StreamBgm);
 	return static_cast<PSSystem::StreamBgm*>(seq);
 }
 
@@ -196,7 +195,8 @@ Scene_Objects::Scene_Objects(u8 p1, PSGame::SceneInfo* info)
 {
 	mCameraMgr = new PSGame::CameraMgr();
 
-	if ((1 - (u8)info->getFlag(PSGame::SceneInfo::SFBS_1))) {
+	bool is2PGame = info->getFlag(PSGame::SceneInfo::SFBS_1) == TRUE;
+	if (!is2PGame) {
 		ObjCalc_SingleGame::newInstance_SingleGame();
 	} else {
 		ObjCalc_2PGame::newInstance_2PGame();
@@ -297,7 +297,7 @@ void Scene_Objects::exec()
 			if (cam) {
 				Vector3f soundpos = *cam->getSoundPositionPtr();
 				Vector3f pos      = cam->getLookAtPosition();
-				f32 dist          = pos.distance(soundpos);
+				f32 dist          = PSMath::calcDistance(soundpos, pos);
 				mCameraMgr->update(i, dist);
 				mCameraMgr->mIsSpecial[i] = cam->isSpecialCamera();
 			}
@@ -523,6 +523,8 @@ void Scene_Game::bossKilled(PSM::EnemyBoss* obj)
 		}
 	}
 
+	FORCE_DONT_INLINE;
+
 
 	/*
 	stwu     r1, -0x20(r1)
@@ -681,9 +683,9 @@ lbl_80468668:
 void Scene_Game::startMainSeq()
 {
 	if (mBossFaderMgr) {
-		u8 i = 0;
-		FOREACH_NODE(JSULink<PSSystem::SeqBase>, mSeqMgr.getFirst(), seq)
-		{
+		JSULink<PSSystem::SeqBase>* seq = mSeqMgr.getFirst();
+		u8 i                            = 0;
+		for (; seq != nullptr; seq = static_cast<JSULink<PSSystem::SeqBase>*>(seq->mNext)) {
 			seq->getObject()->startSeq();
 			if (i) {
 				JAISound* se = *seq->getObject()->getHandleP();
@@ -703,84 +705,6 @@ void Scene_Game::startMainSeq()
 		mEnvSeMgr->on();
 	}
 	_4C = 0;
-	/*
-	stwu     r1, -0x20(r1)
-	mflr     r0
-	stw      r0, 0x24(r1)
-	stw      r31, 0x1c(r1)
-	stw      r30, 0x18(r1)
-	stw      r29, 0x14(r1)
-	mr       r29, r3
-	lwz      r0, 0x50(r3)
-	cmplwi   r0, 0
-	beq      lbl_8046873C
-	lwz      r31, 0x10(r29)
-	li       r30, 0
-	b        lbl_8046871C
-
-lbl_804686BC:
-	lwz      r3, 0(r31)
-	lwz      r12, 0x10(r3)
-	lwz      r12, 0x14(r12)
-	mtctr    r12
-	bctrl
-	clrlwi.  r0, r30, 0x18
-	beq      lbl_80468714
-	lwz      r3, 0(r31)
-	lwz      r12, 0x10(r3)
-	lwz      r12, 0x3c(r12)
-	mtctr    r12
-	bctrl
-	lwz      r3, 0(r3)
-	cmplwi   r3, 0
-	beq      lbl_80468714
-	lwz      r12, 0x10(r3)
-	li       r4, 0
-	lfs      f1, lbl_80520C9C@sda21(r2)
-	li       r5, 0
-	lwz      r12, 0x1c(r12)
-	mtctr    r12
-	bctrl
-
-lbl_80468714:
-	lwz      r31, 0xc(r31)
-	addi     r30, r30, 1
-
-lbl_8046871C:
-	cmplwi   r31, 0
-	bne      lbl_804686BC
-	mr       r3, r29
-	lwz      r12, 0(r29)
-	lwz      r12, 0x54(r12)
-	mtctr    r12
-	bctrl
-	b        lbl_80468754
-
-lbl_8046873C:
-	bl       startMainSeq__Q28PSSystem5SceneFv
-	mr       r3, r29
-	lwz      r12, 0(r29)
-	lwz      r12, 0x54(r12)
-	mtctr    r12
-	bctrl
-
-lbl_80468754:
-	lwz      r3, 0x44(r29)
-	cmplwi   r3, 0
-	beq      lbl_80468764
-	bl       on__Q28PSSystem8EnvSeMgrFv
-
-lbl_80468764:
-	li       r0, 0
-	stw      r0, 0x4c(r29)
-	lwz      r0, 0x24(r1)
-	lwz      r31, 0x1c(r1)
-	lwz      r30, 0x18(r1)
-	lwz      r29, 0x14(r1)
-	mtlr     r0
-	addi     r1, r1, 0x20
-	blr
-	*/
 }
 
 /**
@@ -837,16 +761,17 @@ void Scene_Game::exec()
 
 	JSULink<EnemyBoss>* boss = mEnemyBossList.getFirst();
 	while (boss) {
-		boss->getObject()->dyingFrameWork();
-		boss = boss->getNext();
+		EnemyBoss* obj = boss->getObject();
+		boss           = boss->getNext();
+		obj->dyingFrameWork();
 	}
 
 	ObjCalcBase* calc = PSSystem::SingletonBase<ObjCalcBase>::getInstance();
 	if (calc->is1PGame()) {
-		u8 mode = calc->mMode;
-		P2ASSERTLINE(508, bool(mode != -1));
+		u8 mode = static_cast<ObjCalc_SingleGame*>(calc)->mPlayerNum;
+		P2ASSERTLINE(627, mode != 1);
 		f32 vol = mCameraMgr->getBgmCamVol(mode);
-		P2ASSERTBOUNDSLINE2(510, 0.0f, vol, 1.0f);
+		P2ASSERTBOUNDSLINE2(629, 0.0f, vol, 1.0f);
 		FOREACH_NODE(JSULink<PSSystem::SeqBase>, mSeqMgr.getFirst(), seq)
 		{
 			JAISound* se = *seq->getObject()->getHandleP();
@@ -1144,7 +1069,7 @@ PSSystem::EnvSeMgr* Scene_Game::getEnvSe() { return mEnvSeMgr; }
  */
 void Scene_Game::adaptEnvSe(PSSystem::EnvSeMgr* mgr)
 {
-	P2ASSERTLINE(589, mgr);
+	P2ASSERTLINE(708, mgr);
 	mEnvSeMgr = mgr;
 }
 
@@ -1181,7 +1106,7 @@ void Scene_Game::pauseOn_2D(u8 a1, u8 a2)
 		navi->mSoundObj->stopWaitVoice();
 	}
 
-	P2ASSERTLINE(657, mObjMgr);
+	P2ASSERTLINE(776, mObjMgr);
 
 	FOREACH_NODE(JSULink<Navi>, mObjMgr->mHead, link)
 	{
@@ -1226,7 +1151,7 @@ void Scene_Game::pauseOff_2D()
  */
 void Scene_Game::pauseOn_Demo()
 {
-	P2ASSERTLINE(706, mObjMgr);
+	P2ASSERTLINE(825, mObjMgr);
 
 	FOREACH_NODE(JSULink<Navi>, mObjMgr->mHead, link)
 	{
@@ -1319,7 +1244,7 @@ void Scene_Ground::setPollutUp() { mPollutUpTimer = 0; }
 void Scene_Ground::fadeMainBgm(f32 p1, u32 p2, PSM::Scene_Ground::Time time)
 {
 	PSSystem::SeqBase* seq = mSeqMgr.getFirst()->getObject();
-	P2ASSERTLINE(813, seq);
+	P2ASSERTLINE(932, seq);
 	switch (time) {
 	case GroundTime_On:
 		if (p1 == 0.0f) {
@@ -1351,8 +1276,8 @@ void Scene_Ground::fadeMainBgm(f32 p1, u32 p2, PSM::Scene_Ground::Time time)
 void Scene_Ground::jumpMainBgm(u8 time)
 {
 	MiddleBossSeq* seq = static_cast<MiddleBossSeq*>(mSeqMgr.getFirst()->getObject());
-	P2ASSERTLINE(846, seq);
-	P2ASSERTLINE(847, seq->getCastType() == PSSystem::SeqBase::TYPE_JumpBgmSeq);
+	P2ASSERTLINE(965, seq);
+	P2ASSERTLINE(966, seq->getCastType() == PSSystem::SeqBase::TYPE_JumpBgmSeq);
 	seq->requestJumpBgmOnBeat(time);
 
 	if (mEnvSeMgr) {
@@ -1574,154 +1499,8 @@ Scene_Cave::Scene_Cave(u8 p1, PSGame::SceneInfo* info)
 		mSceneFx = 0.0f;
 		break;
 	default:
-		P2ASSERTLINE(953, false);
+		P2ASSERTLINE(1072, false);
 	}
-	/*
-	stwu     r1, -0x20(r1)
-	mflr     r0
-	lis      r6, lbl_8049D908@ha
-	stw      r0, 0x24(r1)
-	stmw     r26, 8(r1)
-	mr       r27, r3
-	mr       r0, r27
-	mr       r30, r5
-	mr       r28, r0
-	addi     r31, r6, lbl_8049D908@l
-	mr       r29, r0
-	mr       r26, r0
-	bl       __ct__Q26PSGame8PikSceneFUc
-	lis      r3, __vt__Q23PSM9SceneBase@ha
-	cmplwi   r30, 0
-	addi     r0, r3, __vt__Q23PSM9SceneBase@l
-	stw      r0, 0(r26)
-	stw      r30, 0x24(r26)
-	bne      lbl_80469EF4
-	addi     r3, r31, 0xc
-	addi     r5, r31, 0x24
-	li       r4, 0x24
-	crclr    6
-	bl       panic_f__12JUTExceptionFPCciPCce
-
-lbl_80469EF4:
-	mr       r3, r26
-	lwz      r12, 0(r26)
-	lwz      r12, 0x3c(r12)
-	mtctr    r12
-	bctrl
-	lis      r3, __vt__Q23PSM13Scene_Objects@ha
-	li       r4, 0
-	addi     r3, r3, __vt__Q23PSM13Scene_Objects@l
-	lis      r0, 0xf000
-	stw      r3, 0(r29)
-	li       r3, 0x50
-	stw      r4, 0x28(r29)
-	stw      r4, 0x2c(r29)
-	stb      r4, 0x30(r29)
-	stw      r0, 0x34(r29)
-	bl       __nw__FUl
-	or.      r0, r3, r3
-	beq      lbl_80469F44
-	bl       __ct__Q26PSGame9CameraMgrFv
-	mr       r0, r3
-
-lbl_80469F44:
-	stw      r0, 0x28(r29)
-	mr       r3, r30
-	li       r4, 1
-	bl       getFlag__Q26PSGame9SceneInfoCFQ36PSGame9SceneInfo12FlagBitShift
-	clrlwi   r0, r3, 0x18
-	subfic   r0, r0, 1
-	cntlzw   r0, r0
-	rlwinm.  r0, r0, 0x1b, 0x18, 0x1f
-	bne      lbl_80469F70
-	bl       newInstance_SingleGame__Q23PSM18ObjCalc_SingleGameFv
-	b        lbl_80469F74
-
-lbl_80469F70:
-	bl       newInstance_2PGame__Q23PSM14ObjCalc_2PGameFv
-
-lbl_80469F74:
-	lwz      r0,
-"sInstance__Q28PSSystem28SingletonBase<Q23PSM6ObjMgr>"@sda21(r13) cmplwi   r0, 0
-	beq      lbl_80469FA8
-	bne      lbl_80469F98
-	addi     r3, r31, 0x30
-	addi     r5, r31, 0x24
-	li       r4, 0x89
-	crclr    6
-	bl       panic_f__12JUTExceptionFPCciPCce
-
-lbl_80469F98:
-	lwz      r0,
-"sInstance__Q28PSSystem28SingletonBase<Q23PSM6ObjMgr>"@sda21(r13) stw      r0,
-0x2c(r29) lwz      r3, 0x2c(r29) stw      r29, 0x2c(r3)
-
-lbl_80469FA8:
-	lis      r4, __vt__Q23PSM10Scene_Game@ha
-	addi     r3, r28, 0x38
-	addi     r0, r4, __vt__Q23PSM10Scene_Game@l
-	stw      r0, 0(r28)
-	bl       initiate__10JSUPtrListFv
-	li       r4, 0
-	li       r0, -1
-	stw      r4, 0x44(r28)
-	li       r3, 0x14
-	stw      r4, 0x48(r28)
-	stw      r0, 0x4c(r28)
-	stw      r4, 0x50(r28)
-	stw      r4, 0x58(r28)
-	bl       __nw__FUl
-	or.      r0, r3, r3
-	beq      lbl_80469FF0
-	bl       __ct__Q23PSM14PikiHummingMgrFv
-	mr       r0, r3
-
-lbl_80469FF0:
-	lis      r3, __vt__Q23PSM10Scene_Cave@ha
-	stw      r0, 0x54(r28)
-	addi     r0, r3, __vt__Q23PSM10Scene_Cave@l
-	li       r3, 0
-	stw      r0, 0(r27)
-	li       r0, -1
-	stb      r3, 0x5c(r27)
-	stw      r0, 0x64(r27)
-	lwz      r0, 0x38(r30)
-	cmpwi    r0, 4
-	bge      lbl_8046A028
-	cmpwi    r0, 0
-	bge      lbl_8046A034
-	b        lbl_8046A04C
-
-lbl_8046A028:
-	cmpwi    r0, 6
-	bge      lbl_8046A04C
-	b        lbl_8046A040
-
-lbl_8046A034:
-	lfs      f0, cSeFxMix_cave__Q23PSM11CreaturePrm@sda21(r2)
-	stfs     f0, 0x60(r27)
-	b        lbl_8046A060
-
-lbl_8046A040:
-	lfs      f0, lbl_80520C9C@sda21(r2)
-	stfs     f0, 0x60(r27)
-	b        lbl_8046A060
-
-lbl_8046A04C:
-	addi     r3, r31, 0xc
-	addi     r5, r31, 0x24
-	li       r4, 0x3b9
-	crclr    6
-	bl       panic_f__12JUTExceptionFPCciPCce
-
-lbl_8046A060:
-	mr       r3, r27
-	lmw      r26, 8(r1)
-	lwz      r0, 0x24(r1)
-	mtlr     r0
-	addi     r1, r1, 0x20
-	blr
-	*/
 }
 
 /**
@@ -1816,7 +1595,7 @@ void Scene_Cave::startPollutUpSe()
 			se1->setDolby(1.0f, 80, SOUNDPARAM_Unk0);
 		}
 		if (se2) {
-			se2->setPan(1.0f, 80, SOUNDPARAM_Unk0);
+			se2->setPan(0.0f, 80, SOUNDPARAM_Unk0);
 			se2->setDolby(1.0f, 80, SOUNDPARAM_Unk0);
 		}
 	}
@@ -1897,16 +1676,7 @@ void Scene_Cave::bossKilled(PSM::EnemyBoss* obj)
 			}
 		}
 	} else {
-		MiddleBossSeq* seq = PSMGetMiddleBossSeq();
-		bool check         = PSSystem::SingletonBase<BossBgmFader::Mgr>::getInstance()->checkBossActive();
-		if (!check && seq) {
-			seq = PSMGetMiddleBossSeq();
-			if (seq
-			    && (seq->mJumpPort.mCurrentTrackId == EnemyMidBoss::BossBgm_AttackPrep
-			        || seq->mJumpPort.mCurrentTrackId == EnemyMidBoss::BossBgm_AttackLong)) {
-				obj->jumpRequest(PSM::EnemyMidBoss::BossBgm_MainLoop);
-			}
-		}
+		Scene_Game::bossKilled(obj);
 	}
 }
 
@@ -1946,9 +1716,9 @@ void Scene_Challenge::startMainSeq()
 	Scene_Cave::startMainSeq();
 	if (mSceneInfoA->mSceneType == PSGame::SceneInfo::CHALLENGE_MODE) {
 		JSUPtrLink* link = mSeqMgr.getNthLink(2);
-		P2ASSERTLINE(1162, link);
+		P2ASSERTLINE(1281, link);
 		PSSystem::SeqBase* seq = static_cast<PSSystem::SeqBase*>(link->getObjectPtr());
-		P2ASSERTLINE(1165, seq);
+		P2ASSERTLINE(1284, seq);
 		seq->startSeq();
 		JAISound* se = *seq->getHandleP();
 		if (se) {
@@ -2013,158 +1783,27 @@ f32 Scene_NoObjects::getCamDistVol(u8) { return PSGame::CameraMgr::sDefaultVol; 
  * @note Address: 0x8046B5B8
  * @note Size: 0x1B8
  */
-void* PSChangeBgm_ChallengeGame()
+void PSChangeBgm_ChallengeGame()
 {
 	PSSystem::Scene* scene = PSMGetGameScene();
 	if (scene) {
+		PSSystem::SeqBase* seq;
 		PSSystem::SeqMgr* seqmgr = &scene->mSeqMgr;
 
-		PSSystem::SeqBase* seq = seqmgr->getSeq(0);
-		P2ASSERTLINE(1181, seq);
+		seq = seqmgr->getSeq(0);
+		P2ASSERTLINE(1300, seq);
 		JAISound* sound = *seq->getHandleP();
 		if (sound) {
 			sound->setVolume(0.0f, 0, SOUNDPARAM_Dopplar);
 		}
 
 		PSSystem::SeqBase* seq2 = seqmgr->getSeq(2);
-		P2ASSERTLINE(1190, seq2);
+		P2ASSERTLINE(1309, seq2);
 		JAISound* sound2 = *seq2->getHandleP();
 		if (sound2) {
 			sound2->setVolume(1.0f, 30, SOUNDPARAM_Demo);
 		}
 	}
-	/*
-	stwu     r1, -0x20(r1)
-	mflr     r0
-	lis      r3, lbl_8049D908@ha
-	stw      r0, 0x24(r1)
-	stw      r31, 0x1c(r1)
-	addi     r31, r3, lbl_8049D908@l
-	stw      r30, 0x18(r1)
-	stw      r29, 0x14(r1)
-	lwz      r0, spSceneMgr__8PSSystem@sda21(r13)
-	cmplwi   r0, 0
-	bne      lbl_8046B5F8
-	addi     r3, r31, 0x3c
-	addi     r5, r31, 0x24
-	li       r4, 0x1d3
-	crclr    6
-	bl       panic_f__12JUTExceptionFPCciPCce
-
-lbl_8046B5F8:
-	lwz      r30, spSceneMgr__8PSSystem@sda21(r13)
-	cmplwi   r30, 0
-	bne      lbl_8046B618
-	addi     r3, r31, 0x3c
-	addi     r5, r31, 0x24
-	li       r4, 0x1dc
-	crclr    6
-	bl       panic_f__12JUTExceptionFPCciPCce
-
-lbl_8046B618:
-	lwz      r0, 4(r30)
-	cmplwi   r0, 0
-	bne      lbl_8046B638
-	addi     r3, r31, 0x48
-	addi     r5, r31, 0x24
-	li       r4, 0xcf
-	crclr    6
-	bl       panic_f__12JUTExceptionFPCciPCce
-
-lbl_8046B638:
-	lwz      r3, 4(r30)
-	lwz      r30, 4(r3)
-	cmplwi   r30, 0
-	bne      lbl_8046B65C
-	addi     r3, r31, 0x48
-	addi     r5, r31, 0x64
-	li       r4, 0xd1
-	crclr    6
-	bl       panic_f__12JUTExceptionFPCciPCce
-
-lbl_8046B65C:
-	mr       r3, r30
-	lwz      r12, 0(r30)
-	lwz      r12, 0x40(r12)
-	mtctr    r12
-	bctrl
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_8046B67C
-	b        lbl_8046B680
-
-lbl_8046B67C:
-	li       r30, 0
-
-lbl_8046B680:
-	cmplwi   r30, 0
-	beq      lbl_8046B754
-	addi     r29, r30, 0x10
-	li       r4, 0
-	mr       r3, r29
-	bl       getSeq__Q28PSSystem6SeqMgrFUl
-	or.      r30, r3, r3
-	bne      lbl_8046B6B4
-	addi     r3, r31, 0xc
-	addi     r5, r31, 0x24
-	li       r4, 0x49d
-	crclr    6
-	bl       panic_f__12JUTExceptionFPCciPCce
-
-lbl_8046B6B4:
-	mr       r3, r30
-	lwz      r12, 0x10(r30)
-	lwz      r12, 0x3c(r12)
-	mtctr    r12
-	bctrl
-	lwz      r3, 0(r3)
-	cmplwi   r3, 0
-	beq      lbl_8046B6F0
-	lwz      r12, 0x10(r3)
-	li       r4, 0
-	lfs      f1, lbl_80520C9C@sda21(r2)
-	li       r5, 1
-	lwz      r12, 0x1c(r12)
-	mtctr    r12
-	bctrl
-
-lbl_8046B6F0:
-	mr       r3, r29
-	li       r4, 2
-	bl       getSeq__Q28PSSystem6SeqMgrFUl
-	or.      r29, r3, r3
-	bne      lbl_8046B718
-	addi     r3, r31, 0xc
-	addi     r5, r31, 0x24
-	li       r4, 0x4a6
-	crclr    6
-	bl       panic_f__12JUTExceptionFPCciPCce
-
-lbl_8046B718:
-	mr       r3, r29
-	lwz      r12, 0x10(r29)
-	lwz      r12, 0x3c(r12)
-	mtctr    r12
-	bctrl
-	lwz      r3, 0(r3)
-	cmplwi   r3, 0
-	beq      lbl_8046B754
-	lwz      r12, 0x10(r3)
-	li       r4, 0x1e
-	lfs      f1, lbl_80520CA0@sda21(r2)
-	li       r5, 2
-	lwz      r12, 0x1c(r12)
-	mtctr    r12
-	bctrl
-
-lbl_8046B754:
-	lwz      r0, 0x24(r1)
-	lwz      r31, 0x1c(r1)
-	lwz      r30, 0x18(r1)
-	lwz      r29, 0x14(r1)
-	mtlr     r0
-	addi     r1, r1, 0x20
-	blr
-	*/
 }
 
 /**
@@ -2182,7 +1821,7 @@ void PSStart2DStream(u32 id)
  * @note Address: 0x8046B870
  * @note Size: 0xEC
  */
-u8 PSStop2DStream()
+void PSStop2DStream()
 {
 	PSSystem::StreamBgm* seq = static_cast<PSM::Scene_Global*>(PSMGetSceneMgrCheck()->mScenes)->getGlobalStream();
 	seq->stopSeq(30);

@@ -8,8 +8,11 @@
 #include "utilityU.h"
 #include "SoundID.h"
 
-static const int padding[]    = { 0, 0, 0 };
-static const char className[] = "itemCave";
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "itemCave";
+}
 
 namespace Game {
 namespace ItemCave {
@@ -73,26 +76,6 @@ Item::Item()
 	mCaveFilename   = nullptr;
 	_1E4            = nullptr;
 	mLightEventNode = nullptr;
-}
-
-/**
- * @note Address: 0x801EA18C
- * @note Size: 0x2B4
- */
-FogParm::FogParm()
-    : Parameters(nullptr, "FogParm")
-    , mStartZ(this, 'fg00', "startZ", 32.0f, 1.0f, 12800.0f)
-    , mEndZ(this, 'fg01', "endZ", 1200.0f, 1.0f, 12800.0f)
-    , mStartTime(this, 'fg02', "startTime", 2.0f, 0.0f, 30.0f)
-    , mEndTime(this, 'fg03', "endTime", 2.0f, 0.0f, 30.0f)
-    , mRed(this, 'fg04', "Red", 10, 0, 255)
-    , mGreen(this, 'fg05', "Green", 110, 0, 255)
-    , mBlue(this, 'fg06', "Blue", 118, 0, 255)
-    , mDistance(this, 'fg07', "Distance", 2000.0f, 0.0f, 12800.0f)
-    , mEnterDistance(this, 'fg08', "Enter Dist", 190.0f, 0.0f, 12800.0f)
-    , mExitDistance(this, 'fg09', "Exit  Dist", 240.0f, 0.0f, 12800.0f)
-
-{
 }
 
 /**
@@ -225,7 +208,6 @@ void Item::changeMaterial()
 	}
 }
 
-#pragma dont_inline on
 /**
  * @note Address: 0x801EAB90
  * @note Size: 0x14C
@@ -243,7 +225,7 @@ void Item::createLightEvent()
 		arg.mRedScale      = mFogParm.mRed.mValue;
 		arg.mGreenScale    = mFogParm.mGreen.mValue;
 		arg.mBlueScale     = mFogParm.mBlue.mValue;
-		arg.mEventFlag     = (LIGHTEVENT_Unk3 + LIGHTEVENT_Unk4);
+		arg.mEventFlag.typeView = (LIGHTEVENT_Unk3 + LIGHTEVENT_Unk4);
 		arg.mRange         = mFogParm.mDistance.mValue;
 		mLightEventNode    = gameSystem->getLightMgr()->createEventLight(arg);
 	}
@@ -335,7 +317,6 @@ lbl_801EACC8:
 	blr
 	*/
 }
-#pragma dont_inline reset
 
 /**
  * @note Address: 0x801EACDC

@@ -218,7 +218,7 @@ struct J3DMaterialFactory_v21 {
 	J3DGXColor newMatColor(int, int) const;
 	u8 newColorChanNum(int) const;
 	J3DColorChan newColorChan(int, int) const;
-	u8 newTexGenNum(int) const;
+	u32 newTexGenNum(int) const;
 	J3DTexMtx* newTexMtx(int, int) const;
 	u16 newTexNo(int, int) const;
 	u8 newZCompLoc(int) const;

@@ -17,12 +17,15 @@
 #include "RevoSDK/rand.h"
 #include "nans.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "actFormation";
+}
+
 static bool newVer = true;
 
 namespace PikiAI {
-
-static const int someFormationArray[3] = { 0, 0, 0 };
-static const char formationName[]      = "actFormation";
 
 /**
  * @note Address: 0x8019CD70
@@ -308,7 +311,7 @@ int PikiAI::ActFormation::exec()
 		return ACTEXEC_Fail;
 	}
 
-	bool cstickTest = mParent->mNavi->isCStickNetural();
+	bool isCStickNeutral = mParent->mNavi->isCStickNetural();
 	JUT_ASSERTLINE(661, mCPlate->validSlot(mSlotID), "invalid slotId!\n");
 
 	Vector3f slotPos; // 0x138
@@ -472,13 +475,13 @@ int PikiAI::ActFormation::exec()
 
 		if (plateSep.dot(naviPikiSep) > 0.0f) {
 			Vector3f impulse = Vector3f(-naviPikiSep.z, 0.0f, naviPikiSep.x); // f29, f27, f30
-			if (mSlotID & 1) {
+			if (!(mSlotID & 1)) {
 				impulse.negate();
 			}
 
 			impulse.normalise();
 
-			if (newVer && cstickTest) {
+			if (newVer && !isCStickNeutral) {
 				impulse.set(0.0f, 0.0f, 0.0f);
 			}
 
@@ -498,13 +501,13 @@ int PikiAI::ActFormation::exec()
 
 		if (plateSep.dot(naviPikiSep) > 0.0f) {
 			Vector3f impulse = Vector3f(-naviPikiSep.z, 0.0f, naviPikiSep.x); // f29, f27, f30
-			if (mSlotID & 1) {
+			if (!(mSlotID & 1)) {
 				impulse.negate();
 			}
 
 			impulse.normalise();
 
-			if (newVer && cstickTest) {
+			if (newVer && !isCStickNeutral) {
 				impulse.set(0.0f, 0.0f, 0.0f);
 			}
 

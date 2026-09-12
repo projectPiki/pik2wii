@@ -8,13 +8,16 @@
 #include "nans.h"
 #include "trig.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "gameLightMgr";
+}
+
 namespace Game {
 
 template <class T>
 T complement(T start, T end, T ratio);
-
-static const int unusedGameLightArray[] = { 0, 0, 0 };
-static const char unusedGameLightName[] = "gameLightMgr";
 
 /**
  * @note Address: N/A
@@ -193,7 +196,7 @@ void GameLightMgrSetting::readOldVersion(ID32 version, Stream& stream)
 
 void GameLightEventNode::start(GameLightEventArg& eventArg)
 {
-	mEventFlag     = eventArg.mEventFlag;
+	mEventFlag     = eventArg.mEventFlag.typeView;
 	mLightTypeFlag = eventArg.mLightTypeFlag;
 
 	mRedScale   = eventArg.mRedScale;
@@ -475,6 +478,11 @@ void GameLightMgr::loadParm(Stream& stream)
 	}
 
 	mSettings.read(stream);
+}
+
+void GameLightMgr::loadParm(char*)
+{
+	OSReport("user/Yamashita/testResource/light/light.ini"); // for string pooling
 }
 
 /**
@@ -2566,6 +2574,7 @@ void GameLightMgr::updateSunType()
 			if (mTimeMgr->mCurrentTimeOfDay > 13.0f && !isFlag(GAMELIGHT_Unk2)) {
 				// this isn't loading correctly
 				GameLightEventArg eventArg;
+				eventArg.init();
 				createEventLight(eventArg);
 				setFlag(GAMELIGHT_Unk2);
 			}
@@ -2860,8 +2869,6 @@ void GameLightMgr::set(Graphics& gfx)
 	LightMgr::set(gfx);
 	mFogMgr->set(gfx);
 }
-
-static const char unusedIniPath[] = "/user/Yamashita/testResource/light/light.ini";
 
 /**
  * @note Address: 0x80121FA8

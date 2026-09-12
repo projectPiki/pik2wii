@@ -9,6 +9,12 @@
 #include "RevoSDK/rand.h"
 #include "nans.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "246-OniKurage";
+}
+
 namespace Game {
 namespace OniKurage {
 
@@ -150,7 +156,7 @@ void Obj::getShadowParam(ShadowParam& shadowParam)
 		shadowParam.mPosition.y = 5.0f + minY;
 	}
 
-	shadowParam.mBoundingSphere.mPosition = Vector3f(0.0f, 1.0f, 0.0f);
+	shadowParam.mBoundingSphere.mPosition.set(0.0f, 1.0f, 0.0f);
 
 	if (isFlying()) {
 		shadowParam.mBoundingSphere.mRadius = 100.0f;
@@ -257,8 +263,8 @@ void Obj::initMouthSlots()
 	for (int i = 0; i < mMouthSlots.getMax(); i++) {
 		MouthCollPart* slot = mMouthSlots.getSlot(i);
 		slot->mIsOniKurage  = true;
-		f32 offset          = cDefaultKamuJointOffset[i];
 		slot->mRadius       = 1.0f;
+		f32 offset          = cDefaultKamuJointOffset[i];
 		slot->mOffset.x     = offset;
 	}
 }
@@ -474,7 +480,7 @@ Creature* Obj::getSearchedTarget(f32 offset)
 		f32 maxDist     = SQUARE(C_GENERALPARMS.mSightRadius());
 		f32 attackRange = SQUARE(C_GENERALPARMS.mMaxAttackRange());
 
-		Sys::Sphere sphere(mPosition, C_GENERALPARMS.mTerritoryRadius());
+		Sys::Sphere sphere(mPosition, C_GENERALPARMS.mSightRadius());
 		CellIteratorArg iterArg(sphere);
 		iterArg.mOptimise = true;
 		CellIterator iter(iterArg);
@@ -842,24 +848,23 @@ bool Obj::suckNavi(f32 offset)
 					MouthCollPart* slot = mMouthSlots.getSlot(i);
 					if (!slot->mStuckCreature) {
 						Matrixf* worldMat = mModel->getJoint("Proom")->getWorldMatrix();
-						Vector3f xVec     = worldMat->getColumn(0);
-						Vector3f yVec     = worldMat->getColumn(1);
-						Vector3f zVec     = worldMat->getColumn(2);
+						Vector3f xVec, yVec, zVec;
+						worldMat->getColumn(0, xVec);
+						worldMat->getColumn(1, yVec);
+						worldMat->getColumn(2, zVec);
 
 						xVec.normalise();
 						yVec.normalise();
 						zVec.normalise();
 
-						Vector3f sep = naviPos - partPos;
-						InteractSarai suck(this, 100.0f, nullptr);
-						slot->mOffset = Vector3f(xVec.dot(sep), yVec.dot(sep), zVec.dot(sep));
+						Vector3f sep  = naviPos - partPos;
+						slot->mOffset.set(xVec.dot(sep), yVec.dot(sep), zVec.dot(sep));
+						InteractSarai suck(this, 1.0f, slot);
 
 						if (currNavi->stimulate(suck)) {
 							mSuckedNavis[i] = currNavi;
-							break;
-						} else {
-							break;
 						}
+						break;
 					}
 				}
 			}
@@ -1282,20 +1287,8 @@ void Obj::updateCollPartOffset()
 		if (slot->mStuckCreature) {
 			if (absVal(slot->mOffset.x - cDefaultKamuJointOffset[i]) > 1.0f || absVal(20.0f + slot->mOffset.y) > 1.0f
 			    || absVal(slot->mOffset.z) > 1.0f) {
-				slot->mOffset.x = slot->mOffset.x * 0.8f + (0.2f * cDefaultKamuJointOffset[i]); // probably a weighted setting inline
-
-				f32 yDiff = absVal(slot->mOffset.y - -20.0f);
-				f32 yOffset;
-				if (yDiff < 7.5f) { // probably an inline
-					yOffset = -20.0f;
-				} else if (slot->mOffset.y < -20.0f) {
-					yOffset = 7.5f + slot->mOffset.y;
-				} else {
-					yOffset = slot->mOffset.y - 7.5f;
-				}
-
-				slot->mOffset.y = yOffset;
-
+				slot->mOffset.x = interpolate(slot->mOffset.x, cDefaultKamuJointOffset[i], 0.2f);
+				slot->mOffset.y = approach(slot->mOffset.y, -20.0f, 7.5f);
 				slot->mOffset.z *= 0.8f;
 
 				if (absVal(slot->mOffset.x - cDefaultKamuJointOffset[i]) < 1.0f && absVal(20.0f + slot->mOffset.y) < 1.0f
@@ -1559,23 +1552,8 @@ void Obj::flickStickNavi(bool check)
 				val    = -75.0f;
 			}
 
-			// rough scaffold, values are probably incorrect
-			f32 xOffset;
-			if (slot->mOffset.x < -20.0f) {
-				xOffset = 7.5f + slot->mOffset.x;
-			} else {
-				xOffset = slot->mOffset.x - 7.5f;
-			}
-			slot->mOffset.x = xOffset;
-
-			f32 yOffset;
-			if (slot->mOffset.y < -20.0f) {
-				yOffset = 7.5f + slot->mOffset.y;
-			} else {
-				yOffset = slot->mOffset.y - 7.5f;
-			}
-
-			slot->mOffset.y = yOffset;
+			slot->mOffset.x = approach(slot->mOffset.x, offset, 1.0f);
+			slot->mOffset.y = approach(slot->mOffset.y, val, 10.0f);
 
 			if (absVal(slot->mOffset.x - offset) < 1.0f && absVal(slot->mOffset.y - val) < 1.0f) {
 				Creature* navi = slot->mStuckCreature;

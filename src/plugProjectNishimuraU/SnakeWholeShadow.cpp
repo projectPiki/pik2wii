@@ -314,7 +314,7 @@ void SnakeWholeShadowMgr::update()
 			Vector3f kutiPos1;
 			Vector3f kutiPos2;
 			mMatrices[i]->getColumn(0, kutiPos1);
-			mMatrices[i]->getColumn(0, kutiPos2);
+			kutiPos2 = kutiPos1;
 			kutiPos1 *= 100.0f;
 			kutiPos1 += positions[i];
 			kutiPos2 += positions[i];

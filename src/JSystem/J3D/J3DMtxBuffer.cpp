@@ -211,168 +211,131 @@ int J3DMtxBuffer::createBumpMtxArray(J3DModelData* data, u32 viewNum)
 void J3DMtxBuffer::calcWeightEnvelopeMtx()
 {
 	register MtxP weightAnmMtx;
-    register Mtx* worldMtx;
-    register Mtx* invMtx;
-    register f32 weight;
-    int idx;
-    int j;
-    int mixNum;
-    int i;
-    int max;
-    u16* indices;
-    f32* weights;
-    u8* scaleFlags;
-
-#if !__MWERKS__
-    register Mtx mtx;
-#else
-    register f32 var_f1;
-    register f32 var_f2;
-    register f32 var_f3;
-    register f32 var_f4;
-    register f32 var_f5;
-    register f32 var_f6;
-    register f32 var_f7;
-    register f32 var_f8;
-    register f32 var_f9;
-    register f32 var_f10;
-    register f32 var_f11;
-    register f32 var_f12;
-    register f32 var_f13;
-    register f32 var_f31;
-    register f32 var_f30;
-    register f32 var_f29;
-    register f32 var_f28;
-    register f32 var_f27;
-    register f32* var_r7 = J3DUnit01;
-#endif
-
-    i = -1;
-    max = mJointTree->getWEvlpMtxNum();
-    indices = mJointTree->getWEvlpMixIndex() - 1;
-    weights = mJointTree->getWEvlpMixWeight() - 1;
-
-    #if __MWERKS__
-    asm {
-        psq_l var_f27, 0x0(var_r7), 0, 0 /* qr0 */
-        ps_merge00 var_f10, var_f27, var_f27
-        ps_merge00 var_f12, var_f27, var_f27
-        ps_merge00 var_f31, var_f27, var_f27
-    }
-    #endif
-
-    while (++i < max) {
-        scaleFlags = &mEnvelopeScaleFlags[i];
-        *scaleFlags = 1;
-        weightAnmMtx = mWeightEnvelopeMatrices[i];
-
-        #if !__MWERKS__
-        weightAnmMtx[0][0] = weightAnmMtx[0][1] = weightAnmMtx[0][2] = weightAnmMtx[0][3] = 
-        weightAnmMtx[1][0] = weightAnmMtx[1][1] = weightAnmMtx[1][2] = weightAnmMtx[1][3] = 
-        weightAnmMtx[2][0] = weightAnmMtx[2][1] = weightAnmMtx[2][2] = weightAnmMtx[2][3] = 0.0f;
-        #else
-        asm {
-            ps_merge00 var_f9, var_f27, var_f27
-            ps_merge00 var_f11, var_f27, var_f27
-            ps_merge00 var_f13, var_f27, var_f27
-        }
-        #endif
-
-        j = 0;
-        mixNum = mJointTree->getWEvlpMixMtxNum(i);
-        do {
-            idx = *++indices;
-            worldMtx = &mWorldMatrices[idx];
-            invMtx = &mJointTree->getInvJointMtx((u16)idx);
-
-            #if !__MWERKS__
-            C_MTXConcat(*worldMtx, *invMtx, mtx);
-            #else
-            // Fakematch? Doesn't match if worldMtx and invMtx are used directly.
-            register void* var_r5 = worldMtx;
-            register void* var_r6 = invMtx;
-            asm {
-                psq_l var_f2, 0x0(var_r6), 0, 0 /* qr0 */
-                psq_l var_f1, 0x0(var_r5), 0, 0 /* qr0 */
-                psq_l var_f3, 0x10(var_r5), 0, 0 /* qr0 */
-                psq_l var_f5, 0x20(var_r5), 0, 0 /* qr0 */
-                ps_muls0 var_f8, var_f2, var_f1
-                psq_l var_f6, 0x10(var_r6), 0, 0 /* qr0 */
-                ps_muls0 var_f30, var_f2, var_f3
-                ps_muls0 var_f29, var_f2, var_f5
-                psq_l var_f7, 0x20(var_r6), 0, 0 /* qr0 */
-                ps_madds1 var_f8, var_f6, var_f1, var_f8
-                psq_l var_f2, 0x8(var_r5), 0, 0 /* qr0 */
-                ps_madds1 var_f30, var_f6, var_f3, var_f30
-                psq_l var_f4, 0x18(var_r5), 0, 0 /* qr0 */
-                ps_madds1 var_f29, var_f6, var_f5, var_f29
-                psq_l var_f6, 0x28(var_r5), 0, 0 /* qr0 */
-                ps_madds0 var_f8, var_f7, var_f2, var_f8
-            }
-            #endif
-
-            weight = *++weights;
-
-            #if !__MWERKS__
-            weightAnmMtx[0][0] += mtx[0][0] * weight;
-            weightAnmMtx[0][1] += mtx[0][1] * weight;
-            weightAnmMtx[0][2] += mtx[0][2] * weight;
-            weightAnmMtx[0][3] += mtx[0][3] * weight;
-            weightAnmMtx[1][0] += mtx[1][0] * weight;
-            weightAnmMtx[1][1] += mtx[1][1] * weight;
-            weightAnmMtx[1][2] += mtx[1][2] * weight;
-            weightAnmMtx[1][3] += mtx[1][3] * weight;
-            weightAnmMtx[2][0] += mtx[2][0] * weight;
-            weightAnmMtx[2][1] += mtx[2][1] * weight;
-            weightAnmMtx[2][2] += mtx[2][2] * weight;
-            weightAnmMtx[2][3] += mtx[2][3] * weight;
-            #else
-            asm {
-                ps_madds0 var_f30, var_f7, var_f4, var_f30
-                ps_madds0 var_f29, var_f7, var_f6, var_f29
-                psq_l var_f7, 0x8(var_r6), 0, 0 /* qr0 */
-                ps_madds0 var_f9, var_f8, weight, var_f9
-                ps_madds0 var_f11, var_f30, weight, var_f11
-                ps_madds0 var_f13, var_f29, weight, var_f13
-                psq_l var_f8, 0x18(var_r6), 0, 0 /* qr0 */
-                ps_muls0 var_f30, var_f7, var_f1
-                ps_muls0 var_f29, var_f7, var_f3
-                ps_muls0 var_f28, var_f7, var_f5
-                psq_l var_f7, 0x28(var_r6), 0, 0 /* qr0 */
-                psq_st var_f9, 0x0(weightAnmMtx), 0, 0 /* qr0 */
-                ps_madds1 var_f30, var_f8, var_f1, var_f30
-                ps_madds1 var_f29, var_f8, var_f3, var_f29
-                ps_madds1 var_f28, var_f8, var_f5, var_f28
-                ps_madds0 var_f30, var_f7, var_f2, var_f30
-                ps_madds0 var_f29, var_f7, var_f4, var_f29
-                ps_madds0 var_f28, var_f7, var_f6, var_f28
-                psq_st var_f11, 0x10(weightAnmMtx), 0, 0 /* qr0 */
-                psq_st var_f13, 0x20(weightAnmMtx), 0, 0 /* qr0 */
-                ps_madd var_f30, var_f27, var_f2, var_f30
-                ps_madd var_f29, var_f27, var_f4, var_f29
-                ps_madd var_f28, var_f27, var_f6, var_f28
-                ps_madds0 var_f10, var_f30, weight, var_f10
-                ps_madds0 var_f12, var_f29, weight, var_f12
-                ps_madds0 var_f31, var_f28, weight, var_f31
-            }
-            #endif
-
-            *scaleFlags &= mScaleFlags[idx];
-        } while (++j < mixNum);
-
-        #if __MWERKS__
-        asm {
-            psq_st var_f10, 0x8(weightAnmMtx), 0, 0 /* qr0 */
-            ps_merge00 var_f10, var_f27, var_f27
-            psq_st var_f12, 0x18(weightAnmMtx), 0, 0 /* qr0 */
-            ps_merge00 var_f12, var_f27, var_f27
-            psq_st var_f31, 0x28(weightAnmMtx), 0, 0 /* qr0 */
-            ps_merge00 var_f31, var_f27, var_f27
-        }
-        #endif
+	register Mtx* worldMtx;
+	register Mtx* invMtx;
+	register f32 weight;
+	int jointIdx;
+	int mixIdx;
+	int mixCount;
+	int envelopeIdx;
+	int envelopeCount;
+	u16* indices;
+	f32* weights;
+	u8* scaleFlags;
+	register f32 world0XY;
+	register f32 scratch0;
+	register f32 world1XY;
+	register f32 world1ZW;
+	register f32 world2XY;
+	register f32 world2ZW;
+	register f32 scratch1;
+	register f32 inverseRow1;
+	register f32 inverseRow2;
+	register f32 sum0XY;
+	register f32 sum0ZW;
+	register f32 sum1XY;
+	register f32 sum1ZW;
+	register f32 sum2XY;
+	register f32 sum2ZW;
+	register f32 product0XY;
+	register f32 product0ZW;
+	register f32 product1XY;
+	register f32 product1ZW;
+	register f32 product2XY;
+	register f32 unit01;
+	register f32* unitData = J3DUnit01;
+	envelopeIdx            = -1;
+	envelopeCount          = mJointTree->getWEvlpMtxNum();
+	indices                = mJointTree->getWEvlpMixIndex() - 1;
+	weights                = mJointTree->getWEvlpMixWeight() - 1;
+#ifdef __MWERKS__ // clang-format off
+	asm {
+		psq_l unit01, 0(unitData), 0, 0
+		ps_merge00 sum0ZW, unit01, unit01
+		ps_merge00 sum1ZW, unit01, unit01
+		ps_merge00 sum2ZW, unit01, unit01
 	}
-
-	/*	
+#endif // clang-format on
+	while (++envelopeIdx < envelopeCount)
+	{
+		scaleFlags   = &mEnvelopeScaleFlags[envelopeIdx];
+		*scaleFlags  = 1;
+		weightAnmMtx = mWeightEnvelopeMatrices[envelopeIdx];
+#ifdef __MWERKS__ // clang-format off
+		asm {
+			ps_merge00 sum0XY, unit01, unit01
+			ps_merge00 sum1XY, unit01, unit01
+			ps_merge00 sum2XY, unit01, unit01
+		}
+#endif // clang-format on
+		mixIdx   = 0;
+		mixCount = mJointTree->getWEvlpMixMtxNum(envelopeIdx);
+		// this feels bad as a do-while, but I can't get the instruction order to work otherwise
+		do {
+			jointIdx = *++indices;
+			invMtx   = &mJointTree->getInvJointMtx((u16)jointIdx);
+			worldMtx = &mWorldMatrices[jointIdx];
+			weight   = *++weights;
+#ifdef __MWERKS__ // clang-format off
+			asm {
+				psq_l    scratch0, 0(invMtx), 0, 0
+				psq_l    world0XY, 0(worldMtx), 0, 0
+				psq_l    world1XY, 16(worldMtx), 0, 0
+				ps_muls0 product0XY, scratch0, world0XY
+				psq_l    inverseRow1, 16(invMtx), 0, 0
+				ps_muls0 product1XY, scratch0, world1XY
+				psq_l    world2XY, 32(worldMtx), 0, 0
+				psq_l    scratch1, 8(invMtx), 0, 0
+				ps_muls0 product2XY, scratch0, world2XY
+				ps_madds1 product0XY, inverseRow1, world0XY, product0XY
+				psq_l    inverseRow2, 32(invMtx), 0, 0
+				psq_l    scratch0, 8(worldMtx), 0, 0
+				ps_madds1 product1XY, inverseRow1, world1XY, product1XY
+				psq_l    world1ZW, 24(worldMtx), 0, 0
+				ps_madds0 product0XY, inverseRow2, scratch0, product0XY
+				ps_madds1 product2XY, inverseRow1, world2XY, product2XY
+				psq_l    world2ZW, 40(worldMtx), 0, 0
+				ps_madds0 product1XY, inverseRow2, world1ZW, product1XY
+				psq_l    inverseRow1, 24(invMtx), 0, 0
+				ps_muls0 product0ZW, scratch1, world0XY
+				ps_muls0 product1ZW, scratch1, world1XY
+				ps_madds0 product2XY, inverseRow2, world2ZW, product2XY
+				psq_l    inverseRow2, 40(invMtx), 0, 0
+				ps_madds0 sum0XY, product0XY, weight, sum0XY
+				ps_muls0 scratch1, scratch1, world2XY
+				ps_madds1 product0ZW, inverseRow1, world0XY, product0ZW
+				ps_madds1 product1ZW, inverseRow1, world1XY, product1ZW
+				psq_st   sum0XY, 0(weightAnmMtx), 0, 0
+				ps_madds0 sum1XY, product1XY, weight, sum1XY
+				ps_madds1 scratch1, inverseRow1, world2XY, scratch1
+				ps_madds0 product0ZW, inverseRow2, scratch0, product0ZW
+				ps_madds0 product1ZW, inverseRow2, world1ZW, product1ZW
+				psq_st   sum1XY, 16(weightAnmMtx), 0, 0
+				ps_madds0 sum2XY, product2XY, weight, sum2XY
+				ps_madds0 scratch1, inverseRow2, world2ZW, scratch1
+				ps_madd  product0ZW, unit01, scratch0, product0ZW
+				psq_st   sum2XY, 32(weightAnmMtx), 0, 0
+				ps_madd  product1ZW, unit01, world1ZW, product1ZW
+				ps_madd  scratch1, unit01, world2ZW, scratch1
+				ps_madds0 sum0ZW, product0ZW, weight, sum0ZW
+				ps_madds0 sum1ZW, product1ZW, weight, sum1ZW
+				ps_madds0 sum2ZW, scratch1, weight, sum2ZW
+			}
+#endif // clang-format on
+			*scaleFlags &= mScaleFlags[jointIdx];
+		} while (++mixIdx < mixCount);
+#ifdef __MWERKS__ // clang-format off
+		asm {
+			psq_st sum0ZW, 8(weightAnmMtx), 0, 0
+			ps_merge00 sum0ZW, unit01, unit01
+			psq_st sum1ZW, 24(weightAnmMtx), 0, 0
+			ps_merge00 sum1ZW, unit01, unit01
+			psq_st sum2ZW, 40(weightAnmMtx), 0, 0
+			ps_merge00 sum2ZW, unit01, unit01
+		}
+#endif // clang-format on
+	}
+	/*
 	stwu     r1, -0xa0(r1)
 	stfd     f31, 0x90(r1)
 	psq_st   f31, 152(r1), 0, qr0
@@ -529,8 +492,7 @@ void J3DMtxBuffer::calcDrawMtx(u32 p1, const Vec& vec, const Mtx& mtx)
 		Mtx* viewMtx = j3dSys.getViewMtx();
 		u32 mtxNum   = mJointTree->getDrawFullWgtMtxNum();
 		for (u16 i = 0; i < mtxNum; i++) {
-			Mtx& drawMtx = *getDrawMtx(i);
-			PSMTXConcat(*viewMtx, *(Mtx*)getAnmMtx(i), drawMtx);
+			PSMTXConcat(*viewMtx, *(Mtx*)getAnmMtx(mJointTree->getDrawMtxIndex(i)), *getDrawMtx(i));
 		}
 
 		if (mJointTree->getDrawMtxNum() > mtxNum) {
@@ -541,12 +503,12 @@ void J3DMtxBuffer::calcDrawMtx(u32 p1, const Vec& vec, const Mtx& mtx)
 	case 1: {
 		u32 mtxNum = mJointTree->getDrawFullWgtMtxNum();
 		for (u16 i = 0; i < mtxNum; i++) {
-			PSMTXCopy(*(Mtx*)getWeightAnmMtx(i), *getDrawMtx(i));
+			PSMTXCopy(*(Mtx*)getAnmMtx(mJointTree->getDrawMtxIndex(i)), *getDrawMtx(i));
 		}
 
 		mtxNum = mJointTree->getDrawFullWgtMtxNum();
 		for (u16 i = 0; i < mtxNum; i++) {
-			PSMTXCopy(*(Mtx*)getAnmMtx(mJointTree->getDrawMtxIndex(i)), *getDrawMtx(i));
+			PSMTXCopy(mWeightEnvelopeMatrices[i], mDrawMatrices[1][mCurrentViewNumber][i + mJointTree->getDrawFullWgtMtxNum()]);
 		}
 	} break;
 
@@ -564,227 +526,6 @@ void J3DMtxBuffer::calcDrawMtx(u32 p1, const Vec& vec, const Mtx& mtx)
 		}
 	} break;
 	}
-	/*
-	stwu     r1, -0x80(r1)
-	mflr     r0
-	cmpwi    r4, 1
-	stw      r0, 0x84(r1)
-	stw      r31, 0x7c(r1)
-	stw      r30, 0x78(r1)
-	stw      r29, 0x74(r1)
-	stw      r28, 0x70(r1)
-	mr       r28, r3
-	beq      lbl_80089118
-	bge      lbl_80089064
-	cmpwi    r4, 0
-	bge      lbl_80089070
-	b        lbl_80089310
-
-lbl_80089064:
-	cmpwi    r4, 3
-	bge      lbl_80089310
-	b        lbl_800891D0
-
-lbl_80089070:
-	lwz      r3, 0(r28)
-	lis      r4, j3dSys@ha
-	addi     r0, r4, j3dSys@l
-	li       r29, 0
-	lhz      r31, 0x36(r3)
-	mr       r30, r0
-	b        lbl_800890D0
-
-lbl_8008908C:
-	lwz      r4, 0(r28)
-	clrlwi   r0, r29, 0x10
-	lwz      r3, 0x30(r28)
-	rlwinm   r6, r29, 1, 0xf, 0x1e
-	lwz      r7, 0x3c(r4)
-	mulli    r0, r0, 0x30
-	lwz      r5, 0x18(r28)
-	slwi     r4, r3, 2
-	lhzx     r6, r7, r6
-	mr       r3, r30
-	lwzx     r4, r5, r4
-	mulli    r6, r6, 0x30
-	lwz      r7, 0xc(r28)
-	add      r5, r4, r0
-	add      r4, r7, r6
-	bl       PSMTXConcat
-	addi     r29, r29, 1
-
-lbl_800890D0:
-	clrlwi   r0, r29, 0x10
-	cmplw    r0, r31
-	blt      lbl_8008908C
-	lwz      r7, 0(r28)
-	lhz      r0, 0x34(r7)
-	cmplw    r0, r31
-	ble      lbl_80089310
-	lwz      r4, 0x30(r28)
-	mulli    r0, r31, 0x30
-	lwz      r6, 0x18(r28)
-	mr       r3, r30
-	slwi     r5, r4, 2
-	lwz      r4, 0x10(r28)
-	lwzx     r5, r6, r5
-	lhz      r6, 0x1e(r7)
-	add      r5, r5, r0
-	bl       J3DPSMtxArrayConcat__FPA4_fPA4_fPA4_fUl
-	b        lbl_80089310
-
-lbl_80089118:
-	lwz      r3, 0(r28)
-	li       r30, 0
-	lhz      r29, 0x36(r3)
-	b        lbl_80089168
-
-lbl_80089128:
-	lwz      r4, 0(r28)
-	clrlwi   r0, r30, 0x10
-	lwz      r3, 0x30(r28)
-	rlwinm   r5, r30, 1, 0xf, 0x1e
-	lwz      r6, 0x3c(r4)
-	mulli    r0, r0, 0x30
-	lwz      r4, 0x18(r28)
-	slwi     r3, r3, 2
-	lhzx     r5, r6, r5
-	lwzx     r3, r4, r3
-	mulli    r5, r5, 0x30
-	lwz      r6, 0xc(r28)
-	add      r4, r3, r0
-	add      r3, r6, r5
-	bl       PSMTXCopy
-	addi     r30, r30, 1
-
-lbl_80089168:
-	clrlwi   r0, r30, 0x10
-	cmplw    r0, r29
-	blt      lbl_80089128
-	lwz      r3, 0(r28)
-	li       r30, 0
-	lhz      r29, 0x36(r3)
-	b        lbl_800891C0
-
-lbl_80089184:
-	lwz      r3, 0(r28)
-	clrlwi   r6, r30, 0x10
-	lwz      r5, 0x30(r28)
-	mulli    r0, r6, 0x30
-	lhz      r4, 0x36(r3)
-	lwz      r3, 0x10(r28)
-	slwi     r5, r5, 2
-	add      r4, r6, r4
-	lwz      r6, 0x18(r28)
-	mulli    r4, r4, 0x30
-	add      r3, r3, r0
-	lwzx     r0, r6, r5
-	add      r4, r0, r4
-	bl       PSMTXCopy
-	addi     r30, r30, 1
-
-lbl_800891C0:
-	clrlwi   r0, r30, 0x10
-	cmplw    r0, r29
-	blt      lbl_80089184
-	b        lbl_80089310
-
-lbl_800891D0:
-	lfs      f2, 0(r5)
-	lis      r3, j3dSys@ha
-	lfs      f1, 0x10(r6)
-	addi     r3, r3, j3dSys@l
-	lfs      f3, 0(r6)
-	addi     r4, r1, 8
-	fmuls    f7, f1, f2
-	lfs      f0, 0x20(r6)
-	fmuls    f13, f3, f2
-	lfs      f1, 4(r6)
-	fmuls    f3, f0, f2
-	lfs      f12, 4(r5)
-	fmuls    f11, f1, f12
-	lfs      f10, 8(r5)
-	lfs      f2, 8(r6)
-	addi     r5, r1, 0x38
-	lfs      f1, 0x14(r6)
-	fmuls    f9, f2, f10
-	fmuls    f6, f1, f12
-	lfs      f5, 0x18(r6)
-	lfs      f2, 0x24(r6)
-	lfs      f1, 0x28(r6)
-	fmuls    f5, f5, f10
-	fmuls    f2, f2, f12
-	fmuls    f1, f1, f10
-	lfs      f8, 0xc(r6)
-	lfs      f4, 0x1c(r6)
-	lfs      f0, 0x2c(r6)
-	stfs     f13, 8(r1)
-	stfs     f11, 0xc(r1)
-	stfs     f9, 0x10(r1)
-	stfs     f8, 0x14(r1)
-	stfs     f7, 0x18(r1)
-	stfs     f6, 0x1c(r1)
-	stfs     f5, 0x20(r1)
-	stfs     f4, 0x24(r1)
-	stfs     f3, 0x28(r1)
-	stfs     f2, 0x2c(r1)
-	stfs     f1, 0x30(r1)
-	stfs     f0, 0x34(r1)
-	bl       PSMTXConcat
-	lwz      r3, 0(r28)
-	li       r30, 0
-	lhz      r29, 0x36(r3)
-	b        lbl_800892C8
-
-lbl_80089284:
-	lwz      r4, 0(r28)
-	clrlwi   r0, r30, 0x10
-	lwz      r3, 0x30(r28)
-	rlwinm   r6, r30, 1, 0xf, 0x1e
-	lwz      r7, 0x3c(r4)
-	mulli    r0, r0, 0x30
-	lwz      r5, 0x18(r28)
-	slwi     r4, r3, 2
-	lhzx     r6, r7, r6
-	addi     r3, r1, 0x38
-	lwzx     r4, r5, r4
-	mulli    r6, r6, 0x30
-	lwz      r7, 0xc(r28)
-	add      r5, r4, r0
-	add      r4, r7, r6
-	bl       PSMTXConcat
-	addi     r30, r30, 1
-
-lbl_800892C8:
-	clrlwi   r0, r30, 0x10
-	cmplw    r0, r29
-	blt      lbl_80089284
-	lwz      r7, 0(r28)
-	lhz      r3, 0x36(r7)
-	lhz      r0, 0x34(r7)
-	cmplw    r0, r3
-	ble      lbl_80089310
-	lwz      r4, 0x30(r28)
-	mulli    r0, r3, 0x30
-	lwz      r6, 0x18(r28)
-	addi     r3, r1, 0x38
-	slwi     r5, r4, 2
-	lwz      r4, 0x10(r28)
-	lwzx     r5, r6, r5
-	lhz      r6, 0x1e(r7)
-	add      r5, r5, r0
-	bl       J3DPSMtxArrayConcat__FPA4_fPA4_fPA4_fUl
-
-lbl_80089310:
-	lwz      r0, 0x84(r1)
-	lwz      r31, 0x7c(r1)
-	lwz      r30, 0x78(r1)
-	lwz      r29, 0x74(r1)
-	lwz      r28, 0x70(r1)
-	mtlr     r0
-	addi     r1, r1, 0x80
-	blr
-	*/
 }
 
 /**

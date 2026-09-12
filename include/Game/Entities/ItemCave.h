@@ -1,12 +1,12 @@
 #ifndef _GAME_ENTITIES_ITEMCAVE_H
 #define _GAME_ENTITIES_ITEMCAVE_H
 
-#include "types.h"
 #include "Game/BaseItem.h"
-#include "Game/itemMgr.h"
-#include "Game/PlatInstance.h"
 #include "Game/GameLight.h"
+#include "Game/PlatInstance.h"
+#include "Game/itemMgr.h"
 #include "efx/WarpZone.h"
+#include "types.h"
 
 namespace Game {
 namespace ItemBarrel {
@@ -70,7 +70,21 @@ struct OpenState : public State {
 };
 
 struct FogParm : public Parameters {
-	FogParm();
+	FogParm()
+	    : Parameters(nullptr, "FogParm")
+	    , mStartZ(this, 'fg00', "startZ", 32.0f, 1.0f, 12800.0f)
+	    , mEndZ(this, 'fg01', "endZ", 1200.0f, 1.0f, 12800.0f)
+	    , mStartTime(this, 'fg02', "startTime", 2.0f, 0.0f, 30.0f)
+	    , mEndTime(this, 'fg03', "endTime", 2.0f, 0.0f, 30.0f)
+	    , mRed(this, 'fg04', "Red", 10, 0, 255)
+	    , mGreen(this, 'fg05', "Green", 110, 0, 255)
+	    , mBlue(this, 'fg06', "Blue", 118, 0, 255)
+	    , mDistance(this, 'fg07', "Distance", 2000.0f, 0.0f, 12800.0f)
+	    , mEnterDistance(this, 'fg08', "Enter Dist", 190.0f, 0.0f, 12800.0f)
+	    , mExitDistance(this, 'fg09', "Exit  Dist", 240.0f, 0.0f, 12800.0f)
+
+	{
+	}
 
 	void operator=(const FogParm& in)
 	{

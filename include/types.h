@@ -123,7 +123,7 @@ typedef byte1_t					byte_t;
 #define MAX(a, b)                                  (((a) > (b)) ? (a) : (b))
 #define MIN(a, b)                                  (((a) < (b)) ? (a) : (b))
 #define MIN_EQ(a, b)							   (((a) <= (b)) ? (a) : (b))
-#define ROUND_F32_TO_U8(a)                         a >= 0.0f ? a + 0.5f : a - 0.5f
+#define ROUND_F32_TO_U8(a)                         ((a) >= 0.0f) ? ((a) + 0.5f) : ((a) - 0.5f)
 #define INTERPOLATE_BETWEEN(src, dest, proportion) (proportion) * ((f32)(dest) - (f32)(src)) + (f32)(src)
 
 #define DECOMP_DONT_INLINE __attribute__((noinline))

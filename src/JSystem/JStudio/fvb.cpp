@@ -12,7 +12,9 @@ namespace fvb {
  * @note Address: N/A
  * @note Size: 0x48
  */
-TObject::~TObject() { }
+TObject::~TObject()
+{
+}
 
 /**
  * @note Address: 0x8000BB48
@@ -34,6 +36,8 @@ void TObject::prepare(const JStudio::fvb::data::TParse_TBlock& block, JStudio::f
 
 		switch (u32Type) {
 		case 0:
+			// I hate this goto, but I don't see what else could cause this jump in the table??
+			goto end;
 		case 1: {
 			prepare_data_(dat, control);
 		} break;
@@ -140,7 +144,7 @@ void TObject::prepare(const JStudio::fvb::data::TParse_TBlock& block, JStudio::f
 		}
 		pData = dat.mNext;
 	}
-
+end:
 	mBaseFV->prepare();
 	/*
 	.loc_0x0:
@@ -306,43 +310,64 @@ namespace {
  * @note Address: 0x8000BD64
  * @note Size: 0xC
  */
-TFunctionValue_composite::TData getCompositeData_raw_(const void* data) { return TFunctionValue_composite::TData(*(const void**)data); }
+TFunctionValue_composite::TData getCompositeData_raw_(const void* data)
+{
+	return TFunctionValue_composite::TData(*(const void**)data);
+}
 
 /**
  * @note Address: 0x8000BD70
  * @note Size: 0xC
  */
-TFunctionValue_composite::TData getCompositeData_index_(const void* data) { return TFunctionValue_composite::TData(*(u32*)data); }
+TFunctionValue_composite::TData getCompositeData_index_(const void* data)
+{
+	return TFunctionValue_composite::TData(*(u32*)data);
+}
 
 /**
  * @note Address: 0x8000BD7C
  * @note Size: 0xC
  */
-TFunctionValue_composite::TData getCompositeData_parameter_(const void* data) { return TFunctionValue_composite::TData(*(f32*)data); }
+TFunctionValue_composite::TData getCompositeData_parameter_(const void* data)
+{
+	return TFunctionValue_composite::TData(*(f32*)data);
+}
 
 /**
  * @note Address: 0x8000BD88
  * @note Size: 0xC
  */
-TFunctionValue_composite::TData getCompositeData_add_(const void* data) { return TFunctionValue_composite::TData(*(f32*)data); }
+TFunctionValue_composite::TData getCompositeData_add_(const void* data)
+{
+	return TFunctionValue_composite::TData(*(f32*)data);
+}
 
 /**
  * @note Address: 0x8000BD94
  * @note Size: 0xC
  */
-TFunctionValue_composite::TData getCompositeData_subtract_(const void* data) { return TFunctionValue_composite::TData(*(f32*)data); }
+TFunctionValue_composite::TData getCompositeData_subtract_(const void* data)
+{
+	return TFunctionValue_composite::TData(*(f32*)data);
+}
 
 /**
  * @note Address: 0x8000BDA0
  * @note Size: 0xC
  */
-TFunctionValue_composite::TData getCompositeData_multiply_(const void* data) { return TFunctionValue_composite::TData(*(f32*)data); }
+TFunctionValue_composite::TData getCompositeData_multiply_(const void* data)
+{
+	return TFunctionValue_composite::TData(*(f32*)data);
+}
 
 /**
  * @note Address: 0x8000BDAC
  * @note Size: 0xC
  */
-TFunctionValue_composite::TData getCompositeData_divide_(const void* data) { return TFunctionValue_composite::TData(*(f32*)data); }
+TFunctionValue_composite::TData getCompositeData_divide_(const void* data)
+{
+	return TFunctionValue_composite::TData(*(f32*)data);
+}
 
 static const CompositeOperation saCompositeOperation_[data::COMPOSITE_ENUM_SIZE] = {
 	{ nullptr, nullptr },                                                             // COMPOSITE_NONE
@@ -359,7 +384,10 @@ static const CompositeOperation saCompositeOperation_[data::COMPOSITE_ENUM_SIZE]
  * @note Address: N/A
  * @note Size: 0x14
  */
-const CompositeOperation* getCompositeOperation_(data::TEComposite type) { return &saCompositeOperation_[type]; }
+const CompositeOperation* getCompositeOperation_(data::TEComposite type)
+{
+	return &saCompositeOperation_[type];
+}
 
 } // namespace
 
@@ -542,13 +570,18 @@ TControl::TControl()
  * @note Address: 0x8000BF04
  * @note Size: 0x6C
  */
-TControl::~TControl() { }
+TControl::~TControl()
+{
+}
 
 /**
  * @note Address: N/A
  * @note Size: 0x50
  */
-void TControl::appendObject(TObject* object) { mObjectContainer.Push_back(object); }
+void TControl::appendObject(TObject* object)
+{
+	mObjectContainer.Push_back(object);
+}
 
 /**
  * @note Address: 0x8000BF70
@@ -559,7 +592,7 @@ TObject* TControl::getObject(const void* id, u32 length)
 	JGadget::TLinkList<TObject, -12>::iterator start  = mObjectContainer.begin();
 	JGadget::TLinkList<TObject, -12>::iterator end    = mObjectContainer.end();
 	JGadget::TLinkList<TObject, -12>::iterator target = std::find_if(start, end, object::TPRObject_ID_equal(id, length));
-	
+
 	return (target != end) ? &*target : nullptr;
 }
 
@@ -585,7 +618,9 @@ TObject* TControl::getObject_index(u32 idx)
  * @note Address: 0x8000C11C
  * @note Size: 0x48
  */
-TFactory::~TFactory() { }
+TFactory::~TFactory()
+{
+}
 
 /**
  * @note Address: 0x8000C164
@@ -620,7 +655,10 @@ TObject* TFactory::create(const data::TParse_TBlock& block)
  * @note Address: 0x8000C46C
  * @note Size: 0x3C
  */
-void TFactory::destroy(TObject* obj) { delete obj; }
+void TFactory::destroy(TObject* obj)
+{
+	delete obj;
+}
 
 /**
  * @note Address: 0x8000C4A8
@@ -635,7 +673,9 @@ TParse::TParse(TControl* control)
  * @note Address: 0x8000C4C8
  * @note Size: 0x60
  */
-TParse::~TParse() { }
+TParse::~TParse()
+{
+}
 
 /**
  * @note Address: 0x8000C528

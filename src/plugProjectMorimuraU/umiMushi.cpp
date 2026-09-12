@@ -1740,15 +1740,15 @@ bool Obj::outMove()
 		f32 moveSpeed   = 0.5f * C_PROPERPARMS.mMoveSpeed(); // f28
 		mTargetPosition = mHomePosition + (dir * rad);
 
-		f32 angle1 = roundAng(JMAAtan2Radian(mTargetPosition.x - mPosition.x, mTargetPosition.z - mPosition.z));
-		f32 angle2 = roundAng(JMAAtan2Radian(naviPos.x - mPosition.x, naviPos.z - mPosition.z));
+		f32 angle1 = angXZ(mTargetPosition.x - mPosition.x, mTargetPosition.z - mPosition.z);
+		f32 angle2 = angXZ(naviPos.x - mPosition.x, naviPos.z - mPosition.z);
 
 		f32 angleDist = angDist(angle2, angle1);
 
 		if (absF(angleDist) < 1.0f) {
 			Vector3f pos = mPosition;
 			Vector3f vec = mTargetPosition;
-			if (sqrDistanceXZ(pos, vec) < 100.0f) {
+			if (pos.sqrDistance2D(vec) < 100.0f) {
 				mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 				return true;
 			}
@@ -1756,19 +1756,15 @@ bool Obj::outMove()
 			sep.y        = 0.0f;
 			sep.normalise();
 
-			Vector3f vel = sep * moveSpeed; // f30, f29
+			Vector3f vel = sep;
+			vel *= moveSpeed;
 
-			f32 maxAngle  = 0.5f * C_PROPERPARMS.mRotateSpeedMax(); // f27
-			f32 turnSpeed = 0.5f * C_PROPERPARMS.mRotateSpeed();    // f28
-			f32 velY      = getTargetVelocity().y;
-			turnToTarget(mTargetPosition, turnSpeed, maxAngle);
+			f32 velY = getTargetVelocity().y;
+			turnToTarget(mTargetPosition, 0.5f * C_PROPERPARMS.mRotateSpeed(), 0.5f * C_PROPERPARMS.mRotateSpeedMax());
 
-			mTargetVelocity = Vector3f(vel.x, velY, vel.z);
+			mTargetVelocity.set(vel.x, velY, vel.z);
 		} else {
-			f32 maxAngle  = 0.5f * C_PROPERPARMS.mRotateSpeedMax(); // f27
-			f32 turnSpeed = 0.5f * C_PROPERPARMS.mRotateSpeed();    // f28
-
-			turnToTarget(naviPos, turnSpeed, maxAngle);
+			turnToTarget(naviPos, 0.5f * C_PROPERPARMS.mRotateSpeed(), 0.5f * C_PROPERPARMS.mRotateSpeedMax());
 		}
 	}
 

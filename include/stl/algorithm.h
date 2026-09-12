@@ -9,8 +9,8 @@ namespace std {
 template <typename InputIterator, typename Predicate>
 static InputIterator find_if(InputIterator first, InputIterator last, Predicate p);
 
-template <typename ForwardIterator, typename Element, typename Predicate>
-ForwardIterator upper_bound(ForwardIterator first, ForwardIterator last, const Element& value, Predicate predicate);
+template <class ForwardIterator, class T, class Predicate>
+ForwardIterator upper_bound(ForwardIterator first, ForwardIterator last, const T& val, Predicate p);
 
 template <typename T>
 inline T& move(T& x)

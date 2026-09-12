@@ -2,6 +2,12 @@
 #include "RevoSDK/rand.h"
 #include "types.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "246-ElecBug";
+}
+
 namespace Game {
 namespace ElecBug {
 
@@ -96,7 +102,7 @@ void Obj::getShadowParam(ShadowParam& param)
 	Matrixf* bodyJointMtx = mModel->getJoint("body")->getWorldMatrix();
 	param.mPosition       = bodyJointMtx->getColumn(3);
 	param.mPosition.y -= 5.0f;
-	param.mBoundingSphere.mPosition = Vector3f(0.0f, 1.0f, 0.0f);
+	param.mBoundingSphere.mPosition.set(0.0f, 1.0f, 0.0f);
 	param.mBoundingSphere.mRadius   = 15.0f;
 	param.mSize                     = 15.0f;
 }
@@ -322,27 +328,6 @@ bool Obj::startChildChargeState(Obj* beetle)
 void Obj::createEffect()
 {
 	mEffectObj = new efx::TDnkmsEffect;
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	stw      r31, 0xc(r1)
-	mr       r31, r3
-	li       r3, 0x74
-	bl       __nw__FUl
-	or.      r0, r3, r3
-	beq      lbl_8027B890
-	bl       __ct__Q23efx12TDnkmsEffectFv
-	mr       r0, r3
-
-lbl_8027B890:
-	stw      r0, 0x2dc(r31)
-	lwz      r0, 0x14(r1)
-	lwz      r31, 0xc(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
 }
 
 /**
@@ -467,7 +452,9 @@ void Obj::checkInteract(Obj* partner)
 			if (absVal(dotPerp) < 15.0f) {
 				// Calculate the direction for interaction
 				Vector3f interactionDir = searchDirection;
-				interactionDir.scale2D(dotCross / abs);
+				f32 interactionScale = dotCross / abs;
+				interactionDir.x = interactionScale * interactionDir.x;
+				interactionDir.z = interactionScale * interactionDir.z;
 
 				// Perform the interaction with the calculated attack damage
 				f32 attackDamage = C_GENERALPARMS.mAttackDamage.mValue;
