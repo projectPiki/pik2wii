@@ -11,8 +11,6 @@
 #include "math.h"
 #include "trig.h"
 
-static f32 c32 = 1.0f;
-
 JASTrack::SeqCallback JASTrack::sCallBackFunc;
 JASSeqParser JASTrack::sParser;
 JASTrack* JASTrack::sFreeList;
@@ -527,8 +525,8 @@ void JASTrack::oscSetupFull(u8 route, u32 attackOffset, u32 releaseOffset)
 	u8 oscIdx           = (route & 0x10) >> 4;
 	int target          = route & 0xF;
 	bool doSetupEnv     = (route & 0x80) ? true : false;
-	bool doSetupAttack  = route & 0x40  ? true : false;
-	bool doSetupRelease = route & 0x20  ? true : false;
+	bool doSetupAttack  = route & 0x40 ? true : false;
+	bool doSetupRelease = route & 0x20 ? true : false;
 	if (doSetupEnv) {
 		mOscData[oscIdx]         = JASPlayer::sEnvelopeDef;
 		mOscData[oscIdx].mTarget = target;
@@ -2753,13 +2751,12 @@ s32 JASTrack::rootCallback(void* obj)
 		return -1;
 	}
 	track->_340 += track->mCurrentTempo;
-	DCInvalidateRange(&c32, sizeof(c32));
-	if (track->_340 < c32) {
+	
+	if (track->_340 < 1.0f) {
 		track->updateSeq(0, true);
 	} else {
-		while (track->_340 >= c32) {
-			DCInvalidateRange(&c32, sizeof(c32));
-			track->_340 -= c32;
+		while (track->_340 >= 1.0f) {
+			track->_340 -= 1.0f;
 			if (track->mainProc() == -1) {
 				track->stopSeqMain();
 				return -1;

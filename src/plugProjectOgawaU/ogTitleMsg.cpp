@@ -176,7 +176,6 @@ void TitleMsg::setCentering(EnumCentering center)
 		size = 0.0f;
 	}
 
-#if BUILDTARGET == USADEMO1
 	f32 currX = 0.0f; // f25
 	for (int i = 0; i < mStringLength; i++) {
 		J2DPane* pane = mPanes1[i];
@@ -189,18 +188,6 @@ void TitleMsg::setCentering(EnumCentering center)
 		currX += (paneWidth - diff);
 	}
 	mXScale = scaleX;
-#elif BUILDTARGET == USAFINAL
-	f32 scaleY = 1.0f;
-	f32 currX  = 0.0f;
-	for (int i = 0; i < mStringLength; i++) {
-		J2DPane* pane = mPanes1[i];
-		pane->move(size + currX * scaleX, 0.0f);
-
-		mPanes1[i]->updateScale(scaleX, scaleY);
-		currX += mPanes1[i]->mBounds.getWidth();
-	}
-	mXScale = scaleX;
-#endif
 }
 
 /**

@@ -91,6 +91,7 @@ static GXRenderModeObj* sRenderModeTable[4]
 
 System::ERenderMode System::mRenderMode;
 System* sys;
+BitFlag<u32> System::mFlags;
 System::GXVerifyArg System::sVerifyArg;
 
 static bool sUseABXCommand = true;
@@ -395,6 +396,92 @@ void retraceCallback(u32)
 	}
 }
 
+void System::setLanguage()
+{
+	mPlayData->mFlags.set(Game::CommonSaveData::Mgr::SaveFlag_Language);
+
+	switch (SCGetLanguage()) {
+	case SC_LANG_EN: {
+		setLanguage(LANG_USEnglish);
+		break;
+	}
+	case SC_LANG_FR: {
+		setLanguage(LANG_USFrench);
+		break;
+	}
+	case SC_LANG_SP: {
+		setLanguage(LANG_USSpanish);
+		break;
+	}
+	case SC_LANG_IT: {
+		setLanguage(LANG_USEnglish);
+		break;
+	}
+	case SC_LANG_DE: {
+		setLanguage(LANG_USEnglish);
+		break;
+	}
+	case SC_LANG_NL: {
+		setLanguage(LANG_USEnglish);
+		break;
+	}
+	default: {
+		JUT_PANICLINE(1085, "unknown language:%d", SCGetLanguage());
+	}
+	}
+
+	mPlayData->mFlags.unset(Game::CommonSaveData::Mgr::SaveFlag_Language);
+
+	getLanguage();
+}
+
+/**
+ * @note Fabricated name.
+ */
+int System::getLanguage()
+{
+	int lang;
+	switch (SCGetLanguage()) {
+	case SC_LANG_EN: {
+		lang = LANG_USEnglish;
+		break;
+	}
+	case SC_LANG_FR: {
+		lang = LANG_USFrench;
+		break;
+	}
+	case SC_LANG_SP: {
+		lang = LANG_USSpanish;
+		break;
+	}
+	case SC_LANG_IT: {
+		lang = LANG_USEnglish;
+		break;
+	}
+	case SC_LANG_DE: {
+		lang = LANG_USEnglish;
+		break;
+	}
+	case SC_LANG_NL: {
+		lang = LANG_USEnglish;
+		break;
+	}
+	default: {
+		JUT_PANICLINE(1125, "unknown language:%d", SCGetLanguage());
+	}
+	}	
+
+	return lang;
+}
+
+/**
+ * @note Fabricated name. Also unsure if the arg for this should be int, s32, or an enum.
+ */
+void System::setLanguage(int language)
+{
+	mPlayData->setLanguage(language);
+}
+
 /**
  * @note Address: 0x804223E8
  * @note Size: 0x11C
@@ -407,22 +494,24 @@ System::System()
     , mDeltaTime(SINGLE_FRAME_LENGTH)
     , mPlayData(nullptr)
     , mFrameRate(1.0f)
-    , mRegion(System::LANG_English)
 {
 	sys            = this;
 	sUseABXCommand = true;
 	initCurrentHeapMutex();
+
+	mPlayData = new Game::CommonSaveData::Mgr();
+	mPlayData->setDefault();
+	setLanguage();
+	
+
 	JKRHeap* heap = JKRGetCurrentHeap();
-	mSysHeap      = JKRExpHeap::create(0x428000, nullptr, true);
+	mSysHeap      = JKRExpHeap::create(0xc00000, nullptr, true);
 	mSysHeap->becomeCurrentHeap();
 	mHeapStatus = new HeapStatus;
 	construct();
 	heap->becomeCurrentHeap();
 	mGfx = nullptr;
 	JUTVideo::sManager->setPostRetraceCallback(retraceCallback);
-	mFlags.clear();
-	mSysHeap->getTotalFreeSize();
-	mSysHeap->getTotalFreeSize();
 }
 
 /**
@@ -475,7 +564,6 @@ void System::construct()
 	Resource::Mgr2D::init(JKRGetCurrentHeap());
 	heapStatusEnd("ResourceMgr2D");
 
-	mPlayData  = new Game::CommonSaveData::Mgr;
 	mDvdStatus = new DvdStatus;
 	LoadResource::Mgr::init();
 

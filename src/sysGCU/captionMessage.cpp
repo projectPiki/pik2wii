@@ -146,7 +146,7 @@ void TControl::draw(Graphics& gfx)
 {
 	if (mState != 0) {
 		Matrixf mtx;
-		Vector3f pos(0.0f, 290.0f, 0.0f);
+		Vector3f pos(0.0f, 280.0f, 0.0f);
 		mtx.makeT(pos);
 		gfx.mPerspGraph.setPort();
 		P2JME::TControl::draw(mtx.mMatrix.mtxView, gfx.mPerspGraph.mPosMtx);

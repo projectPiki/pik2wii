@@ -6,8 +6,11 @@
 #include "nans.h"
 #include "trig.h"
 
-static const char idk[]  = "\0\0\0\0\0\0\0\0\0";
-static const char name[] = "ebiP2Title";
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "ebiP2Title";
+}
 
 namespace ebi {
 namespace title {
@@ -264,7 +267,7 @@ void TTitleMgr::loadResource()
 		mCoordMgr[COORD_Main].readCoordinate(arc, "logo/coordinate_eng");
 		mCoordMgr[COORD_Sub].readCoordinate(arc, "logo/coordinate_Nintendo");
 	} else {
-		switch (sys->mRegion) {
+		switch (sys->getLanguage()) {
 		case System::LANG_Japanese:
 			if (Game::gGameConfig.mParms.mKFesVersion.mData) {
 				mCoordMgr[COORD_Main].readCoordinate(arc, "logo/coordinate_eng");

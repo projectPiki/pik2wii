@@ -1,11 +1,11 @@
 #ifndef _GAME_MEMORYCARD_MGR_H
 #define _GAME_MEMORYCARD_MGR_H
 
-#include "MemoryCardMgr.h"
+#include "Game/MemoryCard/Player.h"
 #include "JSystem/JKernel/JKRHeap.h"
+#include "MemoryCardMgr.h"
 #include "stream.h"
 #include "types.h"
-#include "Game/MemoryCard/Player.h"
 
 struct Stream;
 
@@ -70,7 +70,8 @@ struct Mgr : public MemoryCardMgr {
 	bool checkError();
 	bool createNewFile();
 	bool saveGameOption();
-	bool loadGameOption();
+	bool loadGameOption(bool loadLanguage);
+	bool commandLoadGameOption(bool loadLanguage);
 	bool savePlayerNoCheckSerialNumber(int);
 	bool savePlayer(int);
 	bool loadPlayer(int);
@@ -86,7 +87,6 @@ struct Mgr : public MemoryCardMgr {
 	bool dataFormat(MemoryCardMgr::ECardSlot);
 	bool varifyCardStatus();
 	bool commandSaveGameOption(bool, bool);
-	bool commandLoadGameOption();
 	void writeGameOption(Stream&);
 	void readGameOption(Stream&);
 	bool checkSerialNo(bool);
@@ -137,6 +137,21 @@ struct Mgr : public MemoryCardMgr {
 	void* mBannerImageFile; // _DC
 	void* mIconImageFile;   // _E0
 	BitFlag<u32> mFlags;    // _E4
+};
+
+// name is a guess, based on the function in pikmin2MemoryCardMgr that uses it
+struct MgrCommandLoadGameOption : public MemoryCardMgrCommandBase {
+	MgrCommandLoadGameOption(int flags, bool loadLanguage)
+	    : MemoryCardMgrCommandBase(flags)
+	    , mLoadLanguage(loadLanguage)
+	{
+	}
+
+	virtual u32 getClassSize() { return sizeof(MgrCommandLoadGameOption); } // _08 (weak)
+
+	// _04     = VTBL
+	// _00-_08 = MemoryCardMgrCommandBase
+	bool mLoadLanguage; // _08
 };
 
 struct MgrCommandCopyPlayer : public MemoryCardMgrCommandBase {

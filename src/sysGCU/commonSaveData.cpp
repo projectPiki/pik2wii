@@ -32,7 +32,7 @@ void Mgr::setDefault()
 	mIsRumble      = WPADIsMotorEnabled();
 	mIsRubyFont    = true;
 	mUseDeflicker  = true;
-	mRegion        = (u8)sys->mRegion;
+	mLanguage        = (u8)sys->getLanguage();
 	mSaveCount     = 0;
 	mTime          = 0;
 	mFileIndex     = -1;
@@ -76,7 +76,7 @@ void Mgr::write(Stream& output)
 	output.writeByte(mIsRumble);
 	output.writeByte(mIsRubyFont);
 	output.writeByte(mUseDeflicker);
-	output.writeByte(mRegion);
+	output.writeByte(mLanguage);
 	PlayCommonData::write(output);
 }
 
@@ -93,7 +93,7 @@ void Mgr::read(Stream& input)
 	mIsRumble     = input.readByte();
 	mIsRubyFont   = input.readByte();
 	mUseDeflicker = input.readByte();
-	mRegion       = input.readByte();
+	setLanguage(input.readByte());
 	mIsRumble     = WPADIsMotorEnabled();
 	PlayCommonData::read(input);
 }
@@ -254,6 +254,24 @@ void Mgr::setSeVolume(f32 volume)
 
 	OSEnableScheduler();
 	OSRestoreInterrupts(temp);
+}
+
+/**
+ * @note Fabricated name. Guess based on the setDeflicker pair further up.
+ */
+void Mgr::setLanguage()
+{
+	setLanguage(mLanguage);
+}
+
+/**
+ * @note Fabricated name. Guess based on the setDeflicker pair further up.
+ */
+void Mgr::setLanguage(int language)
+{
+	if (mFlags.isSet(SaveFlag_Language)) {
+		mLanguage = language;
+	}
 }
 
 } // namespace CommonSaveData

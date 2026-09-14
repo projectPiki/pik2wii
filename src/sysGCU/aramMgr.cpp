@@ -88,7 +88,7 @@ void Mgr::init() { new Mgr(); }
  * @note Size: 0x80
  */
 Mgr::Mgr()
-    : mRootNode("root")
+    : mResourceList("root")
 {
 	P2ASSERTLINE(264, gAramMgr == nullptr);
 	gAramMgr = this;
@@ -115,12 +115,12 @@ u32 Mgr::dvdToAram(char const* name, bool forceAddNode)
 
 		if (forceAddNode) {
 			newNode->dvdToAram(newName, forceAddNode);
-			mRootNode.add(newNode);
+			mResourceList.add(newNode);
 		} else {
 			success = newNode->dvdToAram(newName, false);
 
 			if (success) {
-				mRootNode.add(newNode);
+				mResourceList.add(newNode);
 			} else {
 				delete newName;
 				delete newNode;
@@ -165,7 +165,7 @@ void ARAM::Mgr::dump()
 	u32 max = 0xFFFFFFFF;
 	u32 min = 0;
 	JKRAramBlock* status;
-	FOREACH_NODE(Node, mRootNode.mChild, node)
+	FOREACH_NODE(Node, mResourceList.mChild, node)
 	{
 		status   = node->mMemoryBlock;
 		u32 size = (status) ? status->mSize : 0;
@@ -184,7 +184,7 @@ void ARAM::Mgr::dump()
 Node* ARAM::Mgr::search(char const* str)
 {
 	Node* result = nullptr;
-	CNode* node  = mRootNode.mChild;
+	CNode* node  = mResourceList.mChild;
 	while (node) {
 		if (strcmp(str, node->mName) == 0) {
 			result = static_cast<Node*>(node);

@@ -1463,6 +1463,10 @@ void Obj::calcBaseTrMatrix()
 			isMoving = 0.0f;
 		}
 
+		if (isEvent(0, EB_Bittered)) {
+			isMoving = 0.0f;
+		}
+
 		mPosition.y += mClimbingAccel * (isMoving * C_PARMS->_91C);
 
 	} else {

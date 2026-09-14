@@ -1,10 +1,10 @@
 #ifndef _SYSTEM_H
 #define _SYSTEM_H
 
-#include "JSystem/JGeometry.h"
-#include "DvdThreadCommand.h"
-#include "SysTimers.h"
 #include "BitFlag.h"
+#include "DvdThreadCommand.h"
+#include "JSystem/JGeometry.h"
+#include "SysTimers.h"
 #include "node.h"
 #include "nw4r/ut/ut_CharStrmReader.h"
 
@@ -87,13 +87,16 @@ struct System : public OSMutex {
 	 * @brief Enumeration representing different language IDs.
 	 */
 	enum LanguageID {
-		LANG_English = 0,
-		LANG_French,
+		LANG_EUEnglish = 0,
+		LANG_EUFrench,
 		LANG_German,
 		LANG_Unused, // Hol?
 		LANG_Italian,
 		LANG_Japanese,
-		LANG_Spanish,
+		LANG_EUSpanish,
+		LANG_USEnglish,
+		LANG_USFrench,
+		LANG_USSpanish,
 	};
 
 	enum Flags {
@@ -118,6 +121,10 @@ struct System : public OSMutex {
 
 	System();
 	~System();
+
+	int getLanguage();
+	void setLanguage();
+	void setLanguage(int language);
 
 	static _GXRenderModeObj* getRenderModeObj();
 	static int getRenderModeWidth() { return getRenderModeObj()->fbWidth; }
@@ -239,9 +246,8 @@ struct System : public OSMutex {
 	Game::CommonSaveData::Mgr* mPlayData; // _60
 	f32 mFrameRate;                       // _64
 	DvdThreadCommand mThreadCommand;      // _68
-	LanguageID mRegion;                   // _D4
-	BitFlag<u32> mFlags;                  // _D8
-	struct JUTRomFont* mRomFont;          // _DC
+	static BitFlag<u32> mFlags;           // _D4
+	struct JUTRomFont* mRomFont;          // _D8
 };
 
 extern System* sys;

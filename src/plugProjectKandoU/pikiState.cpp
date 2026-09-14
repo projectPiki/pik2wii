@@ -2562,7 +2562,7 @@ void PikiFallMeckState::platCallback(Piki* piki, PlatEvent& platEvent)
 bool PikiFallMeckState::becomePikihead(Piki* piki)
 {
 	bool check;
-	if (GameStat::mePikis >= 99) {
+	if (GameStat::mePikis >= 99 - GameStat::zikatuPikis) {
 		return false;
 	} else {
 		PikiMgr::mBirthMode        = PikiMgr::PSM_Force;

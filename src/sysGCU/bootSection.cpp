@@ -500,14 +500,6 @@ void BootSection::loadBootResource()
 	P2ASSERTLINE(1034, file);
 	mDolbyMarkTexture = new JUTTexture(file);
 
-	file = JKRGetImageResource("/data/timg/warning.bti");
-	P2ASSERTLINE(1039, file);
-	mWarningTexture = new JUTTexture(file);
-
-	file = JKRGetImageResource("/data/timg/warning_pstart.bti");
-	P2ASSERTLINE(1042, file);
-	mWarningPressStartTexture = new JUTTexture(file);
-
 	// the iterator in here is causing a regswap
 	sTinyPikminMgr->loadResource(arc);
 }
@@ -579,7 +571,7 @@ void BootSection::doDraw(Graphics& gfx)
 	case SID_LoadMemoryCard:
 	case SID_InitNintendoLogo:
 	case SID_FadeInNintendoLogo:
-		drawEpilepsy(gfx); // drawNintendoLogo in USA Demo 1
+		drawNintendoLogo(gfx);
 		break;
 	case SID_NintendoLogo:
 		drawNintendoLogo(gfx);
@@ -650,7 +642,7 @@ void BootSection::drawNintendoLogo(Graphics& gfx)
 
 	J2DPicture pic(mNintendoLogoTexture);
 	JUtility::TColor color;
-	if (sys->mRegion == System::LANG_Japanese) {
+	if (sys->getLanguage() == System::LANG_Japanese) {
 		color.set(NINTENDOLOGO_COLOR_JP);
 	} else {
 		color.set(NINTENDOLOGO_COLOR_US);
@@ -862,19 +854,9 @@ void BootSection::updateLoadResourceFirst()
 {
 	sys->mCardMgr->update();
 	if (!sys->dvdLoadSyncAllNoBlock()) {
-		if (Game::gGameConfig.mParms.mNintendoVersion.mData) {
-			sys->mPlayData->mIsRumble = false;
-		} else if (!Game::gGameConfig.mParms.mE3version.mData) {
-			sys->mCardMgr->loadGameOption();
+		if (!Game::gGameConfig.mParms.mE3version.mData) {
+			sys->mCardMgr->loadGameOption(true);
 		}
-		// THIS IS ALL FOR DEMO 1
-#if BUILDTARGET == USADEMO1
-		PSSystem::SceneMgr* mgr = PSSystem::getSceneMgr();
-		PSSystem::validateSceneMgr(mgr);
-		PSM::Scene_Global* scene = static_cast<PSM::Scene_Global*>(mgr->mScenes);
-		P2ASSERTLINE(1723, scene);
-		scene->startGlobalStream(P2_STREAM_SOUND_ID(PSSTR_PIKMIN_GREET));
-#endif
 		setMode(SID_LoadMemoryCard);
 	}
 }

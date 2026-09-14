@@ -3,7 +3,9 @@
 #include "Game/MemoryCard/Mgr.h"
 #include "Game/THPPlayer.h"
 #include "GameFlow.h"
+#include "JSystem/J2D/J2DPrint.h"
 #include "JSystem/JFramework/JFWDisplay.h"
+#include "JSystem/JFramework/JFWSystem.h"
 #include "JSystem/JUtility/JUTProcBar.h"
 #include "Morimura/HiScore.h"
 #include "PSM/ObjMgr.h"
@@ -22,12 +24,27 @@
 #include "og/newScreen/ogUtil.h"
 #include "og/ogLib2D.h"
 
-static const u32 padding[]    = { 0, 0, 0 };
-static const char className[] = "titleSection";
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "titleSection";
+}
 
 namespace {
-static u8 sMovieIndex[7] = { 0, 2, 4, 1, 3, 11, 11 };
-static s8 sSeasonIndex   = 255;
+static u8 sMovieIndex[7]         = { 0, 2, 4, 1, 3, 11, 11 };
+static s8 sSeasonIndex           = 255;
+static u16 sBuildInfoButtons[11] = { Controller::PRESS_A,
+	                                 Controller::PRESS_B,
+	                                 Controller::PRESS_X,
+	                                 Controller::PRESS_R,
+	                                 Controller::PRESS_L,
+	                                 Controller::PRESS_DPAD_LEFT,
+	                                 Controller::PRESS_DPAD_DOWN,
+	                                 Controller::PRESS_DPAD_UP,
+	                                 Controller::PRESS_DPAD_RIGHT,
+	                                 Controller::PRESS_Z,
+	                                 0 };
+
 } // namespace
 
 namespace Title {
@@ -42,11 +59,14 @@ Section::Section(JKRHeap* heap)
     , mGoToDemoTimer(0.0f)
     , mButtonCallback(nullptr)
 {
-	mMovieIndex     = -1;
-	mButtonCallback = new Delegate<Section>(this, &loadResident);
+	mMovieIndex            = -1;
+	mButtonCallback        = new Delegate<Section>(this, &loadResident);
+	mReloadMessageCallback = new Delegate<Section>(this, &reloadMessageResource);
 	og::Lib2D::create();
 	gPikmin2AramMgr->setLoadPermission(true);
 	mDoCheckShortCut = false;
+	mDebugKeyIndex   = 0;
+	mShowBuildInfo   = false;
 }
 
 /**
@@ -69,8 +89,16 @@ void Section::doExit()
 	mgr->deleteCurrentScene();
 	mThpPlayer->stop();
 	if (!Screen::gGame2DMgr->mScreenMgr->reset()) {
-		JUT_PANICLINE(527, "game2DMgr::reset error\n");
+		JUT_PANICLINE(600, "game2DMgr::reset error\n");
 	}
+}
+
+/**
+ * @note Fabricated name. Could be reloadMessage or loadMessageResource or something.
+ */
+void Section::reloadMessageResource()
+{
+	gP2JMEMgr->reloadMessageResource();
 }
 
 /**
@@ -85,13 +113,13 @@ void Section::loadResident()
 		sys->mSysHeap->becomeCurrentHeap();
 		sys->heapStatusStart("titleSection::loadResident", nullptr);
 
-		char* path      = "/user/Kando/piki/pikis.szs";
+		char* path      = "user/Kando/piki/pikis.szs";
 		JKRArchive* arc = JKRMountArchive(path, JKRArchive::EMM_Mem, nullptr, JKRArchive::EMD_Head);
-		JUT_ASSERTLINE(582, arc, "%s : mount failed !!\n", path);
+		JUT_ASSERTLINE(654, arc, "%s : mount failed !!\n", path);
 
 		path = "user/Kando/onyon/arc.szs";
 		arc  = JKRMountArchive(path, JKRArchive::EMM_Mem, nullptr, JKRArchive::EMD_Head);
-		JUT_ASSERTLINE(590, arc, "%s : mount failed !!\n", path);
+		JUT_ASSERTLINE(662, arc, "%s : mount failed !!\n", path);
 
 		sys->heapStatusEnd("titleSection::loadResident");
 		sys->setFlag(System::SF_LoadResident);
@@ -207,7 +235,7 @@ void Section::doDraw(Graphics& gfx)
 		}
 		mOmakeMgr.draw();
 		break;
-	case 5:
+	case State_ReloadMessages:
 		break;
 	case State_HiScore:
 		Screen::gGame2DMgr->draw(gfx);
@@ -217,6 +245,14 @@ void Section::doDraw(Graphics& gfx)
 	gfx.mPerspGraph.setPort();
 	particle2dMgr->draw(1, 0);
 	particle2dMgr->draw(0, 0);
+	if (mShowBuildInfo) {
+		gfx.mOrthoGraph.setPort();
+		J2DPrint print(JFWSystem::systemFont, 0.0f);
+		print.initiate();
+		print.mGlyphWidth  = 16.0f;
+		print.mGlyphHeight = 16.0f;
+		print.print(32.0f, 370.0f, "%s %s \n", "0517", _2F4C);
+	}
 }
 
 /**
@@ -225,7 +261,13 @@ void Section::doDraw(Graphics& gfx)
  */
 void Section::drawShortCuts(Graphics& gfx)
 {
-	// UNUSED FUNCTION
+	// string pooling
+	OSReport(" U  P");
+	OSReport(" DOWN");
+	OSReport(" LEFT");
+	OSReport("RIGHT");
+	OSReport("NONE");
+	OSReport("%s:%s");
 }
 
 /**
@@ -295,6 +337,7 @@ void Section::doUpdateMainTitle()
 	if (mController1->getButtonDown() & Controller::PRESS_Y) {
 		OSReport("code size           %dKB\n", ((int)JKRHeap::getCodeEnd() - (int)JKRHeap::getCodeStart()) / 1024);
 		OSReport("GameSystemHeap Free %dKB\n", (int)sys->mSysHeap->getTotalFreeSize() / 1024);
+		OSReport("SystemHeap free     %dKB\n", (int)JKRHeap::sSystemHeap->getTotalFreeSize() >> 10);
 	}
 
 	PSSystem::SceneMgr* mgr;
@@ -332,7 +375,7 @@ void Section::doUpdateMainTitle()
 			mgr->checkScene();
 			seq = PSSystem::getSeqData(mgr, BGM_Options);
 			seq->startSeq();
-			mLanguageID = sys->mPlayData->mRegion;
+			mLanguageID = sys->mPlayData->mLanguage;
 			break;
 		case ebi::TMainTitleMgr::Select_HiScore:
 			if (isFinishable()) {
@@ -386,12 +429,10 @@ void Section::doUpdateHiScore()
 {
 	Screen::gGame2DMgr->update();
 	if (Screen::gGame2DMgr->isEndHighScore()) {
-
 		PSSystem::SeqBase* seq = PSSystemGetSeqCheck(BGM_HiScore);
 		seq->stopSeq(0);
 		mState = State_MainTitle;
-		int idk;
-		mMainTitleMgr.startMenuSet(idk, ebi::TMainTitleMgr::Select_HiScore);
+		mMainTitleMgr.startMenuSet(0, ebi::TMainTitleMgr::Select_HiScore);
 		PSSystemGetSeqCheck(BGM_MainTheme)->startSeq();
 		Screen::gGame2DMgr->mScreenMgr->reset();
 	}
@@ -430,7 +471,7 @@ void Section::doUpdateOmake()
 			}
 			mThpPlayer->load((Game::THPPlayer::EMovieIndex)mMovieIndex);
 			mThpPlayer->pause();
-		} else if (mThpPlayer->isFinishLoading()) {
+		} else if (isFinishable() && mThpPlayer->isFinishLoading()) {
 			mThpPlayer->play();
 		}
 		mThpPlayer->update();
@@ -470,7 +511,14 @@ void Section::doUpdateOmake()
  */
 void Section::doUpdateOption()
 {
+	if (!isFinishable()) {
+		return;
+	}
+
 	mOptionMgr.update();
+	if (mOptionMgr.getStateID() != 1) {
+		sys->mPlayData->mFlags.set(Game::CommonSaveData::Mgr::SaveFlag_Language);
+	}
 	if (mOptionMgr.mIsFinished) {
 
 		PSSystem::SeqBase* seq = PSSystemGetSeqCheck(BGM_Options);
@@ -479,9 +527,9 @@ void Section::doUpdateOption()
 		seq->stopSeq((int)rate);
 	}
 	if (mOptionMgr.isFinish()) {
+		sys->mPlayData->mFlags.unset(Game::CommonSaveData::Mgr::SaveFlag_Language);
 		mState = State_MainTitle;
-		int idk;
-		mMainTitleMgr.startMenuSet(idk, ebi::TMainTitleMgr::Select_Options);
+		mMainTitleMgr.startMenuSet(0, ebi::TMainTitleMgr::Select_Options);
 		PSSystemGetSeqCheck(BGM_MainTheme)->startSeq();
 	}
 }
@@ -492,8 +540,9 @@ void Section::doUpdateOption()
  */
 void Section::run()
 {
+	sys->getLanguage();
 	if (!Game::gGameConfig.mParms.mNintendoVersion.mData && !Game::gGameConfig.mParms.mE3version.mData) {
-		sys->mCardMgr->loadGameOption();
+		sys->mCardMgr->loadGameOption(false);
 	}
 
 	bool dorun = true;
@@ -530,9 +579,7 @@ bool Section::doUpdate()
 		doUpdateMainTitle();
 		break;
 	case State_Options:
-		if (isFinishable()) {
-			doUpdateOption();
-		}
+		doUpdateOption();
 		break;
 	case State_Bonus:
 		doUpdateOmake();
@@ -540,18 +587,26 @@ bool Section::doUpdate()
 	case State_HiScore:
 		doUpdateHiScore();
 		break;
-	case 5:
+	case State_ReloadMessages:
 		if (sys->dvdLoadSyncNoBlock(&mThreadCommand)) {
-			mState = State_MainTitle;
-			int idk;
-			mMainTitleMgr.startMenuSet(idk, ebi::TMainTitleMgr::Select_Options);
-			PSSystemGetSeqCheck(BGM_MainTheme)->startSeq();
+			mIsMainActive                = false;
+			GameFlow::mActiveSectionFlag = GameFlow::SN_MainTitle;
 		}
 		break;
 	}
 
 	BaseHIOSection::doUpdate();
 	particle2dMgr->update();
+	// ??
+	if (mController2->isButtonDown(Controller::PRESS_ANY)) {
+		if (mController2->isButtonDown(sBuildInfoButtons[mDebugKeyIndex])) {
+			if (++mDebugKeyIndex == 10) {
+				mShowBuildInfo ^= 1;
+			}
+		} else {
+			mDebugKeyIndex = 0;
+		}
+	}
 	return mIsMainActive;
 }
 
@@ -685,7 +740,7 @@ void Section::loadResource()
 	og::newScreen::makeLanguageResName(buf, name);
 
 	mHiScoreTex = JKRMountArchive(buf, JKRArchive::EMM_Mem, nullptr, JKRArchive::EMD_Head);
-	JUT_ASSERTLINE(1700, mHiScoreTex, "arcName = %s\n", buf);
+	JUT_ASSERTLINE(1864, mHiScoreTex, "arcName = %s\n", buf);
 	sys->heapStatusEnd("hiscoreTexture");
 
 	sys->heapStatusStart("omakeMgr", nullptr);
@@ -724,8 +779,8 @@ void TitleDummy::Section::init()
 void TitleDummy::Section::loadResource()
 {
 	sys->heapStatusStart("TitleDummySection::loadResource", nullptr);
-	static const char* test  = "/user/Yamashita/testResource/tex";
-	static const char* test2 = "titlelogo.bti";
+	OSReport("user/Yamashita/testResource/tex");
+	OSReport("/titlelogo.bti");
 	sys->heapStatusEnd("TitleDummySection::loadResource");
 	// UNUSED FUNCTION
 }

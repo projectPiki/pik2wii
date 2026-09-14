@@ -264,8 +264,7 @@ void TRenderingProcessor::newParagraph()
 		setPageInfo();
 		setOnePageLine();
 		mParagraphNum = 0;
-		mPageInfoNum++;
-		checkPageInfoNum();
+		incPageInfoNum();
 		mFlags.unset(TProcFlag_PageFinished);
 	}
 	setDrawLocate();
@@ -2093,6 +2092,17 @@ mtlr     r0
 addi     r1, r1, 0x90
 blr
 */
+}
+
+/**
+ * @note Fabricated name. Could be incrementPageInfoNum or something.
+ */
+void TRenderingProcessor::incPageInfoNum()
+{
+	mPageInfoNum++;
+	if (mPageInfoNum >= 10) {
+		JUT_PANICLINE(1771, "%d/%d", mPageInfoNum, 10);
+	}
 }
 
 } // namespace P2JME

@@ -1,9 +1,9 @@
 #ifndef _ARAM_H
 #define _ARAM_H
 
-#include "JSystem/JKernel/JKRDvdRipper.h"
-#include "JSystem/JKernel/JKRAram.h"
 #include "CNode.h"
+#include "JSystem/JKernel/JKRAram.h"
+#include "JSystem/JKernel/JKRDvdRipper.h"
 #include "types.h"
 
 namespace ARAM {
@@ -120,7 +120,8 @@ struct Mgr {
 	 */
 	Node* search(char const* name);
 
-	CNode mRootNode; // _00
+	CNode mResourceList;   // _00
+	JKRExpHeap* mNodeHeap; // _18
 };
 }; // namespace ARAM
 extern ARAM::Mgr* gAramMgr;

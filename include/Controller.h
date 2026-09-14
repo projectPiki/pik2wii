@@ -52,6 +52,8 @@ struct Controller {
 		PRESS_ABX     = (PRESS_A | PRESS_B | PRESS_X),
 		PRESS_ABXY    = (PRESS_A | PRESS_B | PRESS_X | PRESS_Y),
 		PRESS_ABXYLRZ = (PRESS_A | PRESS_B | PRESS_X | PRESS_Y | PRESS_L | PRESS_R | PRESS_Z),
+
+		PRESS_ANY = 0xFFFFFFFF,
 	};
 	
 	bool isButtonDown(u32 buttons);

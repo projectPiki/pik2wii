@@ -672,6 +672,7 @@ bool ObjDayEndResultItem::doUpdateFadeout()
  */
 void ObjDayEndResultItem::doDraw(Graphics& gfx)
 {
+	mHasDrawn = true;
 	ObjDayEndResultBase::doDraw(gfx);
 	gfx.mOrthoGraph.setPort();
 
@@ -738,7 +739,9 @@ void ObjDayEndResultItem::doDraw(Graphics& gfx)
 			}
 			mTreasurePokoCount[isOdd] = pokos;
 			mTreasurePokoCounter[isOdd]->update();
-			mScreenMain->draw(gfx, gfx.mOrthoGraph);
+			if (mGXScissorBottomY) {
+				mScreenMain->draw(gfx, gfx.mOrthoGraph);
+			}
 		}
 		i++;
 	}
@@ -934,10 +937,12 @@ void ObjDayEndResultItem::updateCommon()
 	JGeometry::TVec3f topLeft    = mScreenMain->search('Nmask')->getGlbVtx(GLBVTX_BtmLeft);
 	JGeometry::TVec3f centerLeft = mScreenMain->search('Nmask')->getGlbVtx(GLBVTX_TopRight);
 
-	// this is so dumb. SO DUMB.
-	f32 yTop;
-	mGXScissorTopY    = 0.5f + (yTop = topLeft.y);
-	mGXScissorBottomY = centerLeft.y - yTop;
+	if (mHasDrawn) {
+		mGXScissorTopY    = 0.5f + topLeft.y;
+		mGXScissorBottomY = centerLeft.y - topLeft.y;
+	} else {
+		mGXScissorTopY = mGXScissorBottomY = 0;
+	}
 
 	mScreenMain->animation();
 
@@ -1603,6 +1608,32 @@ void ObjDayEndResultIncP::updateCommon()
 	for (int i = 0; i < 6; i++) {
 		mScreenMain->search(arrow[i])->setAngle(mArrowAngles[i]);
 	}
+}
+
+ObjDayEndResultMail::ObjDayEndResultMail()
+{
+	mStatus              = MAILSTATUS_WaitOpen;
+	mScreenCharacter     = nullptr;
+	mCharacterAnimTrans  = nullptr;
+	mSaveMgr             = nullptr;
+	mScreenMain          = nullptr;
+	mMainAnimTrans4      = nullptr;
+	mMainAnimTrans3      = nullptr;
+	mSideMoveTimer       = 0.0f;
+	mDayCounter          = nullptr;
+	mCurrentDay          = 1;
+	mMaxDay              = 1;
+	mIconArchive         = nullptr;
+	mMailIconAnms        = nullptr;
+	mCharacterIconTimer  = 0;
+	mFadePaneArrowR      = nullptr;
+	mFadePaneArrowL      = nullptr;
+	mMessage             = nullptr;
+	mCharacterIconScaleY = 0.0f;
+	mCharacterIconScaleX = 0.0f;
+	mOpenWTimer          = msVal._40;
+	mOpenHTimer          = 0.0f;
+	mAlpha               = 0;
 }
 
 /**

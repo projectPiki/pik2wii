@@ -20,11 +20,13 @@
 #include "nans.h"
 #include "types.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "interactPiki";
+}
+
 namespace Game {
-
-static const int unusedInteractPikiArray[] = { 0, 0, 0 };
-
-static const char interactPikiName[] = "interactPiki";
 
 /**
  * @note Address: 0x80192C84
@@ -381,7 +383,7 @@ bool InteractBury::actPiki(Game::Piki* piki)
 	if (piki->mCurrentState->invincible(piki)) {
 		return false;
 	}
-	if (GameStat::mePikis >= 99) {
+	if (GameStat::mePikis >= 99 - GameStat::zikatuPikis) {
 		return false;
 	}
 
