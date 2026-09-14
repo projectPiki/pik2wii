@@ -447,6 +447,7 @@ struct Obj : public MiniHoudai::Obj {
 	{
 		return EnemyTypeID::EnemyID_FminiHoudai;
 	}
+	virtual void setZukanVisible(bool updateTekiDeathInfo); // _2C0
 
 	// _00		= VTBL
 	// _00-_308	= MiniHoudai::Obj

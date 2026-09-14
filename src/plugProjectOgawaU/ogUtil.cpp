@@ -1,5 +1,5 @@
-#include "Game/MoviePlayer.h"
 #include "og/newScreen/ogUtil.h"
+#include "Game/MoviePlayer.h"
 #include "nans.h"
 
 namespace og {
@@ -9,7 +9,10 @@ namespace newScreen {
  * @note Address: 0x80317F28
  * @note Size: 0x24
  */
-bool checkMovieActive() { return ((Game::moviePlayer != nullptr) && (Game::moviePlayer->isFlag(Game::MVP_IsActive))); }
+bool checkMovieActive()
+{
+	return ((Game::moviePlayer != nullptr) && (Game::moviePlayer->isFlag(Game::MVP_IsActive)));
+}
 
 /**
  * @note Address: N/A
@@ -25,37 +28,47 @@ void drawObjName(Graphics&, char*)
  * @note Size: 0x84
  * Tells the game which resource folder path to use, based on system language.
  */
-void getLanguageDir(char*& path)
+void getLanguageDir(char* path)
 {
-	// UNUSED FUNCTION
+	char* langDir = nullptr;
 	if (LOCALIZED) {
-		switch (sys->mRegion) {
-		case System::LANG_English:
-			path = "eng/";
+		switch (sys->getLanguage()) {
+		case System::LANG_EUEnglish:
+			langDir = "engEU/";
 			break;
-		case System::LANG_French:
-			path = "fra/";
+		case System::LANG_EUFrench:
+			langDir = "fraEU/";
 			break;
 		case System::LANG_German:
-			path = "ger/";
+			langDir = "gerEU/";
 			break;
 		case System::LANG_Italian:
-			path = "ita/";
+			langDir = "itaEU/";
 			break;
 		case System::LANG_Japanese:
-			path = "jpn/";
+			langDir = "jpn/";
 			break;
-		case System::LANG_Spanish:
-			path = "spa/";
+		case System::LANG_EUSpanish:
+			langDir = "spaEU/";
+			break;
+		case System::LANG_USEnglish:
+			langDir = "engUS/";
+			break;
+		case System::LANG_USFrench:
+			langDir = "fraUS/";
+			break;
+		case System::LANG_USSpanish:
+			langDir = "spaUS/";
 			break;
 		case System::LANG_Unused:
 		default:
-			path = "";
+			langDir = "";
 			break;
 		}
 	} else {
-		path = "";
+		langDir = "";
 	}
+	sprintf(path, "%s", langDir);
 }
 
 /**
@@ -64,7 +77,6 @@ void getLanguageDir(char*& path)
  */
 void makeLanguageResName(char* languageResName, char const* path)
 {
-	char* langDir = nullptr;
 	char langDirBuffer[16];
 
 	if (*path == '/') {
@@ -72,8 +84,7 @@ void makeLanguageResName(char* languageResName, char const* path)
 		return;
 	}
 
-	getLanguageDir(langDir);
-	sprintf(langDirBuffer, "%s", langDir);
+	getLanguageDir(langDirBuffer);
 	sprintf(languageResName, "/new_screen/%s%s", langDirBuffer, path);
 }
 } // namespace newScreen

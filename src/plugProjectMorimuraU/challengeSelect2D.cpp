@@ -2364,12 +2364,12 @@ void TChallengeSelect::doCreate(JKRArchive* arc)
 		}
 	}
 
-	mSelected1p = true;
-	if (JUTGamePad::mPadStatus[1].err != -1) {
-		mConnect2p = true;
-	} else {
+	if (!EGG_INSTANCE(EGG::CoreControllerMgr)->getNthController(1)->isConnected()) {
 		mConnect2p = false;
+	} else {
+		mConnect2p = true;
 	}
+	mSelected1p = true;
 
 	if (mDisp->mPlayType == 1) {
 		mSelected1p = false;
@@ -2640,7 +2640,16 @@ bool TChallengeSelect::doUpdate()
 	}
 
 	// update the state of the level name when it moves
-	if (_136) {
+	if (mDisp && mDisp->mStatus == Screen::Game2DMgr::CHECK2D_ChallengeSelect_InDemo) {
+		mLevelNameMoveTimer += 0.25f;
+		if (mLevelNameMoveState > 1) {
+			mLevelNameMoveTimer += 0.15f;
+		}
+		if (mLevelNameMoveTimer > 1.0f) {
+			mLevelNameMoveTimer = 1.0f;
+			mLevelNameMoveState = -1;
+		}
+	} else if (_136) {
 		mLevelNameMoveTimer *= 0.65f;
 		if (mLevelNameMoveTimer < 0.2f) {
 			_136 = false;
@@ -2688,10 +2697,10 @@ bool TChallengeSelect::doUpdate()
 			YGoal = -1.3f;
 			break;
 		case 2:
-			XGoal = 1.25f;
+			XGoal = 1.4f;
 			break;
 		case 3:
-			XGoal = -1.25f;
+			XGoal = -1.4f;
 			break;
 		}
 		mPaneLevelName[i]->addOffset(calc * XGoal * mPaneLevelName[i]->getWidth(), calc * YGoal * mPaneLevelName[i]->getHeight());

@@ -2,8 +2,8 @@
 #define _GAME_PLAYCOMMONDATA_H
 
 #include "BitFlag.h"
-#include "types.h"
 #include "Game/Highscore.h"
+#include "types.h"
 
 #pragma enumsalwaysint off
 
@@ -126,7 +126,7 @@ namespace CommonSaveData {
 // Size: 0x48
 struct Mgr : public PlayCommonData {
 
-	enum Flags { SaveFlag_SerialNoSet = 1 };
+	enum Flags { SaveFlag_SerialNoSet = 1, SaveFlag_Language = 2 };
 
 	enum SoundMode { SM_Mono = 0, SM_Stereo = 1, SM_SurroundSound = 2 };
 	Mgr();
@@ -149,6 +149,9 @@ struct Mgr : public PlayCommonData {
 	void setDeflicker();
 	void setDeflicker(bool);
 
+	void setLanguage();
+	void setLanguage(int language);
+
 	int mSaveCount;      // _18, how many times the game has been saved, doesn't seem to have a purpose
 	u32 mTime;           // _1C
 	char mFileIndex;     // _20
@@ -164,7 +167,7 @@ struct Mgr : public PlayCommonData {
 	u8 mIsRumble;        // _3B
 	u8 mIsRubyFont;      // _3C, japanese version leftover, mini font in cutscenes
 	u8 mUseDeflicker;    // _3D
-	u8 mRegion;          // _3E
+	u8 mLanguage;        // _3E
 	char _3F;            // _3F
 	BitFlag<u16> mFlags; // _40
 	bool mDoSaveOptions; // _42

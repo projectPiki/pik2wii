@@ -229,8 +229,8 @@ DopingCheck::DopingCheck()
 	mNaviLifeRatio    = 1.0f;
 	mFollowPiki       = 1;
 	mNextThrowPiki    = 2;
-	mSpicySprayCount  = 10;
-	mBitterSprayCount = 10;
+	mSpicySprayCount  = -1;
+	mBitterSprayCount = -1;
 	mActiveNaviID     = 1;
 
 	// Inlined init?
@@ -277,6 +277,13 @@ void DopingCheck::update()
 		mIsUpdateCount  = false;
 		mOldSpicyCount  = newSpicyCount;
 		mOldBitterCount = newBitterCount;
+		return;
+	}
+
+	if (newSpicyCount == 0xFFFFFFFF) {
+		return;
+	}
+	if (newBitterCount == 0xFFFFFFFF) {
 		return;
 	}
 

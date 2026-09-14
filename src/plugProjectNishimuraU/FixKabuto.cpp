@@ -1,5 +1,6 @@
 #include "types.h"
 #include "Game/Entities/Kabuto.h"
+#include "Game/gamePlayData.h"
 
 namespace Game {
 namespace FixKabuto {
@@ -41,6 +42,25 @@ void Obj::changeMaterial()
 		j3dSys.setMatPacket(packet);
 		J3DMaterial* material = modelData->getMaterialNodePointer(i);
 		material->diff(packet->getShapePacket()->mDiffFlag);
+	}
+}
+
+void Obj::setZukanVisible(bool updateTekiDeathInfo)
+{
+	if (!mInPiklopedia) {
+		return;
+	}
+	if (gameSystem->isFlag(GAMESYS_DisableDeathCounter)) {
+		return;
+	}
+	if (EnemyInfoFunc::getEnemyInfo(EnemyTypeID::EnemyID_Kabuto, 0xFFFF)->mFlags & EFlag_HasNoInfo) {
+		return;
+	}
+	TekiStat::Info* info = playData->mTekiStatMgr.getTekiInfo(EnemyTypeID::EnemyID_Kabuto);
+	if (updateTekiDeathInfo) {
+		info->incKilled();
+	} else {
+		info->mState.set(TEKISTAT_STATE_UPDATED);
 	}
 }
 

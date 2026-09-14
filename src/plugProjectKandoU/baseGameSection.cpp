@@ -2016,14 +2016,13 @@ void BaseGameSection::setupFixMemory_dvdload()
 
 	TParticle2dMgr::globalInstance();
 	particle2dMgr->createHeap(256000);
-	particle2dMgr->createMgr("user/Ebisawa/effect/eff2d_game2d.jpc", 0x1d4, 0x28, 0x80);
+	particle2dMgr->createMgr("user/Ebisawa/effect/eff2d_game2d.jpc", 0x1A0, 0x42, 0x80);
 	addGenNode(particle2dMgr);
 
 	particleMgr->beginEntryModelEffect();
 	efx::OnyonSpotData* spot = new efx::OnyonSpotData;
 	spot->entry();
 	particleMgr->endEntryModelEffect();
-	// Instance_TPkEffectMgr isn't static, checked particleMgr.o
 	particleMgr->Instance_TPkEffectMgr();
 
 	sys->heapStatusEnd("particle");

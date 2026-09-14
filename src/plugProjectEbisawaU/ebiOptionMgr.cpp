@@ -232,7 +232,7 @@ void FSMState_LoadOption::do_exec(TMgr* mgr)
 			transit(mgr, ScreenOpen, 0);
 		} else {
 			if (sys->mCardMgr->isCardInvalid()) {
-				bool check = sys->mCardMgr->loadGameOption();
+				bool check = sys->mCardMgr->loadGameOption(false);
 				if (check) {
 					mStatus = 1;
 				} else {

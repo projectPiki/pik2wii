@@ -4703,20 +4703,23 @@ void BasePelletMgr::load()
 	char* file = nullptr;
 
 	if (gGameConfig.mParms.mPelletMultiLang.mData != 0) {
-		switch (sys->mRegion) {
+		switch (sys->getLanguage()) {
 		case System::LANG_Japanese:
 			sprintf(buffer, "/pikmin2/user/Abe/Pellet/%s/", "jpn");
 			file = buffer;
 			break;
-		case System::LANG_English:
+		case System::LANG_USEnglish:
+		case System::LANG_USFrench:
+		case System::LANG_USSpanish:
 			sprintf(buffer, "/pikmin2/user/Abe/Pellet/%s/", "us");
 			file = buffer;
 			break;
-		case System::LANG_French:
+		case System::LANG_EUEnglish:
+		case System::LANG_EUFrench:
+		case System::LANG_EUSpanish:
 		case System::LANG_German:
 		// case System::LANG_HOL_UNUSED:
 		case System::LANG_Italian:
-		case System::LANG_Spanish:
 			sprintf(buffer, "/pikmin2/user/Abe/Pellet/%s/", "pal");
 			file = buffer;
 			break;
@@ -4788,20 +4791,23 @@ void BasePelletMgr::load_texArc(char* filename)
 	char* directory = nullptr;
 
 	if (gGameConfig.mParms.mPelletMultiLang.mData != 0) {
-		switch (sys->mRegion) {
+		switch (sys->getLanguage()) {
 		case System::LANG_Japanese:
 			sprintf(buffer, "/pikmin2/user/Abe/Pellet/%s/", "jpn");
 			directory = buffer;
 			break;
-		case System::LANG_English:
+		case System::LANG_USEnglish:
+		case System::LANG_USFrench:
+		case System::LANG_USSpanish:
 			sprintf(buffer, "/pikmin2/user/Abe/Pellet/%s/", "us");
 			directory = buffer;
 			break;
-		case System::LANG_French:
+		case System::LANG_EUEnglish:
+		case System::LANG_EUFrench:
+		case System::LANG_EUSpanish:
 		case System::LANG_German:
 		// case System::LANG_HOL_UNUSED:
 		case System::LANG_Italian:
-		case System::LANG_Spanish:
 			sprintf(buffer, "/pikmin2/user/Abe/Pellet/%s/", "pal");
 			directory = buffer;
 			break;
@@ -4891,20 +4897,23 @@ JKRArchive* BasePelletMgr::openTextArc(char* arc)
 	char directory[512];
 	char* file = nullptr;
 	if (gGameConfig.mParms.mPelletMultiLang.mData != 0) {
-		switch (sys->mRegion) {
+		switch (sys->getLanguage()) {
 		case System::LANG_Japanese:
 			sprintf(directory, "/pikmin2/user/Abe/Pellet/%s/", "jpn");
 			file = directory;
 			break;
-		case System::LANG_English:
+		case System::LANG_USEnglish:
+		case System::LANG_USFrench:
+		case System::LANG_USSpanish:
 			sprintf(directory, "/pikmin2/user/Abe/Pellet/%s/", "us");
 			file = directory;
 			break;
-		case System::LANG_French:
+		case System::LANG_EUEnglish:
+		case System::LANG_EUFrench:
+		case System::LANG_EUSpanish:
 		case System::LANG_German:
 		// case System::LANG_HOL_UNUSED:
 		case System::LANG_Italian:
-		case System::LANG_Spanish:
 			sprintf(directory, "/pikmin2/user/Abe/Pellet/%s/", "pal");
 			file = directory;
 			break;

@@ -9,9 +9,12 @@
 #include "P2Macros.h"
 #include "System.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "resultTexMgr";
+}
 namespace Game {
-
-static const char unusedName[] = "resultTexMgr";
 
 /**
  * @note Address: 0x80227418
@@ -44,29 +47,29 @@ void ResultTexMgr::Mgr::create(ResultTexMgr::Arg& arg)
 	mItemConfigList    = arg.mItemConfigList;
 	mHeap              = arg.mHeap;
 
-	JKRHeap* poppedHeap = JKRHeap::sCurrentHeap;
+	JKRHeap* poppedHeap = JKRGetCurrentHeap();
 	JKRArchive* archive = nullptr;
 	mHeap->becomeCurrentHeap();
 
 	if (arg.mRegionMode == REGIONID_Null) {
-		switch (sys->mRegion) {
+		switch (sys->getLanguage()) {
 		case System::LANG_Japanese:
-			sprintf(pathBuffer, "/user/Matoba/resulttex/%s/arc.szs", "jpn");
+			sprintf(pathBuffer, "user/Matoba/resulttex/%s/arc.szs", "jpn");
 			break;
 		default:
-			sprintf(pathBuffer, "/user/Matoba/resulttex/%s/arc.szs", "us");
+			sprintf(pathBuffer, "user/Matoba/resulttex/%s/arc.szs", "us");
 			break;
 		}
 	} else {
 		switch (arg.mRegionMode) {
 		case REGIONID_JPN:
-			sprintf(pathBuffer, "/user/Matoba/resulttex/%s/arc.szs", "jpn");
+			sprintf(pathBuffer, "user/Matoba/resulttex/%s/arc.szs", "jpn");
 			break;
 		case REGIONID_US:
-			sprintf(pathBuffer, "/user/Matoba/resulttex/%s/arc.szs", "us");
+			sprintf(pathBuffer, "user/Matoba/resulttex/%s/arc.szs", "us");
 			break;
 		case REGIONID_PAL:
-			sprintf(pathBuffer, "/user/Matoba/resulttex/%s/arc.szs", "pal");
+			sprintf(pathBuffer, "user/Matoba/resulttex/%s/arc.szs", "pal");
 			break;
 		}
 	}

@@ -4,7 +4,11 @@
 #include "P2Macros.h"
 #include "System.h"
 
-static const char className[] = "gamePelletList";
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "gamePelletList";
+}
 
 namespace Game {
 namespace PelletList {
@@ -25,7 +29,10 @@ PelletConfigList* Mgr::getConfigList(cKind kind)
  * @note Address: 0x80227DCC
  * @note Size: 0x74
  */
-int Mgr::getCount(cKind kind) { return getConfigList(kind)->mConfigCnt; }
+int Mgr::getCount(cKind kind)
+{
+	return getConfigList(kind)->mConfigCnt;
+}
 
 /**
  * @note Address: 0x80227E40
@@ -78,33 +85,35 @@ void Mgr::loadResource()
 	char pathBuffer[512];
 
 	if (gGameConfig.mParms.mPelletMultiLang.mData) {
-		switch (sys->mRegion) {
-		case System::LANG_French:
+		switch (sys->getLanguage()) {
+		case System::LANG_EUEnglish:
+		case System::LANG_EUFrench:
+		case System::LANG_EUSpanish:
 		case System::LANG_German:
 		case System::LANG_Italian:
 			break;
 		case System::LANG_Japanese:
-			sprintf(pathBuffer, "/user/Abe/Pellet/%s/pelletlist_%s.szs", "jpn", "jpn");
+			sprintf(pathBuffer, "user/Abe/Pellet/%s/pelletlist_%s.szs", "jpn", "jpn");
 			break;
-		case System::LANG_English:
-			sprintf(pathBuffer, "/user/Abe/Pellet/%s/pelletlist_%s.szs", "us", "us");
-			break;
-		case System::LANG_Spanish:
+		case System::LANG_USEnglish:
+		case System::LANG_USFrench:
+		case System::LANG_USSpanish:
+			sprintf(pathBuffer, "user/Abe/Pellet/%s/pelletlist_%s.szs", "us", "us");
 			break;
 		}
 		archive = JKRMountArchive(pathBuffer, JKRArchive::EMM_Mem, JKRHeap::getCurrentHeap(), JKRArchive::EMD_Tail);
 	} else {
-		JUT_PANICLINE(145, "don\'t use this !\n");
-		archive = JKRMountArchive("/user/Kando/pelletlist.szs", JKRArchive::EMM_Mem, JKRHeap::getCurrentHeap(), JKRArchive::EMD_Tail);
+		JUT_PANICLINE(148, "don\'t use this !\n");
+		archive = JKRMountArchive("user/Kando/pelletlist.szs", JKRArchive::EMM_Mem, JKRHeap::getCurrentHeap(), JKRArchive::EMD_Tail);
 	}
 
-	JUT_ASSERTLINE(154, archive, "no pelletlist.szs\n");
+	JUT_ASSERTLINE(157, archive, "no pelletlist.szs\n");
 
 	const char* configs[PLK_Size]
 	    = { "numberpellet_config.txt", "carcass_config.txt", "fruit_config.txt", "otakara_config.txt", "item_config.txt" };
 	for (int i = 0; i < PLK_Size; i++) {
 		void* data = archive->getResource(configs[i]);
-		JUT_ASSERTLINE(168, data, "no config file [%s]\n", configs[i]);
+		JUT_ASSERTLINE(171, data, "no config file [%s]\n", configs[i]);
 		RamStream stream(data, -1);
 		stream.setMode(STREAM_MODE_TEXT, STREAM_MODE_TEXT);
 		getConfig(i)->read(stream);
@@ -132,7 +141,7 @@ int Mgr::getDictionaryNum()
 PelletConfig* Mgr::getConfigFromDictionaryNo(int dictNo)
 {
 	bool isValid = dictNo >= 0 && dictNo < getDictionaryNum();
-	P2ASSERTLINE(188, isValid);
+	P2ASSERTLINE(191, isValid);
 	PelletConfig* result = mInstance->mConfigList[PLK_Otakara].getPelletConfig_ByDictionaryNo(dictNo);
 	if (!result) {
 		result = mInstance->mConfigList[PLK_Item].getPelletConfig_ByDictionaryNo(dictNo);
@@ -152,7 +161,7 @@ int Mgr::getOffsetFromDictionaryNo(int dictNo)
 		offset = mInstance->mConfigList[PLK_Otakara].getConfigCount();
 		config = mInstance->mConfigList[PLK_Item].getPelletConfig_ByDictionaryNo(dictNo);
 	}
-	JUT_ASSERTLINE(210, config, "dictNo:%d \n", dictNo);
+	JUT_ASSERTLINE(213, config, "dictNo:%d \n", dictNo);
 	return offset + config->mParams.mIndex;
 }
 

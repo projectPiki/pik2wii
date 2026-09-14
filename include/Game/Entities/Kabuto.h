@@ -466,14 +466,15 @@ struct Obj : public Kabuto::Obj {
 	{
 		return EnemyTypeID::EnemyID_Fkabuto;
 	}
-	virtual void createEffect();       // _2FC
-	virtual void setupEffect();        // _300
-	virtual void startRotateEffect();  // _304
-	virtual void finishRotateEffect(); // _308
-	virtual void startWaitEffect();    // _30C
-	virtual void finishWaitEffect();   // _310
-	virtual void effectDrawOn();       // _314
-	virtual void effectDrawOff();      // _318
+	virtual void setZukanVisible(bool updateTekiDeathInfo); // _2C0
+	virtual void createEffect();                            // _2FC
+	virtual void setupEffect();                             // _300
+	virtual void startRotateEffect();                       // _304
+	virtual void finishRotateEffect();                      // _308
+	virtual void startWaitEffect();                         // _30C
+	virtual void finishWaitEffect();                        // _310
+	virtual void effectDrawOn();                            // _314
+	virtual void effectDrawOff();                           // _318
 
 	// _00		= VTBL
 	// _00-_2E4 = Kabuto::Obj

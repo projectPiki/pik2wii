@@ -240,12 +240,13 @@ bool Mgr::saveGameOption()
  * @note Address: 0x80442F9C
  * @note Size: 0xB8
  */
-bool Mgr::loadGameOption()
+bool Mgr::loadGameOption(bool loadLanguage)
 {
 	bool result = false;
 	if (checkError() && OSTryLockMutex(&mOsMutex)) {
 		result = true;
-		setCommand(6);
+		MgrCommandLoadGameOption command(6, loadLanguage);
+		setCommand(&command);
 		OSUnlockMutex(&mOsMutex);
 		OSSignalCond(&mCond);
 	}
@@ -403,7 +404,7 @@ bool Mgr::doCardProc(void*, MemoryCardMgrCommand* command)
 		break;
 
 	case 6:
-		result = commandLoadGameOption();
+		result = commandLoadGameOption(reinterpret_cast<MgrCommandLoadGameOption*>(command)->mLoadLanguage);
 		break;
 
 	case 8:
@@ -778,9 +779,15 @@ bool Mgr::commandSaveGameOption(bool isForceSave, bool skipReadCheck)
  * @note Address: 0x8044468C
  * @note Size: 0x248
  */
-bool Mgr::commandLoadGameOption()
+bool Mgr::commandLoadGameOption(bool loadLanguage)
 {
 	bool result = false;
+
+	if (loadLanguage) {
+		sys->mPlayData->mFlags.set(CommonSaveData::Mgr::SaveFlag_Language);
+	} else {
+		sys->mPlayData->mFlags.unset(CommonSaveData::Mgr::SaveFlag_Language);
+	}
 
 	u64 serial;
 	if (readCardSerialNo(&serial, CARDSLOT_Unk0)) {
@@ -851,6 +858,8 @@ bool Mgr::commandLoadGameOption()
 	}
 
 	sys->mPlayData->setup();
+	sys->mPlayData->mFlags.unset(CommonSaveData::Mgr::SaveFlag_Language);
+
 	return result;
 }
 
@@ -1074,7 +1083,7 @@ bool Mgr::commandLoadPlayer(s8 fileIndex)
 {
 	u64 serial;
 	P2ASSERTBOUNDSLINE(2264, 0, fileIndex, 3);
-	commandLoadGameOption();
+	commandLoadGameOption(false);
 	if ((s32)mErrorCode == 1)
 		mErrorCode = 0;
 	if (!isErrorOccured()) {

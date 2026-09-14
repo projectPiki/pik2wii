@@ -88,11 +88,7 @@ GameConfig::GameConfig()
 	mParms.mVsTest.mData           = 0;
 	mParms.mHeapFreeSize.mData     = 1;
 	mParms.mKFesVersion.mData      = 0;
-#if BUILDTARGET == USAFINAL
 	mParms.mNintendoVersion.mData = 0;
-#elif BUILDTARGET == USADEMO1
-	mParms.mNintendoVersion.mData = 1;
-#endif
 	mParms.mVsDeathType.mData          = 1;
 	mParms.mVsHiba.mData               = 0;
 	mParms.mVsY.mData                  = 0;
@@ -107,20 +103,24 @@ GameConfig::GameConfig()
  */
 bool GameConfig::load(char*)
 {
-	if (strcmp(gGameConfig.mParms.mLanguage.mData, "eng") == 0) {
-		sys->mRegion = System::LANG_English;
-	} else if (strcmp(gGameConfig.mParms.mLanguage.mData, "fra") == 0) {
-		sys->mRegion = System::LANG_French;
-	} else if (strcmp(gGameConfig.mParms.mLanguage.mData, "ger") == 0) {
-		sys->mRegion = System::LANG_German;
-	} else if (strcmp(gGameConfig.mParms.mLanguage.mData, "hol") == 0) {
-		sys->mRegion = System::LANG_English;
-	} else if (strcmp(gGameConfig.mParms.mLanguage.mData, "ita") == 0) {
-		sys->mRegion = System::LANG_Italian;
+	if (strcmp(gGameConfig.mParms.mLanguage.mData, "engEU") == 0) {
+		sys->setLanguage(System::LANG_EUEnglish);
+	} else if (strcmp(gGameConfig.mParms.mLanguage.mData, "fraEU") == 0) {
+		sys->setLanguage(System::LANG_EUFrench);
+	} else if (strcmp(gGameConfig.mParms.mLanguage.mData, "gerEU") == 0) {
+		sys->setLanguage(System::LANG_German);
+	} else if (strcmp(gGameConfig.mParms.mLanguage.mData, "itaEU") == 0) {
+		sys->setLanguage(System::LANG_Italian);
 	} else if (strcmp(gGameConfig.mParms.mLanguage.mData, "jpn") == 0) {
-		sys->mRegion = System::LANG_Japanese;
-	} else if (strcmp(gGameConfig.mParms.mLanguage.mData, "spa") == 0) {
-		sys->mRegion = System::LANG_Spanish;
+		sys->setLanguage(System::LANG_Japanese);
+	} else if (strcmp(gGameConfig.mParms.mLanguage.mData, "spaEU") == 0) {
+		sys->setLanguage(System::LANG_EUSpanish);
+	} else if (strcmp(gGameConfig.mParms.mLanguage.mData, "engUS") == 0) {
+		sys->setLanguage(System::LANG_EUSpanish);
+	} else if (strcmp(gGameConfig.mParms.mLanguage.mData, "fraUS") == 0) {
+		sys->setLanguage(System::LANG_EUSpanish);
+	} else if (strcmp(gGameConfig.mParms.mLanguage.mData, "spaUS") == 0) {
+		sys->setLanguage(System::LANG_EUSpanish);
 	}
 	return false;
 }

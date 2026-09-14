@@ -1,25 +1,24 @@
-#include "P2JME/P2JME.h"
-#include "System.h"
-#include "nans.h"
-#include "P2JME/TReference.h"
-#include "JSystem/JMessage/TResource.h"
-#include "JSystem/JUtility/JUTTexture.h"
 #include "JSystem/JKernel/JKRAram.h"
 #include "JSystem/JMessage/TParse.h"
-
-static const u32 padding[3] = { 0, 0, 0 };
+#include "JSystem/JMessage/TResource.h"
+#include "JSystem/JUtility/JUTTexture.h"
+#include "P2JME/P2JME.h"
+#include "P2JME/TReference.h"
+#include "System.h"
+#include "nans.h"
 
 P2JME::Mgr* gP2JMEMgr;
 
 namespace P2JME {
 
 static const char* sFontResName[]
-    = { "/message/font_foreign.szs", "/message/font_foreign.szs", "/message/font_foreign.szs", "/message/font_foreign.szs",
-	    "/message/font_foreign.szs", "/message/font_jpn.szs",     "/message/font_foreign.szs" };
+    = { "message/font_foreign.szs", "message/font_foreign.szs", "message/font_foreign.szs", "message/font_foreign.szs",
+	    "message/font_foreign.szs", "message/font_jpn.szs",     "message/font_foreign.szs", "message/font_foreign.szs",
+	    "message/font_foreign.szs", "message/font_foreign.szs" };
 
-static const char* sMesResName[]
-    = { "/message/mesRes_eng.szs", "/message/mesRes_fra.szs", "/message/mesRes_ger.szs", "/message/mesRes_hol.szs",
-	    "/message/mesRes_ita.szs", "/message/mesRes_jpn.szs", "/message/mesRes_spa.szs" };
+static const char* sMesResName[] = { "message/mesRes_engEU.szs", "message/mesRes_fraEU.szs", "message/mesRes_gerEU.szs",
+	                                 "message/mesRes_engEU.szs", "message/mesRes_itaEU.szs", "message/mesRes_jpn.szs",   "message/mesRes_spaEU.szs",
+	                                 "message/mesRes_engUS.szs", "message/mesRes_fraUS.szs", "message/mesRes_spaUS.szs" };
 
 static const char* cBtnTexName[] = { "a_btn.bti", "b_btn.bti", "c_btn.bti",  "x_btn.bti",  "y_btn.bti", "z_btn.bti",
 	                                 "l_btn.bti", "r_btn.bti", "3d_btn.bti", "st_btn.bti", "t_btn.bti" };
@@ -28,19 +27,28 @@ static const char* cBtnTexName[] = { "a_btn.bti", "b_btn.bti", "c_btn.bti",  "x_
  * @note Address: N/A
  * @note Size: 0x1C
  */
-const char* getCurrentFontResName() { return sFontResName[sys->mRegion]; }
+const char* getCurrentFontResName()
+{
+	return sFontResName[sys->getLanguage()];
+}
 
 /**
  * @note Address: N/A
  * @note Size: 0x1C
  */
-const char* getCurrentMesResName() { return sMesResName[sys->mRegion]; }
+const char* getCurrentMesResName()
+{
+	return sMesResName[sys->getLanguage()];
+}
 
 /**
  * @note Address: 0x80437EAC
  * @note Size: 0x40
  */
-Mgr* Mgr::create(JKRExpHeap* heap) { new Mgr(heap); }
+Mgr* Mgr::create(JKRExpHeap* heap)
+{
+	new Mgr(heap);
+}
 
 /**
  * @note Address: 0x80437EEC
@@ -51,11 +59,11 @@ Mgr::Mgr(JKRExpHeap* heap)
     , mImageLists(nullptr)
     , mMaxTextures(nullptr)
     , mIsLoaded(false)
-    , _2C(0)
+    , mLangHeap(nullptr)
     , mResContainer(nullptr)
     , mMsgRef(nullptr)
 {
-	P2ASSERTLINE(194, !gP2JMEMgr);
+	P2ASSERTLINE(203, !gP2JMEMgr);
 	gP2JMEMgr = this;
 
 	sys->heapStatusStart("MessageMgr", nullptr);
@@ -81,7 +89,8 @@ Mgr::Mgr(JKRExpHeap* heap)
 	sys->heapStatusEnd("MessageMgr");
 
 	JKRHeap* heap2 = JKRGetCurrentHeap();
-	_2C            = 0;
+	mLangHeap      = makeExpHeap(0x57800, heap2, true);
+	mLangHeap->becomeCurrentHeap();
 	setupMessage();
 	heap2->becomeCurrentHeap();
 	mIsLoaded = true;
@@ -91,7 +100,10 @@ Mgr::Mgr(JKRExpHeap* heap)
  * @note Address: 0x8043805C
  * @note Size: 0x68
  */
-Mgr::~Mgr() { gP2JMEMgr = nullptr; }
+Mgr::~Mgr()
+{
+	gP2JMEMgr = nullptr;
+}
 
 /**
  * @note Address: N/A
@@ -99,8 +111,20 @@ Mgr::~Mgr() { gP2JMEMgr = nullptr; }
  */
 void Mgr::reloadMessageResource()
 {
-	// This is most likely used in the PAL region after changing languages
-	// Entirely removed for US though
+	P2ASSERTLINE(278, mLangHeap);
+	mLangHeap->freeAll();
+	JKRHeap* prevHeap = JKRGetCurrentHeap();
+	mLangHeap->becomeCurrentHeap();
+
+	int bufferSize = mLangHeap->getFreeSize();
+	u8* langBuffer = new u8[bufferSize];
+	memset(langBuffer, 0xCD, bufferSize);
+	delete[] langBuffer;
+
+	setupMessage();
+
+	OSReport("Message FreeSize:%d \n", (int)mLangHeap->getFreeSize() >> 10);
+	prevHeap->becomeCurrentHeap();
 }
 
 /**
@@ -110,7 +134,7 @@ void Mgr::reloadMessageResource()
 void Mgr::setupMessage()
 {
 	JKRArchive* msgarc = JKRMountArchive(getCurrentMesResName(), JKRArchive::EMM_Mem, nullptr, JKRArchive::EMD_Head);
-	P2ASSERTLINE(304, msgarc);
+	P2ASSERTLINE(306, msgarc);
 
 	mResContainer      = new JMessage::TResourceContainer;
 	mMsgRef            = new TReference;
@@ -126,14 +150,14 @@ void Mgr::setupMessage()
  */
 void Mgr::setupTex()
 {
-	JKRArchive* imgarc = JKRMountArchive("/user/Yamashita/arc/gameTex.szs", JKRArchive::EMM_Mem, nullptr, JKRArchive::EMD_Head);
+	JKRArchive* imgarc = JKRMountArchive("user/Yamashita/arc/gameTex.szs", JKRArchive::EMM_Mem, nullptr, JKRArchive::EMD_Head);
 	createImage(ImageGroup::ID0, 11);
 
 	ResTIMG* timg;
 	for (int i = 0; i < mMaxTextures[0]; i++) {
 		// dont even ask.
 		timg = (ResTIMG*)JKRGetArchiveImageResource(imgarc, cBtnTexName[i]);
-		P2ASSERTLINE(344, timg);
+		P2ASSERTLINE(350, timg);
 		setImage(ImageGroup::ID0, i, new JUTTexture(timg));
 	}
 }
@@ -145,22 +169,22 @@ void Mgr::setupTex()
 void Mgr::setupFont(char const* path, JKRExpHeap* heap)
 {
 	// Japanese uses a separate font loading system since it's so big
-	if (sys->mRegion == System::LANG_Japanese) {
+	if (sys->getLanguage() == System::LANG_Japanese) {
 		JKRAram::sAramObject->mAramHeap->getFreeSize();
 
 		JKRArchive* fontarc = JKRMountArchive(getCurrentFontResName(), JKRArchive::EMM_Mem, heap, JKRArchive::EMD_Tail);
-		P2ASSERTLINE(368, fontarc);
+		P2ASSERTLINE(374, fontarc);
 		sys->heapStatusStart("cacheFont", nullptr);
 
 		ResFONT* file = static_cast<ResFONT*>(fontarc->getResource(path));
-		P2ASSERTLINE(371, file);
+		P2ASSERTLINE(377, file);
 
 		mFont = new JUTCacheFont(file, 0x4c2c0, JKRGetCurrentHeap());
-		P2ASSERTLINE(374, mFont);
+		P2ASSERTLINE(380, mFont);
 
 		sys->heapStatusEnd("cacheFont");
 
-		P2ASSERTLINE(378, mFont->mIsValid);
+		P2ASSERTLINE(384, mFont->mIsValid);
 		static_cast<JUTCacheFont*>(mFont)->mPagingType = JUTCacheFont::CFPAGETYPE_Unk1;
 		static_cast<JUTCacheFont*>(mFont)->loadCache_string("\tあいうえおかきくけこさしすせそたちすてとなにぬねのはひすへほまみむめもやゆよ"
 		                                                    "わん\tアイウエオカキクケコサシスセソ\タチツテトナ"
@@ -170,7 +194,7 @@ void Mgr::setupFont(char const* path, JKRExpHeap* heap)
 		fontarc->unmount();
 	} else {
 		JKRArchive* fontarc = JKRMountArchive(getCurrentFontResName(), JKRArchive::EMM_Mem, JKRGetCurrentHeap(), JKRArchive::EMD_Head);
-		P2ASSERTLINE(407, fontarc);
+		P2ASSERTLINE(413, fontarc);
 
 		sys->heapStatusStart("resFont", nullptr);
 
@@ -188,8 +212,8 @@ void Mgr::setupFont(char const* path, JKRExpHeap* heap)
  */
 void Mgr::createImage(ImageGroup::EID group, int max)
 {
-	P2ASSERTBOUNDSLINE(423, 0, group, 1);
-	P2ASSERTLINE(426, !mImageLists[group]);
+	P2ASSERTBOUNDSLINE(429, 0, group, 1);
+	P2ASSERTLINE(432, !mImageLists[group]);
 	mMaxTextures[group] = max;
 	mImageLists[group]  = new JUTTexture*[max];
 
@@ -204,8 +228,8 @@ void Mgr::createImage(ImageGroup::EID group, int max)
  */
 void Mgr::setImage(ImageGroup::EID group, int id, JUTTexture* tex)
 {
-	P2ASSERTBOUNDSLINE(442, 0, group, 1);
-	P2ASSERTLINE(444, mMaxTextures[group] > id);
+	P2ASSERTBOUNDSLINE(448, 0, group, 1);
+	P2ASSERTLINE(450, mMaxTextures[group] > id);
 
 	mImageLists[group][id] = tex;
 }
@@ -216,8 +240,8 @@ void Mgr::setImage(ImageGroup::EID group, int id, JUTTexture* tex)
  */
 JUTTexture* Mgr::getImage(ImageGroup::EID group, int id)
 {
-	P2ASSERTBOUNDSLINE(456, 0, group, 1);
-	P2ASSERTLINE(458, mMaxTextures[group] > id);
+	P2ASSERTBOUNDSLINE(462, 0, group, 1);
+	P2ASSERTLINE(464, mMaxTextures[group] > id);
 
 	return mImageLists[group][id];
 }
@@ -230,12 +254,12 @@ void Mgr::setupMessageResource(JKRArchive* arc, char const* path)
 {
 	sys->heapStatusStart("bmg", nullptr);
 	const void* file = arc->getResource(path);
-	P2ASSERTLINE(474, file);
+	P2ASSERTLINE(480, file);
 	sys->heapStatusEnd("bmg");
 
 	sys->heapStatusStart("メッセージのパース", nullptr); // "Message Parsing"
 	JMessage::TParse parse(mResContainer);
-	P2ASSERTLINE(484, parse.parse(file, 0));
+	P2ASSERTLINE(490, parse.parse(file, 0));
 	sys->heapStatusEnd("メッセージのパース"); // "Message Parsing"
 }
 
@@ -246,12 +270,12 @@ void Mgr::setupMessageResource(JKRArchive* arc, char const* path)
 bool Mgr::setupColor(JKRArchive* arc, char const* path)
 {
 	const void* file = arc->getResource(path);
-	P2ASSERTLINE(501, file);
+	P2ASSERTLINE(507, file);
 
 	sys->heapStatusStart("メッセージカラーのパース", nullptr); // "Message Parsing"
 	JMessage::TParse_color parse(mResContainer);
 	bool success = parse.parse(file, 0x20);
-	P2ASSERTLINE(510, success);
+	P2ASSERTLINE(516, success);
 	sys->heapStatusEnd("メッセージカラーのパース"); // "Message Parsing"
 	return success;
 }

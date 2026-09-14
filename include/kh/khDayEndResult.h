@@ -431,31 +431,7 @@ struct ObjDayEndResultMail : public ObjDayEndResultBase {
 		int mIconCount;  // _04
 	};
 
-	ObjDayEndResultMail()
-	{
-		mStatus              = MAILSTATUS_WaitOpen;
-		mScreenCharacter     = nullptr;
-		mCharacterAnimTrans  = nullptr;
-		mSaveMgr             = nullptr;
-		mScreenMain          = nullptr;
-		mMainAnimTrans4      = nullptr;
-		mMainAnimTrans3      = nullptr;
-		mSideMoveTimer       = 0.0f;
-		mDayCounter          = nullptr;
-		mCurrentDay          = 1;
-		mMaxDay              = 1;
-		mIconArchive         = nullptr;
-		mMailIconAnms        = nullptr;
-		mCharacterIconTimer  = 0;
-		mFadePaneArrowR      = nullptr;
-		mFadePaneArrowL      = nullptr;
-		mMessage             = nullptr;
-		mCharacterIconScaleY = 0.0f;
-		mCharacterIconScaleX = 0.0f;
-		mOpenWTimer          = msVal._40;
-		mOpenHTimer          = 0.0f;
-		mAlpha               = 0;
-	}
+	ObjDayEndResultMail();
 
 	virtual ~ObjDayEndResultMail() { }                          // _08 (weak)
 	virtual bool doStart(const ::Screen::StartSceneArg*);       // _44
@@ -583,6 +559,7 @@ struct ObjDayEndResultItem : public ObjDayEndResultBase {
 	int mTotalValueDelay;                                    // _F4
 	u8 mScrollUpDelay;                                       // _F8
 	u8 mScrollDownDelay;                                     // _F9
+	bool mHasDrawn;                                          // _FA
 };
 
 struct ObjDayEndResultTitl : public ::Screen::ObjBase {
