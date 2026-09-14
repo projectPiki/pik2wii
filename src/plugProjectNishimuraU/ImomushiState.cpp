@@ -724,7 +724,7 @@ void StateZukanMove::init(EnemyBase* enemy, StateArg* stateArg)
 {
 	Obj* imomushi = OBJ(enemy);
 	imomushi->setZukanTargetPosition();
-	imomushi->mTargetVelocity = 0.0f;
+	imomushi->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	imomushi->startMotion(IMOMUSHIANIM_Move, nullptr);
 	imomushi->startMoveTraceEffect();
 }

@@ -29,6 +29,7 @@
 #include "RevoSDK/card.h"
 #include "RevoSDK/os.h"
 #include "RevoSDK/rand.h"
+#include "nans.h"
 
 static GXRenderModeObj localNtsc608x448IntDfProg = { VI_TVMODE_NTSC_PROG,
 	                                                 608, // fbWidth
@@ -107,164 +108,10 @@ static void preUserCallback(u16, OSContext*, u32, u32);
  */
 static void Pikmin2DefaultMemoryErrorRoutine(void* address, u32 size, int alignment)
 {
-	JUT_PANICLINE(99, "Memory Alloc Error!\n%x (size %d) align(%d)\nRestTotal=%d\nRestFree =%d\n", address, size, alignment,
+	JUT_PANICLINE(320, "Memory Alloc Error!\n%x (size %d) align(%d)\nRestTotal=%d\nRestFree =%d\n", address, size, alignment,
 	              static_cast<JKRHeap*>(address)->getTotalFreeSize(), static_cast<JKRHeap*>(address)->getFreeSize());
 
-	OSPanic(__FILE__, 101, "abort\n");
-}
-
-/**
- * @note Address: 0x80421F64
- * @note Size: 0x188
- */
-static void kando_panic_f(bool r3, const char* file, int line, const char* format, ...)
-{
-	va_list list;
-	va_start(list, format);
-
-	JUTConsole* console  = JUTException::sConsole;
-	JUTException* except = JUTException::sErrorManager;
-	OSErrorHandler func  = (OSErrorHandler)preUserCallback;
-
-	char buffer[260];
-	vsnprintf(buffer, 255, format, list);
-	if (!except) {
-		OSPanic(file, line, buffer);
-	}
-
-	OSContext* context = &JFWSystem::mainThread->mThread->context;
-	char dest[sizeof(OSContext)];
-	memcpy(dest, context, sizeof(OSContext));
-	except->mStackPointer = (void*)((u32*)dest)[1];
-
-	exCallbackObject.mErrorHandler = func;
-	exCallbackObject.mError        = 255;
-	exCallbackObject.mContext      = context;
-	exCallbackObject._0C           = 0;
-	exCallbackObject._10           = 0;
-
-	if (!console || (console && !(console->mOutput & 2))) {
-		OSReport("%s in \"%s\" on line %d\n", buffer, file, line);
-	}
-
-	if (console) {
-		console->print_f("%s in \"%s\" on\n line %d\n", buffer, file, line);
-	}
-
-	OSSendMessage(&JUTException::sMessageQueue, (OSMessage*)&exCallbackObject, true);
-	OSSuspendThread(OSGetCurrentThread());
-
-	/*
-	.loc_0x0:
-	  stwu      r1, -0x460(r1)
-	  mflr      r0
-	  stw       r0, 0x464(r1)
-	  stmw      r26, 0x448(r1)
-	  mr        r29, r4
-	  mr        r30, r5
-	  bne-      cr1, .loc_0x3C
-	  stfd      f1, 0x28(r1)
-	  stfd      f2, 0x30(r1)
-	  stfd      f3, 0x38(r1)
-	  stfd      f4, 0x40(r1)
-	  stfd      f5, 0x48(r1)
-	  stfd      f6, 0x50(r1)
-	  stfd      f7, 0x58(r1)
-	  stfd      f8, 0x60(r1)
-
-	.loc_0x3C:
-	  addi      r11, r1, 0x468
-	  addi      r0, r1, 0x8
-	  lis       r12, 0x400
-	  stw       r3, 0x8(r1)
-	  lis       r3, 0x8042
-	  lwz       r31, -0x775C(r13)
-	  stw       r4, 0xC(r1)
-	  addi      r28, r3, 0x20EC
-	  addi      r27, r1, 0x68
-	  lwz       r26, -0x7770(r13)
-	  stw       r5, 0x10(r1)
-	  addi      r3, r1, 0x74
-	  mr        r5, r6
-	  li        r4, 0xFF
-	  stw       r6, 0x14(r1)
-	  mr        r6, r27
-	  stw       r7, 0x18(r1)
-	  stw       r8, 0x1C(r1)
-	  stw       r9, 0x20(r1)
-	  stw       r10, 0x24(r1)
-	  stw       r12, 0x68(r1)
-	  stw       r11, 0x6C(r1)
-	  stw       r0, 0x70(r1)
-	  bl        -0x35A998
-	  cmplwi    r26, 0
-	  bne-      .loc_0xB8
-	  mr        r3, r29
-	  mr        r4, r30
-	  addi      r5, r1, 0x74
-	  crclr     6, 0x6
-	  bl        -0x3348AC
-
-	.loc_0xB8:
-	  lwz       r4, -0x7630(r13)
-	  addi      r3, r1, 0x178
-	  li        r5, 0x2C8
-	  lwz       r27, 0x2C(r4)
-	  mr        r4, r27
-	  bl        -0x41CE94
-	  lwz       r0, 0x17C(r1)
-	  lis       r4, 0x804F
-	  cmplwi    r31, 0
-	  li        r3, 0xFF
-	  stw       r0, 0xA0(r26)
-	  li        r0, 0
-	  stwu      r28, 0x7C20(r4)
-	  sth       r3, 0x4(r4)
-	  stw       r27, 0x8(r4)
-	  stw       r0, 0xC(r4)
-	  stw       r0, 0x10(r4)
-	  beq-      .loc_0x110
-	  beq-      .loc_0x12C
-	  lwz       r0, 0x58(r31)
-	  rlwinm.   r0,r0,0,30,30
-	  bne-      .loc_0x12C
-
-	.loc_0x110:
-	  lis       r3, 0x804A
-	  mr        r5, r29
-	  subi      r3, r3, 0x67E4
-	  mr        r6, r30
-	  addi      r4, r1, 0x74
-	  crclr     6, 0x6
-	  bl        -0x3349A0
-
-	.loc_0x12C:
-	  cmplwi    r31, 0
-	  beq-      .loc_0x154
-	  lis       r4, 0x804A
-	  mr        r3, r31
-	  subi      r4, r4, 0x67CC
-	  mr        r6, r29
-	  mr        r7, r30
-	  addi      r5, r1, 0x74
-	  crclr     6, 0x6
-	  bl        -0x3F9714
-
-	.loc_0x154:
-	  lis       r3, 0x804A
-	  lis       r4, 0x804F
-	  addi      r3, r3, 0x3A8
-	  li        r5, 0x1
-	  addi      r4, r4, 0x7C20
-	  bl        -0x332BB0
-	  bl        -0x33070C
-	  bl        -0x32F958
-	  lmw       r26, 0x448(r1)
-	  lwz       r0, 0x464(r1)
-	  mtlr      r0
-	  addi      r1, r1, 0x460
-	  blr
-	  */
+	OSPanic(__FILE__, 322, "abort\n");
 }
 
 /**
@@ -385,15 +232,6 @@ static const char aramStrmName[] = "aramStrm";
 void retraceCallback(u32)
 {
 	sys->mCpuRetraceCount++;
-	if (DVDGetDriveStatus() == DVD_STATE_BUSY) {
-		sys->mCpuRetraceCount = 0;
-	}
-
-	if ((int)sys->mCpuLockCount > 0 && (int)sys->mCpuRetraceCount > (int)sys->mCpuLockCount) {
-		sUseABXCommand = false;
-		OSReport("cpuLockCount %d retraceCount %d\n", sys->mCpuLockCount, sys->mCpuRetraceCount);
-		kando_panic_f(true, "system/retrace", 0, "CPU LOCKED!");
-	}
 }
 
 void System::setLanguage()
@@ -469,7 +307,7 @@ int System::getLanguage()
 	default: {
 		JUT_PANICLINE(1125, "unknown language:%d", SCGetLanguage());
 	}
-	}	
+	}
 
 	return lang;
 }
@@ -502,7 +340,6 @@ System::System()
 	mPlayData = new Game::CommonSaveData::Mgr();
 	mPlayData->setDefault();
 	setLanguage();
-	
 
 	JKRHeap* heap = JKRGetCurrentHeap();
 	mSysHeap      = JKRExpHeap::create(0xc00000, nullptr, true);
@@ -578,7 +415,7 @@ void System::construct()
  */
 void System::constructWithDvdAccessFirst()
 {
-	P2ASSERTLINE(1013, JKRGetCurrentHeap()->getHeapType() == 'EXPH');
+	P2ASSERTLINE(1494, JKRGetCurrentHeap()->getHeapType() == 'EXPH');
 
 	JKRHeap* old = JKRGetCurrentHeap();
 	mSysHeap->becomeCurrentHeap();
@@ -604,7 +441,7 @@ void System::constructWithDvdAccessSecond()
 {
 	loadSoundResource();
 
-	P2ASSERTLINE(1064, JKRGetCurrentHeap()->getHeapType() == 'EXPH');
+	P2ASSERTLINE(1562, JKRGetCurrentHeap()->getHeapType() == 'EXPH');
 
 	JKRExpHeap* old = static_cast<JKRExpHeap*>(JKRGetCurrentHeap());
 	mSysHeap->becomeCurrentHeap();
@@ -619,10 +456,6 @@ void System::constructWithDvdAccessSecond()
 	Game::MovieList::construct();
 	heapStatusEnd("constructWithDvdAccess2nd");
 
-	mSysHeap->getTotalFreeSize();
-	mSysHeap->getTotalFreeSize();
-	mSysHeap->getFreeSize();
-	mSysHeap->getFreeSize();
 	old->becomeCurrentHeap();
 	heapStatusDump(true);
 }
@@ -633,7 +466,7 @@ void System::constructWithDvdAccessSecond()
  */
 void System::createRomFont(JKRHeap* heap)
 {
-	mRomFont = new JUTRomFont(heap);
+	mRomFont = nullptr;
 }
 
 /**
@@ -642,8 +475,6 @@ void System::createRomFont(JKRHeap* heap)
  */
 void System::destroyRomFont()
 {
-	delete mRomFont;
-	mRomFont = nullptr;
 }
 
 /**
@@ -655,18 +486,22 @@ void System::createSoundSystem()
 	sys->heapStatusStart("SoundSystem", nullptr);
 	JKRHeap* old = JKRHeap::getCurrentHeap();
 
-	P2ASSERTLINE(1158, old);
-	P2ASSERTLINE(1161, gResMgr2D);
+	P2ASSERTLINE(1663, old);
+	P2ASSERTLINE(1666, gResMgr2D);
 
 	JKRHeap* resHeap    = gResMgr2D->mHeap;
 	JKRExpHeap* newheap = makeExpHeap(resHeap->getFreeSize(), resHeap, true);
 
-	P2ASSERTLINE(1165, newheap);
+	P2ASSERTLINE(1670, newheap);
 	newheap->becomeCurrentHeap();
 
-	void* file = JKRGetResource("PSound.aaf", JKRMountDvdDrive("/AudioRes", newheap, nullptr));
+	JKRFileCache* cache = JKRMountDvdDrive("/pikmin2/AudioRes", newheap, nullptr);
 
-	P2ASSERTLINE(1173, file);
+	P2ASSERTLINE(1677, cache);
+
+	void* file = JKRGetResource("PSound.aaf", cache);
+
+	P2ASSERTLINE(1679, file);
 
 	PSM::Factory* factory = new PSM::Factory;
 	factory->mMakeSeFunc  = PSM::SeSound::makeSeSound;
@@ -678,7 +513,6 @@ void System::createSoundSystem()
 	JKRSolidHeap* newheap2 = makeSolidHeap(old->getFreeSize(), old, true);
 	newheap2->becomeCurrentHeap();
 
-	// something in these inlines is doing bad regalloc things. or not enough bad regalloc things. not sure.
 	static_cast<PSGame::PikSceneMgr*>(PSSystem::getSceneMgr())->newAndSetGlobalScene();
 	newheap2->adjustSize();
 
@@ -701,7 +535,7 @@ void System::loadSoundResource()
 
 	// something in these inlines is doing bad regalloc things. or not enough bad regalloc things. not sure.
 	PSSystem::Scene* scene = PSMGetPikSceneMgrCheck()->mScenes;
-	P2ASSERTLINE(1245, scene);
+	P2ASSERTLINE(1753, scene);
 	scene->scene1stLoadSync();
 
 	newheap->adjustSize();
@@ -808,19 +642,17 @@ void System::clearGXVerifyLevel()
  */
 void System::initialize()
 {
-	if (RENDER_INFO_STORE->mIdentifier == 'vald') {                         // magic stored from reset
-		System::setRenderMode((ERenderMode)RENDER_INFO_STORE->mRenderMode); // render mode is stored after magic
-	} else {
-		System::setRenderMode(RM_NTSC_Standard);
-	}
+	mFlags.clear();
+
+	System::setRenderMode(RM_NTSC_Standard);
 
 	OSInitFastCast();
 
 	JFWSystem::CSetUpParam::maxStdHeaps      = 1;
 	JFWSystem::CSetUpParam::sysHeapSize      = 0xa0000;
 	JFWSystem::CSetUpParam::fifoBufSize      = 0x70800;
-	JFWSystem::CSetUpParam::aramAudioBufSize = 0x900000;
-	JFWSystem::CSetUpParam::aramGraphBufSize = 0xffffffff;
+	JFWSystem::CSetUpParam::aramAudioBufSize = 0xc00000;
+	JFWSystem::CSetUpParam::aramGraphBufSize = 0x700000;
 
 	JFWSystem::CSetUpParam::renderMode = getRenderModeObj();
 	JFWSystem::init();
@@ -1012,6 +844,7 @@ bool System::beginFrame()
 	mCpuRetraceCount = 0;
 	JUTGamePad::read();
 	mDvdStatus->update();
+	EGG_INSTANCE(EGG::CoreControllerMgr)->beginFrame();
 }
 
 /**
@@ -1020,6 +853,7 @@ bool System::beginFrame()
  */
 void System::endFrame()
 {
+	EGG_INSTANCE(EGG::CoreControllerMgr)->endFrame();
 	mDisplay->endFrame();
 	inactiveGP();
 	mResetMgr->update();
@@ -1035,7 +869,6 @@ void System::endFrame()
 void System::beginRender()
 {
 	activeGP();
-	CARDProbe(0);
 	mDisplay->beginRender();
 }
 
@@ -1247,7 +1080,7 @@ void System::initCurrentHeapMutex()
 void System::startChangeCurrentHeap(JKRHeap* newheap)
 {
 	OSLockMutex(this);
-	P2ASSERTLINE(2033, !mBackupHeap);
+	P2ASSERTLINE(2581, !mBackupHeap);
 	mBackupHeap = JKRGetCurrentHeap();
 	newheap->becomeCurrentHeap();
 }
@@ -1258,7 +1091,7 @@ void System::startChangeCurrentHeap(JKRHeap* newheap)
  */
 void System::endChangeCurrentHeap()
 {
-	P2ASSERTLINE(2041, mBackupHeap);
+	P2ASSERTLINE(2589, mBackupHeap);
 	mBackupHeap->becomeCurrentHeap();
 	mBackupHeap = nullptr;
 	OSUnlockMutex(this);
@@ -1295,7 +1128,7 @@ void System::refreshGenNode()
 void System::setFrameRate(int newFactor)
 {
 	JFWDisplay* display = mDisplay;
-	JUT_ASSERTLINE(2343, display, "no display");
+	JUT_ASSERTLINE(2891, display, "no display");
 	mFrameRate          = (f32)newFactor;
 	mDeltaTime          = mFrameRate / 60.0f;
 	display->mFrameRate = newFactor;

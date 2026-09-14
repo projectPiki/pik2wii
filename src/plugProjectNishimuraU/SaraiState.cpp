@@ -108,7 +108,7 @@ void StateFall::exec(EnemyBase* enemy)
 			sarai->createDownEffect();
 			rumbleMgr->startRumble(RUMBLETYPE_Fixed11, pos, RUMBLEID_Both);
 		} else if (sarai->mCurAnim->mType == KEYEVENT_END) {
-			if (sarai->mHealth <= 0.0f) {
+			if (sarai->isDead()) {
 				transit(sarai, SARAI_Dead, nullptr);
 			} else {
 				transit(sarai, SARAI_Damage, nullptr);
@@ -148,14 +148,14 @@ void StateDamage::init(EnemyBase* enemy, StateArg* stateArg)
 void StateDamage::exec(EnemyBase* enemy)
 {
 	Obj* sarai = OBJ(enemy);
-	if (sarai->mHealth <= 0.0f || sarai->mGeneralTimer > CG_PROPERPARMS(sarai).mStrugglingTime.mValue || sarai->getStickPikminNum() == 0) {
+	if (sarai->isDead() || sarai->mGeneralTimer > CG_PROPERPARMS(sarai).mStrugglingTime.mValue || sarai->getStickPikminNum() == 0) {
 		sarai->finishMotion();
 	}
 
 	sarai->mGeneralTimer += sys->getDeltaTime();
 
 	if (sarai->mCurAnim->mIsPlaying && sarai->mCurAnim->mType == KEYEVENT_END) {
-		if (sarai->mHealth <= 0.0f) {
+		if (sarai->isDead()) {
 			transit(sarai, SARAI_Dead, nullptr);
 		} else {
 			transit(sarai, SARAI_TakeOff, nullptr);
@@ -192,7 +192,7 @@ void StateTakeOff::exec(EnemyBase* enemy)
 	Obj* sarai = OBJ(enemy);
 	f32 val    = sarai->setHeightVelocity();
 
-	if (sarai->mHealth <= 0.0f || val > CG_PROPERPARMS(sarai).mStateTransitionHeight.mValue) {
+	if (sarai->isDead() || val > CG_PROPERPARMS(sarai).mStateTransitionHeight.mValue) {
 		sarai->finishMotion();
 	}
 
@@ -249,7 +249,7 @@ void StateFlick::exec(EnemyBase* enemy)
 			sarai->mFlickTimer = 0.0f;
 
 		} else if (sarai->mCurAnim->mType == KEYEVENT_END) {
-			if (sarai->mHealth <= 0.0f) {
+			if (sarai->isDead()) {
 				transit(sarai, SARAI_Fall, nullptr);
 				return;
 			}

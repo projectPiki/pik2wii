@@ -7,6 +7,12 @@
 #include "efx/TNewkurage.h"
 #include "nans.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "246-KurageState";
+}
+
 namespace Game {
 namespace Kurage {
 
@@ -322,7 +328,7 @@ void StateAttack::init(EnemyBase* enemy, StateArg* stateArg)
 void StateAttack::exec(EnemyBase* enemy)
 {
 	Obj* kurage = OBJ(enemy);
-	if (kurage->mHealth <= 0.0f || kurage->mStateTimer > CG_PROPERPARMS(kurage).mSuckTime.mValue
+	if (kurage->isDead() || kurage->mStateTimer > CG_PROPERPARMS(kurage).mSuckTime.mValue
 	    || kurage->mFallTimer > CG_PROPERPARMS(kurage).mShakeTime.mValue) {
 		kurage->finishMotion();
 	}
@@ -422,7 +428,7 @@ void StateFall::exec(EnemyBase* enemy)
 	kurage->mStateTimer += sys->getDeltaTime();
 
 	if (kurage->mCurAnim->mIsPlaying && (u32)kurage->mCurAnim->mType == KEYEVENT_END) {
-		if (kurage->mHealth <= 0.0f) {
+		if (kurage->isDead()) {
 			transit(kurage, KURAGE_Dead, nullptr);
 		} else {
 			transit(kurage, KURAGE_Land, nullptr);
@@ -466,7 +472,7 @@ void StateLand::exec(EnemyBase* enemy)
 {
 	Obj* kurage = OBJ(enemy);
 	if (kurage->mCurAnim->mIsPlaying && (u32)kurage->mCurAnim->mType == KEYEVENT_END) {
-		if (kurage->mHealth <= 0.0f) {
+		if (kurage->isDead()) {
 			transit(kurage, KURAGE_Dead, nullptr);
 		} else {
 			transit(kurage, KURAGE_Ground, nullptr);
@@ -514,7 +520,7 @@ void StateTakeOff::exec(EnemyBase* enemy)
 			kurage->enableEvent(0, EB_Untargetable);
 
 		} else if ((u32)kurage->mCurAnim->mType == KEYEVENT_END) {
-			if (kurage->mHealth <= 0.0f) {
+			if (kurage->isDead()) {
 				transit(kurage, KURAGE_Dead, nullptr);
 			} else {
 				transit(kurage, KURAGE_Wait, nullptr);
@@ -560,7 +566,7 @@ void StateGround::exec(EnemyBase* enemy)
 	kurage->mStateTimer += sys->getDeltaTime();
 
 	if (kurage->mCurAnim->mIsPlaying && (u32)kurage->mCurAnim->mType == KEYEVENT_END) {
-		if (kurage->mHealth <= 0.0f) {
+		if (kurage->isDead()) {
 			transit(kurage, KURAGE_Dead, nullptr);
 		} else if (kurage->mStuckPikminCount != 0) {
 			transit(kurage, KURAGE_GroundFlick, nullptr);
@@ -684,7 +690,7 @@ void StateGroundFlick::exec(EnemyBase* enemy)
 			kurage->mFlickTimer = 0.0f;
 
 		} else if ((u32)kurage->mCurAnim->mType == KEYEVENT_END) {
-			if (kurage->mHealth <= 0.0f) {
+			if (kurage->isDead()) {
 				transit(kurage, KURAGE_Dead, nullptr);
 
 			} else {
