@@ -13,10 +13,13 @@
 #include "efx/TGate.h"
 #include "nans.h"
 
-namespace Game {
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "itemGate";
+}
 
-static const int unusedItemGateArray[] = { 0, 0, 0 };
-static const char unusedItemGateName[] = "itemGate";
+namespace Game {
 
 ItemGateMgr* itemGateMgr;
 ItemDengekiGate::Mgr* ItemDengekiGate::mgr;

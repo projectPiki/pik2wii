@@ -30,7 +30,7 @@ struct TTestBase : public Screen::ObjBase {
 	virtual bool doStart(Screen::StartSceneArg const*);          // _44
 	virtual bool doEnd(Screen::EndSceneArg const*);              // _48
 	virtual bool doUpdateFadein();                               // _50
-	virtual void doUpdateFadeinFinish();                         // _54
+	virtual void doUpdateFadeinFinish() { mCanInput = true; }    // _54
 	virtual void doUpdateFinish();                               // _5C
 	virtual bool doUpdateFadeout();                              // _60
 	virtual og::Screen::DispMemberBase* getDispMemberBase() = 0; // _78

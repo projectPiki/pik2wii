@@ -86,18 +86,18 @@ struct TFueact : public TBase {
 		}
 		return ret;
 	} // _08 (weak)
-	virtual void forceKill()
-	{
-		mCircle.forceKill();
-		mBiri1.forceKill();
-		mBiri2.forceKill();
-	} // _0C (weak)
 	virtual void fade()
 	{
 		mCircle.fade();
 		mBiri1.fade();
 		mBiri2.fade();
 	} // _10 (weak)
+	virtual void forceKill()
+	{
+		mCircle.forceKill();
+		mBiri1.forceKill();
+		mBiri2.forceKill();
+	} // _0C (weak)
 
 	// _00      = VTBL
 	TFueactCircle mCircle; // _04

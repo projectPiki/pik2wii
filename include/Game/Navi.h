@@ -238,6 +238,8 @@ struct Navi : public FakePiki, virtual public PelletView {
 
 	inline int getNaviID() { return mNaviIndex; }
 
+	inline bool isDead() { return mHealth < 1.0f; }
+
 	// inline NaviState* getCurrentState() { return mCurrentState; }
 
 	inline void setControlFlag(u16 flag) { mNaviControlFlag.typeView |= flag; }

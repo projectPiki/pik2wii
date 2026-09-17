@@ -1800,8 +1800,9 @@ Vector3f MiniHoudaiShotGunMgr::getShotGunPosition()
 bool MiniHoudaiShotGunMgr::searchShotGunRotation()
 {
 	Vector3f pos = getShotGunPosition();
-	Vector3f sep = pos - mTargetPosition;
-	Vector2f sep2D(sep.x, sep.z);
+	f32 dx = pos.x - mTargetPosition.x;
+	f32 dz = pos.z - mTargetPosition.z;
+	Vector2f sep2D(dx, dz);
 	f32 dist = sep2D.length() - 50.0f;
 	if (dist < 1.0f) {
 		dist = 1.0f;

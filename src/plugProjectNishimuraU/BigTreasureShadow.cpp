@@ -1,9 +1,13 @@
 #include "Game/Entities/BigTreasure.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "246-BigTreasureShadow";
+}
+
 namespace Game {
 namespace BigTreasure {
-
-static const char bigTreasureShadowName[] = "246-BigTreasureShadow";
 
 /**
  * @note Address: 0x802DA5C8

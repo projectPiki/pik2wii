@@ -24,15 +24,24 @@ void UmimushiTubeShadowNode::makeShadowSRT(JointShadowParm& parm, Matrixf* mat, 
 	vec2.y += xVec.y * parm._18 + yVec.y * parm._1C;
 	vec2.z += xVec.z * parm._18 + yVec.z * parm._1C;
 
-	Vector3f halfDelta = (vec2 - vec1) * 0.5f;
-	Vector3f side      = halfDelta.cross(parm.mRotation);
+	Vector3f halfDelta;
+	halfDelta.x = (vec2.x - vec1.x) * 0.5f;
+	halfDelta.y = (vec2.y - vec1.y) * 0.5f;
+	halfDelta.z = (vec2.z - vec1.z) * 0.5f;
+	Vector3f side(halfDelta.y * parm.mRotation.z - halfDelta.z * parm.mRotation.y,
+	              halfDelta.z * parm.mRotation.x - halfDelta.x * parm.mRotation.z,
+	              halfDelta.x * parm.mRotation.y - halfDelta.y * parm.mRotation.x);
 	side.normalise();
 
-	Vector3f position = (vec1 + vec2) * 0.5f;
-	position.y += parm.mPositionMultiplier;
+	Vector3f position;
+	position.x = (vec2.x + vec1.x) * 0.5f;
+	position.y = (vec2.y + vec1.y) * 0.5f + parm.mPositionMultiplier;
+	position.z = (vec2.z + vec1.z) * 0.5f;
 
 	Vector3f height(0.0f, (position.y - parm.mPosition.y) + 25.0f, 0.0f);
-	side *= parm.mShadowScale;
+	side.x *= parm.mShadowScale;
+	side.y *= parm.mShadowScale;
+	side.z *= parm.mShadowScale;
 
 	mMainMtx->setColumn(0, halfDelta);
 	mMainMtx->setColumn(1, height);
@@ -178,9 +187,11 @@ void UmimushiSphereShadowNode::makeShadowSRT(JointShadowParm& parm, Matrixf* mat
 	Vector3f xVec;
 	Vector3f zVec;
 
-	if (isAlive) { // regswaps
-		xVec = mat->getColumn(0) * (parm.mShadowScale + 2.5f);
-		zVec = mat->getColumn(2) * parm.mShadowScale;
+	if (isAlive) {
+		mat->getColumn(0, xVec);
+		mat->getColumn(2, zVec);
+		xVec *= (parm.mShadowScale + 2.5f);
+		zVec *= parm.mShadowScale;
 	} else {
 		xVec.set(parm.mShadowScale, 0.0f, 0.0f);
 		zVec.set(0.0f, 0.0f, parm.mShadowScale);

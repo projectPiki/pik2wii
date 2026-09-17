@@ -40,10 +40,10 @@ struct GameLightEventArg {
 		setEvent(LIGHTEVENT_Unk1 | LIGHTEVENT_Unk2);
 		mLightTypeFlag = 0;
 		setLightType(LIGHTTYPE_Main);
-		mGrowTime   = 0.5f;
 		mRedScale   = 1.5f;
 		mGreenScale = 1.5f;
 		mBlueScale  = 1.5f;
+		mGrowTime   = 0.5f;
 		mFadeTime   = 2.0f;
 		mNearZ      = 0.0f;
 		mFarZ       = 1024.0f;

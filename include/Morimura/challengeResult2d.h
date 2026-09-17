@@ -249,11 +249,11 @@ struct TClearTexture {
 };
 
 struct TChallengeResultScene : public THIOScene {
+	virtual const char* getResName() const { return ""; }                    // _1C (weak)
+	virtual void doCreateObj(JKRArchive*) { }                                // _20 (weak)
 	virtual SceneType getSceneType() { return SCENE_CHALLENGE_RESULT; }      // _08 (weak)
 	virtual ScreenOwnerID getOwnerID() { return OWNER_MRMR; }                // _0C (weak)
 	virtual ScreenMemberID getMemberID() { return MEMBER_CHALLENGE_RESULT; } // _10 (weak)
-	virtual const char* getResName() const { return ""; }                    // _1C (weak)
-	virtual void doCreateObj(JKRArchive*) { }                                // _20 (weak)
 	virtual void doUserCallBackFunc(Resource::MgrCommand*);                  // _24
 
 	// _00      = VTBL

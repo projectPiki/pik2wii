@@ -1,15 +1,14 @@
-#include "PSSystem/SeqTrack.h"
-#include "PSMath.h"
+#include "Game/Navi.h"
+#include "JSystem/JAudio/JALCalc.h"
+#include "PSAutoBgm/PSAutoBgm.h"
+#include "PSGame/Global.h"
+#include "PSM/BossSeq.h"
+#include "PSM/CreaturePrm.h"
 #include "PSM/ObjCalc.h"
 #include "PSM/Otakara.h"
-#include "PSGame/Global.h"
-#include "PSAutoBgm/PSAutoBgm.h"
-#include "JSystem/JAudio/JALCalc.h"
-#include "PSM/CreaturePrm.h"
-#include "Game/Navi.h"
+#include "PSMath.h"
+#include "PSSystem/SeqTrack.h"
 #include "utilityU.h"
-#include "PSM/BossSeq.h"
-
 
 namespace PSM {
 
@@ -19,7 +18,7 @@ ObjCalcBase* PSSystem::SingletonBase<ObjCalcBase>::sInstance;
  * @note Size: 0x80
  */
 DamageDirector::DamageDirector()
-	: OneShotDirector(1, "damageD  ")
+    : OneShotDirector(1, "damageD  ")
     , mPitchMod1(0.1f)
     , mPitchMod2(5.0f)
     , mDuration(225)
@@ -77,7 +76,7 @@ void TempoChangeDirectorBase::directOffTrack(PSSystem::SeqTrackBase& seqTrack)
  * @note Size: 0x84
  */
 ActorDirector_TempoChange::ActorDirector_TempoChange()
-	: TempoChangeDirectorBase("lifeD    ", 0.7f, 100) 
+    : TempoChangeDirectorBase("lifeD    ", 0.7f, 100)
 {
 }
 
@@ -356,8 +355,8 @@ f32 ActorDirector_Scaled::getNearestDistance()
 		FOREACH_NODE(JSULink<Game::Creature>, actors->getFirst(), link)
 		{
 			Vector3f objpos = link->getObject()->getPosition();
-			f32 p1Dist      = PSMath::calcDistance(oPos, objpos);
-			f32 p2Dist      = PSMath::calcDistance(lPos, objpos);
+			f32 p1Dist      = PSMath::calcDistance<const Vector3f&>(oPos, objpos);
+			f32 p2Dist      = PSMath::calcDistance<const Vector3f&>(lPos, objpos);
 			if (p1Dist <= p2Dist) {
 				if (p1Dist < minDist) {
 					minDist = p1Dist;
@@ -383,7 +382,7 @@ f32 ActorDirector_Scaled::getNearestDistance()
 		FOREACH_NODE(JSULink<Game::Creature>, mActor->getFirst(), link)
 		{
 			Vector3f objpos = link->getObject()->getPosition();
-			f32 dist        = PSMath::calcDistance(naviPos, objpos);
+			f32 dist        = PSMath::calcDistance<const Vector3f&>(naviPos, objpos);
 			if (dist < minDist) {
 				minDist = dist;
 				onSetMinDistObj(link->getObject());
@@ -820,7 +819,10 @@ ActorDirector_Enemy::ActorDirector_Enemy(const char* name, int trackCount, s32 f
  * @note Address: 0x804580D0
  * @note Size: 0x8
  */
-void ActorDirector_Enemy::onSetMinDistObj(Game::Creature* obj) { mGameObject = static_cast<Game::EnemyBase*>(obj); }
+void ActorDirector_Enemy::onSetMinDistObj(Game::Creature* obj)
+{
+	mGameObject = static_cast<Game::EnemyBase*>(obj);
+}
 
 /**
  * @note Address: 0x804580D8

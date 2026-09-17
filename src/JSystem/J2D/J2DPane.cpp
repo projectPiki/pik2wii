@@ -1,5 +1,5 @@
-#include "JSystem/J2D/J2DScreen.h"
 #include "JSystem/J2D/J2DGrafContext.h"
+#include "JSystem/J2D/J2DScreen.h"
 #include "JSystem/JUtility/JUTResource.h"
 
 JGeometry::TBox2f J2DPane::static_mBounds(0.0f, 0.0f, 0.0f, 0.0f);
@@ -91,7 +91,7 @@ void J2DPane::initialize(J2DPane* parent, bool isVisible, u64 tag, const JGeomet
  */
 J2DPane::J2DPane(u64 tag, const JGeometry::TBox2f& box)
     : mTree(this)
-	, mBounds(0.0f, 0.0f, 0.0f, 0.0f)
+    , mBounds(0.0f, 0.0f, 0.0f, 0.0f)
     , mGlobalBounds(0.0f, 0.0f, 0.0f, 0.0f)
     , mClipRect(0.0f, 0.0f, 0.0f, 0.0f)
     , mTransform(nullptr)
@@ -104,7 +104,10 @@ J2DPane::J2DPane(u64 tag, const JGeometry::TBox2f& box)
  * @note Size: 0xF4
  * initialize__7J2DPaneFUxRCQ29JGeometry8TBox2<f>
  */
-void J2DPane::initialize(u64 tag, const JGeometry::TBox2f& box) { initialize(nullptr, true, tag, box); }
+void J2DPane::initialize(u64 tag, const JGeometry::TBox2f& box)
+{
+	initialize(nullptr, true, tag, box);
+}
 
 /**
  * __ct__7J2DPaneFP7J2DPaneP20JSURandomInputStreamUc
@@ -113,7 +116,7 @@ void J2DPane::initialize(u64 tag, const JGeometry::TBox2f& box) { initialize(nul
  */
 J2DPane::J2DPane(J2DPane* parent, JSURandomInputStream* input, u8 version)
     : mTree(this)
-	, mBounds(0.0f, 0.0f, 0.0f, 0.0f)
+    , mBounds(0.0f, 0.0f, 0.0f, 0.0f)
     , mGlobalBounds(0.0f, 0.0f, 0.0f, 0.0f)
     , mClipRect(0.0f, 0.0f, 0.0f, 0.0f)
     , mTransform(nullptr)
@@ -153,10 +156,10 @@ void J2DPane::makePaneStream(J2DPane* parent, JSURandomInputStream* input)
 	mTag = tag;
 
 	f32 x0 = input->readS16();
-    f32 y0 = input->readS16();
-    f32 x1 = x0 + input->readS16();
-    f32 y1 = y0 + input->readS16();
-    mBounds.set(x0, y0, x1, y1);
+	f32 y0 = input->readS16();
+	f32 x1 = x0 + input->readS16();
+	f32 y1 = y0 + input->readS16();
+	mBounds.set(x0, y0, x1, y1);
 	valuesRemaining -= 6;
 	mAngleX = 0.0f;
 	mAngleY = 0.0f;
@@ -205,8 +208,8 @@ void J2DPane::makePaneStream(J2DPane* parent, JSURandomInputStream* input)
 void J2DPane::changeUseTrans(J2DPane* parent)
 {
 	f32 xOffset = 0.0f;
-    f32 yOffset = 0.0f;
-	
+	f32 yOffset = 0.0f;
+
 	if (mBasePosition % 3 == 1) {
 		xOffset = mBounds.getWidth() / 2;
 	} else if (mBasePosition % 3 == 2) {
@@ -224,10 +227,8 @@ void J2DPane::changeUseTrans(J2DPane* parent)
 
 	mAnchorPoint.x = xOffset;
 	mAnchorPoint.y = yOffset;
-	
-	f32 addX = -mOffset.x;
-    f32 addY = -mOffset.y;
-	mBounds.addPos(addX, addY);
+
+	mBounds.addPos(JGeometry::TVec2<f32>(-mOffset.x, -mOffset.y));
 
 	if (parent) {
 		u8 parentBasePos = parent->mBasePosition;
@@ -355,7 +356,7 @@ void J2DPane::draw(f32 x, f32 y, const J2DGrafContext* grafContext, bool isOrtho
 	if (mBounds.isValid()) {
 		mGlobalBounds = mBounds;
 
-		mGlobalBounds.addPos(mOffset.x, mOffset.y);
+		mGlobalBounds.addPos(JGeometry::TVec2<f32>(mOffset.x, mOffset.y));
 
 		if (unkBool) {
 			mClipRect = mBounds;
@@ -363,9 +364,8 @@ void J2DPane::draw(f32 x, f32 y, const J2DGrafContext* grafContext, bool isOrtho
 		}
 
 		if (parent) {
-			f32 width  = parent->mGlobalBounds.i.x - parent->mBounds.i.x;
-			f32 height = parent->mGlobalBounds.i.y - parent->mBounds.i.y;
-			mGlobalBounds.addPos(width, height);
+			mGlobalBounds.addPos(
+			    JGeometry::TVec2<f32>(parent->mGlobalBounds.i.x - parent->mBounds.i.x, parent->mGlobalBounds.i.y - parent->mBounds.i.y));
 			PSMTXConcat(parent->mGlobalMtx, mPositionMtx, mGlobalMtx);
 
 			if (unkBool) {
@@ -482,7 +482,7 @@ void J2DPane::move(f32 x, f32 y)
 void J2DPane::add(f32 x, f32 y)
 {
 	mOffset.x += x;
-    mOffset.y += y;
+	mOffset.y += y;
 	calcMtx();
 }
 
@@ -919,7 +919,10 @@ J2DPane* J2DPane::getNextChildPane()
  * @note Address: 0x800390E0
  * @note Size: 0x1C
  */
-J2DPane* J2DPane::getParentPane() { return (mTree.getParent() == nullptr) ? nullptr : mTree.getParent()->getObject(); }
+J2DPane* J2DPane::getParentPane()
+{
+	return (mTree.getParent() == nullptr) ? nullptr : mTree.getParent()->getObject();
+}
 
 /**
  * @note Address: 0x800390FC
@@ -1087,7 +1090,10 @@ void J2DPane::setAnimation(J2DAnmBase* animation)
  * @note Address: 0x800395F4
  * @note Size: 0x8
  */
-void J2DPane::setAnimation(J2DAnmTransform* animation) { mTransform = animation; }
+void J2DPane::setAnimation(J2DAnmTransform* animation)
+{
+	mTransform = animation;
+}
 
 /**
  * @note Address: 0x800395FC

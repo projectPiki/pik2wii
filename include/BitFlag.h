@@ -1,8 +1,8 @@
 #ifndef _BITFLAG_H
 #define _BITFLAG_H
 
-#include "types.h"
 #include "stream.h"
+#include "types.h"
 
 /**
  * @brief A template struct representing a bit flag.
@@ -87,6 +87,30 @@ struct BitFlag {
 	 * @param value The value of the bit to unset.
 	 */
 	inline void unset(T value) { typeView &= ~value; }
+
+	/**
+	 * @brief Safely set a specific bit in the bit flag, by number.
+	 *
+	 * @param id Bit number to set.
+	 */
+	inline void setBit(int id)
+	{
+		if (id < (int)(sizeof(T) * 8)) {
+			int byte = id >> 3;
+			byteView[sizeof(T) - 1 - byte] |= 1 << (id - byte * 8);
+		}
+	}
+
+	/**
+	 * @brief Check if a specific bit is set, by number.
+	 *
+	 * @param id Bit number to check.
+	 */
+	inline bool isBitSet(int id) const
+	{
+		int byte = id >> 3;
+		return ((1 << (id - byte * 8)) & byteView[sizeof(T) - 1 - byte]) != 0;
+	}
 
 	union {
 		u8 byteView[sizeof(T)]; /**< The byte view of the bit flag. */

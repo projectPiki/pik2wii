@@ -54,7 +54,7 @@ void MainResultState::init(SingleGameSection* game, StateArg* arg)
 	sys->dvdLoadUseCallBack(&mDvdThread, mLoadDelegate);
 	mStatus               = Result_LoadData;
 	mMainHeap             = nullptr;
-	playData->mDeadNaviID = 0;
+	playData->mDeadNaviID.typeView = 0;
 	naviMgr->clearDeadCount();
 	theTekiHeap = generalEnemyMgr->useHeap();
 	if (Farm::farmMgr) {

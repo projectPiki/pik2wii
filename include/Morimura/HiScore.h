@@ -27,21 +27,6 @@ struct DispMemberHighScore : public og::Screen::DispMemberBase {
 	bool _0C;                  // _0C
 };
 
-struct THiScoreIndPane : public TIndPane {
-	THiScoreIndPane(J2DPane* pane)
-	    : TIndPane("hi_score_00.bti", pane->getWidth(), pane->getHeight())
-	{
-	}
-
-	virtual ~THiScoreIndPane() { } // _08 (weak)
-	virtual void draw();           // _10
-
-	void setRadius(s16, f32);
-
-	// _00     = VTBL
-	// _00-_48 = TIndPane
-};
-
 struct THiScoreListScreen : public TListScreen {
 	THiScoreListScreen(JKRArchive*, int);
 	virtual void create(const char*, u32); // _08
@@ -51,18 +36,18 @@ struct THiScoreListScreen : public TListScreen {
 	// _00-_18 = TScreenBase
 };
 
-struct THiScoreScene : public THIOScene {
-	THiScoreScene();
+struct THiScoreIndPane : public TIndPane {
+	THiScoreIndPane(J2DPane* pane)
+	    : TIndPane("hi_score_00.bti", pane->getWidth(), pane->getHeight())
+	{
+	}
 
-	virtual SceneType getSceneType() { return SCENE_HIGH_SCORE; }        // _08 (weak)
-	virtual ScreenOwnerID getOwnerID() { return OWNER_MRMR; }            // _0C (weak)
-	virtual ScreenMemberID getMemberID() { return MEMBER_HIGH_SCORE; }   // _10 (weak)
-	virtual const char* getResName() const { return "res_hiscore.szs"; } // _1C
-	virtual void doCreateObj(JKRArchive*);                               // _20 (weak)
+	virtual void draw();           // _10
 
-	// _00      = VTBL
-	// _00-_224 = THIOScene
-	// _220, treat as THiScore*
+	void setRadius(s16, f32);
+
+	// _00     = VTBL
+	// _00-_48 = TIndPane
 };
 
 struct THiScore : public TScrollList {
@@ -160,6 +145,26 @@ struct THiScore : public TScrollList {
 		f32 _0C;
 		f32 _10;
 	} mScrollParm;
+};
+
+struct THiScoreScene : public THIOScene {
+	THiScoreScene();
+
+	virtual const char* getResName() const;
+	virtual void doCreateObj(JKRArchive* arc)
+	{
+		THiScore* obj = new THiScore;
+		registObj(obj, arc);
+		mObject = obj;
+
+	} // _20 (weak)
+	virtual SceneType getSceneType() { return SCENE_HIGH_SCORE; }      // _08 (weak)
+	virtual ScreenOwnerID getOwnerID() { return OWNER_MRMR; }          // _0C (weak)
+	virtual ScreenMemberID getMemberID() { return MEMBER_HIGH_SCORE; } // _10 (weak)
+
+	// _00      = VTBL
+	// _00-_224 = THIOScene
+	// _220, treat as THiScore*
 };
 
 } // namespace Morimura

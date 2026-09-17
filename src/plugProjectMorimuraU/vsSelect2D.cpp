@@ -35,7 +35,6 @@ JKRHeap* TVsSelect::mDebugHeapParent;
 Vector2f TVsPiki::mPikiOffset = Vector2f(12.5f, -0.5f);
 TVsSelect::StaticValues TVsSelect::mScrollParm;
 
-u32 unk[]                            = { 1, 2, 3 };
 ResTIMG* TVsSelect::mOrimaTexture[5] = { nullptr };
 ResTIMG* TVsSelect::mLouieTexture[5] = { nullptr };
 
@@ -259,20 +258,24 @@ void TVsPiki::update(int pikis)
  */
 void TVsPiki::draw()
 {
-	JGeometry::TVec3f pos = mPikminLeft->getGlbVtx(GLBVTX_TopLeft);
-	f32 x1                = pos.x - mPikiOffset.x;
-	f32 xoffs             = mPikiOffset.x;
-	f32 y1                = pos.y - 50.0f;
-	f32 y2                = mPikminLeft->getGlbVtx(GLBVTX_TopLeft).y - y1;
-	f32 x2                = (xoffs * 12.0f + x1) - x1;
+	const JGeometry::TVec3f& pos = mPikminLeft->getGlbVtx(GLBVTX_TopLeft);
+	Vector2f origin(pos.x, pos.y);
+	f32 xoffs = mPikiOffset.x;
+	origin.x -= xoffs;
+	origin.y -= 50.0f;
+	f32 x1 = origin.x;
+	f32 y1 = origin.y;
+	f32 y2 = mPikminLeft->getGlbVtx(GLBVTX_TopLeft).y - y1;
+	f32 x2 = (xoffs * 12.0f + x1) - x1;
 	GXSetScissor(x1, y1, x2, y2);
 	Vector2f* offs = &mPikiOffset;
 
 	for (int i = 0; i < 10; i++) {
 		J2DPicture* pic = mPikminLeft;
 		f32 calc        = TVsSelect::mDemoScale;
-		f32 x           = mPosInfos[i].mPosition.x * calc + pic->getGlbVtx(GLBVTX_BtmLeft).x;
-		f32 y           = mPosInfos[i].mPosition.y * calc + pic->getGlbVtx(GLBVTX_BtmLeft).y;
+
+		f32 y = mPosInfos[i].mPosition.y * calc + pic->getGlbVtx(GLBVTX_BtmLeft).y;
+		f32 x = mPosInfos[i].mPosition.x * calc + pic->getGlbVtx(GLBVTX_BtmLeft).x;
 		pic->draw(x, y, calc * pic->getWidth(), calc * pic->getHeight(), false, false, false);
 		pic->calcMtx();
 
@@ -3948,8 +3951,10 @@ bool TVsSelect::doUpdate()
 			for (int i = 0; i < 2; i++) {
 				TVsSelectOnyon* onyon = mOnyonObj[i];
 				f32 calc              = onyon->mGoalAngle;
-				onyon->mGoalPosition
-				    = Vector2f(cosf(calc) * 400.0f + onyon->mCurrentPosition.x, sinf(calc) * 400.0f + onyon->mCurrentPosition.y);
+				Vector2f pos          = onyon->mCurrentPosition;
+				pos.x += 400.0f * sinf(calc);
+				pos.y += 400.0f * cosf(calc);
+				onyon->mGoalPosition = pos;
 			}
 		}
 	}
@@ -4054,8 +4059,9 @@ bool TVsSelect::doUpdate()
 	mListScreen->mScreenObj->scaleScreen(mDemoScale);
 	mFireScreen->mScreenObj->scaleScreen(mDemoScale);
 
+	f32 spotOffsetX = -mScreenXPos / mDemoScale;
 	mPaneSpot->updateScale(1.0f / mDemoScale);
-	f32 x = 1.1f * (-mScreenXPos / mDemoScale) + 324.0f;
+	f32 x = 1.1f * spotOffsetX + 324.0f;
 	f32 y = 243.0f - 40.0f * (1.0f - 1.0f / mDemoScale);
 	mPaneSpot->setOffset(x, y);
 
@@ -4114,11 +4120,11 @@ bool TVsSelect::doUpdate()
 	}
 	mPaneRulesInfo->setOffset(mRulesPanePos.x + mRulesMoveXPos, mRulesPanePos.y);
 
-	JGeometry::TVec3f vec1; 
+	JGeometry::TVec3f vec1;
 	vec1.set(mPaneStageNameBg->getGlbVtx(GLBVTX_BtmLeft));
-	JGeometry::TVec3f vec2; 
+	JGeometry::TVec3f vec2;
 	vec2.set(mPaneStageNameBg->getGlbVtx(GLBVTX_TopRight));
-	TVsSelectScreen* scrn  = static_cast<TVsSelectScreen*>(mMainScreen);
+	TVsSelectScreen* scrn = static_cast<TVsSelectScreen*>(mMainScreen);
 	scrn->mCallbackScissor->mBounds.set(vec1.x, vec1.y, vec2.x, vec2.y);
 
 	vec1.set(mPaneStageList->getGlbVtx(GLBVTX_BtmLeft));
@@ -6455,7 +6461,7 @@ void TVsSelect::doUpdateFadeinFinish()
  */
 void TVsSelect::doUpdateFadeoutFinish()
 {
-	P2ASSERTLINE(2096, mDispMember);
+	P2ASSERTLINE(2176, mDispMember);
 	mDispMember->mOlimarHandicap     = mHandicapSel[0];
 	mDispMember->mLouieHandicap      = mHandicapSel[1];
 	mDispMember->mSelectedStageIndex = mIndexPaneList[mCurrActiveRowSel]->getIndex();
@@ -6473,10 +6479,10 @@ void TVsSelect::doUpdateFadeoutFinish()
 void TVsSelect::paneInit()
 {
 	mPaneStageNameBg = mMainScreen->mScreenObj->search('PICT_075');
-	P2ASSERTLINE(2119, mPaneStageNameBg);
+	P2ASSERTLINE(2199, mPaneStageNameBg);
 
 	mPaneLevelName = mMainScreen->mScreenObj->search('Tbmenu11');
-	P2ASSERTLINE(2122, mPaneLevelName);
+	P2ASSERTLINE(2202, mPaneLevelName);
 
 	mActiveCourseThumbs[0] = static_cast<J2DPicture*>(mListScreen->mScreenObj->search('Plistim0'));
 	mActiveCourseThumbs[1] = static_cast<J2DPicture*>(mListScreen->mScreenObj->search('Plistim1'));
@@ -6491,19 +6497,19 @@ void TVsSelect::paneInit()
 	mPaneLevelWindows[4] = mListScreen->mScreenObj->search('Pliswin4');
 
 	for (int i = 0; i < mNumActiveRows; i++) {
-		JUT_ASSERTLINE(2139, mActiveCourseThumbs[i], "coursename[%d] not find\n", i);
-		JUT_ASSERTLINE(2140, mPaneLevelWindows[i], "pictureframe[%d] not find\n", i);
+		JUT_ASSERTLINE(2219, mActiveCourseThumbs[i], "coursename[%d] not find\n", i);
+		JUT_ASSERTLINE(2220, mPaneLevelWindows[i], "pictureframe[%d] not find\n", i);
 	}
 
 	mPaneSpot = mMainScreen->mScreenObj->search('Pspot0');
-	P2ASSERTLINE(2145, mPaneSpot);
+	P2ASSERTLINE(2225, mPaneSpot);
 
 	f32 test                = 20.0f;
 	mSelectionYOffset       = mIndexPaneList[mCurrActiveRowSel]->getPaneYOffset() - 10.0f;
 	mCursorSelectionYOffset = mSelectionYOffset + test;
 
 	mPaneStars = mMainScreen->mScreenObj->search('Nstarpik');
-	P2ASSERTLINE(2154, mPaneStars);
+	P2ASSERTLINE(2234, mPaneStars);
 
 	changeCourseTexture();
 }
@@ -6536,17 +6542,17 @@ void TVsSelect::changePaneInfo()
 		if (mStickAnimState == 0) {
 			mIsSelectIndexChange = 0;
 		} else {
-			f32 calc                   = 0.0f;
 			mIsSelectIndexChange       = 1;
 			mIndexGroup->mScrollOffset = 0.0f;
 			for (int i = 0; i < mNumActiveRows; i++) {
-				mIndexPaneList[i]->mPane->setOffsetY(calc + mIndexPaneList[i]->getPaneYOffset());
+				mIndexPaneList[i]->setOffset(0.0f);
 			}
 		}
 
 		for (int i = 0; i < mNumActiveRows; i++) {
 			mIndexPaneList[i]->mPane->show();
-			if (id != mIndexPaneList[i]->getIndex()) {
+			int paneIndex = mIndexPaneList[i]->getIndex();
+			if (paneIndex != id) {
 				TIndexPane* ind = mIndexPaneList[i];
 				f32 y2          = ind->getPaneYOffset();
 				ind->getIndex();
@@ -6556,176 +6562,6 @@ void TVsSelect::changePaneInfo()
 			}
 		}
 	}
-	/*
-	stwu     r1, -0x40(r1)
-	mflr     r0
-	stw      r0, 0x44(r1)
-	stfd     f31, 0x30(r1)
-	psq_st   f31, 56(r1), 0, qr0
-	stfd     f30, 0x20(r1)
-	psq_st   f30, 40(r1), 0, qr0
-	stw      r31, 0x1c(r1)
-	stw      r30, 0x18(r1)
-	stw      r29, 0x14(r1)
-	stw      r28, 0x10(r1)
-	mr       r30, r3
-	lwz      r0, 0x94(r3)
-	lwz      r3, 0x88(r3)
-	slwi     r0, r0, 2
-	lwzx     r3, r3, r0
-	bl       getIndex__Q28Morimura10TIndexPaneFv
-	lwz      r12, 0(r30)
-	mr       r0, r3
-	mr       r3, r30
-	lwz      r29, 0xf0(r30)
-	lwz      r12, 0x8c(r12)
-	mr       r4, r0
-	mtctr    r12
-	bctrl
-	stw      r4, 0x1c(r29)
-	lfs      f0, lbl_8051F17C@sda21(r2)
-	stw      r3, 0x18(r29)
-	lfs      f1, 0x230(r30)
-	fmuls    f0, f1, f0
-	stfs     f0, 0x230(r30)
-	lbz      r0, mLoopDrum__Q28Morimura9TVsSelect@sda21(r13)
-	cmplwi   r0, 0
-	bne      lbl_8039F9C8
-	li       r0, 0
-	stw      r0, 0x244(r30)
-	lwz      r3, 0x208(r30)
-	bl       stickUpDown__Q32og6Screen12StickAnimMgrFv
-	lwz      r0, 0x94(r30)
-	lwz      r3, 0x88(r30)
-	slwi     r0, r0, 2
-	lwzx     r3, r3, r0
-	bl       getIndex__Q28Morimura10TIndexPaneFv
-	lwz      r0, 0x94(r30)
-	or.      r31, r3, r3
-	lwz      r3, 0x88(r30)
-	slwi     r0, r0, 2
-	lwzx     r3, r3, r0
-	lfs      f30, 0x1c(r3)
-	bne      lbl_8039F890
-	li       r0, 1
-	stw      r0, 0x244(r30)
-	lwz      r3, 0x208(r30)
-	bl       stickDown__Q32og6Screen12StickAnimMgrFv
-
-lbl_8039F890:
-	lwz      r3, 0x248(r30)
-	addi     r0, r3, -1
-	cmpw     r31, r0
-	bne      lbl_8039F8B0
-	li       r0, 2
-	stw      r0, 0x244(r30)
-	lwz      r3, 0x208(r30)
-	bl       stickUp__Q32og6Screen12StickAnimMgrFv
-
-lbl_8039F8B0:
-	lwz      r0, 0x244(r30)
-	cmpwi    r0, 0
-	bne      lbl_8039F8C8
-	li       r0, 0
-	stb      r0, 0x23d(r30)
-	b        lbl_8039F924
-
-lbl_8039F8C8:
-	li       r0, 1
-	lfs      f31, lbl_8051F170@sda21(r2)
-	stb      r0, 0x23d(r30)
-	li       r28, 0
-	li       r29, 0
-	lwz      r3, 0x84(r30)
-	stfs     f31, 0x14(r3)
-	b        lbl_8039F918
-
-lbl_8039F8E8:
-	lwz      r3, 0x88(r30)
-	lwzx     r4, r3, r29
-	lfs      f0, 0x1c(r4)
-	lwz      r3, 4(r4)
-	fadds    f0, f0, f31
-	stfs     f0, 0xd8(r3)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x2c(r12)
-	mtctr    r12
-	bctrl
-	addi     r29, r29, 4
-	addi     r28, r28, 1
-
-lbl_8039F918:
-	lha      r0, 0x8e(r30)
-	cmpw     r28, r0
-	blt      lbl_8039F8E8
-
-lbl_8039F924:
-	li       r28, 0
-	li       r29, 0
-	b        lbl_8039F9BC
-
-lbl_8039F930:
-	lwz      r3, 0x88(r30)
-	li       r0, 1
-	lwzx     r3, r3, r29
-	lwz      r3, 4(r3)
-	stb      r0, 0xb0(r3)
-	lwz      r3, 0x88(r30)
-	lwzx     r3, r3, r29
-	bl       getIndex__Q28Morimura10TIndexPaneFv
-	cmpw     r3, r31
-	beq      lbl_8039F9B4
-	lwz      r3, 0x88(r30)
-	lwzx     r3, r3, r29
-	lfs      f31, 0x1c(r3)
-	bl       getIndex__Q28Morimura10TIndexPaneFv
-	lwz      r3, 0x88(r30)
-	lwzx     r3, r3, r29
-	bl       getIndex__Q28Morimura10TIndexPaneFv
-	cmpw     r3, r31
-	ble      lbl_8039F984
-	fcmpo    cr0, f30, f31
-	bgt      lbl_8039F9A0
-
-lbl_8039F984:
-	lwz      r3, 0x88(r30)
-	lwzx     r3, r3, r29
-	bl       getIndex__Q28Morimura10TIndexPaneFv
-	cmpw     r3, r31
-	bge      lbl_8039F9B4
-	fcmpo    cr0, f30, f31
-	bge      lbl_8039F9B4
-
-lbl_8039F9A0:
-	lwz      r3, 0x88(r30)
-	li       r0, 0
-	lwzx     r3, r3, r29
-	lwz      r3, 4(r3)
-	stb      r0, 0xb0(r3)
-
-lbl_8039F9B4:
-	addi     r29, r29, 4
-	addi     r28, r28, 1
-
-lbl_8039F9BC:
-	lha      r0, 0x8e(r30)
-	cmpw     r28, r0
-	blt      lbl_8039F930
-
-lbl_8039F9C8:
-	psq_l    f31, 56(r1), 0, qr0
-	lfd      f31, 0x30(r1)
-	psq_l    f30, 40(r1), 0, qr0
-	lfd      f30, 0x20(r1)
-	lwz      r31, 0x1c(r1)
-	lwz      r30, 0x18(r1)
-	lwz      r29, 0x14(r1)
-	lwz      r0, 0x44(r1)
-	lwz      r28, 0x10(r1)
-	mtlr     r0
-	addi     r1, r1, 0x40
-	blr
-	*/
 }
 
 /**
@@ -6734,7 +6570,7 @@ lbl_8039F9C8:
  */
 u64 TVsSelect::getNameID(int id)
 {
-	P2ASSERTLINE(2226, id <= getIdMax());
+	P2ASSERTLINE(2306, id <= getIdMax());
 	int course = getCourseID(id);
 	return mMesgData->getMsgID(course - 1);
 }
@@ -6787,13 +6623,12 @@ void TVsSelect::doZoom()
 			mZoomLevel  = 0.0f;
 			bool finish = true;
 			Vector2f offset(320.0f, 240.0f);
-			Vector2f diff1 = mOnyonObj[0]->mCurrentPosition - offset;
-			if (diff1.sqrMagnitude() < 160000.0f) {
-				finish = false;
-			}
-			Vector2f diff2 = mOnyonObj[1]->mCurrentPosition - offset;
-			if (diff2.sqrMagnitude() < 160000.0f) {
-				finish = false;
+			for (int i = 0; i < 2; i++) {
+				Vector2f diff = mOnyonObj[i]->mCurrentPosition;
+				diff -= offset;
+				if (diff.sqrMagnitude() < 160000.0f) {
+					finish = false;
+				}
 			}
 			if (finish)
 				mZoomState = 0;
@@ -6803,7 +6638,7 @@ void TVsSelect::doZoom()
 	f32 calc  = sinf(mZoomLevel * HALF_PI / mZoomFrameMax);
 	f32 scale = 0.0f;
 	f32 temp;
-	if (calc >= 0.25f) {
+	if (!(calc < 0.25f)) {
 		temp  = 1.0f;
 		scale = (calc - 0.25f) * 4.0f / 3.0f;
 		if (calc == 1.0f) {
@@ -6812,12 +6647,11 @@ void TVsSelect::doZoom()
 				mZoomState = 3;
 				changeIndirectTexture();
 				mCanCancel = false;
-				scale      = temp;
 			}
 		}
 	}
-	mScreenXPos = scale * mDemoOffsetMax;
-	mDemoScale  = scale * (mDemoScaleMax - 1.0f) + 1.0f;
+	mScreenXPos = mDemoOffsetMax * scale;
+	mDemoScale  = (mDemoScaleMax - 1.0f) * scale + 1.0f;
 	/*
 	stwu     r1, -0x30(r1)
 	mflr     r0
@@ -7587,7 +7421,7 @@ void TVsSelect::changeIndirectTexture()
  */
 void TVsSelect::setShortenIndex(int id, int id2, bool)
 {
-	P2ASSERTLINE(2503, id < mNumActiveRows);
+	P2ASSERTLINE(2583, id < mNumActiveRows);
 	id2 = getCourseID(id2);
 	mActiveCourseThumbs[id]->changeTexture(mLevelTextures[id2], 0);
 }
@@ -7680,7 +7514,7 @@ void TVsSelect::changeFaceTexture()
 void TVsSelect::changeOrimaTexture(int id)
 {
 	ResTIMG* timg = mOrimaTexture[id];
-	P2ASSERTLINE(2597, timg);
+	P2ASSERTLINE(2677, timg);
 
 	for (int i = 0; i < 6; i++) {
 		mOlimarFacePanes[i]->changeTexture(timg, 0);
@@ -7694,7 +7528,7 @@ void TVsSelect::changeOrimaTexture(int id)
 void TVsSelect::changeLouieTexture(int id)
 {
 	ResTIMG* timg = mLouieTexture[id];
-	P2ASSERTLINE(2611, timg);
+	P2ASSERTLINE(2691, timg);
 
 	for (int i = 0; i < 6; i++) {
 		mLouieFacePanes[i]->changeTexture(timg, 0);

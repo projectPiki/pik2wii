@@ -29,50 +29,10 @@ void J3DMtxCalcJ3DSysInitBasic::init(const Vec& scale, const Mtx& mtx)
  */
 void J3DMtxCalcJ3DSysInitMaya::init(const Vec& scale, const Mtx& mtx)
 {
-	J3DSys::mCurrentS = scale;
-	J3DSys::mParentS  = (Vec) { 1.0f, 1.0f, 1.0f };
-	JMAMTXApplyScale(mtx, J3DSys::mCurrentMtx, scale.x, scale.y, scale.z);
-
-	/*
-	stwu     r1, -0x20(r1)
-	mflr     r0
-	mr       r9, r3
-	lis      r5, lbl_804789BC@ha
-	stw      r0, 0x24(r1)
-	addi     r7, r5, lbl_804789BC@l
-	lfs      f5, 0(r9)
-	lis      r5, mCurrentS__6J3DSys@ha
-	lwz      r0, 0(r7)
-	lis      r6, mParentS__6J3DSys@ha
-	lwz      r8, 4(r7)
-	lis      r3, mCurrentMtx__6J3DSys@ha
-	stw      r0, 8(r1)
-	addi     r0, r3, mCurrentMtx__6J3DSys@l
-	lwz      r7, 8(r7)
-	mr       r3, r4
-	stw      r8, 0xc(r1)
-	mr       r4, r0
-	lfs      f1, 8(r1)
-	stw      r7, 0x10(r1)
-	lfs      f2, 0xc(r1)
-	stfsu    f1, mParentS__6J3DSys@l(r6)
-	lfs      f3, 0x10(r1)
-	stfs     f2, 4(r6)
-	lfs      f4, 4(r9)
-	stfsu    f5, mCurrentS__6J3DSys@l(r5)
-	lfs      f0, 8(r9)
-	stfs     f3, 8(r6)
-	lfs      f1, 0(r9)
-	lfs      f2, 4(r9)
-	lfs      f3, 8(r9)
-	stfs     f4, 4(r5)
-	stfs     f0, 8(r5)
-	bl       JMAMTXApplyScale__FPA4_CfPA4_ffff
-	lwz      r0, 0x24(r1)
-	mtlr     r0
-	addi     r1, r1, 0x20
-	blr
-	*/
+	Vec init = {1.0f, 1.0f, 1.0f};
+    J3DSys::mParentS = init;
+    J3DSys::mCurrentS = scale;
+    JMAMTXApplyScale(mtx, J3DSys::mCurrentMtx, scale.x, scale.y, scale.z);
 }
 
 inline s32 checkScaleOne(const Vec& vec)
@@ -169,19 +129,20 @@ void J3DMtxCalcCalcTransformMaya::calcTransform(const J3DTransformInfo& transInf
 	}
 
 	if (joint->getScaleCompensate() == 1) {
-		f32 invX = JMath::fastReciprocal(J3DSys::mParentS.x);
-		f32 invY = JMath::fastReciprocal(J3DSys::mParentS.y);
-		f32 invZ = JMath::fastReciprocal(J3DSys::mParentS.z);
+		Vec inv;
+        inv.x = JMath::fastReciprocal(J3DSys::mParentS.x);
+        inv.y = JMath::fastReciprocal(J3DSys::mParentS.y);
+        inv.z = JMath::fastReciprocal(J3DSys::mParentS.z);
 
-		anmMtx[0][0] *= invX;
-		anmMtx[0][1] *= invX;
-		anmMtx[0][2] *= invX;
-		anmMtx[1][0] *= invY;
-		anmMtx[1][1] *= invY;
-		anmMtx[1][2] *= invY;
-		anmMtx[2][0] *= invZ;
-		anmMtx[2][1] *= invZ;
-		anmMtx[2][2] *= invZ;
+		anmMtx[0][0] *= inv.x;
+        anmMtx[0][1] *= inv.x;
+        anmMtx[0][2] *= inv.x;
+        anmMtx[1][0] *= inv.y;
+        anmMtx[1][1] *= inv.y;
+        anmMtx[1][2] *= inv.y;
+        anmMtx[2][0] *= inv.z;
+        anmMtx[2][1] *= inv.z;
+        anmMtx[2][2] *= inv.z;
 	}
 
 	PSMTXConcat(J3DSys::mCurrentMtx, anmMtx, J3DSys::mCurrentMtx);
@@ -315,12 +276,9 @@ void J3DJoint::recursiveCalc()
 	J3DMtxCalc* prevMtxCalc = nullptr;
 	Mtx prevCurrentMtx;
 	PSMTXCopy(J3DSys::mCurrentMtx, prevCurrentMtx);
-	f32 currentX = J3DSys::mCurrentS.x;
-	f32 currentY = J3DSys::mCurrentS.y;
-	f32 currentZ = J3DSys::mCurrentS.z;
-	f32 parentX  = J3DSys::mParentS.x;
-	f32 parentY  = J3DSys::mParentS.y;
-	f32 parentZ  = J3DSys::mParentS.z;
+	Vec current, parent;
+    current = J3DSys::mCurrentS;
+    parent = J3DSys::mParentS;
 	if (getMtxCalc() != nullptr) {
 		prevMtxCalc        = getCurrentMtxCalc();
 		J3DMtxCalc* piVar2 = this->getMtxCalc();
@@ -346,12 +304,8 @@ void J3DJoint::recursiveCalc()
 	}
 	PSMTXCopy(prevCurrentMtx, J3DSys::mCurrentMtx);
 
-	J3DSys::mCurrentS.x = currentX;
-	J3DSys::mCurrentS.y = currentY;
-	J3DSys::mCurrentS.z = currentZ;
-	J3DSys::mParentS.x  = parentX;
-	J3DSys::mParentS.y  = parentY;
-	J3DSys::mParentS.z  = parentZ;
+	J3DSys::mCurrentS = current;
+    J3DSys::mParentS = parent;
 
 	if (prevMtxCalc != nullptr) {
 		setCurrentMtxCalc(prevMtxCalc);

@@ -213,9 +213,9 @@ void TMainScreen::loadResource()
  * @note Address: 0x803D53F8
  * @note Size: 0x12E4
  */
-void TMainScreen::doSetArchive(JKRArchive* arc)
+void TMainScreen::doSetArchive(JKRArchive* archive)
 {
-	/* NON-MATCHING */
+	JKRArchive* const arc = archive;
 	sys->heapStatusStart("TScreenFileSelect::setArchive", nullptr);
 
 	sys->heapStatusStart("TScreenFileSelect::setArchive--set__blo", nullptr);
@@ -282,10 +282,8 @@ void TMainScreen::doSetArchive(JKRArchive* arc)
 	mPaneCopyCursorL[2] = E2DScreen_searchAssert(mMainScreen, 'Pposd3l');
 	mPaneCopyCursorR[2] = E2DScreen_searchAssert(mMainScreen, 'Pposd3r');
 
-	J2DTextBox* text = static_cast<J2DTextBox*>(E2DScreen_searchAssert(mMainScreen, 'Tcol'));
-	mFontColor1.setColors(text);
-	text = static_cast<J2DTextBox*>(mPaneMesgNo);
-	mFontColor2.setColors(text);
+	mFontColor1.setColors(static_cast<J2DTextBox*>(E2DScreen_searchAssert(mMainScreen, 'Tcol')));
+	mFontColor2.setColors(static_cast<J2DTextBox*>(mPaneMesgNo));
 
 	for (int i = 0; i < 3; i++) {
 		mPaneCopyCursorL[i]->setAlpha(0);
@@ -1312,7 +1310,6 @@ void TMainScreen::initDataBalls_()
  */
 void TMainScreen::setColorTimgDataBall_(s32 fileID)
 {
-	/* NON-MATCHING */
 	if (mFileData[fileID].mIsBrokenFile) {
 		const ResTIMG* time = mPanePdc[fileID]->changeTexture("break_new_icon.bti", 0);
 		P2ASSERTLINE(1363, time);
@@ -1359,10 +1356,11 @@ void TMainScreen::setColorTimgDataBall_(s32 fileID)
 
 	JUtility::TColor color = getDataBallColor_(fileID);
 
-	int r = 1023.0f * color.r / 255.0f;
-	int g = 1023.0f * color.g / 255.0f;
-	int b = 1023.0f * color.b / 255.0f;
-	J2DGXColorS10 newColor(r, g, b, color.a);
+	J2DGXColorS10 newColor;
+	newColor.r = 1023.0f * color.r / 255.0f;
+	newColor.g = 1023.0f * color.g / 255.0f;
+	newColor.b = 1023.0f * color.b / 255.0f;
+	newColor.a = color.a;
 
 	setTevColor(mPaneIconColorA[fileID]->getMaterial()->mTevBlock, newColor);
 	setTevColor(mPaneIconColorB[fileID]->getMaterial()->mTevBlock, newColor);
@@ -1377,7 +1375,7 @@ void TMainScreen::setColorTimgDataBall_(s32 fileID)
  */
 JUtility::TColor TMainScreen::getDataBallColor_(s32 fileID)
 {
-	P2ASSERTBOUNDSLINE(1445, 0, fileID, 3);
+	P2ASSERTBOUNDSLINE(1449, 0, fileID, 3);
 
 	int blues   = getFileData(fileID)->mBluePikis;
 	int reds    = getFileData(fileID)->mRedPikis;

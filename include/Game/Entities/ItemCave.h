@@ -118,9 +118,9 @@ struct Item : public FSMItem<Item, FSM, State> {
 
 	virtual void onInit(CreatureInitArg*);             // _30
 	virtual void doDirectDraw(Graphics&);              // _50
-	virtual f32 getFaceDir() { return mFaceDir; }      // _64 (weak)
 	virtual bool sound_culling();                      // _104
 	virtual char* getCreatureName() { return "Cave"; } // _1A8 (weak)
+	virtual f32 getFaceDir() { return mFaceDir; }      // _64 (weak)
 	virtual void initDependency();                     // _1BC
 	virtual void makeTrMatrix();                       // _1C4
 	virtual void doAI();                               // _1C8
@@ -152,14 +152,13 @@ struct Mgr : public TNodeItemMgr {
 
 	virtual void setup(BaseItem*);                                        // _40
 	virtual void onLoadResources();                                       // _48
+	virtual BaseItem* doNew() { return new Item; }                        // _A0 (weak)
 	virtual u32 generatorGetID() { return 'cave'; }                       // _58 (weak)
 	virtual BaseItem* generatorBirth(Vector3f&, Vector3f&, GenItemParm*); // _5C
 	virtual void generatorWrite(Stream&, GenItemParm*);                   // _60
 	virtual void generatorRead(Stream&, GenItemParm*, u32);               // _64
 	virtual u32 generatorLocalVersion() { return '0002'; }                // _68 (weak)
 	virtual GenItemParm* generatorNewItemParm();                          // _70
-	virtual BaseItem* doNew() { return new Item; }                        // _A0 (weak)
-	virtual ~Mgr() { }                                                    // _B8 (weak)
 
 	// _00     = VTBL
 	// _00-_88 = TNodeItemMgr

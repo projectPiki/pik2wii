@@ -1,20 +1,23 @@
+#include "Game/gamePlayData.h"
 #include "Game/AIConstants.h"
 #include "Game/BirthMgr.h"
 #include "Game/DeathMgr.h"
-#include "Game/Piki.h"
-#include "Game/gameGeneratorCache.h"
-#include "Game/gamePlayData.h"
-#include "Game/gameStages.h"
-#include "Game/Entities/PelletOtakara.h"
 #include "Game/Entities/PelletItem.h"
-#include "Game/gameStat.h"
+#include "Game/Entities/PelletOtakara.h"
+#include "Game/Piki.h"
 #include "Game/enemyInfo.h"
+#include "Game/gameGeneratorCache.h"
+#include "Game/gameStages.h"
+#include "Game/gameStat.h"
 
 /**
  * @note Address: N/A
  * @note Size: 0xE4
  */
-static void _Print(char* name, ...) { OSReport("PlayData"); }
+static void _Print(char* name, ...)
+{
+	OSReport("PlayData");
+}
 
 namespace Game {
 
@@ -141,8 +144,8 @@ void PelletCropMemory::clear()
  * @note Address: N/A
  * @note Size: 0x288
  */
-bool PelletCropMemory::obtainPellet(Pellet* pellet) 
-{ 
+bool PelletCropMemory::obtainPellet(Pellet* pellet)
+{
 	if ((pellet->getKind() == PelletType::Treasure) ? true : false) {
 		int id = pellet->getConfigIndex();
 		(mOtakara(id))++;
@@ -154,7 +157,7 @@ bool PelletCropMemory::obtainPellet(Pellet* pellet)
 		(mCarcass(id))++;
 	}
 	return true;
-	
+
 	FORCE_DONT_INLINE;
 }
 
@@ -162,13 +165,18 @@ bool PelletCropMemory::obtainPellet(Pellet* pellet)
  * @note Address: 0x801E58B0
  * @note Size: 0x48
  */
-int PelletCropMemory::calcEarnKinds() { return mOtakara.getEarnKinds() + mItem.getEarnKinds(); }
+int PelletCropMemory::calcEarnKinds()
+{
+	return mOtakara.getEarnKinds() + mItem.getEarnKinds();
+}
 
 /**
  * @note Address: N/A
  * @note Size: 0x10
  */
-int PelletCropMemory::calcNumKinds() { }
+int PelletCropMemory::calcNumKinds()
+{
+}
 
 /**
  * @note Address: N/A
@@ -431,7 +439,10 @@ PlayData::PlayData()
  * @note Address: 0x801E6A58
  * @note Size: 0x68
  */
-PlayData::~PlayData() { playData = nullptr; }
+PlayData::~PlayData()
+{
+	playData = nullptr;
+}
 
 /**
  * @note Address: 0x801E6AC0
@@ -441,7 +452,7 @@ void PlayData::reset()
 {
 	mNaviLifeMax[1]        = 0.0f;
 	mNaviLifeMax[0]        = 0.0f;
-	mDeadNaviID            = 0;
+	mDeadNaviID.typeView   = 0;
 	u64 osTime             = OSGetTime();
 	mOsTime                = osTime;
 	mDoAllowDebugPikiSpawn = false;
@@ -667,7 +678,10 @@ void PlayData::setDemoFlag(int flag)
  * @note Address: 0x801E73E0
  * @note Size: 0x28
  */
-bool PlayData::isDemoFlag(int flag) { return mDemoFlags.isFlag(flag); }
+bool PlayData::isDemoFlag(int flag)
+{
+	return mDemoFlags.isFlag(flag);
+}
 
 /**
  * @note Address: 0x801E7408
@@ -683,19 +697,28 @@ void PlayData::setFindItemDemoFlag(int flag)
  * @note Address: 0x801E7444
  * @note Size: 0x28
  */
-bool PlayData::isFindItemDemoFlag(int flag) { return mFindItemFlags.isFlag(flag); }
+bool PlayData::isFindItemDemoFlag(int flag)
+{
+	return mFindItemFlags.isFlag(flag);
+}
 
 /**
  * @note Address: 0x801E746C
  * @note Size: 0x8
  */
-void PlayData::setCurrentCourse(int id) { mCaveSaveData.mCourseIdx = id; }
+void PlayData::setCurrentCourse(int id)
+{
+	mCaveSaveData.mCourseIdx = id;
+}
 
 /**
  * @note Address: 0x801E7474
  * @note Size: 0xC
  */
-void PlayData::clearCurrentCave() { mCaveSaveData.mIsInCave = false; }
+void PlayData::clearCurrentCave()
+{
+	mCaveSaveData.mIsInCave = false;
+}
 
 /**
  * @note Address: 0x801E7480
@@ -722,7 +745,10 @@ void PlayData::setCurrentCaveFloor(int floor)
  * @note Address: 0x801E74DC
  * @note Size: 0x8
  */
-int PlayData::getCurrentCourseIndex() { return mCaveSaveData.mCourseIdx; }
+int PlayData::getCurrentCourseIndex()
+{
+	return mCaveSaveData.mCourseIdx;
+}
 
 /**
  * @note Address: 0x801E74E4
@@ -750,19 +776,28 @@ void PlayData::getCurrentCave(ID32& outCaveID, int& outCaveFloor)
  * @note Address: 0x801E7564
  * @note Size: 0x30
  */
-bool PlayData::firstCarryPellet(Game::Pellet* pellet) { return mZukanStat->firstCarryPellet(pellet); }
+bool PlayData::firstCarryPellet(Game::Pellet* pellet)
+{
+	return mZukanStat->firstCarryPellet(pellet);
+}
 
 /**
  * @note Address: 0x801E7594
  * @note Size: 0x30
  */
-void PlayData::obtainPellet(BasePelletMgr* mgr, int p2) { mZukanStat->obtainPellet(mgr, p2); }
+void PlayData::obtainPellet(BasePelletMgr* mgr, int p2)
+{
+	mZukanStat->obtainPellet(mgr, p2);
+}
 
 /**
  * @note Address: 0x801E75C4
  * @note Size: 0x30
  */
-void PlayData::losePellet(Game::BasePelletMgr* mgr, int p2) { mZukanStat->losePellet(mgr, p2); }
+void PlayData::losePellet(Game::BasePelletMgr* mgr, int p2)
+{
+	mZukanStat->losePellet(mgr, p2);
+}
 
 /**
  * @note Address: 0x801E75F4
@@ -798,7 +833,9 @@ void PlayData::obtainPellet_Cave(Game::Pellet* pellet)
  * @note Address: N/A
  * @note Size: 0x4
  */
-void PlayData::confirmCaveCropMemory() { }
+void PlayData::confirmCaveCropMemory()
+{
+}
 
 /**
  * @note Address: N/A
@@ -1088,7 +1125,9 @@ bool PlayData::isCaveFirstTime(int courseIndex, ID32& caveID)
  * @note Address: N/A
  * @note Size: 0xCC
  */
-bool PlayData::isCaveFirstReturn(int, ID32&) { }
+bool PlayData::isCaveFirstReturn(int, ID32&)
+{
+}
 
 /**
  * @note Address: 0x801E88A4
@@ -1375,7 +1414,9 @@ void PlayData::visitCourse(int index)
 	mBitfieldPerCourse[index] |= PDCF_Visited;
 }
 
-bool PlayData::closeCourse(int) { }
+bool PlayData::closeCourse(int)
+{
+}
 
 /**
  * @note Address: 0x801E9480
@@ -1445,7 +1486,7 @@ CaveSaveData::CaveSaveData()
 	mCurrentCaveID.setID('none');
 	mIsWaterwraithAlive = 1;
 	mWaterwraithTimer   = 0.0f;
-	mActiveNaviID   = 0;
+	mActiveNaviID       = 0;
 }
 
 /**
@@ -1461,7 +1502,7 @@ void CaveSaveData::clear()
 	mCurrentCaveID.setID('none');
 	mIsWaterwraithAlive = 1;
 	mWaterwraithTimer   = 0.0f;
-	mActiveNaviID   = 0;
+	mActiveNaviID       = 0;
 }
 
 /**
@@ -1523,7 +1564,10 @@ int PlayData::getOtakaraNum_Course_CaveID_Old(int courseIndex, ID32& caveID)
  * @note Address: 0x801E9AF4
  * @note Size: 0x8
  */
-int PlayData::getMoney_Old() { return mPokoCountOld; }
+int PlayData::getMoney_Old()
+{
+	return mPokoCountOld;
+}
 
 /**
  * @note Address: 0x801E9AFC

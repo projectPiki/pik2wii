@@ -123,10 +123,11 @@ struct TChallengeEndCount2p : public TChallengeEndCount {
 struct TCountDownScene : public THIOScene {
 	TCountDownScene() { mChallengeEndCount2p = nullptr; }
 
+	virtual const char* getResName() const { return "res_ground.szs"; }   // _1C (weak)
 	virtual SceneType getSceneType() { return SCENE_COUNT_DOWN; }         // _08 (weak)
 	virtual ScreenOwnerID getOwnerID() { return OWNER_MRMR; }             // _0C (weak)
 	virtual ScreenMemberID getMemberID() { return MEMBER_DAY_END_COUNT; } // _10 (weak)
-	virtual const char* getResName() const { return "res_ground.szs"; }   // _1C (weak)
+	
 	virtual void doCreateObj(JKRArchive*);                                // _20 (weak)
 	virtual bool doStart(Screen::StartSceneArg*);                         // _3C
 

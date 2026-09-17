@@ -1246,7 +1246,7 @@ bool Piki::isMyPikmin(Creature* creature)
 {
 	if (getCurrActionID() == PikiAI::ACT_Teki) {
 		PikiAI::ActTeki* action = static_cast<PikiAI::ActTeki*>(getCurrAction());
-		P2ASSERTLINE(1718, action);
+		P2ASSERTLINE(1755, action);
 
 		return action->mFollowingTeki == creature;
 	}
@@ -1394,8 +1394,6 @@ void Piki::changeShape(int color)
 		GameStat::alivePikis.inc(this);
 	}
 
-	// int count = GameStat::alivePikis;
-
 	mEffectsObj->mPikiColor     = color;
 	mEffectsObj->mHamonPosPtr   = &mPosition;
 	mEffectsObj->mBaseObjMatrix = &mBaseTrMatrix;
@@ -1435,10 +1433,6 @@ void Piki::do_updateLookCreature()
 			mTargetLookTimer -= sys->getDeltaTime();
 			if (mTargetLookTimer > 0.0f) {
 				Vector3f targetPos = mLookAtTargetCreature->getPosition();
-				// targetPos          = targetPos - mPosition;
-				// targetPos.y -= mPosition.y;
-				// targetPos.z -= mPosition.z;
-				// Vector3f sep       = Vector3f(targetPos.y - mPosition.y, targetPos.z - mPosition.z, targetPos.x - mPosition.x);
 				if (targetPos.distance(mPosition) > 200.0f) {
 					finishLook();
 				}
@@ -1510,160 +1504,3 @@ void Piki::setTekiKillID(int id)
 }
 
 } // namespace Game
-
-/**
- * @note Address: 0x8014AAE0
- * @note Size: 0x54
- */
-void MonoObjectMgr<Game::Piki>::kill(Game::Piki* piki)
-{
-	for (int i = 0; i < mMax; i++) {
-		if (&mArray[i] == piki) {
-			mOpenIds[i] = true;
-			mActiveCount--;
-			return;
-		}
-	}
-}
-
-/**
- * @note Address: 0x8014AB34
- * @note Size: 0x4
- */
-void Game::StateMachine<Game::Piki>::init(Game::Piki*)
-{
-}
-
-/**
- * @note Address: 0x8014AB38
- * @note Size: 0x9C
- */
-void Game::StateMachine<Game::Piki>::transit(Game::Piki* piki, int stateID, Game::StateArg* stateArg)
-{
-	int stateIndex          = mIdToIndexArray[stateID];
-	PikiState* currentState = piki->mCurrentState;
-	if (currentState) {
-		currentState->cleanup(piki);
-		mCurrentID = currentState->mId;
-	}
-	if (stateIndex >= mLimit) {
-		while (true)
-			;
-	}
-	PikiState* state    = static_cast<PikiState*>(mStates[stateIndex]);
-	piki->mCurrentState = state;
-	state->init(piki, stateArg);
-}
-
-/**
- * @note Address: 0x8014ABDC
- * @note Size: 0x38
- */
-void Game::StateMachine<Game::Piki>::exec(Game::Piki* piki)
-{
-	if (piki->mCurrentState) {
-		piki->mCurrentState->exec(piki);
-	}
-}
-
-/**
- * @note Address: 0x8014AC18
- * @note Size: 0x170
- */
-void __sinit_piki_cpp()
-{
-	/*
-	stwu     r1, -0x20(r1)
-	lis      r3, __float_nan@ha
-	lis      r5, lbl_804B0990@ha
-	lis      r4, pikiColors__Q24Game4Piki@ha
-	stw      r31, 0x1c(r1)
-	addi     r31, r4, pikiColors__Q24Game4Piki@l
-	li       r11, 0xff
-	li       r12, 0x32
-	stw      r30, 0x18(r1)
-	li       r30, 0
-	li       r10, 0x1e
-	li       r9, 0xd2
-	stw      r29, 0x14(r1)
-	addi     r29, r5, lbl_804B0990@l
-	li       r6, 0xe6
-	li       r5, 0x8c
-	stw      r28, 0x10(r1)
-	li       r8, 0x1c
-	li       r7, 0x34
-	li       r28, -1
-	lfs      f0, __float_nan@l(r3)
-	lis      r3, pikiColorsCursor__Q24Game4Piki@ha
-	addi     r4, r3, pikiColorsCursor__Q24Game4Piki@l
-	li       r0, 0xfa
-	li       r3, 0x78
-	stb      r30, 0(r31)
-	stb      r12, 1(r31)
-	stb      r11, 2(r31)
-	stb      r11, 3(r31)
-	stb      r11, 4(r31)
-	stb      r10, 5(r31)
-	stb      r30, 6(r31)
-	stb      r11, 7(r31)
-	stb      r11, 8(r31)
-	stb      r9, 9(r31)
-	stb      r30, 0xa(r31)
-	stb      r11, 0xb(r31)
-	stb      r8, 0xc(r31)
-	stb      r30, 0xd(r31)
-	stb      r7, 0xe(r31)
-	stb      r11, 0xf(r31)
-	stb      r11, 0x10(r31)
-	stb      r6, 0x11(r31)
-	stb      r11, 0x12(r31)
-	stb      r11, 0x13(r31)
-	stb      r11, 0x14(r31)
-	stb      r5, 0x15(r31)
-	stb      r30, 0x16(r31)
-	stb      r11, 0x17(r31)
-	stb      r11, 0x18(r31)
-	stb      r11, 0x19(r31)
-	stb      r11, 0x1a(r31)
-	stb      r30, 0x1b(r31)
-	stb      r30, 0(r4)
-	stb      r12, 1(r4)
-	stb      r11, 2(r4)
-	stb      r11, 3(r4)
-	stb      r11, 4(r4)
-	stb      r10, 5(r4)
-	stb      r30, 6(r4)
-	stb      r11, 7(r4)
-	stb      r11, 8(r4)
-	stb      r9, 9(r4)
-	stb      r30, 0xa(r4)
-	stb      r11, 0xb(r4)
-	stb      r3, 0xc(r4)
-	stb      r30, 0xd(r4)
-	stb      r0, 0xe(r4)
-	stb      r11, 0xf(r4)
-	stb      r11, 0x10(r4)
-	stb      r6, 0x11(r4)
-	stb      r11, 0x12(r4)
-	stb      r11, 0x13(r4)
-	stb      r11, 0x14(r4)
-	stb      r5, 0x15(r4)
-	stb      r30, 0x16(r4)
-	stb      r11, 0x17(r4)
-	stb      r11, 0x18(r4)
-	stb      r11, 0x19(r4)
-	stb      r11, 0x1a(r4)
-	stb      r30, 0x1b(r4)
-	lwz      r31, 0x1c(r1)
-	stw      r28, lbl_80515920@sda21(r13)
-	lwz      r30, 0x18(r1)
-	stfs     f0, lbl_80515924@sda21(r13)
-	stfs     f0, 0(r29)
-	stfs     f0, 4(r29)
-	stfs     f0, 8(r29)
-	lwz      r29, 0x14(r1)
-	lwz      r28, 0x10(r1)
-	addi     r1, r1, 0x20
-	blr
-	*/
-}

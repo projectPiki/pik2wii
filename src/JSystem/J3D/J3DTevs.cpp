@@ -585,11 +585,15 @@ lbl_800656CC:
  */
 void makeAlphaCmpTable()
 {
-	u8* table = j3dAlphaCmpTable;
-	for (u32 i = 0; i < 8; i++) {
-		for (int j = 0; j < 4; j++) {
+	u32 i       = 0;
+	u32 iOffset = 0;
+	u8* table   = j3dAlphaCmpTable;
+	for (; i < 8; i++, iOffset += 32) {
+		u32 j       = 0;
+		u32 jOffset = 0;
+		for (; j < 4; j++, jOffset += 8) {
 			for (u32 k = 0; k < 8; k++) {
-				u32 idx            = i * 32 + j * 8 + k;
+				u32 idx            = iOffset + jOffset + k;
 				table[idx * 3]     = i;
 				table[idx * 3 + 1] = j;
 				table[idx * 3 + 2] = k;
@@ -686,11 +690,15 @@ lbl_80065720:
  */
 void makeZModeTable()
 {
-	u8* table = j3dZModeTable;
-	for (int i = 0; i < 2; i++) {
-		for (u32 j = 0; j < 8; j++) {
+	int i       = 0;
+	int iOffset = 0;
+	u8* table   = j3dZModeTable;
+	for (; i < 2; i++, iOffset += 16) {
+		int jOffset = 0;
+		int j       = 0;
+		for (; j < 8; j++, jOffset += 2) {
 			for (int k = 0; k < 2; k++) {
-				u32 idx            = i * 16 + j * 2 + k;
+				u32 idx            = iOffset + jOffset + k;
 				table[idx * 3]     = i;
 				table[idx * 3 + 1] = j;
 				table[idx * 3 + 2] = k;

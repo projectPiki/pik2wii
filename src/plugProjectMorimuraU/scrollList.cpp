@@ -415,8 +415,8 @@ void TScrollList::updateIndex(bool doScrollDown)
 	// find the index of a pane within the bounds of the current selection position
 	int idx = -1;
 	for (int i = 0; i < mNumActiveRows; i++) {
-		mIndexPaneList[i]->mYOffset = mIndexPaneList[i]->mPane->mOffset.y;
-		if (mIndexPaneList[i]->mYOffset < mCursorSelectionYOffset && mIndexPaneList[i]->mYOffset > mSelectionYOffset) {
+		getIndexPane(i)->alignPaneY();
+		if (getIndexPane(i)->getPaneYOffset() < mCursorSelectionYOffset && getIndexPane(i)->getPaneYOffset() > mSelectionYOffset) {
 			idx = i;
 		}
 	}

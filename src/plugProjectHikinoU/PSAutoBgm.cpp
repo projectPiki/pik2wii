@@ -248,19 +248,18 @@ u32 Track::seqCpuSync_AutoBgm_Track(JASTrack* track1, u16 cmd, u32 p2, JASTrack*
 			mUnisonTrack = nullptr;
 		}
 
-		u8 max = getChildNum();
+		u32 max = getChildNum();
 		for (u8 i = 0; i < max; i++) {
 			getChild(i)->mIsTableAddrSet = 0;
 		}
 
-		// this isn't quite right but it's Close-ish
-		u32 x;
+		u16 x;
 		if (mUnisonTrack) {
 			u8 val = mUnisonTrack->_D0.mValue;
-			x      = (60 & (~(val - 1 | 1 - val) >> 1));
+			x      = val == 1 ? 60 : 0;
 		} else {
 			u8 val = _D0.mValue;
-			x      = (60 & (~(val - 1 | 1 - val) >> 1));
+			x      = val == 1 ? 60 : 0;
 		}
 		return (u16)(x + ((_A0.mValue & 0xFFFF) * 0x78));
 	case 0x800:
@@ -542,14 +541,13 @@ u32 Module::seqCpuSync_AutoBgm_Module(JASTrack* track1, u16 cmd, u32 p3, JASTrac
 		}
 
 		Track* track = static_cast<Track*>(mTree.getParent()->getObjectPtr());
-		// this isn't quite right but it's Close-ish
-		u32 x;
+		u16 x;
 		if (track->mUnisonTrack) {
 			u8 val = track->mUnisonTrack->getChild(0)->_274.mValue;
-			x      = (60 & (~(val - 1 | 1 - val) >> 1));
+			x      = val == 1 ? 60 : 0;
 		} else {
 			u8 val = _274.mValue;
-			x      = (0x3C & (~(val - 1 | 1 - val) >> 1));
+			x      = val == 1 ? 60 : 0;
 		}
 		return (u16)(x + (_64.mValue * 0x78));
 	}
@@ -961,8 +959,9 @@ u16 CycleBase::play(JASTrack* track)
 		u16 x;
 		Track* childTrk = ((Track*)mModule->mTree.getParent()->getObjectPtr())->mUnisonTrack;
 		if (childTrk == nullptr) {
-			PSWsData& ws = mModule->mWsData[mWaveSceneIndex++];
-			u16 wsPtr    = (ws.mData[0] << 8 | ws.mData[1]);
+			u8 index     = mWaveSceneIndex++;
+			PSWsData* ws = mModule->mWsData;
+			u16 wsPtr    = (ws[index].mData[0] << 8 | ws[index].mData[1]);
 			x            = avoidCheck();
 			x |= wsPtr;
 		} else {

@@ -855,7 +855,7 @@ void BaseGameSection::initGenerators()
 		olimar->setPosition(position, false);
 		olimar->setVelocity(velocity);
 
-		if (playData->mDeadNaviID & 1) {
+		if (playData->mDeadNaviID.typeView & 1) {
 
 			olimar->setDeadLaydown();
 			olimarAlive = true;
@@ -893,10 +893,10 @@ void BaseGameSection::initGenerators()
 		louie->mFaceDir = roundAng(mapRotation);
 		louie->setPosition(position, false);
 		louie->setVelocity(velocity);
-		if (!(playData->mDeadNaviID >> 1 & 1)) {
+		if (!(playData->mDeadNaviID.typeView >> 1 & 1)) {
 			louie->mHealth = playData->mNaviLifeMax[1];
 		}
-		if (playData->mDeadNaviID & 2) {
+		if (playData->mDeadNaviID.typeView & 2) {
 			louie->setDeadLaydown();
 			return;
 		}
@@ -1243,21 +1243,16 @@ void BaseGameSection::prepareHoleIn(Vector3f& suroundPos, bool killPikihead)
 		Piki* piki = *iPiki;
 		if (piki->getKind() != Bulbmin || piki->isPikmin()) {
 			if (!piki->isZikatu()) {
-				if (piki->getKind() == Bulbmin) {
-					piki->getCurrActionID();
-					piki->getStateID();
-				}
 				piki->endStick();
 				piki->mFsm->transitForce(piki, PIKISTATE_Walk, nullptr);
-				piki->getCreatureID();
 				piki->mNavi   = aliveOrima;
 				f32 randAngle = randFloat() * TAU;
 
 				Vector3f suroundCircle(sinf(randAngle), 0, cosf(randAngle));
 
 				Vector3f vec = Vector3f(sinf(randAngle) * 50.0f, 0.0f, cosf(randAngle) * 50.0f);
-				vec += suroundPos;
-				vec.y = mapMgr->getMinY(vec);
+				vec          = vec + suroundPos;
+				vec.y        = mapMgr->getMinY(vec);
 				piki->setPosition(vec, false);
 				PikiAI::ActFormationInitArg arg(aliveOrima);
 				arg.mIsDemoFollow = true;

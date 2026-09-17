@@ -453,7 +453,7 @@ JSystem/JStudio_JAudio/control.cpp:
 
 JSystem/JAudio/JAS/JASWSParser.cpp:
 	.text       start:0x8004AA18 end:0x8004AF44
-	.sbss       start:0x8066B9A8 end:0x8066B9B0
+	.sbss       start:0x8066B9A8 end:0x8066B9AC
 
 JSystem/JAudio/JAS/JASBankMgr.cpp:
 	.text       start:0x8004AF44 end:0x8004B718
@@ -481,9 +481,10 @@ JSystem/JAudio/JAS/JASBNKParser.cpp:
 
 JSystem/JAudio/JAS/JASDrumSet.cpp:
 	.text       start:0x8004CFF4 end:0x8004D3FC
-	.data       start:0x80564558 end:0x80564570
+	.data       start:0x80564558 end:0x8056456C
 	.bss        start:0x805D2B60 end:0x805D2B78
-	.sdata2     start:0x8066D960 end:0x8066D978
+	.sdata      start:0x8066A878 end:0x8066A87C
+	.sdata2     start:0x8066D960 end:0x8066D974
 
 JSystem/JAudio/JAS/JASInstEffect.cpp:
 	.text       start:0x8004D3FC end:0x8004D404
@@ -570,7 +571,7 @@ JSystem/JAudio/JAS/JASChannel.cpp:
 JSystem/JAudio/JAS/JASDriverIF.cpp:
 	.text       start:0x80055374 end:0x80055870
 	.ctors      start:0x80534CC8 end:0x80534CCC
-	.rodata     start:0x80538DD0 end:0x80538FE0
+	.rodata     start:0x80538DD0 end:0x80538FD0
 	.bss        start:0x805D2B78 end:0x805D2CF8
 	.sdata      start:0x8066A888 end:0x8066A890
 	.sdata2     start:0x8066DAE0 end:0x8066DAF0
@@ -1242,7 +1243,7 @@ JSystem/J2D/J2DGrafContext.cpp:
 JSystem/J2D/J2DPane.cpp:
 	.text       start:0x800992A4 end:0x8009C460
 	.ctors      start:0x80534D20 end:0x80534D24
-	.data       start:0x80569200 end:0x805692B8
+	.data       start:0x80569200 end:0x805692B4
 	.sdata2     start:0x8066DFC8 end:0x8066DFF4
 
 JSystem/J2D/J2DPicture.cpp:
@@ -5646,7 +5647,6 @@ plugProjectHikinoU/PSSeq.cpp:
 	.text       start:0x803B06CC end:0x803B3884
 	.rodata     start:0x80552528 end:0x805525C8
 	.data       start:0x805BA6C8 end:0x805BAB30
-	.sdata      start:0x8066B468 end:0x8066B478
 	.sbss       start:0x8066CE58 end:0x8066CE60
 	.sdata2     start:0x806738C0 end:0x806738E0
 
@@ -5654,6 +5654,7 @@ plugProjectHikinoU/PSGame.cpp:
 	.text       start:0x803B3884 end:0x803B7D44
 	.rodata     start:0x805525C8 end:0x80552A28
 	.data       start:0x805BAB30 end:0x805BAEF0
+	.sdata      start:0x8066B468 end:0x8066B478
 	.sbss       start:0x8066CE60 end:0x8066CE70
 	.sdata2     start:0x806738E0 end:0x80673938
 
@@ -5698,7 +5699,7 @@ plugProjectHikinoU/PSCreatureMgr.cpp:
 plugProjectHikinoU/PSAutoBgm_MeloArranger.cpp:
 	.text       start:0x803BDF5C end:0x803BE164
 	.rodata     start:0x80552BB8 end:0x80552BE0
-	.data       start:0x805BB270 end:0x805BB2A0
+	.data       start:0x805BB270 end:0x805BB29C
 
 plugProjectHikinoU/PSSe.cpp:
 	.text       start:0x803BE164 end:0x803BF888
@@ -5961,17 +5962,21 @@ plugProjectMorimuraU/tamagoMushi.cpp:
 plugProjectMorimuraU/zukan2D.cpp:
 	.text       start:0x803ED4C8 end:0x803FA47C
 	.ctors      start:0x80534F78 end:0x80534F7C
+	.rodata     start:0x805536E8 end:0x80554498
 	.data       start:0x805C4190 end:0x805C4990
 	.bss        start:0x80639358 end:0x80639368
 	.sdata      start:0x8066B4E8 end:0x8066B510
 	.sbss       start:0x8066CF10 end:0x8066CF58
+	.sdata2     start:0x80674130 end:0x80674228
 
 plugProjectMorimuraU/hiScore2D.cpp:
 	.text       start:0x803FA47C end:0x803FF6AC
 	.ctors      start:0x80534F7C end:0x80534F80
+	.rodata     start:0x80554498 end:0x805548A8
 	.data       start:0x805C4990 end:0x805C4B10
-	.sdata      start:0x8066B510 end:0x8066B538
+	.sdata      start:0x8066B510 end:0x8066B520
 	.sbss       start:0x8066CF58 end:0x8066CF60
+	.sdata2     start:0x80674228 end:0x806742D0
 
 plugProjectMorimuraU/umiMushiState.cpp:
 	.text       start:0x803FF6AC end:0x80401338
@@ -6013,6 +6018,7 @@ plugProjectMorimuraU/shijimiChouMgr.cpp:
 	.text       start:0x80406F38 end:0x80407F90
 	.rodata     start:0x80554A78 end:0x80554AD0
 	.data       start:0x805C5428 end:0x805C5578
+	.sdata      start:0x8066B520 end:0x8066B538
 	.sdata2     start:0x80674400 end:0x80674470
 
 plugProjectMorimuraU/shijimiChou.cpp:
@@ -6043,23 +6049,30 @@ plugProjectMorimuraU/challengeResult2D.cpp:
 plugProjectMorimuraU/vsSelect2D.cpp:
 	.text       start:0x804194A4 end:0x80421BF8
 	.ctors      start:0x80534F8C end:0x80534F90
+	.rodata     start:0x805555C0 end:0x80555CB8
 	.data       start:0x805C5C20 end:0x805C5E98
 	.sdata      start:0x8066B590 end:0x8066B5C0
 	.sbss       start:0x8066CFD0 end:0x8066CFE8
+	.sdata2     start:0x806746D8 end:0x80674820
 
 plugProjectMorimuraU/mrUtil.cpp:
 	.text       start:0x80421BF8 end:0x80422CC4
+	.rodata     start:0x80555CB8 end:0x80555CE0
 	.data       start:0x805C5E98 end:0x805C6070
+	.sdata2     start:0x80674820 end:0x80674850
 
 plugProjectMorimuraU/scrollList.cpp:
 	.text       start:0x80422CC4 end:0x80424178
+	.rodata     start:0x80555CE0 end:0x80555D08
 	.data       start:0x805C6070 end:0x805C6130
 	.sdata      start:0x8066B5C0 end:0x8066B5C8
 	.sbss       start:0x8066CFE8 end:0x8066CFF0
+	.sdata2     start:0x80674850 end:0x806748B0
 
 plugProjectMorimuraU/mrWindow.cpp:
 	.text       start:0x80424178 end:0x80424550
 	.data       start:0x805C6130 end:0x805C6200
+	.sdata2     start:0x806748B0 end:0x806748C8
 
 plugProjectMorimuraU/blackManState.cpp:
 	.text       start:0x80424550 end:0x80425C40
@@ -6939,7 +6952,7 @@ sysGCU/memoryCard.cpp:
 sysGCU/pikmin2MemoryCardMgr.cpp:
 	.text       start:0x804C8350 end:0x804CC060
 	.rodata     start:0x8055AAB8 end:0x8055ABD0
-	.data       start:0x805CDEA8 end:0x805CDF80
+	.data       start:0x805CDEA8 end:0x805CDF40
 	.sdata      start:0x8066B740 end:0x8066B748
 
 sysGCU/commonSaveData.cpp:
@@ -6951,7 +6964,7 @@ sysGCU/bootSection.cpp:
 	.text       start:0x804CC76C end:0x804CF07C
 	.ctors      start:0x80535074 end:0x80535078
 	.rodata     start:0x8055AC08 end:0x8055ADC8
-	.data       start:0x805CDF80 end:0x805CE160
+	.data       start:0x805CDF40 end:0x805CE160
 	.bss        start:0x80639758 end:0x80639768
 	.sdata      start:0x8066B748 end:0x8066B750
 	.sbss       start:0x8066D2D8 end:0x8066D2E8

@@ -1668,9 +1668,7 @@ bool Triangle::insideXZ(Vector3f& point)
 void Triangle::makePlanes(Sys::VertexTable& vertTable)
 {
 	Vector3f triNormal;
-	Vector3f* triNormalPtr = &triNormal;
 	Vector3f edgeNormal;
-	Vector3f* edgeNormalPtr = &edgeNormal;
 
 	Vector3f vert_A = *vertTable.getVertex(mVertices[0]);
 	Vector3f vert_B = *vertTable.getVertex(mVertices[1]);
@@ -1681,70 +1679,39 @@ void Triangle::makePlanes(Sys::VertexTable& vertTable)
 
 	// TRIANGLE PLANE
 	// get unit normal to triangle plane
-	*triNormalPtr     = cross(CA, BA);
-	f32 len_triNormal = pikmin2_sqrtf(triNormal.x * triNormal.x + triNormal.y * triNormal.y + triNormal.z * triNormal.z);
-	if (len_triNormal > 0.0f) {
-		f32 norm_triNormal = 1.0f / len_triNormal;
-		triNormal.x *= norm_triNormal;
-		triNormal.y *= norm_triNormal;
-		triNormal.z *= norm_triNormal;
-	}
+	triNormal = CA;
+	triNormal.cross(triNormal, BA);
+	_normalise(&triNormal);
 
 	// define trianglePlane using unit normal and point A
-	Vector3f triPlaneVec   = triNormal;
-	mTrianglePlane.mNormal = triPlaneVec;
-	mTrianglePlane.mOffset
-	    = mTrianglePlane.mNormal.x * vert_A.x + mTrianglePlane.mNormal.y * vert_A.y + mTrianglePlane.mNormal.z * vert_A.z;
+	mTrianglePlane.updatePlane(vert_A, triNormal);
 
 	// EDGE PLANES
 	// AB
 	// get unit normal to AB edge plane
-	Vector3f AB         = vert_A - vert_B;
-	*edgeNormalPtr      = cross(AB, triNormal);
-	f32 len_edgeNormal0 = pikmin2_sqrtf(edgeNormal.x * edgeNormal.x + edgeNormal.y * edgeNormal.y + edgeNormal.z * edgeNormal.z);
-	if (len_edgeNormal0 > 0.0f) {
-		f32 norm_edgeNormal0 = 1.0f / len_edgeNormal0;
-		edgeNormal.x *= norm_edgeNormal0;
-		edgeNormal.y *= norm_edgeNormal0;
-		edgeNormal.z *= norm_edgeNormal0;
-	}
+	edgeNormal = vert_A - vert_B;
+	edgeNormal.cross(edgeNormal, triNormal);
+	_normalise(&edgeNormal);
 	// define AB edge plane using unit normal and point A
-	mEdgePlanes[0].mNormal = edgeNormal;
-	mEdgePlanes[0].mOffset
-	    = mEdgePlanes[0].mNormal.x * vert_A.x + mEdgePlanes[0].mNormal.y * vert_A.y + mEdgePlanes[0].mNormal.z * vert_A.z;
+	mEdgePlanes[0].updatePlane(vert_A, edgeNormal);
 
 	// BC
 	// get unit normal to BC edge plane
-	Vector3f BC         = vert_B - vert_C;
-	*edgeNormalPtr      = cross(BC, triNormal);
-	f32 len_edgeNormal1 = pikmin2_sqrtf(edgeNormal.x * edgeNormal.x + edgeNormal.y * edgeNormal.y + edgeNormal.z * edgeNormal.z);
-	if (len_edgeNormal1 > 0.0f) {
-		f32 norm_edgeNormal1 = 1.0f / len_edgeNormal1;
-		edgeNormal.x *= norm_edgeNormal1;
-		edgeNormal.y *= norm_edgeNormal1;
-		edgeNormal.z *= norm_edgeNormal1;
-	}
+	edgeNormal = vert_B - vert_C;
+	edgeNormal.cross(edgeNormal, triNormal);
+	_normalise(&edgeNormal);
 
 	// define BC edge plane using unit normal and point B
-	mEdgePlanes[1].mNormal = edgeNormal;
-	mEdgePlanes[1].mOffset
-	    = mEdgePlanes[1].mNormal.x * vert_B.x + mEdgePlanes[1].mNormal.y * vert_B.y + mEdgePlanes[1].mNormal.z * vert_B.z;
+	mEdgePlanes[1].updatePlane(vert_B, edgeNormal);
 
 	// CA
 	// get unit normal to CA edge plane
-	*edgeNormalPtr      = cross(CA, triNormal);
-	f32 len_edgeNormal2 = pikmin2_sqrtf(edgeNormal.x * edgeNormal.x + edgeNormal.y * edgeNormal.y + edgeNormal.z * edgeNormal.z);
-	if (len_edgeNormal2 > 0.0f) {
-		f32 norm_edgeNormal2 = 1.0f / len_edgeNormal2;
-		edgeNormal.x *= norm_edgeNormal2;
-		edgeNormal.y *= norm_edgeNormal2;
-		edgeNormal.z *= norm_edgeNormal2;
-	}
+	edgeNormal = CA;
+	edgeNormal.cross(edgeNormal, triNormal);
+	_normalise(&edgeNormal);
 
 	// define CA edge plane using unit normal and point C
-	mEdgePlanes[2].mNormal = edgeNormal;
-	mEdgePlanes[2].mOffset
-	    = mEdgePlanes[2].mNormal.x * vert_C.x + mEdgePlanes[2].mNormal.y * vert_C.y + mEdgePlanes[2].mNormal.z * vert_C.z;
+	mEdgePlanes[2].updatePlane(vert_C, edgeNormal);
 	/*
 	stwu     r1, -0x140(r1)
 	mflr     r0
@@ -2466,34 +2433,12 @@ f32 GridDivider::getMinY(Vector3f& inputPoint)
 	bool foundY                = false;
 	TriIndexList& triIndexList = mTriIndexLists[gridZIndex + (gridXIndex * mMaxZ)];
 
+	Vector3f point(inputX, inputPoint.y, inputZ);
+
 	for (int i = 0; i < triIndexList.getNum(); ++i) {
 		Triangle* triangle = mTriangleTable->getTriangle(triIndexList.mObjects[i]);
-		float normalY      = triangle->mTrianglePlane.mNormal.y;
-
-		if (normalY <= 0.0f) {
-			continue; // Skip triangles with non-positive normal Y component
-		}
-
-		// Calculate potential Y value based on the plane equation
-		float potentialY = (triangle->mTrianglePlane.mOffset
-		                    - (triangle->mTrianglePlane.mNormal.x * inputX + triangle->mTrianglePlane.mNormal.z * inputZ))
-		                 / normalY;
-
-		// Check if the point is inside the triangle
-		bool isInsideTriangle = true;
-		for (int j = 0; j < 3; ++j) {
-			const Plane& edgePlane = triangle->mEdgePlanes[j];
-
-			if ((inputX * edgePlane.mNormal.x + potentialY * edgePlane.mNormal.y + inputZ * edgePlane.mNormal.z) - edgePlane.mOffset
-			    > 0.0f) {
-				isInsideTriangle = false;
-				break;
-			}
-		}
-
-		// Update minY if the point is inside the triangle and potentialY is valid
-		if (isInsideTriangle && potentialY < minY) {
-			minY   = potentialY;
+		if (triangle->insideXZ(point) && minY > point.y) {
+			minY   = point.y;
 			foundY = true;
 		}
 	}
@@ -3547,8 +3492,10 @@ void GridDivider::create(BoundBox& box, int countX, int countZ, Sys::VertexTable
  * @note Address: N/A
  * @note Size: 0x6C
  */
-void GridDivider::write(Stream&)
+void GridDivider::write(Stream& stream)
 {
+	mVertexTable->write(stream);
+	mTriangleTable->write(stream);
 	// UNUSED FUNCTION
 }
 
@@ -3556,7 +3503,7 @@ void GridDivider::write(Stream&)
  * @note Address: N/A
  * @note Size: 0xC0
  */
-void GridInfo::write(Stream&)
+void GridInfo::write(Stream& stream)
 {
 	// UNUSED FUNCTION
 }

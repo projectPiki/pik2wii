@@ -557,9 +557,13 @@ bool THurryUp2D::doStart(Screen::StartSceneArg const* arg)
  * @note Address: N/A
  * @note Size: 0x2C
  */
-void THurryUp2D::calcCount()
+int THurryUp2D::calcCount()
 {
-	// UNUSED FUNCTION
+	f32 step = 0.000043f;
+	if (mIsSection) {
+		step = 0.0001f;
+	}
+	return int((mDisp->mCurrSunRatio - mDisp->mDuration) / step);
 }
 
 /**
@@ -620,29 +624,39 @@ void THurryUp2D::init()
 
 	if (mDoDraw) {
 		mWhitePane->show();
-		J2DBlend info1(1, 6, 7, 0);
+		J2DBlend info1(GX_BM_BLEND, GX_BL_DSTALPHA, GX_BL_INVDSTALPHA, GX_LO_CLEAR);
 		// J2DBlend blend(info1);
 		static_cast<J2DPictureEx*>(mPaneSunW)->getMaterial()->mPeBlock.setBlend(info1);
 
-		J2DBlend info2(1, 1, 0, 0);
+		J2DBlend info2(GX_BM_BLEND, GX_BL_ONE, GX_BL_ZERO, GX_LO_CLEAR);
 		// J2DBlend blend2(info2);
 		mWhitePane->getMaterial()->mPeBlock.setBlend(info2);
 		mWhitePane->mAlpha = 0;
 	} else {
-		J2DBlend info(1, 4, 5, 0);
+		J2DBlend info(GX_BM_BLEND, GX_BL_SRCALPHA, GX_BL_INVSRCALPHA, GX_LO_CLEAR);
 		// J2DBlend blend(info);
 		J2DPictureEx* pane = static_cast<J2DPictureEx*>(mScreen->search('sunw'));
 		pane->getMaterial()->mPeBlock.setBlend(info);
 		mWhitePane->hide();
 	}
 
-	// These values need to be treated as variables and not constants, somehow
-	s32 numA = 75;
-	s32 numB = 9;
-	s32 numC = 64;
-	s32 numD = 6;
-	mTimer   = calcTimer(numA, numB, numC, numD);
+	int durations[4];
+	durations[0] = 75;
+	durations[1] = 9;
+	durations[2] = 64;
+	durations[3] = 6;
 
+	int count = calcCount();
+
+	for (int i = 0; i < 4; i++) {
+		mState = i + 1;
+		if (count >= durations[i]) {
+			count -= durations[i];
+		} else {
+			break;
+		}
+	}
+	mTimer = count;
 	changeState(mState, mTimer);
 
 	/*

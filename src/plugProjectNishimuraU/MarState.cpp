@@ -3,10 +3,14 @@
 #include "Game/Entities/Mar.h"
 #include "Game/MapMgr.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "246-MarState";
+}
+
 namespace Game {
 namespace Mar {
-
-static const char unusedMarStateName[] = "246-MarState";
 
 /**
  * @note Address: 0x80282614
@@ -157,10 +161,9 @@ void StateMove::exec(EnemyBase* enemy)
 	Obj* mar = OBJ(enemy);
 	mar->setHeightVelocity();
 
-	// this bit is being weird
 	Vector3f pos       = mar->getPosition();
-	f32 sqrDist        = sqrDistanceXZ(pos, mar->mTargetPosition);
-	Vector3f targetPos = mar->mTargetPosition;
+	Vector3f targetPos = Vector3f(mar->mTargetPosition);
+	f32 sqrDist = sqrDistanceXZ(pos, targetPos);
 
 	Creature* target = mar->getSearchedPikmin();
 	if (target) {
@@ -343,12 +346,12 @@ void StateChase::exec(EnemyBase* enemy)
 			Vector3f sep(marPos.x - targetPos.x, 0.0f, marPos.z - targetPos.z);
 			sep.normalise();
 			sep *= CG_GENERALPARMS(mar).mMaxAttackRange();
-			Vector3f newPos = targetPos + sep;                                          // f24, f23
-			f32 angle       = JMAAtan2Radian(newPos.x - marPos.x, newPos.z - marPos.z); // f29
+			targetPos += sep;
+			f32 angle = JMAAtan2Radian(targetPos.x - marPos.x, targetPos.z - marPos.z);
 
 			mar->turnToTarget(target, CG_GENERALPARMS(mar).mTurnSpeed(), CG_GENERALPARMS(mar).mMaxTurnAngle());
 
-			if (sqrDistanceXZ(marPos, newPos) > 225.0f) {
+			if (sqrDistanceXZ(marPos, targetPos) > 225.0f) {
 				f32 x = CG_GENERALPARMS(mar).mMoveSpeed() * sinf(angle);
 				f32 y = mar->getTargetVelocity().y;
 				f32 z = CG_GENERALPARMS(mar).mMoveSpeed() * cosf(angle);
@@ -874,7 +877,7 @@ void StateAttack::exec(EnemyBase* enemy)
 		mar->windTarget();
 	}
 
-	if (mar->mHealth <= 0.0f) {
+	if (mar->isDead()) {
 		transit(mar, MAR_Dead, nullptr);
 		return;
 	}
@@ -947,7 +950,7 @@ void StateFall::exec(EnemyBase* enemy)
 
 	mar->mGeneralTimer += sys->getDeltaTime();
 
-	if (mar->mHealth <= 0.0f) {
+	if (mar->isDead()) {
 		transit(mar, MAR_Dead, nullptr);
 		return;
 	}
@@ -990,7 +993,7 @@ void StateLand::init(EnemyBase* enemy, StateArg* stateArg)
  */
 void StateLand::exec(EnemyBase* enemy)
 {
-	if (enemy->mHealth <= 0.0f) {
+	if (enemy->isDead()) {
 		transit(enemy, MAR_Dead, nullptr);
 		return;
 	}
@@ -1037,7 +1040,7 @@ void StateGround::exec(EnemyBase* enemy)
 
 	mar->mGeneralTimer += sys->getDeltaTime();
 
-	if (mar->mHealth <= 0.0f) {
+	if (mar->isDead()) {
 		transit(mar, MAR_Dead, nullptr);
 		return;
 	}
@@ -1085,7 +1088,7 @@ void StateTakeOff::exec(EnemyBase* enemy)
 		mar->subShadowOffset();
 	}
 
-	if (mar->mHealth <= 0.0f) {
+	if (mar->isDead()) {
 		transit(mar, MAR_Dead, nullptr);
 		return;
 	}
@@ -1132,7 +1135,7 @@ void StateFlyFlick::exec(EnemyBase* enemy)
 	Obj* mar = OBJ(enemy);
 	mar->setHeightVelocity();
 
-	if (mar->mHealth <= 0.0f) {
+	if (mar->isDead()) {
 		transit(mar, MAR_Dead, nullptr);
 		return;
 	}
@@ -1177,7 +1180,7 @@ void StateGroundFlick::init(EnemyBase* enemy, StateArg* stateArg)
  */
 void StateGroundFlick::exec(EnemyBase* enemy)
 {
-	if (enemy->mHealth <= 0.0f) {
+	if (enemy->isDead()) {
 		transit(enemy, MAR_Dead, nullptr);
 		return;
 	}

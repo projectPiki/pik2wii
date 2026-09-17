@@ -882,8 +882,8 @@ void TZukanBase::doDraw(Graphics& gfx)
 		c.a = mMessageBoxBGAlpha;
 		graf->setColor(c);
 		GXSetAlphaUpdate(GX_FALSE);
-		u16 y    = System::getRenderModeObj()->efbHeight;
-		u16 x    = System::getRenderModeObj()->fbWidth;
+		f32 y    = System::getRenderModeObj()->efbHeight;
+		f32 x    = System::getRenderModeObj()->fbWidth;
 		f32 zero = 0.0f;
 		JGeometry::TBox2f box(0.0f, 0.0f, zero + x, zero + y);
 		graf->fillBox(box);
@@ -920,8 +920,8 @@ void TZukanBase::doDraw(Graphics& gfx)
 		color.a = mMessageBoxBGAlpha;
 		graf->setColor(color);
 		GXSetAlphaUpdate(GX_FALSE);
-		u32 y    = System::getRenderModeObj()->efbHeight;
-		u32 x    = System::getRenderModeObj()->fbWidth;
+		f32 y    = System::getRenderModeObj()->efbHeight;
+		f32 x    = System::getRenderModeObj()->fbWidth;
 		f32 zero = 0.0f;
 		JGeometry::TBox2f box(0.0f, 0.0f, zero + x, zero + y);
 		graf->fillBox(box);
@@ -931,8 +931,8 @@ void TZukanBase::doDraw(Graphics& gfx)
 	color.a = 255 - mFadeAlpha;
 	graf->setColor(color);
 	GXSetAlphaUpdate(GX_FALSE);
-	u32 y    = System::getRenderModeObj()->efbHeight;
-	u32 x    = System::getRenderModeObj()->fbWidth;
+	f32 y    = System::getRenderModeObj()->efbHeight;
+	f32 x    = System::getRenderModeObj()->fbWidth;
 	f32 zero = 0.0f;
 	JGeometry::TBox2f box(0.0f, 0.0f, zero + x, zero + y);
 	graf->fillBox(box);
@@ -3653,29 +3653,31 @@ void TItemZukan::doCreate(JKRArchive* arc)
  */
 void TItemZukan::doDemoDraw(Graphics& gfx)
 {
+	J2DPicture* pane1;
 	J2DPerspGraph* graf = gfx.getPerspGraph();
 
-	u8 alpha = mDemoStateButtonAlpha * 255.0f;
+	u8 savedAlpha = mDemoStateButtonAlpha * 255.0f;
 	gfx.mOrthoGraph.setPort();
 
-	J2DPane* pane1 = mMainScreen->mScreenObj->search('Pzbtn3');
-	pane1->setAlpha(alpha);
-	static_cast<J2DPicture*>(pane1)->draw(pane1->getGlbVtx(GLBVTX_BtmLeft).x, pane1->getGlbVtx(GLBVTX_BtmRight).y, pane1->getWidth(),
-	                                      pane1->getHeight(), false, false, false);
+	pane1 = static_cast<J2DPicture*>(mMainScreen->mScreenObj->search('Pzbtn3'));
+	pane1->setAlpha(savedAlpha);
+	pane1->draw(pane1->getGlbVtx(GLBVTX_BtmLeft).x, pane1->getGlbVtx(GLBVTX_BtmRight).y, pane1->getWidth(), pane1->getHeight(), false,
+	            false, false);
 	pane1->calcMtx();
 	pane1->setAlpha(255);
 
-	J2DPane* pane2;
-	pane2 = mMainScreen->mScreenObj->search('Pzbtn2');
-	pane2->setAlpha(alpha);
-	static_cast<J2DPicture*>(pane2)->draw(pane2->getGlbVtx(GLBVTX_BtmLeft).x, pane2->getGlbVtx(GLBVTX_BtmRight).y, pane2->getWidth(),
-	                                      pane2->getHeight(), false, false, false);
+	J2DPicture* pane2;
+	J2DPicture* pane3;
+	pane2 = static_cast<J2DPicture*>(mMainScreen->mScreenObj->search('Pzbtn2'));
+	pane2->setAlpha(savedAlpha);
+	pane2->draw(pane2->getGlbVtx(GLBVTX_BtmLeft).x, pane2->getGlbVtx(GLBVTX_BtmRight).y, pane2->getWidth(), pane2->getHeight(), false,
+	            false, false);
 	pane2->calcMtx();
 	pane2->setAlpha(255);
 
 	gfx.getPerspGraph()->setPort();
 
-	mPaneMenu->setAlpha(alpha);
+	mPaneMenu->setAlpha(savedAlpha);
 	mMessageItemName->draw(gfx, *graf);
 	mPaneMenu->setAlpha(255);
 	gfx.mOrthoGraph.setPort();
@@ -3686,32 +3688,30 @@ void TItemZukan::doDemoDraw(Graphics& gfx)
 		for (int j = 0; j < 3; j++) {
 			TIconInfo* icon = getIndexPane(i)->getIconInfo(j);
 			if (mSelection == icon->mCategoryID && icon->mPane->isVisible()) {
-				u8 alpha = mMessageBoxBGAlpha * mCategoryAlphaRate;
-				J2DPictureEx* pane2;
-				J2DPictureEx* pane3;
-				J2DPictureEx* pane1 = icon->mPic;
-				u8 oldalpha         = pane1->mAlpha;
+				u8 alpha   = mMessageBoxBGAlpha * mCategoryAlphaRate;
+				pane1      = icon->mPic;
+				savedAlpha = pane1->mAlpha;
 				pane1->setAlpha(alpha);
 				pane1->draw(pane1->getGlbVtx(GLBVTX_BtmLeft).x + 8.0f, pane1->getGlbVtx(GLBVTX_BtmLeft).y + 2.5f, pane1->getWidth(),
 				            pane1->getHeight(), false, false, false);
 				pane1->calcMtx();
-				pane1->setAlpha(oldalpha);
+				pane1->setAlpha(savedAlpha);
 
-				pane2    = static_cast<J2DPictureEx*>(getIndexPane(i)->getIconInfo(j)->mPane);
-				oldalpha = pane2->mAlpha;
+				pane2      = static_cast<J2DPictureEx*>(getIndexPane(i)->getIconInfo(j)->mPane);
+				savedAlpha = pane2->mAlpha;
 				pane2->setAlpha(mMessageBoxBGAlpha);
 				pane2->draw(pane2->getGlbVtx(GLBVTX_BtmLeft).x, pane2->getGlbVtx(GLBVTX_BtmLeft).y, pane2->getWidth(), pane2->getHeight(),
 				            false, false, false);
 				pane2->calcMtx();
-				pane2->setAlpha(oldalpha);
+				pane2->setAlpha(savedAlpha);
 
-				pane3    = static_cast<J2DPictureEx*>(getIndexPane(i)->getIconInfo(j)->mPane2);
-				oldalpha = pane3->mAlpha;
+				pane3      = static_cast<J2DPictureEx*>(getIndexPane(i)->getIconInfo(j)->mPane2);
+				savedAlpha = pane3->mAlpha;
 				pane3->setAlpha(mMessageBoxBGAlpha);
 				pane3->draw(pane3->getGlbVtx(GLBVTX_BtmLeft).x, pane3->getGlbVtx(GLBVTX_BtmLeft).y, pane3->getWidth(), pane3->getHeight(),
 				            false, false, false);
 				pane3->calcMtx();
-				pane3->setAlpha(oldalpha);
+				pane3->setAlpha(savedAlpha);
 			}
 		}
 	}

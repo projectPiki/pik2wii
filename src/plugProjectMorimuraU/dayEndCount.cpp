@@ -129,7 +129,8 @@ bool TDayEndCount::doUpdate()
 		return false;
 	}
 
-	f32 calc2 = calc_2 * 1.1f;
+	f32 calc2 = calc_2;
+	calc2 *= 1.1f;
 	if (calc2 >= 11.0f) {
 		calc2 = 11.0f;
 	}
@@ -142,39 +143,57 @@ bool TDayEndCount::doUpdate()
 	if (id >= 10)
 		id = 10;
 
-	int i = id;
-	if (mCurrNumberValue != i) {
-		for (; i + 1 < COUNTDOWN_NUMBERS; i++) {
+	if (mCurrNumberValue != id) {
+		for (int i = id + 1; i < COUNTDOWN_NUMBERS; i++) {
 			J2DPane* pane = mScreenObj->search(deTagName[i]);
 			P2ASSERTLINE(164, pane);
 			pane->hide();
 		}
-		mCurrNumberValue = i;
-		mCurrNumberPane  = static_cast<J2DPicture*>(mScreenObj->search(deTagName[i]));
+		mCurrNumberValue = id;
+		mCurrNumberPane  = static_cast<J2DPicture*>(mScreenObj->search(deTagName[id]));
 		P2ASSERTLINE(172, mCurrNumberPane);
 		mCurrNumberPane->show();
 		mDoPlaySE = true;
 	}
 
-	u32 alpha = mAlphaMax;
-	f32 scale = 1.0f;
-	f32 calc3 = 1.0f - (calc2 - id);
-	if (calc3 > 0.3f) {
-		if (calc3 > 0.7f) {
-			mCurrNumberPane->setOffset(mNumberPanePos.x, mNumberPanePos.y + mOffsetY);
-			scale = calc3 * 3.33333f + -1.333333f;
-		} else {
-			mCurrNumberPane->setOffset(mNumberPanePos.x, mNumberPanePos.y + mOffsetY);
+	int alpha    = mAlphaMax;
+	f32 scale    = mStopScale;
+	f32 scaleMax = mScaleMax;
+	f32 fraction = calc2 - id;
+	f32 calc3    = 1.0f - fraction;
+	f32 start    = 0.5f * (1.0f - mWaitTime);
+	f32 end      = 0.5f * (1.0f + mWaitTime);
+	if (calc3 < start) {
+		u8 currentAlpha = mCurrNumberPane->getAlpha();
+		int newAlpha    = calc3 * ((f32)(u8)alpha / start);
+		alpha           = currentAlpha;
+		if ((u8)newAlpha > currentAlpha) {
+			alpha = newAlpha;
 		}
-	} else {
-		alpha = mCurrNumberPane->getAlpha();
-		scale = mCurrNumberPane->mScale.x;
+
+		f32 newScale     = calc3 * (scale / start);
+		f32 currentScale = mCurrNumberPane->mScale.x;
+		scale            = currentScale;
+		if (newScale > currentScale) {
+			scale = newScale;
+		}
+
 		if (mMode) {
-			mCurrNumberPane->add((mNumberPanePos.x - mCurrNumberPane->mOffset.x) * scale,
-			                     (mNumberPanePos.y - mCurrNumberPane->mOffset.y) * scale + mOffsetY);
+			f32 xOffset = mNumberPanePos.x - mCurrNumberPane->mOffset.x;
+			f32 yOffset = mNumberPanePos.y - mCurrNumberPane->mOffset.y;
+			mCurrNumberPane->add(xOffset * scale, yOffset * scale + mOffsetY);
 		} else {
 			mCurrNumberPane->setOffset(mNumberPanePos.x, mNumberPanePos.y + mOffsetY);
 		}
+	} else if (calc3 > end) {
+		// f32 duration   = 1.0f - end;
+		f32 scaleSlope = (scale - scaleMax) / (end - 1.0f);
+		f32 alphaSlope = (f32)(u8)alpha / (1.0f - end);
+		scale          = scaleSlope * calc3 + (scaleMax - scaleSlope);
+		alpha          = -alphaSlope * calc3 + alphaSlope;
+		mCurrNumberPane->setOffset(mNumberPanePos.x, mNumberPanePos.y + mOffsetY);
+	} else {
+		mCurrNumberPane->setOffset(mNumberPanePos.x, mNumberPanePos.y + mOffsetY);
 	}
 
 	if (scale == 1.0f && mSoundEnabled && mDoPlaySE) {
@@ -183,57 +202,55 @@ bool TDayEndCount::doUpdate()
 		mDoPlaySE = false;
 	}
 
-	u32 texAlpha = alpha;
-	if (id >= 0 && (u8)alpha <= 100) {
-		alpha = 100;
+	u32 textAlpha = alpha;
+	if (id >= 0 && (u8)textAlpha <= 100) {
+		textAlpha = 100;
 	}
 
 	JUtility::TColor color;
-	if (alpha < mAlphaMax && !mColorTest) {
-		switch (id) {
-		case 0:
-		case 1:
-		case 2:
-		case 3:
+	GXColor fadeColor;
+	if ((u8)alpha < mAlphaMax && !mColorTest) {
+		if (id <= 3) {
 			mColor.r = 255;
 			mColor.g = 100;
 			mColor.b = 0;
-			break;
-		case 4:
-		case 5:
-		case 6:
+		} else if (id <= 6) {
 			mColor.r = 255;
 			mColor.g = 255;
 			mColor.b = 0;
-			break;
-		default:
+		} else {
 			mColor.r = 255;
-			mColor.g = 100;
+			mColor.g = 255;
 			mColor.b = 255;
-			break;
 		}
-		color = mColor;
+
+		f32 colorRatio = (u8)textAlpha / 100.0f - 1.0f;
+		f32 whiteRatio = 1.0f - colorRatio;
+		fadeColor.r    = (u8)(mColor.r * colorRatio + 255.0f * whiteRatio);
+		fadeColor.g    = (u8)(mColor.g * colorRatio + 255.0f * whiteRatio);
+		fadeColor.b    = (u8)(mColor.b * colorRatio + 255.0f * whiteRatio);
+		fadeColor.a    = 255;
+		color.set(fadeColor);
 		mTextPane->setWhite(color);
 	} else {
-		color = mColor;
+		color.set(mColor);
 		mTextPane->setWhite(color);
 	}
 
-	f32 angle        = TAU * 2.0f * (u8)texAlpha / mAlphaMax;
-	f32 xoffs        = sinf(angle) * 5.0f;
-	f32 yoffs        = cosf(angle) * 5.0f;
-	mTexCoords1[0].x = mTexCoords2[0].x - xoffs;
-	mTexCoords1[0].y = mTexCoords2[0].y - yoffs;
-	mTexCoords1[1].x = mTexCoords2[1].x + xoffs;
-	mTexCoords1[1].y = mTexCoords2[1].y - yoffs;
-	mTexCoords1[2].x = mTexCoords2[2].x + xoffs;
-	mTexCoords1[2].y = mTexCoords2[2].y + yoffs;
-	mTexCoords1[3].x = mTexCoords2[3].x - xoffs;
-	mTexCoords1[3].y = mTexCoords2[3].y + yoffs;
-	mCurrNumberPane->setTexCoord(mTexCoords1);
+	J2DPicture* numPane = mCurrNumberPane;
+	f32 angle           = TAU * 2.0f * (u8)alpha / mAlphaMax;
+	f32 xoffs           = sinf(angle);
+	f32 yoffs           = cosf(angle);
+	xoffs *= 5.0f;
+	yoffs *= 5.0f;
+	mTexCoords1[0].set(mTexCoords2[0].x - xoffs, mTexCoords2[0].y - yoffs);
+	mTexCoords1[1].set(mTexCoords2[1].x + xoffs, mTexCoords2[1].y - yoffs);
+	mTexCoords1[2].set(mTexCoords2[2].x + xoffs, mTexCoords2[2].y + yoffs);
+	mTexCoords1[3].set(mTexCoords2[3].x - xoffs, mTexCoords2[3].y + yoffs);
+	numPane->setTexCoord(mTexCoords1);
 
 	if (mMode) {
-		u8 alpha = mFadeFraction * mWaitAlpha;
+		u8 alpha = mWaitAlpha * mFadeFraction;
 		for (int i = 0; i < mCurrNumberValue; i++) {
 			mNumberPaneList[i]->setAlpha(alpha);
 		}
@@ -244,10 +261,10 @@ bool TDayEndCount::doUpdate()
 		mCurrNumberPane->setWhite(mNumberColor);
 	}
 
-	mCurrNumberPane->setAlpha(alpha * mFadeFraction);
+	mCurrNumberPane->setAlpha((u8)alpha * mFadeFraction);
 	mCurrNumberPane->updateScale(scale * mScale);
 	mTextPane->setOffset(mTextPanePos.x, mTextPanePos.y + mOffsetY);
-	mTextPane->setAlpha(alpha * mFadeFraction);
+	mTextPane->setAlpha((u8)textAlpha * mFadeFraction);
 	mScreenObj->update();
 	return false;
 
@@ -1169,15 +1186,6 @@ bool TCountDownScene::doStart(Screen::StartSceneArg* arg)
 	if (Screen::SceneBase::doStart(arg) && mChallengeEndCount2p) {
 		return mChallengeEndCount2p->start(arg);
 	}
-}
-
-/**
- * @note Address: 0x80345F64
- * @note Size: 0xC
- */
-void TTestBase::doUpdateFadeinFinish()
-{
-	mCanInput = true;
 }
 
 }; // namespace Morimura

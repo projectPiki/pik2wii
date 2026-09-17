@@ -300,7 +300,7 @@ struct J2DTevSwapModeTableInfo {
 	u8 mA; // _03
 };
 
-inline u8 J2DCalcTevSwapTable(u8 r, u8 g, u8 b, u8 a)
+inline u8 J2DCalcTevSwapTable(const u8 r, const u8 g, const u8 b, const u8 a)
 {
 	return (r << 6) + (g << 4) + (b << 2) + a;
 }

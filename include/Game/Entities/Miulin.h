@@ -1,11 +1,11 @@
 #ifndef _GAME_ENTITIES_MIULIN_H
 #define _GAME_ENTITIES_MIULIN_H
 
-#include "Game/EnemyStateMachine.h"
 #include "Game/EnemyAnimatorBase.h"
-#include "Game/EnemyParmsBase.h"
-#include "Game/EnemyMgrBase.h"
 #include "Game/EnemyBase.h"
+#include "Game/EnemyMgrBase.h"
+#include "Game/EnemyParmsBase.h"
+#include "Game/EnemyStateMachine.h"
 #include "Game/WalkSmokeEffect.h"
 #include "SysShape/Joint.h"
 
@@ -139,11 +139,10 @@ struct Obj : public EnemyBase {
 	virtual void doSimulation(f32);                                                            // _4C
 	virtual void doDirectDraw(Graphics& gfx);                                                  // _50
 	virtual void getShadowParam(ShadowParam& settings);                                        // _134
+	virtual void setInitialSetting(EnemyInitialParamBase*) { }                                 // _1C4 (weak)
 	virtual void applyImpulse(Vector3f&, Vector3f&) { }                                        // _18C (weak)
-	virtual Vector3f getGoalPos() { return mGoalPosition; }                                    // _198 (weak)
 	virtual ~Obj() { }                                                                         // _1BC (weak)
 	virtual void birth(Vector3f&, f32);                                                        // _1C0
-	virtual void setInitialSetting(EnemyInitialParamBase*) { }                                 // _1C4 (weak)
 	virtual void doUpdate();                                                                   // _1CC
 	virtual void doDebugDraw(Graphics& gfx);                                                   // _1EC
 	virtual void setParameters();                                                              // _228
@@ -153,6 +152,7 @@ struct Obj : public EnemyBase {
 	virtual void startCarcassMotion();                                                         // _2C4
 	virtual void wallCallback(const MoveInfo& info);                                           // _2E8
 	virtual f32 getDownSmokeScale() { return 0.85f; }                                          // _2EC (weak)
+	virtual Vector3f getGoalPos() { return mGoalPosition; }                                    // _198 (weak)
 	virtual void setFSM(FSM* fsm)
 	{
 		mFsm = fsm;

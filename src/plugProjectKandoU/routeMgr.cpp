@@ -526,8 +526,10 @@ WayPoint* RouteMgr::getNearestWayPoint(WPSearchArg& searchArg)
  */
 bool RouteMgr::getNearestEdge(WPEdgeSearchArg& searchArg)
 {
-	f32 minDist = FLOAT_DIST_MAX;
-	bool result = false;
+	searchArg.mWp2 = nullptr;
+	searchArg.mWp1 = nullptr;
+	f32 minDist    = FLOAT_DIST_MAX;
+	bool result    = false;
 	Iterator<WayPoint> iter(this);
 	CI_LOOP(iter)
 	{
@@ -562,11 +564,23 @@ bool RouteMgr::getNearestEdge(WPEdgeSearchArg& searchArg)
 				continue;
 			}
 
-			if (wpB->mFromLinks[i] == wpA->mIndex && wpA->mIndex > wpB->mIndex) {
+			// there really are a shitton of branches here from SOMETHING
+			// this is my best guess for now
+			bool isReverseLink = false;
+			for (int j = 0; j < 8; j++) {
+				if (wpB->mFromLinks[i] == wpA->mIndex) {
+					isReverseLink = true;
+					break;
+				}
+			}
+			if (isReverseLink && wpA->mIndex > wpB->mIndex) {
 				continue;
 			}
 
 			bool isWaypointAClosed = wpA->isFlag(WPF_Closed);
+			if (isWaypointAClosed && wpB->isFlag(WPF_Closed)) {
+				continue;
+			}
 			if (isWaypointAClosed || wpB->isFlag(WPF_Closed)) {
 				WayPoint* a;
 				WayPoint* b;
@@ -580,8 +594,9 @@ bool RouteMgr::getNearestEdge(WPEdgeSearchArg& searchArg)
 
 				Vector3f sep = a->mPosition - b->mPosition;
 				sep.normalise();
-				Vector3f searchSep = searchArg.mStartPosition - b->mPosition;
-				if (sep.dot(searchSep) < 0.0f) {
+				Plane plane;
+				plane.updatePlane(b->mPosition, sep);
+				if (plane.calcDist(a->mPosition) * plane.calcDist(searchArg.mStartPosition) < 0.0f) {
 					continue;
 				}
 			}
@@ -594,6 +609,8 @@ bool RouteMgr::getNearestEdge(WPEdgeSearchArg& searchArg)
 				relativePosition.x *= norm;
 				relativePosition.y *= norm;
 				relativePosition.z *= norm;
+			} else {
+				distanceMagnitude = 0.0f;
 			}
 			Vector3f searchSep = searchArg.mStartPosition - wpPos;
 			f32 dotProd        = relativePosition.dot(searchSep) / distanceMagnitude;
@@ -614,7 +631,7 @@ bool RouteMgr::getNearestEdge(WPEdgeSearchArg& searchArg)
 				}
 			} else {
 				f32 factor       = dotProd * distanceMagnitude;
-				Vector3f edgePos = wpPos + relativePosition * factor;
+				Vector3f edgePos = relativePosition * factor + wpA->mPosition;
 				f32 radius       = (1.0f - dotProd) * wpA->mRadius + dotProd * wpB->mRadius;
 				newDist          = edgePos.distance(searchPos) - radius;
 			}

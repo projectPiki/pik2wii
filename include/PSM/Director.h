@@ -29,8 +29,6 @@ struct OneShotDirector : public ::PSSystem::OneShotDirector {
 	{
 	}
 
-	virtual ~OneShotDirector() { } // _08 (weak)
-
 	// _00     = VTBL
 	// _00-_48 = PSSystem::OneShotDirector
 	::PSSystem::DirectorCopyActor* mActor; // _48
@@ -138,7 +136,6 @@ struct ActorDirector_TempoChange : public TempoChangeDirectorBase {
 struct TrackOnDirectorBase : public SwitcherDirector {
 	TrackOnDirectorBase(int trackCount, const char* name, s32 fadeIn, s32 fadeOut);
 
-	virtual ~TrackOnDirectorBase() { }                      // _08 (weak)
 	virtual void directOnTrack(::PSSystem::SeqTrackBase&);  // _20
 	virtual void directOffTrack(::PSSystem::SeqTrackBase&); // _24
 	virtual void onPlayInit(JASTrack*);                     // _2C
@@ -176,7 +173,7 @@ struct ListDirectorActor : public ::PSSystem::DirectorCopyActor, public JSUList<
 
 struct TrackOnDirector_Scaled : public TrackOnDirectorBase {
 	TrackOnDirector_Scaled(const char* name, int trackCount, f32 endDistance, f32 startDistance, s32 fadeIn, s32 fadeOut, u32 fadeDuration);
-	//virtual ~TrackOnDirector_Scaled() { } // _08 (weak)
+
 	virtual void underDirection();        // _18
 	virtual f32 getNearestDistance() = 0; // _38
 

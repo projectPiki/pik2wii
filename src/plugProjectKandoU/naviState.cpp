@@ -4981,10 +4981,11 @@ void NaviThrowWaitState::exec(Navi* navi)
 				transit(navi, NSID_Walk, nullptr);
 				return;
 			}
-			CollPart* part   = navi->mCollTree->getCollPart('rhnd');
-			Vector3f handPos = part->mPosition;
-			Vector3f pikiPos = mNextPiki->getPosition();
-			f32 dist         = handPos.distance(pikiPos);
+			CollPart* part      = navi->mCollTree->getCollPart('rhnd');
+			Vector3f handPos    = part->mPosition;
+			Vector3f pikiPos    = mNextPiki->getPosition();
+			Vector3f handToPiki = handPos - pikiPos;
+			f32 dist            = handToPiki.length();
 			if (!(dist <= 32.5f))
 				return;
 
@@ -5004,13 +5005,10 @@ void NaviThrowWaitState::exec(Navi* navi)
 
 	navi->mNextThrowPiki = mHeldPiki;
 
-	f32 min               = CG_NAVIPARMS(navi).mThrowDistanceMin();
-	f32 max               = CG_NAVIPARMS(navi).mThrowDistanceMax();
-	navi->mHoldPikiCharge = mHoldChargeLevel / 3.0f * (max - min) + min;
-
-	max                    = CG_NAVIPARMS(navi).mThrowHeightMax();
-	min                    = CG_NAVIPARMS(navi).mThrowHeightMin();
-	navi->mHoldPikiCharge2 = mHoldChargeLevel / 3.0f * (max - min) + min;
+	navi->mHoldPikiCharge  = mHoldChargeLevel / 3.0f * (CG_NAVIPARMS(navi).mThrowDistanceMax() - CG_NAVIPARMS(navi).mThrowDistanceMin())
+	                       + CG_NAVIPARMS(navi).mThrowDistanceMin();
+	navi->mHoldPikiCharge2 = mHoldChargeLevel / 3.0f * (CG_NAVIPARMS(navi).mThrowHeightMax() - CG_NAVIPARMS(navi).mThrowHeightMin())
+	                       + CG_NAVIPARMS(navi).mThrowHeightMin();
 
 	if (mHeldPiki && mHasHeldPiki) {
 		int stateID = mHeldPiki->getStateID();
@@ -6294,11 +6292,10 @@ void NaviDemo_UfoState::initSuck(Navi* navi)
 {
 	Onyon* ship   = ItemOnyon::mgr->mUfo;
 	Vector3f diff = ship->getSuckPos() - navi->getPosition();
-	f32 dist      = diff.length();
-	mDist         = dist;
+	mDist         = diff.length();
 
-	_14               = 0.0f;
-	navi->mVelocity.y = 0.0f;
+	_14             = 0.0f;
+	navi->mVelocity = Vector3f(navi->mVelocity.x, 0.0f, navi->mVelocity.z);
 
 	mScaleMod = 1.0f;
 	mStartPos = navi->getPosition();
@@ -6389,13 +6386,17 @@ lbl_801880BC:
 bool NaviDemo_UfoState::execSuck(Navi* navi)
 {
 	Vector3f goalPos = ItemOnyon::mgr->mUfo->getSuckPos();
-	Vector3f setPos  = mStartPos + (goalPos - mStartPos) * mProgress;
+	Vector3f dir     = Vector3f::sub2(goalPos, mStartPos);
+	Vector3f setPos  = Vector3f(mStartPos + dir * mProgress);
 	navi->setPosition(setPos, false);
 	navi->mScale = -(mProgress * 0.75f - 1.0f) * mScaleMod;
 
 	mProgress += (mSpeed * sys->getDeltaTime()) / mDist;
 	mSpeed += sys->getDeltaTime() * 720.0f;
-	return mProgress >= 1.0f;
+	if (mProgress >= 1.0f) {
+		return true;
+	}
+	return false;
 	/*
 	stwu     r1, -0x30(r1)
 	mflr     r0
@@ -6604,8 +6605,8 @@ bool NaviDemo_HoleInState::execHesitate(Navi* navi)
 		return true;
 	}
 
-	navi->mVelocity       = 0.0f;
-	navi->mTargetVelocity = 0.0f;
+	navi->mVelocity.set(0.0f, 0.0f, 0.0f);
+	navi->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	return false;
 
 	/*
