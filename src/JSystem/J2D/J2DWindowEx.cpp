@@ -38,10 +38,10 @@ J2DWindowEx::J2DWindowEx(J2DPane* parent, JSURandomInputStream* input, u32 flags
 	colors[3]                   = &mContentsColorD;
 
 	for (int i = 0; i < 4; i++) {
-		mFrameMaterialIds[i]            = windowData.mContentIds[i];
-		mFrameMaterials[i] = nullptr;
+		mFrameMaterialIds[i] = windowData.mContentIds[i];
+		mFrameMaterials[i]   = nullptr;
 		if (mFrameMaterialIds[i] != 0xffff) {
-			mFrameMaterials[i]           = materials + mFrameMaterialIds[i];
+			mFrameMaterials[i]                        = materials + mFrameMaterialIds[i];
 			(materials + mFrameMaterialIds[i])->mPane = this;
 		}
 		_168[i]      = windowData._28[i];
@@ -419,7 +419,7 @@ void J2DWindowEx::drawFrameTexture(f32 x, f32 y, f32 width, f32 height, u16 p5, 
 			}
 		} else if (parentPane != nullptr && mIsInfluencedAlpha != 0 && p10) {
 			u8 matColorAlpha = material->getColorBlock()->getMatColor(0)->a;
-			matColorAlpha   = matColorAlpha * parentPane->mColorAlpha / 0xff;
+			matColorAlpha    = matColorAlpha * parentPane->mColorAlpha / 0xff;
 			GXSetChanMatColor(GX_ALPHA0, JUtility::TColor(matColorAlpha));
 		}
 		GXSetVtxAttrFmt(GX_VTXFMT0, GX_VA_POS, GX_CLR_RGBA, GX_F32, 0);
@@ -558,16 +558,16 @@ void J2DWindowEx::setTevStage(bool p1)
  */
 void J2DWindowEx::setStage(J2DTevStage* stage, J2DWindowEx::stage_enum stageNum)
 {
-	s8 local_30[6][4] = {
+	const s8 local_30[6][4] = {
 		{ 0x0f, 0x08, 0x0a, 0x0f }, { 0x0f, 0x08, 0x0a, 0x0f }, { 0x0f, 0x0a, 0x00, 0x0f },
 		{ 0x02, 0x04, 0x08, 0x0f }, { 0x02, 0x04, 0x08, 0x0f }, { 0x0f, 0x0f, 0x0f, 0x0a },
 	};
-	s8 local_48[6][4] = {
+	const s8 local_48[6][4] = {
 		{ 0x07, 0x04, 0x05, 0x07 }, { 0x05, 0x07, 0x07, 0x07 }, { 0x07, 0x05, 0x00, 0x07 },
 		{ 0x01, 0x02, 0x04, 0x07 }, { 0x07, 0x07, 0x07, 0x02 }, { 0x07, 0x07, 0x07, 0x05 },
 	};
-	s8 local_68[6][5] = {
-		{ 1, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0 }, { 0, 1, 0, 0, 1 }, { 0, 0, 1, 0, 0 }, { 1, 0, 0, 0, 0 }, { 0, 0, 0, 0, 1 },
+	const s8 local_68[6][5] = {
+		{ 0, 0, 0, 1, 0 }, { 0, 0, 0, 1, 0 }, { 0, 0, 0, 1, 0 }, { 0, 0, 0, 1, 0 }, { 0, 0, 0, 1, 0 }, { 0, 0, 0, 1, 0 },
 	};
 
 	stage->setTevColorAB(local_30[stageNum][0], local_30[stageNum][1]);
@@ -628,7 +628,7 @@ bool J2DWindowEx::setBlackWhite(JUtility::TColor black, JUtility::TColor white)
 	}
 
 	bool bVar1 = (u32)black != 0 || (u32)white != 0xffffffff;
-	u8 uVar3 = bVar1 ? 2 : 1;
+	u8 uVar3   = bVar1 ? 2 : 1;
 	for (int i = 0; i < 4; i++) {
 		mFrameMaterials[i]->getTevBlock()->setTevStageNum(uVar3);
 	}
@@ -995,55 +995,4 @@ const J2DAnmTransform* J2DWindowEx::animationPane(const J2DAnmTransform* animati
 		}
 	}
 	return J2DPane::animationPane(animation);
-}
-
-/**
- * @note Address: 0x80047828
- * @note Size: 0x58
- * draw__11J2DWindowExFffff
- */
-void J2DWindowEx::draw(f32 p1, f32 p2, f32 p3, f32 p4)
-{
-	draw(JGeometry::TBox2<f32>(JGeometry::TVec2<f32>(p1, p2), JGeometry::TVec2<f32>(p1 + p3, p2 + p4)));
-	// JGeometry::TBox2f box;
-	// box.f.x = p3 + p1;
-	// box.f.y = p4 + p2;
-	// box.i.x = p1;
-	// box.i.y = p2;
-	// f32 x1 = p1 + p3;
-	// f32 y1 = p2 + p4;
-	// JGeometry::TBox2f box(p1, p2, x1, y1);
-	// JGeometry::TVec2f bottomRight, topLeft = JGeometry::TVec2f(p1, p2);
-	// bottomRight.add(p3, p4);
-	// JGeometry::TBox2f box;
-	// box.set(p1, p2, p1 + p3, p2 + p4);
-	// JGeometry::TVec2f bottomRight = JGeometry::TVec2f(p1 + p3, p2 + p4);
-	// JGeometry::TVec2f topLeft     = JGeometry::TVec2f(p1, p2);
-	// JGeometry::TBox2f box(topLeft, bottomRight);
-	// JGeometry::TBox2f box(p1, p2, p1 + p3, p2 + p4);
-	// draw(box);
-	/*
-	stwu     r1, -0x20(r1)
-	mflr     r0
-	frsp     f6, f1
-	stfs     f1, 8(r1)
-	frsp     f5, f2
-	fadds    f1, f1, f3
-	addi     r4, r1, 0x10
-	stw      r0, 0x24(r1)
-	fadds    f0, f2, f4
-	stfs     f6, 0x10(r1)
-	stfs     f5, 0x14(r1)
-	stfs     f1, 0x18(r1)
-	stfs     f0, 0x1c(r1)
-	lwz      r12, 0(r3)
-	stfs     f2, 0xc(r1)
-	lwz      r12, 0x94(r12)
-	mtctr    r12
-	bctrl
-	lwz      r0, 0x24(r1)
-	mtlr     r0
-	addi     r1, r1, 0x20
-	blr
-	*/
 }

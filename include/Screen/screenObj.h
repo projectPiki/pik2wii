@@ -96,8 +96,8 @@ struct SetSceneArg : public SceneArgBase {
 	{
 	}
 
-	virtual SceneType getSceneType() const { return mSceneType; } // _08
 	virtual int getClassSize() { return sizeof(SetSceneArg); }    // _0C
+	virtual SceneType getSceneType() const { return mSceneType; } // _08
 
 	// _00 = VTBL
 	SceneType mSceneType;                    // _04

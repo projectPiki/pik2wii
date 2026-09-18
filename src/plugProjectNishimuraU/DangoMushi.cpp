@@ -11,6 +11,12 @@
 #include "RevoSDK/rand.h"
 #include "types.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "246-DangoMushi";
+}
+
 namespace Game {
 namespace DangoMushi {
 
@@ -803,7 +809,7 @@ void Obj::setBodyCollision(bool check)
 		}
 	}
 
-	if (check && mStuckPikminCount != 0 && !(mHealth <= 0.0f)) {
+	if (check && mStuckPikminCount != 0 && !(isDead())) {
 		f32 angle = PI + mFaceDir;
 		Vector3f effectPos;
 		effectPos.x = 150.0f * sinf(mFaceDir);

@@ -5,8 +5,8 @@
 #include "CNode.h"
 #include "Game/PikiContainer.h"
 #include "Game/TekiStat.h"
-#include "Game/gameStages.h"
 #include "Game/gameGeneratorCache.h"
+#include "Game/gameStages.h"
 #include "id32.h"
 #include "kh/khDayEndResult.h"
 
@@ -482,7 +482,7 @@ struct PlayData : public CNode {
 	bool mDoAllowDebugPikiSpawn;            // _18
 	u8 mLoadType;                           // _19, see SaveFlags enum
 	void* mBeforeSaveDelegate;              // _1C
-	u8 mDeadNaviID;                         // _20
+	BitFlag<u8> mDeadNaviID;                // _20
 	u8 mDeadNaviID2;                        // _21
 	f32 mNaviLifeMax[2];                    // _24
 	u8 mHasContainerFlags;                  // _2C

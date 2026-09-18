@@ -11,6 +11,12 @@
 #include "Viewport.h"
 #include "types.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "farm";
+}
+
 namespace Game {
 namespace Farm {
 

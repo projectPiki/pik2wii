@@ -8,6 +8,12 @@
 #include "RevoSDK/OS/OSThread.h"
 #include "stl/string.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "dvdThread";
+}
+
 /**
  * @note Address: 0x80424818
  * @note Size: 0x80

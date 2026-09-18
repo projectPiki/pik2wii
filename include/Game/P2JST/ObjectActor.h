@@ -65,7 +65,7 @@ struct ObjectActor : public JStage::TActor, public ObjectBase {
 	virtual void stop() { }                                // _B8 (weak)
 	virtual bool setShape();                               // _BC
 	virtual bool setAnim();                                // _C0
-	virtual void mountArchive();                           // _C4
+	virtual bool mountArchive();                           // _C4
 	virtual void parseUserData_(u32, const void*);         // _C8 (weak)
 
 	// _00 = VTABLE (JStage::TActor)

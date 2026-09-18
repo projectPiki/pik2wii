@@ -5,7 +5,11 @@
 #include "Game/generalEnemyMgr.h"
 #include "RevoSDK/rand.h"
 
-static const char bombSaraiName[] = "246-BombSarai";
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "246-BombSarai";
+}
 
 namespace Game {
 
@@ -115,7 +119,7 @@ void BombSarai::Obj::getShadowParam(ShadowParam& shadowParam)
 		shadowParam.mPosition.y = 5.0f + mPosition.y;
 	}
 
-	shadowParam.mBoundingSphere.mPosition = Vector3f(0.0f, 1.0f, 0.0f);
+	shadowParam.mBoundingSphere.mPosition.set(0.0f, 1.0f, 0.0f);
 	shadowParam.mBoundingSphere.mRadius   = 50.0f + C_PROPERPARMS.mFlightHeight.mValue;
 	shadowParam.mSize                     = 17.5f;
 }

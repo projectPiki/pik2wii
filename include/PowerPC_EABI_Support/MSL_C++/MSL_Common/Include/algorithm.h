@@ -45,7 +45,8 @@ ForwardIterator upper_bound(ForwardIterator first, ForwardIterator last, const T
 }
 
 template <class InputIt, class UnaryPredicate>
-InputIt find_if(InputIt first, InputIt last, UnaryPredicate p){
+InputIt find_if(InputIt first, InputIt last, UnaryPredicate p)
+{
 	while (first != last && !p(*first)) {
 		++first;
 	}
@@ -89,10 +90,9 @@ void fill(ForwardIt first, ForwardIt last, const T& value)
 template <class InputIt, class OutputIt>
 inline OutputIt copy(InputIt first, InputIt last, OutputIt d_first)
 {
-	for (; first < last;) {
-		*d_first++ = *first++;
-	}
-	return d_first;
+	size_t n = static_cast<size_t>(last - first);
+	memmove(d_first, first, n * sizeof(OutputIt));
+	return d_first + n;
 }
 
 template <class T, int N>

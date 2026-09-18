@@ -39,7 +39,7 @@ f32 TChallengeResult::mDemoSpeedUpRate = 2.0f;
 f32 TChallengeResult::mDemoSpeedUpMax  = 3.0f;
 u8 TChallengeResult::mFlashColor[]     = { 255, 255, 0, 255 };
 
-const int cRandArray[] = { 0, 1, 2, 0, 2, 1, 1, 0, 2, 1, 2, 0, 2, 1, 0, 2, 0, 1, 0 };
+const int cRandArray[] = { 0, 1, 2, 0, 2, 1, 1, 0, 2, 1, 2, 0, 2, 1, 0, 2, 0, 1 };
 
 /**
  * @note Address: 0x80393348
@@ -228,13 +228,14 @@ void TMovePane::update()
 void TMovePane::move()
 {
 	turn();
-	mAngleSin = sinf(mAngle) * TChallengeResult::mMoveSpeed * TChallengeResult::mDemoSpeedUpRate;
-	mAngleCos = -cosf(mAngle) * TChallengeResult::mMoveSpeed * TChallengeResult::mDemoSpeedUpRate;
+	mTargetVelocity.x = sinf(mAngle) * TChallengeResult::mMoveSpeed * TChallengeResult::mDemoSpeedUpRate;
+	mTargetVelocity.y = -cosf(mAngle) * TChallengeResult::mMoveSpeed * TChallengeResult::mDemoSpeedUpRate;
 
+	JGeometry::TVec2f difference(mTargetVelocity.x - mVelocity.x, mTargetVelocity.y - mVelocity.y);
+	JGeometry::TVec2f acceleration;
+	acceleration.scale(difference, TChallengeResult::mAccel);
 	JGeometry::TVec2f velocity;
-	velocity.x = (mAngleSin - mVelocity.x) * TChallengeResult::mAccel * TChallengeResult::mDemoSpeedUpRate;
-	velocity.y = (mAngleCos - mVelocity.y) * TChallengeResult::mAccel * TChallengeResult::mDemoSpeedUpRate;
-	velocity += mVelocity;
+	velocity.add(mVelocity, acceleration * TChallengeResult::mDemoSpeedUpRate);
 	mVelocity = velocity;
 
 	mPaneGoal += mVelocity;
@@ -383,8 +384,8 @@ f32 TMovePane::getAngDist()
 bool TMovePane::hosei()
 {
 	bool ret  = false;
-	mAngleSin = 0.0f;
-	mAngleCos = 0.0f;
+	mTargetVelocity.x = 0.0f;
+	mTargetVelocity.y = 0.0f;
 	mVelocity = 0.0f;
 	f32 x     = (mOffset.x - mPaneGoal.x) * 0.05f * TChallengeResult::mDemoSpeedUpRate;
 	f32 y     = (mOffset.y - mPaneGoal.y) * 0.05f * TChallengeResult::mDemoSpeedUpRate;
@@ -613,16 +614,16 @@ bool TMovePane::isReachToGoal()
  */
 void TMovePane::reset()
 {
-	mVelocity   = 0.0f;
-	mAngleSin   = mVelocity.x;
-	mAngleCos   = mVelocity.y;
-	mPaneGoal.x = mPanePosition.x;
-	mPaneGoal.y = mPanePosition.y;
-	mOffset.x   = mPaneGoal.x;
-	mOffset.y   = mPaneGoal.y;
-	mState      = 0;
-	mCounter    = 0;
-	mAngle      = 0.0f;
+	mVelocity         = 0.0f;
+	mTargetVelocity.x = mVelocity.x;
+	mTargetVelocity.y = mVelocity.y;
+	mPaneGoal.x       = mPanePosition.x;
+	mPaneGoal.y       = mPanePosition.y;
+	mOffset.x         = mPaneGoal.x;
+	mOffset.y         = mPaneGoal.y;
+	mState            = 0;
+	mCounter          = 0;
+	mAngle            = 0.0f;
 	mPane->setOffset(mPaneGoal.x, mPaneGoal.y);
 	mPane->setAngle(roundAng(TAU - mAngle) * 360.0f / TAU);
 }
@@ -1296,11 +1297,9 @@ bool TChallengeResult::doUpdate()
 	if (mIsSaveOpen && mSaveMgr->isFinish()) {
 		if (mSaveMgr->mEndState == ebi::Save::TMgr::End_Cancel) {
 			if (mComplete) {
-				u16 y = sys->getRenderModeObj()->efbHeight;
-				u16 x = sys->getRenderModeObj()->fbWidth;
-
-				Vector2f pos(x * 0.5f, y * 0.5f);
-				efx2d::Arg arg(pos);
+				f32 y = (sys->getRenderModeObj()->efbHeight) * 0.5f;
+				f32 x = (sys->getRenderModeObj()->fbWidth) * 0.5f;
+				efx2d::Arg arg(Vector2f(x, y));
 				mEfxCompLoop->create(&arg);
 			}
 			mIsSaveOpen = false;
@@ -2151,9 +2150,9 @@ void TChallengeResult::doDraw(Graphics& gfx)
 	graf->setColor(color);
 	GXSetAlphaUpdate(GX_FALSE);
 
+	f32 y    = System::getRenderModeObj()->efbHeight;
+	f32 x    = System::getRenderModeObj()->fbWidth;
 	f32 zero = 0.0f;
-	u16 y    = System::getRenderModeObj()->efbHeight;
-	u16 x    = System::getRenderModeObj()->fbWidth;
 	graf->fillBox(JGeometry::TBox2f(0.0f, 0.0f, zero + x, zero + y));
 
 	GXSetAlphaUpdate(GX_TRUE);
@@ -2297,7 +2296,7 @@ void TChallengeResult::setInfo()
 		mPanePlayerNumShadow->setMsgID('4870_00'); // "2-Player Challenge"
 	}
 
-	mResultDemoScreen->startDemo();
+	mResultDemoScreen->setComplete(false);
 
 	if (mFlags[0] & 0x10) {
 		for (int i = 0; i < 5; i++) {
@@ -3458,15 +3457,16 @@ void TChallengeResult::updateDemo()
 						mOnyonMovePane[i]->mState = 2;
 						id2                       = mResultCounters[id1]->mDigits;
 						f32 x                     = mVecUnit[id1]._00.x;
+						f32 xSpan                 = x - mVecUnit[id1]._08.x;
 						f32 y                     = (f32)id2 / (f32)mResultCounters[id1]->_18;
 						if (id2 == 1) {
 							y += 0.05f;
 						}
-						f32 y2 = y + 0.1f;
-						if (y + 0.1f > 1.0f) {
-							y2 = 1.0f;
+						y += 0.1f;
+						if (y > 1.0f) {
+							y = 1.0f;
 						}
-						mOnyonMovePane[i]->mOffset.set(-((x - mVecUnit[id1]._08.x) * y2 - x), mVecUnit[id1]._08.y);
+						mOnyonMovePane[i]->mOffset.set(-(xSpan * y - x), mVecUnit[id1]._08.y);
 						mOnyonMovePane[i]->mCounter = 1;
 					} else if (id2 == 2) {
 						if (FABS(mOnyonMovePane[i]->getAngDist()) < 0.05f) {
@@ -3494,15 +3494,15 @@ void TChallengeResult::updateDemo()
 					mCounter4->start();
 					break;
 				}
-			}
-			if (i == _1E8 && mOnyonMovePane[i]->_48 != 3) {
-				mOnyonMovePane[i]->mState = 1;
-				PSSystem::spSysIF->playSystemSe(PSSE_SY_CHALLENGE_SCORE_L, 0);
-				PSSystem::spSysIF->playSystemSe(PSSE_SY_PIKI_INCREMENT, 0);
-				mOnyonMovePane[i]->mOffset.x = mVecUnit[3]._00.x;
-				mOnyonMovePane[i]->mOffset.y = mVecUnit[3]._00.y;
-				mOnyonMovePane[i]->mCounter  = 1;
-				mOnyonMovePane[i]->_48       = 3;
+				if (i == _1E8 && mOnyonMovePane[i]->_48 != 3) {
+					mOnyonMovePane[i]->mState = 1;
+					PSSystem::spSysIF->playSystemSe(PSSE_SY_CHALLENGE_SCORE_L, 0);
+					PSSystem::spSysIF->playSystemSe(PSSE_SY_PIKI_INCREMENT, 0);
+					mOnyonMovePane[i]->mOffset.x = mVecUnit[3]._00.x;
+					mOnyonMovePane[i]->mOffset.y = mVecUnit[3]._00.y;
+					mOnyonMovePane[i]->mCounter  = 1;
+					mOnyonMovePane[i]->_48       = 3;
+				}
 			}
 		}
 		if (check) {
@@ -3515,21 +3515,22 @@ void TChallengeResult::updateDemo()
 						test = 5;
 					}
 					int id = cRandArray[test * 3];
-					mOnyonMovePane[id]->mOffset.set(mVecUnit[3]._00);
+					mOnyonMovePane[id]->mOffset.set(mVecUnit[3]._00.x, mVecUnit[3]._00.y);
 					mOnyonMovePane[id]->mState   = 1;
 					mOnyonMovePane[id]->mCounter = 1;
 
-					int id2 = mResultCounters[3]->mDigits;
-					f32 x   = mVecUnit[3]._00.x;
-					f32 y   = (f32)id2 / (f32)mResultCounters[3]->_18;
+					int id2   = mResultCounters[3]->mDigits;
+					f32 x     = mVecUnit[3]._00.x;
+					f32 xSpan = x - mVecUnit[3]._08.x;
+					f32 y     = (f32)id2 / (f32)mResultCounters[3]->_18;
 					if (id2 == 1) {
 						y += 0.05f;
 					}
-					f32 y2 = y + 0.1f;
-					if (y + 0.1f > 1.0f) {
-						y2 = 1.0f;
+					y += 0.1f;
+					if (y > 1.0f) {
+						y = 1.0f;
 					}
-					mOnyonMovePane[cRandArray[test * 3 + 1]]->mOffset.set(-((x - mVecUnit[3]._08.x) * y2 - x), mVecUnit[3]._08.y);
+					mOnyonMovePane[cRandArray[test * 3 + 1]]->mOffset.set(-(xSpan * y - x), mVecUnit[3]._08.y);
 					mOnyonMovePane[cRandArray[test * 3 + 1]]->mState   = 1;
 					mOnyonMovePane[cRandArray[test * 3 + 1]]->mCounter = 1;
 					mOnyonMovePane[cRandArray[test * 3 + 2]]->start();
@@ -3558,7 +3559,8 @@ void TChallengeResult::updateDemo()
 						mOnyonMovePane[i]->mState = 2;
 						mOnyonMovePane[i]->mOffset.set(mVecUnit[3]._00.x + 300.0f, mVecUnit[3]._00.y);
 					}
-					if (FABS(mOnyonMovePane[i]->getAngDist()) > 0.01f) {
+					// what even man (this is never going to be true, surely a typo?)
+					if ((state == 0) == 2 || FABS(mOnyonMovePane[i]->getAngDist()) > 0.01f) {
 						check = false;
 					}
 				}
@@ -3606,11 +3608,11 @@ void TChallengeResult::updateDemo()
 						if (id2 == 1) {
 							y += 0.05f;
 						}
-						f32 y2 = y + 0.1f;
-						if (y + 0.1f > 1.0f) {
-							y2 = 1.0f;
+						y += 0.1f;
+						if (y > 1.0f) {
+							y = 1.0f;
 						}
-						mOnyonMovePane[i]->mPaneGoal.set(_168._08.x * y2 + pic->mGlobalMtx[0][3], x);
+						mOnyonMovePane[i]->mPaneGoal.set(_168._08.x * y + pic->mGlobalMtx[0][3], x);
 					}
 					mOnyonMovePane[i]->startStick(pic);
 					mOnyonMovePane[i]->mCounter = 0;

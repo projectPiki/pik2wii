@@ -31,15 +31,14 @@ ObjectActor::ObjectActor(char const* name, MoviePlayer* movie)
     , mTranslation(govNAN_)
     , mRotation(govNAN_)
     , mScaling(govNAN_)
+	, mShape(gu32NAN_)
+    , mAnimation(gu32NAN_)
     , mAnimFrame(gfNAN_)
     , mAnimFrameMax(gfNAN_)
+	, mModelFileId(gu32NAN_)
+    , mAnimationFileId(gu32NAN_)
 {
-	u32 invalid      = gu32NAN_.a;
-	mShape           = invalid;
-	mAnimation       = invalid;
-	mModelFileId     = invalid;
-	mAnimationFileId = invalid;
-	mArchive         = MoviePlayer::mArchive;
+	mArchive = MoviePlayer::mArchive;
 }
 
 /**
@@ -57,7 +56,7 @@ ObjectActor::~ObjectActor()
 void ObjectActor::reset()
 {
 	// this probably shouldnt be needed but it matches here (not in the ctor above)
-	u32 test = gu32NAN_.a;
+	u32 test = gu32NAN_;
 
 	mTranslation     = govNAN_;
 	mRotation        = govNAN_;
@@ -222,13 +221,13 @@ void ObjectActor::entry()
 bool ObjectActor::setShape()
 {
 	if (moviePlayer->isFlag(MVP_IsFinished)) {
-		return; // doesnt specify true or false
+		return true;
 	}
 
 	sys->startChangeCurrentHeap(moviePlayer->mMovieHeap);
 
 	int id = mShape;
-	if (id == gu32NAN_.a) {
+	if (id == gu32NAN_) {
 		sys->endChangeCurrentHeap();
 		return false;
 	}
@@ -252,7 +251,7 @@ bool ObjectActor::setShape()
 		flag |= J3DMLF_Material_PE_Full;
 	}
 	mModelData = J3DModelLoaderDataBase::load(file, flag);
-	JUT_ASSERTLINE(281, mModelData, "ModelData null");
+	JUT_ASSERTLINE(308, mModelData, "ModelData null");
 
 	if (!mModelData) {
 		sys->endChangeCurrentHeap();
@@ -260,7 +259,7 @@ bool ObjectActor::setShape()
 	}
 
 	mModel = new J3DModel(mModelData, 0, 1);
-	JUT_ASSERTLINE(290, mModel, "pModel_ null");
+	JUT_ASSERTLINE(317, mModel, "pModel_ null");
 	mModelFileId = mShape;
 	sys->endChangeCurrentHeap();
 	return true;
@@ -273,13 +272,13 @@ bool ObjectActor::setShape()
 bool ObjectActor::setAnim()
 {
 	if (moviePlayer->isFlag(MVP_IsFinished)) {
-		return; // doesnt specify true or false
+		return true;
 	}
 
 	sys->startChangeCurrentHeap(moviePlayer->mMovieHeap);
 
 	int id = mAnimation;
-	if (id == gu32NAN_.a) {
+	if (id == gu32NAN_) {
 		sys->endChangeCurrentHeap();
 		return false;
 	}
@@ -313,9 +312,10 @@ bool ObjectActor::setAnim()
  * @note Address: 0x8042F1CC
  * @note Size: 0x38
  */
-void ObjectActor::mountArchive()
+bool ObjectActor::mountArchive()
 {
-	JUT_PANICLINE(359, "DON\'T CALL THIS !\n");
+	JUT_PANICLINE(386, "DON\'T CALL THIS !\n");
+	return false;
 }
 
 /**
@@ -371,7 +371,7 @@ void ObjectActor::parseUserData_(u32 p1, void const* p2)
  */
 int ObjectActor::JSGFindNodeID(char const* name) const
 {
-	P2ASSERTLINE(428, mModelData);
+	P2ASSERTLINE(456, mModelData);
 	return mModelData->getJointName()->getIndex(name);
 }
 
@@ -381,7 +381,7 @@ int ObjectActor::JSGFindNodeID(char const* name) const
  */
 bool ObjectActor::JSGGetNodeTransformation(u32 id, Mtx mtx) const
 {
-	P2ASSERTLINE(434, mModel);
+	P2ASSERTLINE(462, mModel);
 	PSMTXCopy(mModel->mMtxBuffer->mWorldMatrices[(u16)id], mtx);
 	return true;
 }

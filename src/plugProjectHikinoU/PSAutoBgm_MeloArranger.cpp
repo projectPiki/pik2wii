@@ -74,10 +74,12 @@ bool MeloArrMgr::isToAvoid(MeloArrArg& meloArg)
  */
 static void fakeFunc(MeloArr_RandomAvoid* randAvoid, MeloArrBase* base)
 {
-	randAvoid->~MeloArr_RandomAvoid();
+	
 	base->~MeloArrBase();
 	base->directOff(nullptr);
 	base->directOn(nullptr);
+	randAvoid->~MeloArr_RandomAvoid();
+	
 }
 
 } // namespace PSAutoBgm

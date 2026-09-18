@@ -1,18 +1,18 @@
 #ifndef _SYSSHAPE_MODEL_H
 #define _SYSSHAPE_MODEL_H
 
-#include "Matrixf.h"
-#include "types.h"
-#include "SysShape/MtxObject.h"
 #include "JSystem/J3D/J3DModel.h"
 #include "JSystem/J3D/J3DSys.h"
+#include "Matrixf.h"
+#include "SysShape/Joint.h"
+#include "SysShape/MtxObject.h"
+#include "types.h"
 
 namespace Sys {
 struct Sphere;
 } // namespace Sys
 
 namespace SysShape {
-struct Joint;
 struct BaseAnimator;
 
 /**
@@ -21,16 +21,16 @@ struct BaseAnimator;
 struct Model : public MtxObject {
 	Model(J3DModelData* data, u32 flags, u32 viewNum);
 
-	virtual Matrixf* getMatrix(int jointIndex);                    // _08
-	virtual bool isModel() { return true; }                        // _0C (weak)
-	virtual bool isVisible(Sys::Sphere& sphere);                   // _10
-	virtual bool isVisible() { return mIsVisible; }                // _14 (weak)
-	virtual void hide();                                           // _18
-	virtual void show();                                           // _1C
-	virtual void hidePackets();                                    // _20
-	virtual void showPackets();                                    // _24
-	virtual void jointVisible(bool newVisibility, int jointIndex); // _28
-	virtual void jointVisible(bool, Joint*);                       // _2C (weak)
+	virtual Matrixf* getMatrix(int jointIndex);                                                    // _08
+	virtual bool isModel() { return true; }                                                        // _0C (weak)
+	virtual bool isVisible(Sys::Sphere& sphere);                                                   // _10
+	virtual bool isVisible() { return mIsVisible; }                                                // _14 (weak)
+	virtual void hide();                                                                           // _18
+	virtual void show();                                                                           // _1C
+	virtual void hidePackets();                                                                    // _20
+	virtual void showPackets();                                                                    // _24
+	virtual void jointVisible(bool newVisibility, int jointIndex);                                 // _28
+	virtual void jointVisible(bool flag, Joint* joint) { jointVisible(flag, joint->mJointIndex); } // _2C (weak)
 
 	void clearAnimatorAll();
 	void enableMaterialAnim(int);

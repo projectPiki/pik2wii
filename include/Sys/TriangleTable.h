@@ -16,6 +16,16 @@ struct TriangleTable : public ArrayContainer<Triangle> {
 	TriangleTable();
 
 	virtual ~TriangleTable() { }                                 // _08 (weak)
+	virtual void readObject(Stream& input, Triangle& triangle) // _30 (weak)
+	{
+		triangle.mVertices[0] = input.readInt();
+		triangle.mVertices[1] = input.readInt();
+		triangle.mVertices[2] = input.readInt();
+		triangle.mTrianglePlane.read(input);
+		triangle.mEdgePlanes[0].read(input);
+		triangle.mEdgePlanes[1].read(input);
+		triangle.mEdgePlanes[2].read(input);
+	}
 	virtual void writeObject(Stream& output, Triangle& triangle) // _2C (weak)
 	{
 		output.writeInt(triangle.mVertices[0]);
@@ -26,16 +36,6 @@ struct TriangleTable : public ArrayContainer<Triangle> {
 		triangle.mEdgePlanes[0].write(output);
 		triangle.mEdgePlanes[1].write(output);
 		triangle.mEdgePlanes[2].write(output);
-	}
-	virtual void readObject(Stream& input, Triangle& triangle) // _30 (weak)
-	{
-		triangle.mVertices[0] = input.readInt();
-		triangle.mVertices[1] = input.readInt();
-		triangle.mVertices[2] = input.readInt();
-		triangle.mTrianglePlane.read(input);
-		triangle.mEdgePlanes[0].read(input);
-		triangle.mEdgePlanes[1].read(input);
-		triangle.mEdgePlanes[2].read(input);
 	}
 
 	void createTriangleSphere(VertexTable&);

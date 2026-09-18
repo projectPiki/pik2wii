@@ -20,6 +20,7 @@
 
 bool PSGame::ConductorList::sToolMode;
 PSGame::ConductorList* PSSystem::SingletonBase<PSGame::ConductorList>::sInstance;
+PSGame::SoundTable::CategoryMgr* PSSystem::SingletonBase<PSGame::SoundTable::CategoryMgr>::sInstance;
 
 namespace PSGame {
 char newSeqName[32];

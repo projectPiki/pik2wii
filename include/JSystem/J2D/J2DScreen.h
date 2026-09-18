@@ -14,9 +14,9 @@ struct J2DScreen : public J2DPane {
 	virtual J2DPane* searchUserInfo(u64);                                                                                  // _40
 	virtual bool isUsed(const ResTIMG* resource);                                                                          // _4C
 	virtual bool isUsed(const ResFONT* resource);                                                                          // _50
+	virtual void setAnimation(J2DAnmBase* animation) { J2DPane::setAnimation(animation); }                                 // _5C (weak)
+	virtual void setAnimation(J2DAnmTransform* animation) { J2DPane::setAnimation(animation); }                            // _60 (weak)
 	virtual void clearAnmTransform() { J2DPane::clearAnmTransform(); }                                                     // _54 (weak)
-	virtual void setAnimation(J2DAnmBase* animation);                                                                      // _5C (weak)
-	virtual void setAnimation(J2DAnmTransform* animation);                                                                 // _60 (weak)
 	virtual void setAnimation(J2DAnmColor* animation);                                                                     // _64
 	virtual void setAnimation(J2DAnmTexPattern* animation);                                                                // _68
 	virtual void setAnimation(J2DAnmTextureSRTKey* animation);                                                             // _6C

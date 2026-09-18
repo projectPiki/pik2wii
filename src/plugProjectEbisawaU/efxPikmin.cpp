@@ -290,92 +290,6 @@ void TFueactCircle::execute(JPABaseEmitter* emit)
 	sep2.normalize();
 
 	emit->setAngle(&sep2);
-
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	stw      r31, 0xc(r1)
-	mr       r31, r4
-	stw      r30, 8(r1)
-	mr       r30, r3
-	lwz      r0, 0xc(r3)
-	cmplwi   r0, 0
-	bne      lbl_803B6F44
-	lis      r3, lbl_80495A28@ha
-	lis      r5, lbl_80495A38@ha
-	addi     r3, r3, lbl_80495A28@l
-	li       r4, 0x212
-	addi     r5, r5, lbl_80495A38@l
-	crclr    6
-	bl       panic_f__12JUTExceptionFPCciPCce
-
-lbl_803B6F44:
-	lwz      r0, 0x10(r30)
-	cmplwi   r0, 0
-	bne      lbl_803B6F6C
-	lis      r3, lbl_80495A28@ha
-	lis      r5, lbl_80495A38@ha
-	addi     r3, r3, lbl_80495A28@l
-	li       r4, 0x213
-	addi     r5, r5, lbl_80495A38@l
-	crclr    6
-	bl       panic_f__12JUTExceptionFPCciPCce
-
-lbl_803B6F6C:
-	lwz      r5, 0x10(r30)
-	lis      r3, __float_epsilon@ha
-	lwz      r4, 0xc(r30)
-	lfs      f1, 4(r5)
-	lfs      f0, 0x1c(r4)
-	lfs      f2, 0(r5)
-	fsubs    f5, f1, f0
-	lfs      f0, 0xc(r4)
-	lfs      f1, 8(r5)
-	fsubs    f4, f2, f0
-	lfs      f0, 0x2c(r4)
-	fmuls    f2, f5, f5
-	fsubs    f6, f1, f0
-	lfs      f1, lbl_8051F6A0@sda21(r2)
-	lfs      f0, __float_epsilon@l(r3)
-	fmadds   f2, f4, f4, f2
-	fmuls    f0, f1, f0
-	fmadds   f7, f6, f6, f2
-	fcmpo    cr0, f7, f0
-	cror     2, 0, 2
-	beq      lbl_803B7000
-	lfs      f0, lbl_8051F670@sda21(r2)
-	fcmpo    cr0, f7, f0
-	cror     2, 0, 2
-	bne      lbl_803B6FD4
-	b        lbl_803B6FF4
-
-lbl_803B6FD4:
-	frsqrte  f3, f7
-	lfs      f2, lbl_8051F6A4@sda21(r2)
-	lfs      f0, lbl_8051F6A8@sda21(r2)
-	frsp     f3, f3
-	fmuls    f1, f3, f3
-	fmuls    f2, f2, f3
-	fnmsubs  f0, f7, f1, f0
-	fmuls    f7, f2, f0
-
-lbl_803B6FF4:
-	fmuls    f4, f4, f7
-	fmuls    f5, f5, f7
-	fmuls    f6, f6, f7
-
-lbl_803B7000:
-	stfs     f4, 0x18(r31)
-	stfs     f5, 0x1c(r31)
-	stfs     f6, 0x20(r31)
-	lwz      r31, 0xc(r1)
-	lwz      r30, 8(r1)
-	lwz      r0, 0x14(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
 }
 
 /**
@@ -387,31 +301,24 @@ void TFueactCircle::execute(JPABaseEmitter*, JPABaseParticle* prt)
 	P2ASSERTLINE(547, mMtx);
 	P2ASSERTLINE(548, mPos);
 
-	// Vector3f sep = *mPos - mMtx->getTranslation();
-	JGeometry::TVec3f pos;
-	pos.set(mPos->x, mPos->y, mPos->z); // 0x38
 	JGeometry::TVec3f mtxPos;
+	JGeometry::TVec3f pos;
+	pos.set(mPos->x, mPos->y, mPos->z);
 	mtxPos.set((*mMtx)(0, 3), (*mMtx)(1, 3), (*mMtx)(2, 3));
-	JGeometry::TVec3f sep2;
-	sep2.sub(pos, mtxPos);
-	f32 squareX = sep2.x * sep2.x;
-	f32 squareY = sep2.y * sep2.y;
-	f32 squareZ = sep2.z * sep2.z;
-	f32 squared = squareX + squareY;
-	squared     = squareZ + squared;
-	f32 dist    = JGeometry::TUtilf::sqrt(squared);
+	JGeometry::TVec3f sep2 = pos - mtxPos;
+	f32 dist               = sep2.length();
 	if (dist > 175.0f) {
 		sep2.normalize();
 		sep2.scale(175.0f);
-		pos.set(mtxPos);
-		pos.add(sep2);
+		pos = mtxPos + sep2;
 	}
 
 	if (!prt->checkStatus(0x4)) {
 		JGeometry::TVec3f newScaledVec;
 		newScaledVec.scale(prt->mTime, pos);
-		sep2.scaleAdd(1.0f - prt->mTime, mtxPos, newScaledVec);
-		prt->setOffsetPosition(sep2);
+		JGeometry::TVec3f offset;
+		offset.scaleAdd(1.0f - prt->mTime, mtxPos, newScaledVec);
+		prt->setOffsetPosition(offset);
 	}
 	/*
 	stwu     r1, -0x60(r1)

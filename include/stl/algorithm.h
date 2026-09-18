@@ -7,7 +7,7 @@
 
 namespace std {
 template <typename InputIterator, typename Predicate>
-static InputIterator find_if(InputIterator first, InputIterator last, Predicate p);
+static inline InputIterator find_if(InputIterator first, InputIterator last, Predicate p);
 
 template <class ForwardIterator, class T, class Predicate>
 ForwardIterator upper_bound(ForwardIterator first, ForwardIterator last, const T& val, Predicate p);

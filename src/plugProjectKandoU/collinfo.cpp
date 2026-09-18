@@ -21,6 +21,12 @@
 
 bool CollTree::mDebug;
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "collpart";
+}
+
 /**
  * __ct__8PlatformFv
  * @note Address: 0x801336A8
@@ -196,7 +202,7 @@ Platform* PlatAttacher::getPlatform(int i)
 AgePlatform::AgePlatform()
 {
 	mTriDivider = new Sys::OBBTree[2]; // something here has to generate four weak dtors
-	new Sys::GridDivider;
+	new Sys::GridDivider[2];
 }
 
 /**
@@ -1118,18 +1124,16 @@ void CollPart::calcPoseMatrix(Vector3f& input, Matrixf& poseMatrix)
 		Matrixf mtx;
 		makeMatrixTo(mtx);
 
-		Vector3f pos;
-		mtx.getTranslation(pos);
-
-		pos -= input;
+		Vector3f pos = mtx.getTranslation();
+		pos = pos - input;
 		f32 len = pos.normalise();
 
 		if (len == 0.0f) {
-			pos = Vector3f(0.0f, 0.0f, 1.0f);
+			pos.set(0.0f, 0.0f, 1.0f);
 		}
 
-		Vector3f zAxis(0.0f, 0.0f, 1.0f);
-		Vector3f crossProd = pos.cross(zAxis);
+		Vector3f yAxis(0.0f, 1.0f, 0.0f);
+		Vector3f crossProd = yAxis.cross(pos);
 		crossProd.normalise();
 		poseMatrix.setColumn(0, crossProd);
 		poseMatrix.setColumn(1, pos.cross(crossProd));
@@ -1165,7 +1169,7 @@ void CollPart::calcPoseMatrix(Vector3f& input, Matrixf& poseMatrix)
 
 		Vector3f axis;
 		tube.getAxisVector(axis);
-		axis.negate2();
+		axis = -axis;
 
 		Vector3f axisCross = input.cross(axis);
 		_normaliseVec(axisCross);

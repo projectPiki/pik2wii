@@ -168,10 +168,9 @@ void StateMove::exec(EnemyBase* enemy)
 	Obj* hanachirashi = OBJ(enemy);
 	hanachirashi->setHeightVelocity();
 
-	// this bit is being weird
 	Vector3f pos       = hanachirashi->getPosition();
-	f32 sqrDist        = sqrDistanceXZ(pos, hanachirashi->mTargetPosition);
-	Vector3f targetPos = hanachirashi->mTargetPosition;
+	Vector3f targetPos = Vector3f(hanachirashi->mTargetPosition);
+	f32 sqrDist        = sqrDistanceXZ(pos, targetPos);
 
 	Creature* target = hanachirashi->getSearchedPikmin();
 	if (target) {
@@ -354,12 +353,12 @@ void StateChase::exec(EnemyBase* enemy)
 			Vector3f sep(hanachirashiPos.x - targetPos.x, 0.0f, hanachirashiPos.z - targetPos.z);
 			sep.normalise();
 			sep *= CG_GENERALPARMS(hanachirashi).mMaxAttackRange();
-			Vector3f newPos = targetPos + sep;                                                            // f24, f23
-			f32 angle       = JMAAtan2Radian(newPos.x - hanachirashiPos.x, newPos.z - hanachirashiPos.z); // f29
+			targetPos += sep;
+			f32 angle = JMAAtan2Radian(targetPos.x - hanachirashiPos.x, targetPos.z - hanachirashiPos.z);
 
 			hanachirashi->turnToTarget(target, CG_GENERALPARMS(hanachirashi).mTurnSpeed(), CG_GENERALPARMS(hanachirashi).mMaxTurnAngle());
 
-			if (sqrDistanceXZ(hanachirashiPos, newPos) > 225.0f) {
+			if (sqrDistanceXZ(hanachirashiPos, targetPos) > 225.0f) {
 				f32 x = CG_GENERALPARMS(hanachirashi).mMoveSpeed() * sinf(angle);
 				f32 y = hanachirashi->getTargetVelocity().y;
 				f32 z = CG_GENERALPARMS(hanachirashi).mMoveSpeed() * cosf(angle);

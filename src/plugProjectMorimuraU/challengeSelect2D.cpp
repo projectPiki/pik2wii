@@ -52,7 +52,7 @@ TChallengePiki::TChallengePiki(J2DPane* pane1, J2DPane* pane2, J2DPane* pane3)
 	mPanes[1] = pane2;
 	mPanes[2] = pane3;
 	for (int i = 0; i < 3; i++) {
-		P2ASSERTLINE(72, mPanes[i]);
+		P2ASSERTLINE(74, mPanes[i]);
 	}
 	reset();
 }
@@ -106,7 +106,7 @@ void TChallengePiki::update()
 {
 	if (mMaxPiki > 0) {
 		for (int i = 0; i < 3; i++) {
-			mPanes[i]->addOffsetY(mYOffset);
+			mPanes[i]->setOffset(mPanes[i]->getOffsetX(), mPanes[i]->getOffsetY() + mYOffset);
 		}
 	}
 
@@ -141,8 +141,8 @@ void TChallengePiki::update()
 						mPosInfo[i].mState = 3;
 					}
 					mPosInfo[i].mCurrentPos.x = -(mPosInfo[i].mDeviation.x * sinf(mPosInfo[i].mTimer) - mPosInfo[i].mInitialPos.x);
-					mPosInfo[i].mCurrentPos.y
-					    = (mPosInfo[i].mInitialPos.y - FABS(sinf(mPosInfo[i].mTimer * 2.0f) * mPosInfo[i].mDeviation.y));
+					f32 offY                  = absF(sinf(mPosInfo[i].mTimer * 2.0f) * mPosInfo[i].mDeviation.y);
+					mPosInfo[i].mCurrentPos.y = (mPosInfo[i].mInitialPos.y - offY);
 				}
 				break;
 			case 1:

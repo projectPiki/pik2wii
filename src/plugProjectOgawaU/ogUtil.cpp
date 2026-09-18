@@ -85,7 +85,7 @@ void makeLanguageResName(char* languageResName, char const* path)
 	}
 
 	getLanguageDir(langDirBuffer);
-	sprintf(languageResName, "/new_screen/%s%s", langDirBuffer, path);
+	sprintf(languageResName, "new_screen/%s%s", langDirBuffer, path);
 }
 } // namespace newScreen
 } // namespace og

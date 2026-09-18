@@ -49,7 +49,7 @@ void SelectState::init(SingleGameSection*, StateArg*)
 	Screen::gGame2DMgr->mScreenMgr->reset();
 	sParentHeapFreeSize_Last = sParentHeapFreeSize;
 	sParentHeapFreeSize      = JKRHeap::sCurrentHeap->getFreeSize();
-	playData->mDeadNaviID = 0;
+	playData->mDeadNaviID.typeView = 0;
 	naviMgr->clearDeadCount();
 	mNewLevelOpen = false;
 }

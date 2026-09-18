@@ -246,8 +246,9 @@ struct System : public OSMutex {
 	Game::CommonSaveData::Mgr* mPlayData; // _60
 	f32 mFrameRate;                       // _64
 	DvdThreadCommand mThreadCommand;      // _68
-	static BitFlag<u32> mFlags;           // _D4
-	struct JUTRomFont* mRomFont;          // _D8
+	struct JUTRomFont* mRomFont;          // _D4
+
+	static BitFlag<u32> mFlags;
 };
 
 extern System* sys;

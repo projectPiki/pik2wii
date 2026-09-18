@@ -1819,15 +1819,6 @@ void JASRegisterParam::setFlag(u16)
 }
 
 /**
- * @note Address: N/A
- * @note Size: 0x8
- */
-void JSULoByte(u16)
-{
-	// UNUSED FUNCTION
-}
-
-/**
  * @note Address: 0x800A1AF4
  * @note Size: 0x5B0
  */

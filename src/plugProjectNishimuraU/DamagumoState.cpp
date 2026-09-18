@@ -6,6 +6,12 @@
 #include "RevoSDK/rand.h"
 #include "nans.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "246-DamagumoState";
+}
+
 namespace Game {
 namespace Damagumo {
 
@@ -36,7 +42,7 @@ void StateDead::init(EnemyBase* enemy, StateArg* stateArg)
 	damagumo->deathProcedure();
 	damagumo->disableEvent(0, EB_Cullable);
 
-	damagumo->mTargetVelocity = 0.0f;
+	damagumo->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 	damagumo->setEmotionCaution();
 	damagumo->startMotion(DAMAGUMOANIM_Dead, nullptr);
 
@@ -179,7 +185,7 @@ void StateLand::exec(EnemyBase* enemy)
 			damagumo->createOnGroundEffect(2, damagumo->mWaterBox);
 
 		} else if ((u32)damagumo->mCurAnim->mType == KEYEVENT_END) {
-			if (damagumo->mHealth <= 0.0f) {
+			if (damagumo->isDead()) {
 				transit(damagumo, DAMAGUMO_Dead, nullptr);
 			} else if (EnemyFunc::isStartFlick(damagumo, false)) {
 				transit(damagumo, DAMAGUMO_Flick, nullptr);
@@ -228,7 +234,7 @@ void StateWait::exec(EnemyBase* enemy)
 	Obj* damagumo = OBJ(enemy);
 	damagumo->mStateTimer += sys->getDeltaTime();
 
-	if (damagumo->mHealth <= 0.0f) {
+	if (damagumo->isDead()) {
 		damagumo->mNextState = DAMAGUMO_Dead;
 		damagumo->finishMotion();
 	} else if (EnemyFunc::isStartFlick(damagumo, false)) {
@@ -283,7 +289,7 @@ void StateFlick::exec(EnemyBase* enemy)
 			damagumo->mFlickTimer = 0.0f;
 			damagumo->startBossFlickBGM();
 		} else if ((u32)damagumo->mCurAnim->mType == KEYEVENT_END) {
-			if (damagumo->mHealth <= 0.0f) {
+			if (damagumo->isDead()) {
 				transit(damagumo, DAMAGUMO_Dead, nullptr);
 			} else {
 				transit(damagumo, DAMAGUMO_Walk, nullptr);
@@ -336,7 +342,7 @@ void StateWalk::exec(EnemyBase* enemy)
 		damagumo->finishIKMotion();
 	}
 
-	if (damagumo->mHealth <= 0.0f) {
+	if (damagumo->isDead()) {
 		transit(damagumo, DAMAGUMO_Dead, nullptr);
 	} else if (damagumo->isFinishIKMotion()) {
 		transit(damagumo, damagumo->mNextState, nullptr);

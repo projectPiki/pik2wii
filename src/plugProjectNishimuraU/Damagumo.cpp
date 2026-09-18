@@ -13,6 +13,12 @@
 #include "RevoSDK/rand.h"
 #include "nans.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "246-Damagumo";
+}
+
 namespace Game {
 namespace Damagumo {
 
@@ -181,7 +187,7 @@ void Obj::setFSM(FSM* fsm)
 void Obj::getShadowParam(ShadowParam& param)
 {
 	param.mPosition                 = mPosition;
-	param.mBoundingSphere.mPosition = Vector3f(0.0f, 1.0f, 0.0f);
+	param.mBoundingSphere.mPosition.set(0.0f, 1.0f, 0.0f);
 	param.mBoundingSphere.mRadius   = 0.1f;
 	param.mSize                     = 0.1f;
 }

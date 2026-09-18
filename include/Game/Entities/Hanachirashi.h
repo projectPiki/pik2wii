@@ -58,21 +58,21 @@ struct Obj : public EnemyBase {
 	virtual void doDebugDraw(Graphics& gfx);                       // _1EC
 	virtual void changeMaterial();                                 // _200
 	virtual Vector3f getOffsetForMapCollision();                   // _224
+	virtual void getThrowupItemPosition(Vector3f* position);       // _268
+	virtual void getThrowupItemVelocity(Vector3f* velocity);       // _26C
+	virtual void throwupItemInDeathProcedure() { }                 // _270 (weak)
 	virtual EnemyTypeID::EEnemyTypeID getEnemyTypeID()             // _258 (weak)
 	{
 		return EnemyTypeID::EnemyID_Hanachirashi;
 	}
-	virtual void getThrowupItemPosition(Vector3f* position); // _268
-	virtual void getThrowupItemVelocity(Vector3f* velocity); // _26C
-	virtual void throwupItemInDeathProcedure() { }           // _270 (weak)
-	virtual void doStartStoneState();                        // _2A4
-	virtual void doFinishStoneState();                       // _2A8
-	virtual void doStartWaitingBirthTypeDrop();              // _2E0
-	virtual void doFinishWaitingBirthTypeDrop();             // _2E4
-	virtual f32 getDownSmokeScale() { return 0.7f; }         // _2EC (weak)
-	virtual void doStartMovie();                             // _2F0
-	virtual void doEndMovie();                               // _2F4
-	virtual void setFSM(FSM* fsm);                           // _2F8
+	virtual void doStartStoneState();                // _2A4
+	virtual void doFinishStoneState();               // _2A8
+	virtual void doStartWaitingBirthTypeDrop();      // _2E0
+	virtual void doFinishWaitingBirthTypeDrop();     // _2E4
+	virtual f32 getDownSmokeScale() { return 0.7f; } // _2EC (weak)
+	virtual void doStartMovie();                     // _2F0
+	virtual void doEndMovie();                       // _2F4
+	virtual void setFSM(FSM* fsm);                   // _2F8
 	//////////////// VTABLE END
 
 	Vector3f getHeadJointPos();

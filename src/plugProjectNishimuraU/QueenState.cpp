@@ -349,7 +349,8 @@ void StateRolling::exec(EnemyBase* enemy)
 		Vector3f dir = getDirection(theta);
 
 		Vector3f position = queen->getPosition();
-		Vector3f sep      = position - queen->mHomePosition;
+		Vector3f home     = queen->mHomePosition;
+		Vector3f sep      = position - home;
 		sep.y             = 0.0f;
 		f32 dotProd       = sep.dot(dir);
 
@@ -358,7 +359,7 @@ void StateRolling::exec(EnemyBase* enemy)
 		} else { // mismatch lives here
 			f32 increasedRad = 10.0f + CG_GENERALPARMS(queen).mTerritoryRadius();
 			dir *= increasedRad;
-			Vector3f newSep = queen->mHomePosition - position;
+			Vector3f newSep = home - position;
 
 			newSep = dir + newSep;
 			newSep.toFlatDirection();

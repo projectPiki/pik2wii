@@ -1,10 +1,10 @@
-#include "PSGame/SeMgr.h"
 #include "PSGame/PSSe.h"
-#include "PSGame/EnvSe.h"
+#include "CNode.h"
 #include "JSystem/JAudio/JALCalc.h"
+#include "PSGame/EnvSe.h"
+#include "PSGame/SeMgr.h"
 #include "PSSystem/PSSystemIF.h"
 #include "trig.h"
-#include "CNode.h"
 
 namespace PSGame {
 f32 Rappa::cRatio                  = 15.0f;
@@ -104,11 +104,8 @@ Rappa::Rappa()
  */
 void Rappa::init(u16 id)
 {
-	bool check = true;
-	if ((1 | id) - (1 - id >> 1) >> 31 == 0) {
-		check = false;
-	}
-	P2ASSERTLINE(180, check);
+	s16 checkID = id;
+	P2ASSERTBOUNDSLINE(189, 0, checkID, 2);
 
 	u32 val    = -(id == 0);
 	mId        = val + 14;
@@ -364,7 +361,7 @@ SetSe::SetSe(const char* name, s16 min, s16 max)
 	mCounter2  = 0;
 	mSounds[0] = nullptr;
 	mSounds[1] = nullptr;
-	P2ASSERTLINE(319, max >= 0);
+	P2ASSERTLINE(423, max >= 0);
 }
 
 /**
@@ -386,7 +383,7 @@ void SetSe::exec()
  */
 JAISound* SetSe::startSound(JAInter::Object* obj, u32 id1, u32 flag)
 {
-	P2ASSERTLINE(336, obj);
+	P2ASSERTLINE(440, obj);
 	if (mStatus == -1) {
 		JAISound* ret = obj->startSound(id1, flag);
 		startCounter(id1);
@@ -444,14 +441,14 @@ RandId::RandId()
 u32 RandId::getRandomId(u32 soundID, u32 range)
 {
 	if (mId == -1.0f) {
-		P2ASSERTLINE(426, range > 1);
+		P2ASSERTLINE(530, range > 1);
 		u32 inc = range * JALCalc::getRandom_0_1();
-		P2ASSERTLINE(429, inc < range);
+		P2ASSERTLINE(533, inc < range);
 		return soundID + inc;
 	}
 
-	P2ASSERTLINE(432, mId >= 0.0f);
-	P2ASSERTLINE(433, range > 1);
+	P2ASSERTLINE(536, mId >= 0.0f);
+	P2ASSERTLINE(537, range > 1);
 	f32 comp = JALCalc::getRandom_0_1() - mId;
 	if (comp < 0.0f) {
 		return soundID;
@@ -464,7 +461,7 @@ u32 RandId::getRandomId(u32 soundID, u32 range)
 			return soundID + i;
 		}
 	}
-	P2ASSERTLINE(451, false);
+	P2ASSERTLINE(555, false);
 	return soundID;
 }
 
@@ -475,7 +472,7 @@ u32 RandId::getRandomId(u32 soundID, u32 range)
 JAISe* RandId::startSound(JAInter::Object* obj, u32 soundID, u32 range, u32 flag)
 {
 	u32 randomID = getRandomId(soundID, range);
-	P2ASSERTLINE(460, obj);
+	P2ASSERTLINE(564, obj);
 	obj->startSound(randomID, flag);
 }
 
@@ -752,28 +749,32 @@ lbl_80340310:
  */
 void Builder_EvnSe_Perspective::build(f32 volume, PSSystem::EnvSeMgr* mgr)
 {
-	P2ASSERTLINE(596, mgr);
+	P2ASSERTLINE(700, mgr);
 	f32 totalSizeX = mBox.mMax.x - mBox.mMin.x;
 	f32 totalSizeZ = mBox.mMax.z - mBox.mMin.z;
 
 	if (!mDoSkipSizeCheck) {
 		f32* temp = &totalSizeX;
 		int* val  = &mGridSizeX;
-		while (*val = *temp / 1000.0f, val != &mGridSizeZ) {
+		while (true) {
+			*val = *temp / 1000.0f;
+			if (val == &mGridSizeZ) {
+				break;
+			}
 			temp = &totalSizeZ;
 			val  = &mGridSizeZ;
 		}
 	} else {
-		P2ASSERTBOOLLINE(639, mGridSizeX > 0 && mGridSizeZ > 0);
+		P2ASSERTBOOLLINE(743, mGridSizeX > 0 && mGridSizeZ > 0);
 	}
 
 	Vec pos;
 	pos.y = mYPosition;
 
 	f32 unitSizeX = totalSizeX / f32(mGridSizeX);
-	f32 startPosX = mBox.mMin.x + unitSizeX / 2;
 
 	f32 unitSizeZ = totalSizeZ / f32(mGridSizeZ);
+	f32 startPosX = mBox.mMin.x + unitSizeX / 2;
 	f32 startPosZ = mBox.mMin.z + unitSizeZ / 2;
 
 	for (int x = 0; x < mGridSizeX; x++) {
@@ -781,10 +782,10 @@ void Builder_EvnSe_Perspective::build(f32 volume, PSSystem::EnvSeMgr* mgr)
 		for (int z = 0; z < mGridSizeZ; z++) {
 			pos.z = unitSizeZ * f32(z) + startPosZ;
 
-			mList.setNextLink();
+			PSSystem::IdLink* link = mList.setNextLink();
 
-			EnvSe_Perspective* se = newSeObj(mList.mNextLink->mId, volume, pos);
-			P2ASSERTLINE(662, se);
+			EnvSe_Perspective* se = newSeObj(link->mId, volume, pos);
+			P2ASSERTLINE(766, se);
 			onBuild(se);
 			mgr->mEnvList.append(se);
 		}

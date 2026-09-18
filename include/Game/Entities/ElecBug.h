@@ -29,7 +29,6 @@ struct Obj : public EnemyBase {
 	virtual void setInitialSetting(EnemyInitialParamBase* params);                              // _1C4
 	virtual void doUpdate();                                                                    // _1CC
 	virtual void doDebugDraw(Graphics& gfx);                                                    // _1EC
-	virtual EnemyTypeID::EEnemyTypeID getEnemyTypeID() { return EnemyTypeID::EnemyID_ElecBug; } // _258 (weak)
 	virtual bool pressCallBack(Creature* source, f32 damage, CollPart* part);                   // _27C
 	virtual bool hipdropCallBack(Creature* source, f32 damage, CollPart* part);                 // _284
 	virtual bool earthquakeCallBack(Creature* source, f32 bounceFactor);                        // _28C
@@ -42,6 +41,7 @@ struct Obj : public EnemyBase {
 	virtual void doStartMovie();                                                                // _2F0
 	virtual void doEndMovie();                                                                  // _2F4
 	virtual void setFSM(FSM* fsm);                                                              // _2F8
+	virtual EnemyTypeID::EEnemyTypeID getEnemyTypeID() { return EnemyTypeID::EnemyID_ElecBug; } // _258 (weak)
 	//////////////// VTABLE END
 
 	void setTargetPosition();

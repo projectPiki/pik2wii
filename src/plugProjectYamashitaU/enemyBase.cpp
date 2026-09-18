@@ -50,10 +50,6 @@ PSM::BossBgmFader::Mgr* PSSystem::SingletonBase<PSM::BossBgmFader::Mgr>::sInstan
 PSM::CreaturePrm* PSSystem::SingletonBase<PSM::CreaturePrm>::sInstance;
 PSM::ObjMgr* PSSystem::SingletonBase<PSM::ObjMgr>::sInstance;
 PSM::BgmTrackMapFile* PSSystem::SingletonBase<PSM::BgmTrackMapFile>::sInstance;
-PSGame::SoundTable::CategoryMgr* PSSystem::SingletonBase<PSGame::SoundTable::CategoryMgr>::sInstance;
-PSSystem::SeqDataList* PSSystem::SingletonBase<PSSystem::SeqDataList>::sInstance;
-PSSystem::StreamDataList* PSSystem::SingletonBase<PSSystem::StreamDataList>::sInstance;
-
 
 /**
  * Unused. Just here to make the rodata line up.

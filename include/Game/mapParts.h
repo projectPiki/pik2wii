@@ -196,11 +196,11 @@ struct MapUnitMgr : public NodeObjectMgr<MapUnit> {
 struct MapRoom : public CellObject {
 	MapRoom();
 
-	virtual Vector3f getPosition() { return mBoundingSphere.mPosition; }              // _08 (weak)
 	virtual void getBoundingSphere(Sys::Sphere& sphere) { sphere = mBoundingSphere; } // _10 (weak)
-	virtual bool collisionUpdatable() { return false; }                               // _14 (weak)
 	virtual char* getTypeName() { return "room"; }                                    // _24 (weak)
 	virtual u16 getObjType() { return 0xAAAA; }                                       // _28 (weak)
+	virtual bool collisionUpdatable() { return false; }                               // _14 (weak)
+	virtual Vector3f getPosition() { return mBoundingSphere.mPosition; }              // _08 (weak)
 	virtual void constructor() { }                                                    // _2C (weak)
 	virtual void doAnimation();                                                       // _30
 	virtual void doEntry();                                                           // _34
