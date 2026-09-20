@@ -1,9 +1,13 @@
 #include "Game/Entities/Sarai.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "246-SaraiMgr";
+}
+
 namespace Game {
 namespace Sarai {
-
-static const char saraiMgrName[] = "246-SaraiMgr";
 
 /**
  * @note Address: 0x80272504

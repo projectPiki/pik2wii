@@ -2,10 +2,14 @@
 #include "Game/generalEnemyMgr.h"
 #include "JSystem/JUtility/JUTNameTab.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "246-TankMgr";
+}
+
 namespace Game {
 namespace Tank {
-
-static const char tankMgrName[] = "246-TankMgr";
 
 /**
  * @note Address: 0x80275A18

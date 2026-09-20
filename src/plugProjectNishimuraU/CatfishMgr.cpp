@@ -1,6 +1,12 @@
 #include "types.h"
 #include "Game/Entities/Catfish.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "246-CatfishMgr";
+}
+
 namespace Game {
 namespace Catfish {
 

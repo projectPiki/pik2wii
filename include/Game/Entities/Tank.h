@@ -1,11 +1,11 @@
 #ifndef _GAME_ENTITIES_TANK_H
 #define _GAME_ENTITIES_TANK_H
 
-#include "Game/EnemyStateMachine.h"
 #include "Game/EnemyAnimatorBase.h"
-#include "Game/EnemyParmsBase.h"
-#include "Game/EnemyMgrBase.h"
 #include "Game/EnemyBase.h"
+#include "Game/EnemyMgrBase.h"
+#include "Game/EnemyParmsBase.h"
+#include "Game/EnemyStateMachine.h"
 #include "Game/WalkSmokeEffect.h"
 #include "SysShape/Joint.h"
 #include "efx/TTank.h"
@@ -182,75 +182,9 @@ struct State : public EnemyFSMState {
 	// _00-_10 	= EnemyFSMState
 };
 
-struct StateAttack : public State {
-	inline StateAttack()
-	    : State(TANK_Attack, "attack")
-	{
-	}
-
-	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
-	virtual void exec(EnemyBase* enemy);                     // _0C
-	virtual void cleanup(EnemyBase* enemy);                  // _10
-
-	// _00		= VTBL
-	// _00-_10 	= EnemyFSMState
-};
-
-struct StateChaseTurn : public State {
-	inline StateChaseTurn()
-	    : State(TANK_ChaseTurn, "chaseturn")
-	{
-	}
-	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
-	virtual void exec(EnemyBase* enemy);                     // _0C
-	virtual void cleanup(EnemyBase* enemy);                  // _10
-
-	// _00		= VTBL
-	// _00-_10 	= EnemyFSMState
-};
-
 struct StateDead : public State {
-	inline StateDead()
-	    : State(TANK_Dead, "dead")
-	{
-	}
-	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
-	virtual void exec(EnemyBase* enemy);                     // _0C
-	virtual void cleanup(EnemyBase* enemy);                  // _10
-
-	// _00		= VTBL
-	// _00-_10 	= EnemyFSMState
-};
-
-struct StateFlick : public State {
-	inline StateFlick()
-	    : State(TANK_Flick, "flick")
-	{
-	}
-	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
-	virtual void exec(EnemyBase* enemy);                     // _0C
-	virtual void cleanup(EnemyBase* enemy);                  // _10
-
-	// _00		= VTBL
-	// _00-_10 	= EnemyFSMState
-};
-
-struct StateMove : public State {
-	inline StateMove()
-	    : State(TANK_Move, "move")
-	{
-	}
-	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
-	virtual void exec(EnemyBase* enemy);                     // _0C
-	virtual void cleanup(EnemyBase* enemy);                  // _10
-
-	// _00		= VTBL
-	// _00-_10 	= EnemyFSMState
-};
-
-struct StateMoveTurn : public State {
-	inline StateMoveTurn()
-	    : State(TANK_MoveTurn, "moveturn")
+	inline StateDead(const char* name)
+	    : State(TANK_Dead, name)
 	{
 	}
 	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
@@ -262,8 +196,74 @@ struct StateMoveTurn : public State {
 };
 
 struct StateWait : public State {
-	inline StateWait()
-	    : State(TANK_Wait, "wait")
+	inline StateWait(const char* name)
+	    : State(TANK_Wait, name)
+	{
+	}
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
+
+	// _00		= VTBL
+	// _00-_10 	= EnemyFSMState
+};
+
+struct StateMove : public State {
+	inline StateMove(const char* name)
+	    : State(TANK_Move, name)
+	{
+	}
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
+
+	// _00		= VTBL
+	// _00-_10 	= EnemyFSMState
+};
+
+struct StateMoveTurn : public State {
+	inline StateMoveTurn(const char* name)
+	    : State(TANK_MoveTurn, name)
+	{
+	}
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
+
+	// _00		= VTBL
+	// _00-_10 	= EnemyFSMState
+};
+
+struct StateChaseTurn : public State {
+	inline StateChaseTurn(const char* name)
+	    : State(TANK_ChaseTurn, name)
+	{
+	}
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
+
+	// _00		= VTBL
+	// _00-_10 	= EnemyFSMState
+};
+
+struct StateAttack : public State {
+	inline StateAttack(const char* name)
+	    : State(TANK_Attack, name)
+	{
+	}
+
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
+
+	// _00		= VTBL
+	// _00-_10 	= EnemyFSMState
+};
+
+struct StateFlick : public State {
+	inline StateFlick(const char* name)
+	    : State(TANK_Flick, name)
 	{
 	}
 	virtual void init(EnemyBase* enemy, StateArg* settings); // _08

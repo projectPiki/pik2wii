@@ -1,9 +1,13 @@
 #include "Game/Entities/KumaChappy.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "246-KumaChappyMgr";
+}
+
 namespace Game {
 namespace KumaChappy {
-
-static const char kumaChappyMgrName[] = "246-KumaChappyMgr";
 
 /**
  * @note Address: 0x802992B4

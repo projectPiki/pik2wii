@@ -202,8 +202,6 @@ Pellet* PelletView::becomePellet(PelletViewArg* viewArg)
 		Vector3f offset = newPellet->getOffset();
 
 		Vector3f resultVec;
-		Vector3f& vecPtr = resultVec;
-		vecPtr           = offset;
 
 		Vector3f row1 = viewArg->mMatrix->getRow(0);
 		resultVec.x   = offset.dot(row1);
@@ -4748,7 +4746,7 @@ void BasePelletMgr::load()
 		} else {
 			sprintf(buffer2, "%s", config->mParams.mBmd.mData);
 
-			void* resource = JKRFileLoader::getGlbResource(buffer2, nullptr);
+			void* resource = JKRGetResource(buffer2, nullptr);
 			if (resource == nullptr) {
 				JUT_PANICLINE(4587, "meck ** %s : is not foun !\n", buffer2);
 			}
@@ -4982,9 +4980,7 @@ SysShape::Model* BasePelletMgr::createShape(int modelDataIndex, int arg2)
  */
 void BasePelletMgr::setCollTree(Pellet* pellet, int partIndex)
 {
-	SysShape::Model* pelletModel = pellet->mModel;
-
-	if (pelletModel == nullptr) {
+	if (pellet->mModel == nullptr) {
 		SysShape::Model* pelletViewModel = pellet->mPelletView->viewGetShape();
 		Sys::Sphere sphere(Vector3f::zero, pellet->mConfig->mParams.mPRadius.mData);
 		pellet->mCollTree->createSingleSphere(pelletViewModel, pellet->mPelletView->viewGetCollTreeJointIndex(), sphere, &mCollPartMgr);
@@ -4996,12 +4992,12 @@ void BasePelletMgr::setCollTree(Pellet* pellet, int partIndex)
 	} else {
 		CollPart* part = mCollParts[partIndex];
 		if (part) {
-			pellet->mCollTree->createFromFactory(pelletModel, (CollPartFactory*)part, &mCollPartMgr);
+			pellet->mCollTree->createFromFactory(pellet->mModel, (CollPartFactory*)part, &mCollPartMgr);
 			return;
 		}
 
 		Sys::Sphere sphere(Vector3f::zero, pellet->mConfig->mParams.mRadius.mData);
-		pellet->mCollTree->createSingleSphere(pelletModel, 0, sphere, &mCollPartMgr);
+		pellet->mCollTree->createSingleSphere(pellet->mModel, 0, sphere, &mCollPartMgr);
 	}
 }
 

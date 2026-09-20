@@ -4,6 +4,12 @@
 #include "Game/Navi.h"
 #include "RevoSDK/rand.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "246-TadpoleState";
+}
+
 namespace Game {
 namespace Tadpole {
 
@@ -15,12 +21,12 @@ void FSM::init(EnemyBase* enemy)
 {
 	create(TADPOLE_StateCount);
 
-	registerState(new StateDead);
-	registerState(new StateWait);
-	registerState(new StateMove);
-	registerState(new StateAmaze);
-	registerState(new StateEscape);
-	registerState(new StateLeap);
+	registerState(new StateDead("dead"));
+	registerState(new StateWait("wait"));
+	registerState(new StateMove("move"));
+	registerState(new StateAmaze("amaze"));
+	registerState(new StateEscape("escape"));
+	registerState(new StateLeap("leap"));
 }
 
 /**
@@ -86,14 +92,14 @@ void StateWait::exec(EnemyBase* enemy)
 	Navi* navi = EnemyFunc::getNearestNavi(tadpole, CG_GENERALPARMS(tadpole).mViewAngle.mValue,
 	                                       CG_GENERALPARMS(tadpole).mSightRadius.mValue, nullptr, nullptr);
 	if (navi) {
-		tadpole->mTargetPosition = Vector3f(tadpole->getTargetPosition(navi));
+		tadpole->mTargetPosition = tadpole->getTargetPosition(navi);
 		tadpole->mNextState      = TADPOLE_Amaze;
 		tadpole->finishMotion();
 	}
 
 	tadpole->mStateTimer += sys->getDeltaTime();
 
-	if (tadpole->mHealth <= 0.0f) {
+	if (tadpole->isDead()) {
 		transit(tadpole, TADPOLE_Dead, nullptr);
 		return;
 	}
@@ -149,7 +155,7 @@ void StateMove::exec(EnemyBase* enemy)
 	Navi* navi = EnemyFunc::getNearestNavi(tadpole, CG_GENERALPARMS(tadpole).mViewAngle.mValue,
 	                                       CG_GENERALPARMS(tadpole).mSightRadius.mValue, nullptr, nullptr);
 	if (navi) {
-		tadpole->mTargetPosition = Vector3f(tadpole->getTargetPosition(navi));
+		tadpole->mTargetPosition = tadpole->getTargetPosition(navi);
 		tadpole->mNextState      = TADPOLE_Amaze;
 		tadpole->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 		tadpole->finishMotion();
@@ -157,7 +163,7 @@ void StateMove::exec(EnemyBase* enemy)
 
 	tadpole->mStateTimer += sys->getDeltaTime();
 
-	if (tadpole->mHealth <= 0.0f) {
+	if (tadpole->isDead()) {
 		transit(tadpole, TADPOLE_Dead, nullptr);
 		return;
 	}
@@ -256,7 +262,7 @@ void StateEscape::exec(EnemyBase* enemy)
 		tadpole->finishMotion();
 	}
 
-	if (tadpole->mHealth <= 0.0f) {
+	if (tadpole->isDead()) {
 		transit(tadpole, TADPOLE_Dead, nullptr);
 		return;
 	}
@@ -297,7 +303,7 @@ void StateLeap::init(EnemyBase* enemy, StateArg* stateArg)
 	tadpole->mNextState = TADPOLE_NULL;
 	tadpole->enableEvent(0, EB_NoInterrupt);
 	tadpole->startMotion(TADPOLEANIM_Piti, nullptr);
-	tadpole->mTargetVelocity = Vector3f(tadpole->getVelocity());
+	tadpole->mTargetVelocity = tadpole->getVelocity();
 }
 
 /**
@@ -349,7 +355,7 @@ void StateLeap::exec(EnemyBase* enemy)
 
 	tadpole->mStateTimer += sys->getDeltaTime();
 
-	if (tadpole->mHealth <= 0.0f) {
+	if (tadpole->isDead()) {
 		transit(tadpole, TADPOLE_Dead, nullptr);
 		return;
 	}
@@ -381,7 +387,7 @@ void StateLeap::exec(EnemyBase* enemy)
 			Navi* navi = EnemyFunc::getNearestNavi(tadpole, CG_GENERALPARMS(tadpole).mViewAngle.mValue,
 			                                       CG_GENERALPARMS(tadpole).mSightRadius.mValue, nullptr, nullptr);
 			if (navi) {
-				tadpole->mTargetPosition = Vector3f(tadpole->getTargetPosition(navi));
+				tadpole->mTargetPosition = tadpole->getTargetPosition(navi);
 				tadpole->mNextState      = TADPOLE_Amaze;
 			}
 

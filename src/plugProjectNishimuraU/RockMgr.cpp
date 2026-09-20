@@ -1,10 +1,14 @@
 #include "Game/Entities/Rock.h"
 #include "Game/generalEnemyMgr.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "246-RockMgr";
+}
+
 namespace Game {
 namespace Rock {
-
-static const char rockMgrName[] = "246-RockMgr";
 
 /**
  * @note Address: 0x802628F0

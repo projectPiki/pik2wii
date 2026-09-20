@@ -1,18 +1,18 @@
 #ifndef _GAME_ENTITIES_QUEEN_H
 #define _GAME_ENTITIES_QUEEN_H
 
-#include "Game/EnemyStateMachine.h"
+#include "Collinfo.h"
 #include "Game/EnemyAnimatorBase.h"
-#include "Game/EnemyParmsBase.h"
-#include "Game/EnemyMgrBase.h"
-#include "Game/JointFuncs.h"
 #include "Game/EnemyBase.h"
+#include "Game/EnemyMgrBase.h"
+#include "Game/EnemyParmsBase.h"
+#include "Game/EnemyStateMachine.h"
+#include "Game/JointFuncs.h"
 #include "Game/WalkSmokeEffect.h"
-#include "efx/TQueen.h"
-#include "SysShape/Joint.h"
 #include "Sys/MatBaseAnimation.h"
 #include "Sys/MatBaseAnimator.h"
-#include "Collinfo.h"
+#include "SysShape/Joint.h"
+#include "efx/TQueen.h"
 
 /**
  * --Header for Empress Bulblax (Queen)--
@@ -267,9 +267,37 @@ struct State : public EnemyFSMState {
 	// _00-_10 	= EnemyFSMState
 };
 
-struct StateBorn : public State {
-	inline StateBorn(const char* name)
-	    : State(QUEEN_Born, name)
+struct StateDead : public State {
+	inline StateDead(const char* name)
+	    : State(QUEEN_Dead, name)
+	{
+	}
+
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
+
+	// _00		= VTBL
+	// _00-_10 	= EnemyFSMState
+};
+
+struct StateSleep : public State {
+	inline StateSleep(const char* name)
+	    : State(QUEEN_Sleep, name)
+	{
+	}
+
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
+
+	// _00		= VTBL
+	// _00-_10 	= EnemyFSMState
+};
+
+struct StateWait : public State {
+	inline StateWait(const char* name)
+	    : State(QUEEN_Wait, name)
 	{
 	}
 
@@ -284,20 +312,6 @@ struct StateBorn : public State {
 struct StateDamage : public State {
 	inline StateDamage(const char* name)
 	    : State(QUEEN_Damage, name)
-	{
-	}
-
-	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
-	virtual void exec(EnemyBase* enemy);                     // _0C
-	virtual void cleanup(EnemyBase* enemy);                  // _10
-
-	// _00		= VTBL
-	// _00-_10 	= EnemyFSMState
-};
-
-struct StateDead : public State {
-	inline StateDead(const char* name)
-	    : State(QUEEN_Dead, name)
 	{
 	}
 
@@ -337,23 +351,9 @@ struct StateRolling : public State {
 	// _00-_10 	= EnemyFSMState
 };
 
-struct StateSleep : public State {
-	inline StateSleep(const char* name)
-	    : State(QUEEN_Sleep, name)
-	{
-	}
-
-	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
-	virtual void exec(EnemyBase* enemy);                     // _0C
-	virtual void cleanup(EnemyBase* enemy);                  // _10
-
-	// _00		= VTBL
-	// _00-_10 	= EnemyFSMState
-};
-
-struct StateWait : public State {
-	inline StateWait(const char* name)
-	    : State(QUEEN_Wait, name)
+struct StateBorn : public State {
+	inline StateBorn(const char* name)
+	    : State(QUEEN_Born, name)
 	{
 	}
 

@@ -1,11 +1,11 @@
 #ifndef _GAME_ENTITIES_QURIONE_H
 #define _GAME_ENTITIES_QURIONE_H
 
-#include "Game/EnemyStateMachine.h"
 #include "Game/EnemyAnimatorBase.h"
-#include "Game/EnemyParmsBase.h"
-#include "Game/EnemyMgrBase.h"
 #include "Game/EnemyBase.h"
+#include "Game/EnemyMgrBase.h"
+#include "Game/EnemyParmsBase.h"
+#include "Game/EnemyStateMachine.h"
 #include "Game/gameGenerator.h"
 #include "efx/TQuri.h"
 
@@ -103,27 +103,6 @@ struct Obj : public EnemyBase {
 	                                // _2FC = PelletView
 };
 
-struct Mgr : public EnemyMgrBase {
-	Mgr(int objLimit, u8 modelType);
-
-	// virtual ~Mgr();                                     // _58 (weak)
-	virtual void doAlloc();                            // _A8
-	virtual EnemyBase* getEnemy(int idx);              // _A4
-	virtual void createObj(int count);                 // _A0
-	virtual EnemyTypeID::EEnemyTypeID getEnemyTypeID() // _AC (weak)
-	{
-		return EnemyTypeID::EnemyID_Qurione;
-	}
-	virtual J3DModelData* doLoadBmd(void* filename) // _D4 (weak)
-	{
-		return J3DModelLoaderDataBase::load(filename, 0x20240010);
-	}
-
-	// _00 		= VTBL
-	// _00-_44	= EnemyMgrBase
-	Obj* mObj; // _44, array of Objs
-};
-
 struct Parms : public EnemyParmsBase {
 	struct ProperParms : public Parameters {
 		inline ProperParms()
@@ -176,6 +155,27 @@ struct Generator : public EnemyGeneratorBase {
 	QurioneInitialParam mInitialParam; // _24
 };
 
+struct Mgr : public EnemyMgrBase {
+	Mgr(int objLimit, u8 modelType);
+
+	// virtual ~Mgr();                                     // _58 (weak)
+	virtual void doAlloc();                            // _A8
+	virtual EnemyBase* getEnemy(int idx);              // _A4
+	virtual void createObj(int count);                 // _A0
+	virtual EnemyTypeID::EEnemyTypeID getEnemyTypeID() // _AC (weak)
+	{
+		return EnemyTypeID::EnemyID_Qurione;
+	}
+	virtual J3DModelData* doLoadBmd(void* filename) // _D4 (weak)
+	{
+		return J3DModelLoaderDataBase::load(filename, 0x20240010);
+	}
+
+	// _00 		= VTBL
+	// _00-_44	= EnemyMgrBase
+	Obj* mObj; // _44, array of Objs
+};
+
 enum AnimID {
 	QURIONEANIM_Wait   = 0,
 	QURIONEANIM_Damage = 1,
@@ -226,9 +226,9 @@ struct State : public EnemyFSMState {
 	// _00-_10 	= EnemyFSMState
 };
 
-struct StateAppear : public State {
-	inline StateAppear()
-	    : State(QURIONE_Appear, "appear")
+struct StateStay : public State {
+	inline StateStay(const char* name)
+	    : State(QURIONE_Stay, name)
 	{
 	}
 
@@ -240,9 +240,9 @@ struct StateAppear : public State {
 	// _00-_10 	= EnemyFSMState
 };
 
-struct StateDead : public State {
-	inline StateDead()
-	    : State(QURIONE_Dead, "dead")
+struct StateAppear : public State {
+	inline StateAppear(const char* name)
+	    : State(QURIONE_Appear, name)
 	{
 	}
 
@@ -255,22 +255,8 @@ struct StateDead : public State {
 };
 
 struct StateDisappear : public State {
-	inline StateDisappear()
-	    : State(QURIONE_Disappear, "disappear")
-	{
-	}
-
-	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
-	virtual void exec(EnemyBase* enemy);                     // _0C
-	virtual void cleanup(EnemyBase* enemy);                  // _10
-
-	// _00		= VTBL
-	// _00-_10 	= EnemyFSMState
-};
-
-struct StateDrop : public State {
-	inline StateDrop()
-	    : State(QURIONE_Drop, "drop")
+	inline StateDisappear(const char* name)
+	    : State(QURIONE_Disappear, name)
 	{
 	}
 
@@ -283,8 +269,8 @@ struct StateDrop : public State {
 };
 
 struct StateMove : public State {
-	inline StateMove()
-	    : State(QURIONE_Move, "move")
+	inline StateMove(const char* name)
+	    : State(QURIONE_Move, name)
 	{
 	}
 
@@ -296,9 +282,23 @@ struct StateMove : public State {
 	// _00-_10 	= EnemyFSMState
 };
 
-struct StateStay : public State {
-	inline StateStay()
-	    : State(QURIONE_Stay, "stay")
+struct StateDrop : public State {
+	inline StateDrop(const char* name)
+	    : State(QURIONE_Drop, name)
+	{
+	}
+
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
+
+	// _00		= VTBL
+	// _00-_10 	= EnemyFSMState
+};
+
+struct StateDead : public State {
+	inline StateDead(const char* name)
+	    : State(QURIONE_Dead, name)
 	{
 	}
 

@@ -17,7 +17,7 @@ int JSUOutputStream::write(const void* data, s32 length)
 {
 	int len = writeData(data, length);
 	if (len != length) {
-		mIsEOFMaybe |= 1;
+		setState(IOS_STATE_1);
 	}
 	return len;
 }
@@ -31,16 +31,16 @@ void JSUOutputStream::write(const char* str)
 	if (str == nullptr) {
 		u16 val = 0;
 		if (writeData(&val, 2) != sizeof(val)) {
-			mIsEOFMaybe |= 1;
+			setState(IOS_STATE_1);
 		}
 	} else {
-		int len = strlen((char*)str);
-		if ((s32)len >= 0x10000) {
-			mIsEOFMaybe |= 2;
+		int len = strlen(str);
+		if (len >= 0x10000) {
+			setState(IOS_STATE_2);
 		} else {
 			u16 val = len;
 			if (writeData(&val, 2) != sizeof(val) || (writeData(str, len) != len)) {
-				mIsEOFMaybe |= 1;
+				setState(IOS_STATE_1);
 			}
 		}
 	}

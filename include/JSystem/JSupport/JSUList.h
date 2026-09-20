@@ -75,7 +75,7 @@ struct JSUList : public JSUPtrList {
 	JSULink<T>* getLast() const { return (JSULink<T>*)getLastLink(); }
 	JSULink<T>* getEnd() const { return nullptr; }
 
-	u32 getNumLinks() const { return JSUPtrList::getNumLinks(); }
+	u32 getNumLinks() const { return mLinkCount; }
 };
 
 template <typename T>
@@ -236,7 +236,7 @@ struct JSUTree : public JSUList<T>, public JSULink<T> {
 	JSUTree<T>* getPrevChild() const { return (JSUTree<T>*)getPrev(); }
 	JSUTree<T>* getEndChild() const { return nullptr; }
 
-	u32 getNumChildren() const { return mLinkCount; }
+	u32 getNumChildren() const { return this->getNumLinks(); }
 	T* getObject() const { return (T*)mValue; }
 	JSUTree<T>* getParent() const { return (JSUTree<T>*)getList(); }
 

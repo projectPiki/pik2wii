@@ -2,10 +2,14 @@
 #include "Game/generalEnemyMgr.h"
 #include "JSystem/JUtility/JUTNameTab.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "246-OtakaraBaseMgr";
+}
+
 namespace Game {
 namespace OtakaraBase {
-
-static const char otakaraBaseMgrName[] = "246-OtakaraBaseMgr";
 
 /**
  * @note Address: 0x802B5E98

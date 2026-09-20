@@ -4,6 +4,12 @@
 #include "RevoSDK/rand.h"
 #include "efx/TGasuHiba.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "246-GasHiba";
+}
+
 namespace Game {
 namespace GasHiba {
 
@@ -95,10 +101,10 @@ void Obj::setFSM(FSM* fsm)
  */
 void Obj::getShadowParam(ShadowParam& shadowParam)
 {
-	shadowParam.mPosition                 = mPosition;
-	shadowParam.mBoundingSphere.mPosition = Vector3f(0.0f, 1.0f, 0.0f);
-	shadowParam.mBoundingSphere.mRadius   = 1.0f;
-	shadowParam.mSize                     = 1.0f;
+	shadowParam.mPosition = mPosition;
+	shadowParam.mBoundingSphere.mPosition.set(0.0f, 1.0f, 0.0f);
+	shadowParam.mBoundingSphere.mRadius = 1.0f;
+	shadowParam.mSize                   = 1.0f;
 }
 
 /**
@@ -109,9 +115,9 @@ bool Obj::damageCallBack(Creature* creature, f32 damage, CollPart* collpart)
 {
 	if ((creature) && !creature->isNavi()) {
 		Vector3f position = creature->getPosition();
+		Parms* parms      = C_PARMS;
 		position.y -= mPosition.y;
 
-		Parms* parms = C_PARMS;
 		if ((position.y < parms->mGeneral.mMaxAttackRange.mValue) && (position.y > -parms->mGeneral.mMaxAttackAngle.mValue)) {
 			addDamage(damage, 1.0f);
 			return true;
@@ -208,6 +214,8 @@ void Obj::setInitLivingThing()
 		mGate         = nullptr;
 
 		if (gameSystem != nullptr && !gameSystem->mIsInCave && gameSystem->isStoryMode()) {
+			f32 threshold1 = 25.0f;
+			f32 threshold2 = 75.0f;
 			if (ItemBridge::mgr != nullptr) {
 				Iterator<BaseItem> bridgeIter(ItemBridge::mgr);
 
@@ -218,15 +226,15 @@ void Obj::setInitLivingThing()
 					f32 yDist                = bridgePos.y - mPosition.y;
 					yDist                    = (yDist > 0.0f) ? yDist : -yDist;
 
-					if (yDist < 25.0f) {
+					if (yDist < threshold1) {
 						f32 xDist = bridgePos.x - mPosition.x;
 						xDist     = (xDist > 0.0f) ? xDist : -xDist;
 
-						if (xDist < 75.0f) {
+						if (xDist < threshold2) {
 							f32 zDist = bridgePos.z - mPosition.z;
 							zDist     = (zDist > 0.0f) ? zDist : -zDist;
 
-							if (zDist < 75.0f) {
+							if (zDist < threshold2) {
 								mBridge = bridge;
 								break;
 							}
@@ -245,15 +253,15 @@ void Obj::setInitLivingThing()
 					f32 yDist        = gatePos.y - mPosition.y;
 					yDist            = (yDist > 0.0f) ? yDist : -yDist;
 
-					if (yDist < 25.0f) {
+					if (yDist < threshold1) {
 						f32 xDist = gatePos.x - mPosition.x;
 						xDist     = (xDist > 0.0f) ? xDist : -xDist;
 
-						if (xDist < 75.0f) {
+						if (xDist < threshold2) {
 							f32 zDist = gatePos.z - mPosition.z;
 							zDist     = (zDist > 0.0f) ? zDist : -zDist;
 
-							if (zDist < 75.0f) {
+							if (zDist < threshold2) {
 								mGate = gate;
 								break;
 							}

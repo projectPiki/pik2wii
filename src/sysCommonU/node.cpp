@@ -3,6 +3,12 @@
 #include "JSystem/JUtility/JUTException.h"
 #include "RevoSDK/os.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "node";
+}
+
 /**
  * @note Address: 0x80411204
  * @note Size: 0x4

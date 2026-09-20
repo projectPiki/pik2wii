@@ -33,10 +33,13 @@
 Game::ItemOnyon::Mgr* Game::ItemOnyon::mgr;
 static bool sVolveFlag;
 
-namespace Game {
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "onyonMgr";
+}
 
-static const char UNUSED_1[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-static const char UNUSED_2[] = "onyonMgr";
+namespace Game {
 
 /**
  * @note Address: 0x80174CA0
@@ -50,9 +53,6 @@ void Onyon::movieUserCommand(u32 code, MoviePlayer* player)
 		if (!playData->hasBootContainer(mOnyonType)) {
 			JUT_PANICLINE(534, "BIKKURI no boot!\n");
 		}
-
-		// Redundant call
-		GameStat::getAllPikmins(mOnyonType);
 
 		// This whole section of code is almost entirely redundant, it spawns a new sprout,
 		// kills it, then spawns the actual sprout it uses, WTF?
@@ -356,7 +356,7 @@ void Onyon::getShadowParam(ShadowParam& param)
 		param.mSize                   = 27.0f;
 	}
 
-	param.mBoundingSphere.mPosition = Vector3f(0.0f, 1.0f, 0.0f);
+	param.mBoundingSphere.mPosition.set(0.0f, 1.0f, 0.0f);
 }
 
 /**
@@ -581,7 +581,7 @@ void Onyon::doDirectDraw(Graphics& gfx)
 {
 	if (mOnyonType == ONYON_TYPE_SHIP) {
 		gfx.initPrimDraw(0);
-		Vector3f pos   = getInStart_UFO();
+		Vector3f pos   = Vector3f(getInStart_UFO());
 		gfx.mDrawColor = Color4(0, 255, 0, 255);
 		gfx.drawSphere(pos, 5.0);
 		pos            = getOutStart_UFO();
@@ -922,8 +922,7 @@ void Onyon::do_doAnimation()
 				persp.set(1.0, 200.0, 0.4, 400.0, 0.0);
 				sound->specializePerspCalc(persp);
 			}
-			SysShape::Animator anim = getPAnimator(1);
-			f32 time                = anim.mTimer;
+			f32 time                = getPAnimator(1).mTimer;
 			getPAnimator(1); // sus
 			if (time > 5.0f && time < 8.0f && !sVolveFlag) {
 				PSM::SeSound* sound = static_cast<PSM::SeSound*>(mSoundObj->startSound(PSSE_EV_ROCKET_VOLVE, 0));
@@ -1040,7 +1039,7 @@ void Onyon::startWaitMotion()
 		} else {
 			if (getStoreCount() > 0) {
 				int animid = mAnimator.getAnimIndex();
-				if (animid <= (u32)1 || animid == 3) {
+				if (animid == 0 || animid == 1 || animid == 3) {
 					mAnimator.startAnim(2, this);
 				}
 			} else {
@@ -1329,13 +1328,12 @@ void Onyon::changeMaterial()
 			} else {
 				anmtime = 0.0f;
 			}
-			Sys::MatLoopAnimator* loopAnim = mMatAnim1;
 			if (anmtime != 0.0f) {
 				anmtime = timer / anmtime;
 			} else {
 				anmtime = 1.0f;
 			}
-			loopAnim->setCurrentFrame(mattime * anmtime);
+			mMatAnim1->setCurrentFrame(mattime * anmtime);
 		} else {
 			mMatAnim1->setCurrentFrame(mattime);
 		}
@@ -1578,15 +1576,13 @@ Creature* Onyon::exitPiki()
 
 			int& count = playData->mPikiContainer.getCount(color, happa);
 			count--;
-			playData->mPikiContainer.getColorSum(color);
 			piki->init(nullptr);
 			piki->changeShape(color);
 			piki->changeHappa(happa);
 
 			if (mOnyonType == ONYON_TYPE_SHIP) {
 				Vector3f outpos   = getOutStart_UFO();
-				Vector3f onyonpos = getPosition();
-				Vector3f vel      = outpos - onyonpos;
+				Vector3f vel      = Vector3f(outpos - getPosition());
 				vel.normalise();
 				f32 factor = randFloat() * 30.0f + 100.0f;
 				vel        = Vector3f(vel.x * factor, vel.y * factor, vel.z * factor);
@@ -1635,8 +1631,7 @@ bool Onyon::insideAccessArea(Vector3f& navipos)
 			return true;
 		}
 	} else {
-		Vector3f pos = mPosition;
-		if (sqrDistanceXZ(navipos, pos) < 900.0f) {
+		if (sqrDistanceXZ(navipos, mPosition) < 900.0f) {
 			return true;
 		}
 	}
@@ -1706,7 +1701,12 @@ void ItemOnyon::Mgr::setupSoundViewerAndBas()
 Vector3f Onyon::getInEnd_UFO()
 {
 	if (mPikiInJoint) {
-		return getJointPosition(mPikiInJoint); // this is necessary to make the stack line up for both this and the next function
+		Vector3f offs = Vector3f(0.0f, 0.0f, 7.0f);
+		Vec outVec;
+
+		PSMTXMultVec(mPikiInJoint->getWorldMatrix()->mMatrix.mtxView, (Vec*)&offs, &outVec);
+		offs = outVec;
+		return offs;
 	} else {
 		JUT_PANICLINE(2545, "not ufo\n");
 		return Vector3f::zero;
@@ -1720,10 +1720,8 @@ Vector3f Onyon::getInEnd_UFO()
 Vector3f Onyon::getInStart_UFO()
 {
 	Vector3f jntpos = getInEnd_UFO();
-	f32 jX          = jntpos.x;
-	f32 jZ          = jntpos.z;
 	Vector3f pos    = getPosition();
-	Vector3f fixpos(jX - pos.x, 0.0f, jZ - pos.z);
+	Vector3f fixpos(jntpos.x - pos.x, 0.0f, jntpos.z - pos.z);
 	fixpos.normalise();
 	return (pos + (fixpos * 90.0f));
 }
@@ -1735,7 +1733,12 @@ Vector3f Onyon::getInStart_UFO()
 Vector3f Onyon::getOutStart_UFO()
 {
 	if (mPikiOutJoint) {
-		return getJointPosition(mPikiOutJoint);
+		Vector3f offs = Vector3f(0.0f, 0.0f, 7.0f);
+		Vec outVec;
+		
+		PSMTXMultVec(mPikiOutJoint->getWorldMatrix()->mMatrix.mtxView, (Vec*)&offs, &outVec);
+		offs = outVec;
+		return offs;
 	} else {
 		JUT_PANICLINE(2569, "だめです");
 		return Vector3f::zero;
@@ -1764,9 +1767,9 @@ void Onyon::init_pmotions()
 			mPMotionSpeeds[i] = speed;
 		}
 
-		getPAnimator(0).startAnim(1, nullptr);
-		getPAnimator(1).startAnim(2, nullptr);
-		getPAnimator(2).startAnim(3, nullptr);
+		start_pmotion(0, 1);
+		start_pmotion(1, 2);
+		start_pmotion(2, 3);
 
 		mPMotionSpeeds[2] = 30.0f;
 
@@ -1797,6 +1800,12 @@ SysShape::Animator& Onyon::getPAnimator(int i)
 	bool check = (0 <= i && i < mPMotionCount);
 	P2ASSERTLINE(2609, check);
 	return mPMotionList[i];
+}
+
+
+void Onyon::start_pmotion(int i, int animIdx)
+{
+	getPAnimator(i).startAnim(animIdx, nullptr);
 }
 
 /**
@@ -1982,7 +1991,6 @@ Onyon* ItemOnyon::Mgr::birth(int objType, int onyonType)
 
 		resultOnyon        = onyon;
 		mOnyons[onyonType] = onyon;
-		playData->hasBootContainer(onyonType);
 
 		// play boot animation if the onion isnt booted (glitched onion)
 		if (gameSystem->isStoryMode() && !playData->hasBootContainer(onyonType)) {
@@ -2091,7 +2099,7 @@ void ItemOnyon::Mgr::load()
 	}
 	sys->heapStatusEnd("onyon-arc");
 
-	void* file = JKRFileLoader::getGlbResource("goal.bmd", nullptr);
+	void* file = JKRGetResource("goal.bmd", nullptr);
 	JUT_ASSERTLINE(2966, file, "goal.bmd not found !!\n");
 	mModelData[0] = J3DModelLoaderDataBase::load(file, J3DMLF_UseUniqueMaterials | J3DMLF_UseSingleSharedDL);
 

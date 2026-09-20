@@ -1,12 +1,12 @@
 #ifndef _GAME_ENTITIES_BABY_H
 #define _GAME_ENTITIES_BABY_H
 
-#include "Game/EnemyStateMachine.h"
-#include "Game/EnemyAnimatorBase.h"
-#include "Game/EnemyParmsBase.h"
-#include "Game/EnemyMgrBase.h"
-#include "Game/EnemyBase.h"
 #include "Collinfo.h"
+#include "Game/EnemyAnimatorBase.h"
+#include "Game/EnemyBase.h"
+#include "Game/EnemyMgrBase.h"
+#include "Game/EnemyParmsBase.h"
+#include "Game/EnemyStateMachine.h"
 
 /**
  * --Header for Bulborb Larva (Baby)--
@@ -70,23 +70,6 @@ struct Obj : public EnemyBase {
 	                              // _2D8 = PelletView
 };
 
-struct Mgr : public EnemyMgrBase {
-	Mgr(int objLimit, u8 modelType);
-
-	// virtual ~Mgr();                                     // _58 (weak)
-	virtual void doAlloc();                            // _A8
-	virtual void createObj(int count);                 // _A0
-	virtual EnemyBase* getEnemy(int idx);              // _A4
-	virtual EnemyTypeID::EEnemyTypeID getEnemyTypeID() // _AC (weak)
-	{
-		return EnemyTypeID::EnemyID_Baby;
-	}
-
-	// _00 		= VTBL
-	// _00-_44	= EnemyMgrBase
-	Obj* mObj; // _44, likely an array of Objs
-};
-
 struct Parms : public EnemyParmsBase {
 	struct ProperParms : public Parameters {
 		inline ProperParms()
@@ -111,6 +94,23 @@ struct Parms : public EnemyParmsBase {
 
 	// _00-_7F8	= EnemyParmsBase
 	ProperParms mProperParms; // _7F8
+};
+
+struct Mgr : public EnemyMgrBase {
+	Mgr(int objLimit, u8 modelType);
+
+	// virtual ~Mgr();                                     // _58 (weak)
+	virtual void doAlloc();                            // _A8
+	virtual void createObj(int count);                 // _A0
+	virtual EnemyBase* getEnemy(int idx);              // _A4
+	virtual EnemyTypeID::EEnemyTypeID getEnemyTypeID() // _AC (weak)
+	{
+		return EnemyTypeID::EnemyID_Baby;
+	}
+
+	// _00 		= VTBL
+	// _00-_44	= EnemyMgrBase
+	Obj* mObj; // _44, likely an array of Objs
 };
 
 enum AnimID {
@@ -164,51 +164,9 @@ struct State : public EnemyFSMState {
 	// _00-_10 	= EnemyFSMState
 };
 
-struct StateAttack : public State {
-	inline StateAttack()
-	    : State(BABY_Attack, "attack")
-	{
-	}
-
-	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
-	virtual void exec(EnemyBase* enemy);                     // _0C
-	virtual void cleanup(EnemyBase* enemy);                  // _10
-
-	// _00		= VTBL
-	// _00-_10 	= EnemyFSMState
-};
-
-struct StateBorn : public State {
-	inline StateBorn()
-	    : State(BABY_Born, "born")
-	{
-	}
-
-	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
-	virtual void exec(EnemyBase* enemy);                     // _0C
-	virtual void cleanup(EnemyBase* enemy);                  // _10
-
-	// _00		= VTBL
-	// _00-_10 	= EnemyFSMState
-};
-
 struct StateDead : public State {
-	inline StateDead()
-	    : State(BABY_Dead, "dead")
-	{
-	}
-
-	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
-	virtual void exec(EnemyBase* enemy);                     // _0C
-	virtual void cleanup(EnemyBase* enemy);                  // _10
-
-	// _00		= VTBL
-	// _00-_10 	= EnemyFSMState
-};
-
-struct StateMove : public State {
-	inline StateMove()
-	    : State(BABY_Move, "move")
+	inline StateDead(const char* name)
+	    : State(BABY_Dead, name)
 	{
 	}
 
@@ -221,8 +179,8 @@ struct StateMove : public State {
 };
 
 struct StatePress : public State {
-	inline StatePress()
-	    : State(BABY_Press, "press")
+	inline StatePress(const char* name)
+	    : State(BABY_Press, name)
 	{
 	}
 
@@ -233,6 +191,49 @@ struct StatePress : public State {
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
 };
+
+struct StateBorn : public State {
+	inline StateBorn(const char* name)
+	    : State(BABY_Born, name)
+	{
+	}
+
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
+
+	// _00		= VTBL
+	// _00-_10 	= EnemyFSMState
+};
+
+struct StateMove : public State {
+	inline StateMove(const char* name)
+	    : State(BABY_Move, name)
+	{
+	}
+
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
+
+	// _00		= VTBL
+	// _00-_10 	= EnemyFSMState
+};
+
+struct StateAttack : public State {
+	inline StateAttack(const char* name)
+	    : State(BABY_Attack, name)
+	{
+	}
+
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
+
+	// _00		= VTBL
+	// _00-_10 	= EnemyFSMState
+};
+
 /////////////////////////////////////////////////////////////////
 } // namespace Baby
 } // namespace Game

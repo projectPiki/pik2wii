@@ -3,12 +3,18 @@
 #include "JSystem/JUtility/JUTNameTab.h"
 #include "Sys/MatBaseAnimation.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "246-FireChappyMgr";
+}
+
 namespace Game {
 namespace FireChappy {
 
 namespace {
-static const char* cMatAnimBtkTexName = "/enemy/data/FireChappy/yakichappy.btk";
-static const char* cMatAnimBrkTexName = "/enemy/data/FireChappy/yakichappy.brk";
+static const char* cMatAnimBtkTexName = "enemy/data/FireChappy/yakichappy.btk";
+static const char* cMatAnimBrkTexName = "enemy/data/FireChappy/yakichappy.brk";
 } // namespace
 
 /**

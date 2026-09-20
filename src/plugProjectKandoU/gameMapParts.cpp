@@ -390,7 +390,22 @@ MapRoom::MapRoom()
  */
 void MapRoom::countItems()
 {
-	// UNUSED FUNCTION
+	for (int i = 0; i < mObjectLayoutInfo->getCount(1); i++) {
+		ObjectLayoutNode* node = mObjectLayoutInfo->getNode(1, i);
+
+		PelletIndexInitArg initArg(node->getObjectId());
+		pelletMgr->setUse(&initArg);
+	}
+
+	if (gameSystem && gameSystem->isVersusMode()) {
+		PelletList::cKind kind;
+		PelletConfig* config = PelletList::Mgr::getConfigAndKind(const_cast<char*>(VsOtakaraName::cCoin), kind);
+
+		if (config) {
+			PelletIndexInitArg initArg(pelletMgr->encode(kind, config->mParams.mIndex));
+			pelletMgr->setUse(&initArg);
+		}
+	}
 }
 
 /**
@@ -399,7 +414,25 @@ void MapRoom::countItems()
  */
 void MapRoom::countEnemys()
 {
-	// UNUSED FUNCTION
+	for (int i = 0; i < mObjectLayoutInfo->getCount(0); i++) {
+		ObjectLayoutNode* node = mObjectLayoutInfo->getNode(0, i);
+		PelletMgr::OtakaraItemCode itemCode;
+		itemCode.mValue = node->getExtraCode();
+
+		PelletInitArg initArg;
+
+		if (pelletMgr->makePelletInitArg(initArg, itemCode)) {
+			if (pelletMgr->setUse(&initArg)) {
+				if (Pellet::sFromTekiEnable) {
+					PelletBirthBuffer::entry(initArg);
+				}
+			} else {
+				itemCode.mValue = 0;
+			}
+		}
+
+		generalEnemyMgr->addEnemyNum(node->getObjectId(), node->getBirthCount(), nullptr);
+	}
 }
 
 /**
@@ -596,9 +629,27 @@ void MapRoom::getCenterPosition(Vector3f&)
  * @note Address: N/A
  * @note Size: 0x16C
  */
-void MapRoom::create(MapUnit*, Matrixf&)
+void MapRoom::create(MapUnit* unit, Matrixf& mtx)
 {
-	// UNUSED FUNCTION
+	mUnit = unit;
+	PSMTXCopy(mtx.mMatrix.mtxView, mRoomSpaceMtx.mMatrix.mtxView);
+	PSMTXInverse(mtx.mMatrix.mtxView, mInvRoomSpaceMtx.mMatrix.mtxView);
+	mModel = new SysShape::Model(unit->mModelData, J3DMODEL_CreateNewDL, 2);
+	mModel->mJ3dModel->newDifferedTexMtx(TEXDIFF_Material);
+	mModel->mJ3dModel->newDifferedDisplayList(0x200);
+
+	PSMTXCopy(mRoomSpaceMtx.mMatrix.mtxView, mModel->mJ3dModel->mPosMtx);
+	mModel->mJ3dModel->calc();
+	mModel->mJ3dModel->calcMaterial();
+	mModel->mJ3dModel->makeDL();
+	mModel->mJ3dModel->lock();
+
+	mAnimationCount = unit->mAnimationCount;
+	mAnimators      = new Sys::MatLoopAnimator[mAnimationCount];
+
+	for (int i = 0; i < mAnimationCount; i++) {
+		mAnimators[i].start(&unit->mAnimations[i]);
+	}
 }
 
 /**
@@ -855,17 +906,6 @@ void RoomMapMgr::createRandomMap(int floorNum, Cave::EditMapUnit* edit)
 	Cave::FloorInfo* floorInfo = mCaveInfo->getFloorInfo(floorNum);
 	mFloorInfo                 = floorInfo;
 	mSublevel                  = floorNum;
-
-	// probably printed debug info
-	floorInfo->getTekiMax();
-	floorInfo->getTekiInfoNum();
-	floorInfo->getTekiWeightSum();
-	floorInfo->getItemMax();
-	floorInfo->getItemInfoNum();
-	floorInfo->getItemWeightSum();
-	floorInfo->getGateMax();
-	floorInfo->getGateInfoNum();
-	floorInfo->getGateWeightSum();
 
 	// get map unit file
 	char unitFileName[512];
@@ -4977,71 +5017,17 @@ void RoomMapMgr::makeOneRoom(f32 centreX, f32 centreY, f32 direction, char* unit
 	room->mLink             = link;
 	room->mObjectLayoutInfo = static_cast<Cave::ObjectLayout*>(layoutInfo);
 
-	for (int i = 0; i < room->mObjectLayoutInfo->getCount(0); i++) {
-		ObjectLayoutNode* node = room->mObjectLayoutInfo->getNode(0, i);
-		PelletMgr::OtakaraItemCode itemCode;
-		itemCode.mValue = node->getExtraCode();
-
-		PelletInitArg initArg;
-
-		if (pelletMgr->makePelletInitArg(initArg, itemCode)) {
-			if (pelletMgr->setUse(&initArg)) {
-				if (Pellet::sFromTekiEnable) {
-					PelletBirthBuffer::entry(initArg);
-				}
-			} else {
-				itemCode.mValue = 0;
-			}
-		}
-
-		u8 num = node->getBirthCount();
-
-		generalEnemyMgr->addEnemyNum(node->getObjectId(), num, nullptr);
-	}
-
-	for (int i = 0; i < room->mObjectLayoutInfo->getCount(1); i++) {
-		ObjectLayoutNode* node = room->mObjectLayoutInfo->getNode(1, i);
-
-		PelletIndexInitArg initArg(node->getObjectId());
-		pelletMgr->setUse(&initArg);
-	}
-
-	if (gameSystem && gameSystem->isVersusMode()) {
-		PelletList::cKind kind;
-		PelletConfig* config = PelletList::Mgr::getConfigAndKind(const_cast<char*>(VsOtakaraName::cCoin), kind);
-
-		if (config) {
-			PelletIndexInitArg initArg(pelletMgr->encode(kind, config->mParams.mIndex));
-			pelletMgr->setUse(&initArg);
-		}
-	}
+	room->countEnemys();
+	room->countItems();
 
 	Matrixf mtx1;                                                   // 0x214
 	Vector3f translation(centreX * 170.0f, 0.0f, centreY * 170.0f); // 0xD0
 	Vector3f rotation1(0.0f, faceAngle, 0.0f);                      // 0xC4
 	mtx1.makeTR(translation, rotation1);
 
-	MapUnit* unit = mMapUnitMgr->findMapUnit(unitName); // r22
+	MapUnit* unit = mMapUnitMgr->findMapUnit(unitName); // r22	
 
-	room->mUnit = unit;
-	PSMTXCopy(mtx1.mMatrix.mtxView, room->mRoomSpaceMtx.mMatrix.mtxView);
-	PSMTXInverse(mtx1.mMatrix.mtxView, room->mInvRoomSpaceMtx.mMatrix.mtxView);
-	room->mModel = new SysShape::Model(unit->mModelData, J3DMODEL_CreateNewDL, 2);
-	room->mModel->mJ3dModel->newDifferedTexMtx(TEXDIFF_Material);
-	room->mModel->mJ3dModel->newDifferedDisplayList(0x200);
-
-	PSMTXCopy(room->mRoomSpaceMtx.mMatrix.mtxView, room->mModel->mJ3dModel->mPosMtx);
-	room->mModel->mJ3dModel->calc();
-	room->mModel->mJ3dModel->calcMaterial();
-	room->mModel->mJ3dModel->makeDL();
-	room->mModel->mJ3dModel->lock();
-
-	room->mAnimationCount = unit->mAnimationCount;
-	room->mAnimators      = new Sys::MatLoopAnimator[room->mAnimationCount];
-
-	for (int i = 0; i < room->mAnimationCount; i++) {
-		room->mAnimators[i].start(&unit->mAnimations[i]);
-	}
+	room->create(unit, mtx1);
 
 	Matrixf boundMtx;                          // 0x1E4
 	BoundBox bBox(unit->mBoundingBox);         // 0xF4

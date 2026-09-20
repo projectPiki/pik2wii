@@ -1,6 +1,7 @@
 #include "JSystem/JKernel/JKRHeap.h"
 #include "JSystem/JSupport.h"
 #include "JSystem/JUtility/JUTConsole.h"
+#include "JSystem/JUtility/JUTException.h"
 #include "RevoSDK/os.h"
 #include "stl/limits.h"
 #include "types.h"
@@ -15,11 +16,27 @@ JKRExpHeap* JKRExpHeap::createRoot(int maxHeaps, bool errorFlag)
 	if (!sRootHeap) {
 		void* memory;
 		u32 memorySize;
-		initArena((char**)&memory, &memorySize, maxHeaps);
+		initArena2((char**)&memory, &memorySize, maxHeaps);
 		u8* start       = (u8*)memory + ALIGN_NEXT(sizeof(JKRExpHeap), 0x10);
 		u32 alignedSize = memorySize - ALIGN_NEXT(sizeof(JKRExpHeap), 0x10);
 		heap            = new (memory) JKRExpHeap(start, alignedSize, nullptr, errorFlag);
 		sRootHeap       = heap;
+	}
+	heap->_6E = true;
+	return heap;
+}
+
+JKRExpHeap* JKRExpHeap::createRoot2(int maxHeaps, bool errorFlag)
+{
+	JKRExpHeap* heap = nullptr;
+	if (!sRootHeap) {
+		void* memory;
+		u32 memorySize;
+		initArena((char**)&memory, &memorySize, maxHeaps);
+		u8* start       = (u8*)memory + ALIGN_NEXT(sizeof(JKRExpHeap), 0x10);
+		u32 alignedSize = memorySize - ALIGN_NEXT(sizeof(JKRExpHeap), 0x10);
+		heap            = new (memory) JKRExpHeap(start, alignedSize, nullptr, errorFlag);
+		sRootHeap2       = heap;
 	}
 	heap->_6E = true;
 	return heap;
@@ -598,7 +615,7 @@ s32 JKRExpHeap::getUsedSize(u8 groupId) const
 void JKRExpHeap::appendUsedList(JKRExpHeap::CMemBlock* blockToAppend)
 {
 	if (!blockToAppend) {
-		OSErrorLine(1567, ":::ERROR! appendUsedList\n");
+		JUTException::panic(__FILE__, 1616, "bad appendUsedList\n");
 	}
 	CMemBlock* tail             = mTailUsedList;
 	blockToAppend->mUsageHeader = 'HM';
@@ -746,7 +763,7 @@ void JKRExpHeap::joinTwoBlocks(JKRExpHeap::CMemBlock* block)
 	if (endAddr > nextAddr) {
 		JUTWarningConsole_f(":::Heap may be broken. (block = %x)", block);
 		JKRGetCurrentHeap()->dump();
-		OSErrorLine(1819, ":::: Bad Block\n");
+		JUTException::panic(__FILE__, 1868, "Bad Block\n");
 	}
 	if (endAddr == nextAddr) {
 		block->mAllocatedSpace = next->mAllocatedSpace + sizeof(CMemBlock) + next->getAlignment() + block->mAllocatedSpace;

@@ -4,6 +4,12 @@
 #include "TagParm.h"
 #include "string.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "tagparms";
+}
+
 /**
  * @note Address: N/A
  * @note Size: 0x2C

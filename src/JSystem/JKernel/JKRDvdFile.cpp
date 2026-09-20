@@ -1,5 +1,6 @@
 #include "JSystem/JKernel/JKRFile.h"
 #include "JSystem/JSupport/JSUList.h"
+#include "JSystem/JUtility/JUTException.h"
 #include "RevoSDK/dvd.h"
 #include "RevoSDK/os.h"
 #include "types.h"
@@ -126,7 +127,7 @@ void JKRDvdFile::close()
 			mFileOpen = false;
 			sDvdList.remove(&mLink);
 		} else {
-			OSErrorLine(213, "cannot close DVD file\n");
+			JUTException::panic(__FILE__, 213, "cannot close DVD file\n");
 		}
 	}
 }

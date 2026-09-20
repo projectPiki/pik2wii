@@ -105,6 +105,8 @@ struct Obj : public EnemyBase {
 	bool stimulateBomb();
 	Creature* getChaseTargetCreature();
 
+	bool setTreasure(Creature*);
+
 	inline void getScaledRadius(f32 scale, f32* radius) { *radius = scale * (mCellRadius - 10.0f); }
 
 	inline f32 getMaxAttackHeight() const { return mPosition.y + static_cast<EnemyParmsBase*>(mParms)->mGeneral.mMaxAttackRange.mValue; }

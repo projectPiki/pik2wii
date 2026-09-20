@@ -238,14 +238,14 @@ void* JKRDvdRipper::loadToMainRAM(JKRDvdFile* jkrDvdFile, u8* file, JKRExpandSwi
 			JKRDecompressFromDVD(jkrDvdFile, file, fileSizeAligned, fileSize, 0, startOffset, newSize);
 
 		} else {
-			JUT_PANICLINE(323, "Sorry, not applied for SZP archive.");
+			JUTException::panic(__FILE__, 323, "Sorry, not applied for SZP archive.");
 		}
 
 		return file;
 
 	} else if (compression == COMPRESSION_YAY0) {
 		if (startOffset != 0) {
-			JUT_PANICLINE(333, "Not support SZP with offset read");
+			JUTException::panic(__FILE__, 333, "Not support SZP with offset read");
 		}
 
 		while (true) {

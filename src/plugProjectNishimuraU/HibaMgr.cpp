@@ -1,9 +1,13 @@
 #include "Game/Entities/Hiba.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "246-HibaMgr";
+}
+
 namespace Game {
 namespace Hiba {
-
-static const char hibaMgrName[] = "246-HibaMgr";
 
 /**
  * @note Address: 0x8026B8BC

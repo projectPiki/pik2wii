@@ -11,9 +11,6 @@
 #include "System.h"
 #include "THP/THPRead.h"
 #include "nans.h"
-#if BUILDTARGET == USADEMO1
-#include "Game/GameConfig.h"
-#endif
 
 static OSTime sPlayTime = OSSecondsToTicks((OSTime)300);
 
@@ -29,7 +26,7 @@ void Section::init()
  * @note Address: 0x80423774
  * @note Size: 0x1D0
  */
-Section::Section(JFWDisplay* display, JKRHeap* heap, bool b)
+Section::Section(JFWDisplay* display, JKRHeap* heap, bool b, bool mem2)
 {
 	mIsLoadingDVD = false;
 	mDisplayHeap  = nullptr;

@@ -1,6 +1,12 @@
 #include "Game/Entities/FireChappy.h"
 #include "efx/THanacho.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "246-FireChappy";
+}
+
 namespace Game {
 namespace FireChappy {
 
@@ -88,7 +94,7 @@ void Obj::getShadowParam(ShadowParam& shadowParam)
 	Matrixf* worldMat       = mShadowJoint->getWorldMatrix();
 	shadowParam.mPosition   = Vector3f(worldMat->mMatrix.mtxView[0][3], worldMat->mMatrix.mtxView[1][3], worldMat->mMatrix.mtxView[2][3]);
 	shadowParam.mPosition.y = mPosition.y + 5.0f;
-	shadowParam.mBoundingSphere.mPosition = Vector3f(0.0f, 1.0f, 0.0f);
+	shadowParam.mBoundingSphere.mPosition.set(0.0f, 1.0f, 0.0f);
 
 	if (isEvent(1, EB2_Earthquake)) {
 		shadowParam.mBoundingSphere.mRadius = 75.0f;
@@ -238,13 +244,14 @@ void Obj::updateMaterialAnimation()
 		f32 p2                           = mLoopAnimators[0].mCurrFrame;
 		f32 frameMax                     = (animation) ? animation->getFrameMax() : 0.0f;
 		frameMax -= 30.0f;
+		f32 p3 = 0.5f;
 
 		if (mAnimationFireTimer == 30.0f) {
 			if (p2 >= frameMax - 1.0f && p2 <= frameMax) {
-				mAnimationFireTimer -= 0.5f;
+				mAnimationFireTimer -= p3;
 			}
 		} else {
-			mAnimationFireTimer -= 0.5f;
+			mAnimationFireTimer -= p3;
 			if (mAnimationFireTimer < 0.0f) {
 				mAnimationFireTimer = 0.0f;
 			}

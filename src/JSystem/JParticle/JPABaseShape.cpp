@@ -1382,19 +1382,17 @@ void rotTypeXYZ(f32 p1, f32 p2, Mtx& mtx)
 	f32 diag = 0.33333299f * (1.0f - p2);
 	f32 off1 = 0.57735f * p1;
 	f32 off2 = diag + off1;
-	off1 = diag - off1;
-	diag += p2;
-	mtx[0][0] = diag;
-	mtx[0][1] = off1;
+	mtx[0][0] = diag + p2;
+	mtx[0][1] = diag - off1;
 	mtx[0][2] = off2;
 	mtx[0][3] = 0.0f;
 	mtx[1][0] = off2;
-	mtx[1][1] = diag;
-	mtx[1][2] = off1;
+	mtx[1][1] = diag + p2;
+	mtx[1][2] = diag - off1;
 	mtx[1][3] = 0.0f;
-	mtx[2][0] = off1;
+	mtx[2][0] = diag - off1;
 	mtx[2][1] = off2;
-	mtx[2][2] = diag;
+	mtx[2][2] = diag + p2;
 	mtx[2][3] = 0.0f;
 }
 
@@ -1623,8 +1621,7 @@ void JPADrawLine(JPAEmitterWorkData* work, JPABaseParticle* particle)
 {
 	if (particle->checkStatus(8) == 0) {
 		JGeometry::TVec3f position;
-		position.x = particle->mPosition.x;
-		// JGeometry::setTVec3f(&particle->mPosition.x, &local_1c.x);
+		position = particle->mPosition;
 		JGeometry::TVec3f direction;
 		particle->getVelVec(direction);
 		if (!direction.isZero()) {
@@ -1641,126 +1638,6 @@ void JPADrawLine(JPAEmitterWorkData* work, JPABaseParticle* particle)
 			GXSetVtxDesc(GX_VA_TEX0, GX_INDEX8);
 		}
 	}
-	/*
-	stwu     r1, -0x70(r1)
-	mflr     r0
-	stw      r0, 0x74(r1)
-	stfd     f31, 0x60(r1)
-	psq_st   f31, 104(r1), 0, qr0
-	stfd     f30, 0x50(r1)
-	psq_st   f30, 88(r1), 0, qr0
-	stfd     f29, 0x40(r1)
-	psq_st   f29, 72(r1), 0, qr0
-	stfd     f28, 0x30(r1)
-	psq_st   f28, 56(r1), 0, qr0
-	stfd     f27, 0x20(r1)
-	psq_st   f27, 40(r1), 0, qr0
-	lwz      r0, 0x7c(r4)
-	rlwinm.  r0, r0, 0, 0x1c, 0x1c
-	bne      lbl_8008D96C
-	lfs      f6, 0x28(r4)
-	lis      r5, __float_epsilon@ha
-	lwz      r7, 0(r4)
-	fmuls    f0, f6, f6
-	lfs      f5, 0x24(r4)
-	lwz      r6, 4(r4)
-	lwz      r0, 8(r4)
-	fmadds   f2, f5, f5, f0
-	lfs      f7, 0x2c(r4)
-	lfs      f1, lbl_80516B68@sda21(r2)
-	lfs      f0, __float_epsilon@l(r5)
-	fmadds   f8, f7, f7, f2
-	stw      r7, 8(r1)
-	fmuls    f0, f1, f0
-	stw      r6, 0xc(r1)
-	fcmpo    cr0, f8, f0
-	stw      r0, 0x10(r1)
-	cror     2, 0, 2
-	beq      lbl_8008D96C
-	lfs      f1, lbl_80516B38@sda21(r2)
-	fcmpo    cr0, f8, f0
-	lfs      f0, 0x64(r4)
-	lfs      f2, 0x148(r3)
-	fmuls    f0, f1, f0
-	fmuls    f3, f2, f0
-	cror     2, 0, 2
-	beq      lbl_8008D8DC
-	lfs      f0, lbl_80516B50@sda21(r2)
-	fcmpo    cr0, f8, f0
-	cror     2, 0, 2
-	bne      lbl_8008D8AC
-	b        lbl_8008D8CC
-
-	lbl_8008D8AC:
-	frsqrte  f4, f8
-	lfs      f2, lbl_80516B48@sda21(r2)
-	lfs      f0, lbl_80516B6C@sda21(r2)
-	frsp     f4, f4
-	fmuls    f1, f4, f4
-	fmuls    f2, f2, f4
-	fnmsubs  f0, f8, f1, f0
-	fmuls    f8, f2, f0
-
-	lbl_8008D8CC:
-	fmuls    f0, f8, f3
-	fmuls    f5, f5, f0
-	fmuls    f6, f6, f0
-	fmuls    f7, f7, f0
-
-	lbl_8008D8DC:
-	lfs      f0, 8(r1)
-	li       r3, 9
-	lfs      f31, 0xc(r1)
-	li       r4, 1
-	lfs      f30, 0x10(r1)
-	fsubs    f29, f0, f5
-	fsubs    f28, f31, f6
-	fsubs    f27, f30, f7
-	bl       GXSetVtxDesc
-	li       r3, 0xd
-	li       r4, 1
-	bl       GXSetVtxDesc
-	li       r3, 0xa8
-	li       r4, 1
-	li       r5, 2
-	bl       GXBegin
-	lfs      f0, 8(r1)
-	lis      r5, 0xCC008000@ha
-	lfs      f1, lbl_80516B50@sda21(r2)
-	li       r3, 9
-	stfs     f0, 0xCC008000@l(r5)
-	li       r4, 2
-	lfs      f0, lbl_80516B4C@sda21(r2)
-	stfs     f31, -0x8000(r5)
-	stfs     f30, -0x8000(r5)
-	stfs     f1, -0x8000(r5)
-	stfs     f1, -0x8000(r5)
-	stfs     f29, -0x8000(r5)
-	stfs     f28, -0x8000(r5)
-	stfs     f27, -0x8000(r5)
-	stfs     f1, -0x8000(r5)
-	stfs     f0, -0x8000(r5)
-	bl       GXSetVtxDesc
-	li       r3, 0xd
-	li       r4, 2
-	bl       GXSetVtxDesc
-
-	lbl_8008D96C:
-	psq_l    f31, 104(r1), 0, qr0
-	lfd      f31, 0x60(r1)
-	psq_l    f30, 88(r1), 0, qr0
-	lfd      f30, 0x50(r1)
-	psq_l    f29, 72(r1), 0, qr0
-	lfd      f29, 0x40(r1)
-	psq_l    f28, 56(r1), 0, qr0
-	lfd      f28, 0x30(r1)
-	psq_l    f27, 40(r1), 0, qr0
-	lwz      r0, 0x74(r1)
-	lfd      f27, 0x20(r1)
-	mtlr     r0
-	addi     r1, r1, 0x70
-	blr
-	*/
 }
 
 /**

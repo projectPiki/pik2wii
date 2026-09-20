@@ -1,5 +1,11 @@
 #include "Game/Entities/LeafChappy.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "246-LeafChappyMgr";
+}
+
 namespace Game {
 namespace LeafChappy {
 

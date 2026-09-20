@@ -172,7 +172,7 @@ f32 JPACalcKeyAnmValue(f32 currentFrame, u16 keyFrameCount, const f32* keyFrameD
 
 	int lastKeyFrameIndex = keyFrameCount - 1;
 	if (keyFrameData[lastKeyFrameIndex * 4] <= currentFrame) {
-		return keyFrameData[lastKeyFrameIndex * 4 + 1];
+		return (keyFrameData + lastKeyFrameIndex * 4)[1];
 	}
 
 	int frame = keyFrameCount;

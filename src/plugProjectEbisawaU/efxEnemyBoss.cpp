@@ -15,7 +15,7 @@ namespace efx {
  */
 bool TDangoCrash::create(Arg* arg)
 {
-	bool nameCheck = strcmp("ArgDir", arg->getName()) == 0;
+	bool nameCheck = arg->is("ArgDir");
 	P2ASSERTLINE(16, nameCheck);
 
 	ArgDir* argd = static_cast<ArgDir*>(arg);
@@ -42,7 +42,7 @@ bool TDangoCrash::create(Arg* arg)
  */
 bool TDangoTurn::create(Arg* arg)
 {
-	bool nameCheck = strcmp("ArgRotY", arg->getName()) == 0;
+	bool nameCheck = arg->is("ArgRotY");
 	P2ASSERTLINE(47, nameCheck);
 
 	ArgRotY* argy = static_cast<ArgRotY*>(arg);
@@ -108,7 +108,7 @@ void TKageDead1::setGlobalPrmColor(Color4& color)
  */
 bool TKageDead2::create(Arg* arg)
 {
-	bool nameCheck = strcmp("ArgPrmColor", arg->getName()) == 0;
+	bool nameCheck = arg->is("ArgPrmColor");
 	P2ASSERTLINE(103, nameCheck);
 
 	ArgPrmColor* argp = static_cast<ArgPrmColor*>(arg);
@@ -136,7 +136,7 @@ void TOootaParticle::setGlobalDynamicsScale(f32 scale)
  */
 bool TOootaBombLeg::create(Arg* arg)
 {
-	bool nameCheck = strcmp("ArgPosPos", arg->getName()) == 0;
+	bool nameCheck = arg->is("ArgPosPos");
 	P2ASSERTLINE(132, nameCheck);
 
 	ArgPosPos* argp = static_cast<ArgPosPos*>(arg);
@@ -168,7 +168,7 @@ bool TOootaBombLeg::create(Arg* arg)
 bool TOootaFire::create(Arg* arg)
 {
 	P2ASSERTLINE(161, arg);
-	bool nameCheck = strcmp("ArgScale", arg->getName()) == 0;
+	bool nameCheck = arg->is("ArgScale");
 	P2ASSERTLINE(162, nameCheck);
 
 	ArgScale* sarg = static_cast<ArgScale*>(arg);
@@ -189,7 +189,7 @@ bool TOootaFire::create(Arg* arg)
  */
 bool TKchFlickSand::create(Arg* arg)
 {
-	bool nameCheck = strcmp("ArgRotYScale", arg->getName()) == 0;
+	bool nameCheck = arg->is("ArgRotYScale");
 	P2ASSERTLINE(181, nameCheck);
 
 	ArgRotYScale* argp = static_cast<ArgRotYScale*>(arg);
@@ -221,7 +221,7 @@ bool TKchFlickSand::create(Arg* arg)
  */
 bool TKchApSand::create(Arg* arg)
 {
-	bool nameCheck = strcmp("ArgRotYScale", arg->getName()) == 0;
+	bool nameCheck = arg->is("ArgRotYScale");
 	P2ASSERTLINE(204, nameCheck);
 
 	ArgRotYScale* argp = static_cast<ArgRotYScale*>(arg);
@@ -253,7 +253,7 @@ bool TKchApSand::create(Arg* arg)
  */
 bool TKchApWat::create(Arg* arg)
 {
-	bool nameCheck = strcmp("ArgRotYScale", arg->getName()) == 0;
+	bool nameCheck = arg->is("ArgRotYScale");
 	P2ASSERTLINE(227, nameCheck);
 
 	ArgRotYScale* argp = static_cast<ArgRotYScale*>(arg);
@@ -335,7 +335,7 @@ void TKchCryInd::setGlobalScale(f32 scale)
  */
 bool TKchDamage::create(Arg* arg)
 {
-	bool nameCheck = strcmp("ArgScale", arg->getName()) == 0;
+	bool nameCheck = arg->is("ArgScale");
 	P2ASSERTLINE(296, nameCheck);
 
 	ArgScale* argp = static_cast<ArgScale*>(arg);
@@ -368,7 +368,7 @@ void TKchSmokeHana::setGlobalScale(f32 scale)
  */
 bool TKchDownsmoke::create(Arg* arg)
 {
-	bool nameCheck = strcmp("ArgScale", arg->getName()) == 0;
+	bool nameCheck = arg->is("ArgScale");
 	P2ASSERTLINE(323, nameCheck);
 
 	ArgScale* argp = static_cast<ArgScale*>(arg);
@@ -446,7 +446,7 @@ void TParticleCallBack_KchYodare::execute(JPABaseEmitter* emit, JPABaseParticle*
 bool TKchYodareBaseChaseMtx::create(Arg* arg)
 {
 	P2ASSERTLINE(388, arg);
-	bool nameCheck = strcmp("ArgKchYodare", arg->getName()) == 0;
+	bool nameCheck = arg->is("ArgKchYodare");
 	P2ASSERTLINE(389, nameCheck);
 
 	ArgKchYodare* argp = static_cast<ArgKchYodare*>(arg);
@@ -570,7 +570,7 @@ lbl_803EC4C8:
  */
 bool THdamaShell::create(efx::Arg* arg)
 {
-	bool nameCheck = strcmp("ArgDir", arg->getName()) == 0;
+	bool nameCheck = arg->is("ArgDir");
 	P2ASSERTLINE(440, nameCheck);
 
 	efx::ArgDir* argp = static_cast<efx::ArgDir*>(arg);
@@ -595,7 +595,7 @@ bool THdamaShell::create(efx::Arg* arg)
  */
 bool THdamaHit2W::create(efx::Arg* arg)
 {
-	bool nameCheck = strcmp("ArgDir", arg->getName()) == 0;
+	bool nameCheck = arg->is("ArgDir");
 	P2ASSERTLINE(453, nameCheck);
 
 	efx::ArgDir* argd = static_cast<efx::ArgDir*>(arg);
@@ -745,7 +745,7 @@ lbl_803EC730:
  */
 bool THdamaDeadHahen1::create(efx::Arg* arg)
 {
-	bool nameCheck = strcmp("ArgPosPos", arg->getName()) == 0;
+	bool nameCheck = arg->is("ArgPosPos");
 	P2ASSERTLINE(484, nameCheck);
 
 	efx::ArgPosPos* argd = static_cast<efx::ArgPosPos*>(arg);
@@ -774,7 +774,7 @@ bool THdamaDeadHahen1::create(efx::Arg* arg)
  */
 bool THdamaDeadHahen2::create(efx::Arg* arg)
 {
-	bool nameCheck = strcmp("ArgPosPos", arg->getName()) == 0;
+	bool nameCheck = arg->is("ArgPosPos");
 	P2ASSERTLINE(512, nameCheck);
 
 	efx::ArgPosPos* argd = static_cast<efx::ArgPosPos*>(arg);

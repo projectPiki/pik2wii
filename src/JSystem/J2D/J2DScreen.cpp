@@ -100,7 +100,7 @@ bool J2DScreen::private_set(JSURandomInputStream* stream, u32 flags, JKRArchive*
 	if ((flags & 0x1F0000) == 0) {
 		clean();
 	}
-	return (result != false) ? stream->mIsEOFMaybe == 0 : false;
+	return (result != false) ? stream->isGood() : false;
 }
 
 /**

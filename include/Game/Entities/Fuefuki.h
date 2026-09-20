@@ -194,7 +194,7 @@ struct FSM : public EnemyStateMachine {
 };
 
 struct State : public EnemyFSMState {
-	inline State(int stateID, char* name)
+	inline State(int stateID, const char* name)
 	    : EnemyFSMState(stateID)
 	{
 		mName = name;
@@ -205,36 +205,8 @@ struct State : public EnemyFSMState {
 };
 
 struct StateDead : public State {
-	inline StateDead()
-	    : State(FUEFUKI_Dead, "dead")
-	{
-	}
-
-	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
-	virtual void exec(EnemyBase* enemy);                     // _0C
-	virtual void cleanup(EnemyBase* enemy);                  // _10
-
-	// _00		= VTBL
-	// _00-_10 	= EnemyFSMState
-};
-
-struct StateJump : public State {
-	inline StateJump()
-	    : State(FUEFUKI_Jump, "jump")
-	{
-	}
-
-	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
-	virtual void exec(EnemyBase* enemy);                     // _0C
-	virtual void cleanup(EnemyBase* enemy);                  // _10
-
-	// _00		= VTBL
-	// _00-_10 	= EnemyFSMState
-};
-
-struct StateLand : public State {
-	inline StateLand()
-	    : State(FUEFUKI_Land, "land")
+	inline StateDead(const char* name)
+	    : State(FUEFUKI_Dead, name)
 	{
 	}
 
@@ -247,8 +219,8 @@ struct StateLand : public State {
 };
 
 struct StateStay : public State {
-	inline StateStay()
-	    : State(FUEFUKI_Stay, "stay")
+	inline StateStay(const char* name)
+	    : State(FUEFUKI_Stay, name)
 	{
 	}
 
@@ -260,9 +232,9 @@ struct StateStay : public State {
 	// _00-_10 	= EnemyFSMState
 };
 
-struct StateStruggle : public State {
-	inline StateStruggle()
-	    : State(FUEFUKI_Struggle, "struggle")
+struct StateLand : public State {
+	inline StateLand(const char* name)
+	    : State(FUEFUKI_Land, name)
 	{
 	}
 
@@ -274,9 +246,9 @@ struct StateStruggle : public State {
 	// _00-_10 	= EnemyFSMState
 };
 
-struct StateTurn : public State {
-	inline StateTurn()
-	    : State(FUEFUKI_Turn, "turn")
+struct StateJump : public State {
+	inline StateJump(const char* name)
+	    : State(FUEFUKI_Jump, name)
 	{
 	}
 
@@ -289,8 +261,22 @@ struct StateTurn : public State {
 };
 
 struct StateWait : public State {
-	inline StateWait()
-	    : State(FUEFUKI_Wait, "wait")
+	inline StateWait(const char* name)
+	    : State(FUEFUKI_Wait, name)
+	{
+	}
+
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
+
+	// _00		= VTBL
+	// _00-_10 	= EnemyFSMState
+};
+
+struct StateTurn : public State {
+	inline StateTurn(const char* name)
+	    : State(FUEFUKI_Turn, name)
 	{
 	}
 
@@ -303,8 +289,8 @@ struct StateWait : public State {
 };
 
 struct StateWalk : public State {
-	inline StateWalk()
-	    : State(FUEFUKI_Walk, "walk")
+	inline StateWalk(const char* name)
+	    : State(FUEFUKI_Walk, name)
 	{
 	}
 
@@ -318,8 +304,8 @@ struct StateWalk : public State {
 
 // dev spelling
 struct StateWhisle : public State {
-	inline StateWhisle()
-	    : State(FUEFUKI_Whisle, "whisle")
+	inline StateWhisle(const char* name)
+	    : State(FUEFUKI_Whisle, name)
 	{
 	}
 
@@ -330,6 +316,21 @@ struct StateWhisle : public State {
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
 };
+
+struct StateStruggle : public State {
+	inline StateStruggle(const char* name)
+	    : State(FUEFUKI_Struggle, name)
+	{
+	}
+
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
+
+	// _00		= VTBL
+	// _00-_10 	= EnemyFSMState
+};
+
 /////////////////////////////////////////////////////////////////
 } // namespace Fuefuki
 } // namespace Game

@@ -10,6 +10,12 @@
 #include "Title.h"
 #include "nans.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "gameflow";
+}
+
 // NOTE: Fabricated struct name.
 namespace {
 static SectionInfo sSectionInfo[] = {

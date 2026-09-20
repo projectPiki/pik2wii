@@ -308,7 +308,7 @@ u32 JKRMemArchive::fetchResource_subroutine(u8* src, u32 srcLength, u8* dst, u32
 		return srcLength;
 
 	default: {
-		OSErrorLine(723, ":::??? bad sequence\n");
+		JUTException::panic(__FILE__, 723, "??? bad sequence\n");
 		return 0;
 	}
 	}

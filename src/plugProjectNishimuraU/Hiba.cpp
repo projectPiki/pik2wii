@@ -93,7 +93,7 @@ void Obj::setFSM(FSM* fsm)
 void Obj::getShadowParam(ShadowParam& shadowParam)
 {
 	shadowParam.mPosition                 = mPosition;
-	shadowParam.mBoundingSphere.mPosition = Vector3f(0.0f, 1.0f, 0.0f);
+	shadowParam.mBoundingSphere.mPosition.set(0.0f, 1.0f, 0.0f);
 	shadowParam.mBoundingSphere.mRadius   = 0.0f;
 	shadowParam.mSize                     = 0.0f;
 }

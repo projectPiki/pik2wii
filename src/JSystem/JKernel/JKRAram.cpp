@@ -136,13 +136,13 @@ void JKRAram::checkOkAddress(u8* addr, u32 size, JKRAramBlock* block, u32 param_
 {
 	if (param_4 == 0) {
 		if (!IS_ALIGNED((u32)addr, 0x20) && !IS_ALIGNED(size, 0x20)) {
-			JUT_PANICLINE(219, "%s", ":::address not 32Byte aligned.");
+			JUTException::panic(__FILE__, 219, ":::address not 32Byte aligned.");
 		}
 		return;
 	}
 
 	if (block && !IS_ALIGNED((u32)(size + block->mAddress), 0x20)) {
-		JUT_PANICLINE(227, "%s", ":::address not 32Byte aligned.");
+		JUTException::panic(__FILE__, 227, ":::address not 32Byte aligned.");
 	}
 }
 
@@ -562,3 +562,4 @@ static u8* nextSrcData(u8* current)
 
 	return dest;
 }
+DECOMP_FORCEACTIVE(JKRAram_cpp, "bad aramSync\n");

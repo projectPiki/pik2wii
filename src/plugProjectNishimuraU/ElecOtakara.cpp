@@ -1,5 +1,11 @@
 #include "Game/Entities/ElecOtakara.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "246-ElecOtakara";
+}
+
 namespace Game {
 namespace ElecOtakara {
 /**

@@ -5,6 +5,12 @@
 #include "Game/rumble.h"
 #include "RevoSDK/rand.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "246-SaraiState";
+}
+
 namespace Game {
 namespace Sarai {
 
@@ -15,17 +21,17 @@ namespace Sarai {
 void FSM::init(EnemyBase* enemy)
 {
 	create(SARAI_StateCount);
-	registerState(new StateDead);
-	registerState(new StateFall);
-	registerState(new StateDamage);
-	registerState(new StateTakeOff);
-	registerState(new StateFlick);
-	registerState(new StateWait);
-	registerState(new StateMove);
-	registerState(new StateAttack);
-	registerState(new StateFail);
-	registerState(new StateCatchFly);
-	registerState(new StateFallMeck);
+	registerState(new StateDead("dead"));
+	registerState(new StateFall("fall"));
+	registerState(new StateDamage("damage"));
+	registerState(new StateTakeOff("takeoff"));
+	registerState(new StateFlick("flick"));
+	registerState(new StateWait("wait"));
+	registerState(new StateMove("move"));
+	registerState(new StateAttack("attack"));
+	registerState(new StateFail("fail"));
+	registerState(new StateCatchFly("catchfly"));
+	registerState(new StateFallMeck("fallmeck"));
 }
 
 /**
@@ -967,11 +973,9 @@ void StateFail::exec(EnemyBase* enemy)
 	Obj* sarai = OBJ(enemy);
 	sarai->setHeightVelocity();
 
-	// regswaps here
-	f32 decayRate = CG_PROPERPARMS(sarai).mPostHuntDecayRate();
-	// Vector3f vel = sarai->getTargetVelocity();
-	// Vector3f vel           = sarai->mTargetVelocity * CG_PROPERPARMS(sarai).mFp32();
-	sarai->mTargetVelocity = sarai->mTargetVelocity * decayRate;
+	Vector3f targetVel = sarai->getTargetVelocity();
+	targetVel *= CG_PROPERPARMS(sarai).mPostHuntDecayRate();
+	sarai->setTargetVelocity(targetVel);
 
 	if (sarai->mCurAnim->mIsPlaying && sarai->mCurAnim->mType == KEYEVENT_END) {
 		if (sarai->getCatchTargetNum()) {
@@ -981,66 +985,6 @@ void StateFail::exec(EnemyBase* enemy)
 
 		transit(sarai, SARAI_Move, nullptr);
 	}
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	stw      r31, 0xc(r1)
-	mr       r31, r4
-	stw      r30, 8(r1)
-	mr       r30, r3
-	mr       r3, r31
-	bl       setHeightVelocity__Q34Game5Sarai3ObjFv
-	lwz      r3, 0xc0(r31)
-	lfs      f1, 0x1d4(r31)
-	lfs      f0, 0x9fc(r3)
-	lfs      f2, 0x1d8(r31)
-	fmuls    f1, f1, f0
-	lfs      f3, 0x1dc(r31)
-	fmuls    f2, f2, f0
-	fmuls    f3, f3, f0
-	stfs     f1, 0x1d4(r31)
-	stfs     f2, 0x1d8(r31)
-	stfs     f3, 0x1dc(r31)
-	lwz      r3, 0x188(r31)
-	lbz      r0, 0x24(r3)
-	cmplwi   r0, 0
-	beq      lbl_8027207C
-	lwz      r0, 0x1c(r3)
-	cmplwi   r0, 0x3e8
-	bne      lbl_8027207C
-	mr       r3, r31
-	bl       getCatchTargetNum__Q34Game5Sarai3ObjFv
-	cmpwi    r3, 0
-	beq      lbl_8027205C
-	mr       r3, r30
-	mr       r4, r31
-	lwz      r12, 0(r30)
-	li       r5, 9
-	li       r6, 0
-	lwz      r12, 0x1c(r12)
-	mtctr    r12
-	bctrl
-	b        lbl_8027207C
-
-lbl_8027205C:
-	mr       r3, r30
-	mr       r4, r31
-	lwz      r12, 0(r30)
-	li       r5, 6
-	li       r6, 0
-	lwz      r12, 0x1c(r12)
-	mtctr    r12
-	bctrl
-
-lbl_8027207C:
-	lwz      r0, 0x14(r1)
-	lwz      r31, 0xc(r1)
-	lwz      r30, 8(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
 }
 
 /**

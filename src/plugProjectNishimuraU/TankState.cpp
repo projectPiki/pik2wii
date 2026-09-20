@@ -3,19 +3,25 @@
 #include "Game/Entities/Tank.h"
 #include "RevoSDK/rand.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "246-TankState";
+}
+
 namespace Game {
 namespace Tank {
 
 void FSM::init(EnemyBase* enemy)
 {
 	create(TANK_Count);
-	registerState(new StateDead);
-	registerState(new StateWait);
-	registerState(new StateMove);
-	registerState(new StateMoveTurn);
-	registerState(new StateChaseTurn);
-	registerState(new StateAttack);
-	registerState(new StateFlick);
+	registerState(new StateDead("dead"));
+	registerState(new StateWait("wait"));
+	registerState(new StateMove("move"));
+	registerState(new StateMoveTurn("moveturn"));
+	registerState(new StateChaseTurn("chaseturn"));
+	registerState(new StateAttack("attack"));
+	registerState(new StateFlick("flick"));
 }
 
 /**

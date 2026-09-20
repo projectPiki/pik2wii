@@ -1,12 +1,12 @@
 #ifndef _GAME_ENTITIES_TADPOLE_H
 #define _GAME_ENTITIES_TADPOLE_H
 
-#include "Game/EnemyStateMachine.h"
-#include "Game/EnemyAnimatorBase.h"
-#include "Game/EnemyParmsBase.h"
-#include "Game/EnemyMgrBase.h"
-#include "Game/EnemyBase.h"
 #include "Collinfo.h"
+#include "Game/EnemyAnimatorBase.h"
+#include "Game/EnemyBase.h"
+#include "Game/EnemyMgrBase.h"
+#include "Game/EnemyParmsBase.h"
+#include "Game/EnemyStateMachine.h"
 
 /**
  * --Header for Wogpole (Tadpole)--
@@ -63,23 +63,6 @@ struct Obj : public EnemyBase {
 	                          // _2D8 = PelletView
 };
 
-struct Mgr : public EnemyMgrBase {
-	Mgr(int objLimit, u8 modelType);
-
-	// virtual ~Mgr();                                     // _58 (weak)
-	virtual void doAlloc();                            // _A8
-	virtual void createObj(int count);                 // _A0
-	virtual EnemyBase* getEnemy(int idx);              // _A4
-	virtual EnemyTypeID::EEnemyTypeID getEnemyTypeID() // _AC (weak)
-	{
-		return EnemyTypeID::EnemyID_Tadpole;
-	}
-
-	// _00 		= VTBL
-	// _00-_44	= EnemyMgrBase
-	Obj* mObj; // _44, likely an array of Objs
-};
-
 struct Parms : public EnemyParmsBase {
 	struct ProperParms : public Parameters {
 		inline ProperParms()
@@ -103,6 +86,23 @@ struct Parms : public EnemyParmsBase {
 
 	// _00-_7F8	= EnemyParmsBase
 	ProperParms mProperParms; // _7F8
+};
+
+struct Mgr : public EnemyMgrBase {
+	Mgr(int objLimit, u8 modelType);
+
+	// virtual ~Mgr();                                     // _58 (weak)
+	virtual void doAlloc();                            // _A8
+	virtual void createObj(int count);                 // _A0
+	virtual EnemyBase* getEnemy(int idx);              // _A4
+	virtual EnemyTypeID::EEnemyTypeID getEnemyTypeID() // _AC (weak)
+	{
+		return EnemyTypeID::EnemyID_Tadpole;
+	}
+
+	// _00 		= VTBL
+	// _00-_44	= EnemyMgrBase
+	Obj* mObj; // _44, likely an array of Objs
 };
 
 enum AnimID {
@@ -136,7 +136,7 @@ struct FSM : public EnemyStateMachine {
 };
 
 struct State : public EnemyFSMState {
-	inline State(int stateID, char* name)
+	inline State(int stateID, const char* name)
 	    : EnemyFSMState(stateID)
 	{
 		mName = name;
@@ -146,65 +146,9 @@ struct State : public EnemyFSMState {
 	// _00-_10 	= EnemyFSMState
 };
 
-struct StateAmaze : public State {
-	inline StateAmaze()
-	    : State(TADPOLE_Amaze, "amaze")
-	{
-	}
-
-	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
-	virtual void exec(EnemyBase* enemy);                     // _0C
-	virtual void cleanup(EnemyBase* enemy);                  // _10
-
-	// _00		= VTBL
-	// _00-_10 	= EnemyFSMState
-};
-
 struct StateDead : public State {
-	inline StateDead()
-	    : State(TADPOLE_Dead, "dead")
-	{
-	}
-
-	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
-	virtual void exec(EnemyBase* enemy);                     // _0C
-	virtual void cleanup(EnemyBase* enemy);                  // _10
-
-	// _00		= VTBL
-	// _00-_10 	= EnemyFSMState
-};
-
-struct StateEscape : public State {
-	inline StateEscape()
-	    : State(TADPOLE_Escape, "escape")
-	{
-	}
-
-	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
-	virtual void exec(EnemyBase* enemy);                     // _0C
-	virtual void cleanup(EnemyBase* enemy);                  // _10
-
-	// _00		= VTBL
-	// _00-_10 	= EnemyFSMState
-};
-
-struct StateLeap : public State {
-	inline StateLeap()
-	    : State(TADPOLE_Leap, "leap")
-	{
-	}
-
-	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
-	virtual void exec(EnemyBase* enemy);                     // _0C
-	virtual void cleanup(EnemyBase* enemy);                  // _10
-
-	// _00		= VTBL
-	// _00-_10 	= EnemyFSMState
-};
-
-struct StateMove : public State {
-	inline StateMove()
-	    : State(TADPOLE_Move, "move")
+	inline StateDead(const char* name)
+	    : State(TADPOLE_Dead, name)
 	{
 	}
 
@@ -217,8 +161,64 @@ struct StateMove : public State {
 };
 
 struct StateWait : public State {
-	inline StateWait()
-	    : State(TADPOLE_Wait, "wait")
+	inline StateWait(const char* name)
+	    : State(TADPOLE_Wait, name)
+	{
+	}
+
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
+
+	// _00		= VTBL
+	// _00-_10 	= EnemyFSMState
+};
+
+struct StateMove : public State {
+	inline StateMove(const char* name)
+	    : State(TADPOLE_Move, name)
+	{
+	}
+
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
+
+	// _00		= VTBL
+	// _00-_10 	= EnemyFSMState
+};
+
+struct StateAmaze : public State {
+	inline StateAmaze(const char* name)
+	    : State(TADPOLE_Amaze, name)
+	{
+	}
+
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
+
+	// _00		= VTBL
+	// _00-_10 	= EnemyFSMState
+};
+
+struct StateEscape : public State {
+	inline StateEscape(const char* name)
+	    : State(TADPOLE_Escape, name)
+	{
+	}
+
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
+
+	// _00		= VTBL
+	// _00-_10 	= EnemyFSMState
+};
+
+struct StateLeap : public State {
+	inline StateLeap(const char* name)
+	    : State(TADPOLE_Leap, name)
 	{
 	}
 

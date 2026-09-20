@@ -160,7 +160,7 @@ JKRADCommand* JKRDvdAramRipper::callCommand_Async(JKRADCommand* command)
 				VIWaitForRetrace();
 			}
 			DCInvalidateRange(bufPtr, 0x20);
-			compression      = JKRCheckCompressed(bufPtr);
+			compression      = JKRCheckCompressed_noASR(bufPtr);
 			u32 expSize      = JKRDecompExpandSize(bufPtr);
 			uncompressedSize = expSize;
 
@@ -239,7 +239,7 @@ bool JKRDvdAramRipper::syncAram(JKRADCommand* command, BOOL isNonBlocking)
 	JKRAramStreamCommand* streamCommand = command->mStreamCommand;
 	if (streamCommand) {
 		streamCommand    = JKRAramStream::sync(streamCommand, isNonBlocking);
-		command->mStatus = -(streamCommand == nullptr);
+		command->mStatus = (streamCommand) ? nullptr : -1;
 		if (isNonBlocking && streamCommand == nullptr) {
 			OSUnlockMutex(&file->mAramMutex);
 			return false;
@@ -386,10 +386,10 @@ static int decompSZS_subroutine(u8* src, u32 dmaAddr)
 			readCount++;
 		} else {
 			int t0     = src[0];
-			int t1     = src[1];
-			copySource = refCurrent - (t1 | (t0 & 0x0f) << 8) - 1;
+			int t1     = src[1] | ((t0 & 0x0f) << 8);
 			numBytes   = t0 >> 4;
 			src += 2;
+			copySource = refCurrent - t1 - 1;
 			if (copySource < refBuf)
 				copySource = copySource + (refEnd - refBuf);
 

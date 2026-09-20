@@ -1,5 +1,11 @@
 #include "id32.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "id32";
+}
+
 ID32 ID32::eof('_eof');
 
 /**

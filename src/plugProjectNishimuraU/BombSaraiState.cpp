@@ -6,11 +6,14 @@
 #include "Game/rumble.h"
 #include "nans.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "246-BombSaraiState";
+}
+
 namespace Game {
 namespace BombSarai {
-
-static const int unusedBombSaraiArray[] = { 0, 0, 0 };
-static const char bombSaraiStateName[]  = "246-BombSaraiState";
 
 /**
  * @note Address: 0x802AFC74
@@ -116,7 +119,7 @@ void StateDamage::init(EnemyBase* enemy, StateArg* stateArg)
 void StateDamage::exec(EnemyBase* enemy)
 {
 	Obj* sarai = OBJ(enemy);
-	if (sarai->mHealth <= 0.0f || sarai->mStuckPikminCount == 0 || sarai->mStateTimer > CG_PROPERPARMS(sarai).mStruggleTime.mValue) {
+	if (sarai->isDead() || sarai->mStuckPikminCount == 0 || sarai->mStateTimer > CG_PROPERPARMS(sarai).mStruggleTime.mValue) {
 		sarai->finishMotion();
 	}
 
@@ -134,7 +137,7 @@ void StateDamage::exec(EnemyBase* enemy)
 			rumbleMgr->startRumble(RUMBLETYPE_Fixed8, pos, RUMBLEID_Both);
 
 		} else if (sarai->mCurAnim->mType == KEYEVENT_END) {
-			if (sarai->mHealth <= 0.0f) {
+			if (sarai->isDead()) {
 				transit(sarai, BOMBSARAI_Dead, nullptr);
 				return;
 			}
@@ -1260,7 +1263,7 @@ void StateFall::exec(EnemyBase* enemy)
 			sarai->createDownEffect(0.9f);
 
 		} else if (sarai->mCurAnim->mType == KEYEVENT_END) {
-			if (sarai->mHealth <= 0.0f) {
+			if (sarai->isDead()) {
 				transit(sarai, BOMBSARAI_Dead, nullptr);
 			} else {
 				transit(sarai, BOMBSARAI_Damage, nullptr);
@@ -1304,7 +1307,7 @@ void StateTakeOff1::exec(EnemyBase* enemy)
 		height = sarai->setHeightVelocity(false);
 	}
 
-	if (sarai->mHealth <= 0.0f || height > CG_PROPERPARMS(sarai).mTransitHeight.mValue) {
+	if (sarai->isDead() || height > CG_PROPERPARMS(sarai).mTransitHeight.mValue) {
 		StateID stateID = sarai->getNextStateOnHeight();
 		if (stateID >= 0) {
 			transit(sarai, stateID, nullptr);
@@ -1353,7 +1356,7 @@ void StateTakeOff2::exec(EnemyBase* enemy)
 		height = sarai->setHeightVelocity(true);
 	}
 
-	if (sarai->mHealth <= 0.0f || height > CG_PROPERPARMS(sarai).mTransitHeight.mValue) {
+	if (sarai->isDead() || height > CG_PROPERPARMS(sarai).mTransitHeight.mValue) {
 		StateID stateID = sarai->getNextStateOnHeight();
 		if (stateID >= 0) {
 			transit(sarai, stateID, nullptr);

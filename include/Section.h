@@ -30,7 +30,7 @@ struct ISectionMgr {
 struct Section : public ISection {
 	enum EDrawInitMode { Zero = 0, One = 1, Two = 2 };
 
-	Section(JFWDisplay*, JKRHeap*, bool);
+	Section(JFWDisplay*, JKRHeap*, bool, bool);
 
 	virtual ~Section();                                      // _08
 	virtual void run();                                      // _0C
@@ -50,7 +50,7 @@ struct Section : public ISection {
 	virtual bool doLoading() { return false; }            // _38 (weak)
 	virtual bool doUpdate()            = 0;               // _3C
 	virtual void doDraw(Graphics& gfx) = 0;               // _40
-	virtual void doEntry();                               // _44
+	virtual void doEntry(){}                               // _44
 	virtual bool isFinishable() { return true; }          // _48 (weak)
 
 	bool beginFrame();

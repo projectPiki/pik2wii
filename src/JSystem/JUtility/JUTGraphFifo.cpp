@@ -22,7 +22,7 @@ JUTGraphFifo::JUTGraphFifo(u32 size)
 
 	} else {
 		/** TODO: Figure out what has sizeof 0xA0. */
-		mBase        = JKRHeap::getSystemHeap()->alloc(mSize + 0xA0, 0x20);
+		mBase        = JKRHeap::getRootHeap2()->alloc(mSize + 0xA0, 0x20);
 		mBase        = (void*)ALIGN_NEXT((u32)mBase, 0x20);
 		mFifo        = GXInit(mBase, mSize);
 		sInitiated   = true;

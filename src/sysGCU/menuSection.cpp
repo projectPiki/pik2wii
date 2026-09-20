@@ -2,12 +2,18 @@
 #include "RootMenuSection.h"
 #include "System.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "menuSection";
+}
+
 /**
  * @note Address: 0x804245CC
  * @note Size: 0x48
  */
 MenuSection::MenuSection(JFWDisplay* display, JKRHeap* heap, bool b)
-    : Section(display, heap, b)
+    : Section(display, heap, b, false)
 {
 	mCurrentSection = nullptr;
 	mIsDone         = false;
@@ -32,8 +38,6 @@ void MenuSection::run()
  */
 bool MenuSection::runChildSection()
 {
-	JKRHeap::sCurrentHeap->getFreeSize();
-
 	JKRExpHeap* expHeap  = JKRExpHeap::create(mDisplayHeap->getFreeSize(), mDisplayHeap, true);
 	JKRHeap* currentHeap = expHeap->becomeCurrentHeap();
 
@@ -54,7 +58,6 @@ bool MenuSection::runChildSection()
 
 	expHeap->destroy();
 	currentHeap->becomeCurrentHeap();
-	JKRHeap::sCurrentHeap->getFreeSize();
 
 	return (mCurrentSection != 0);
 }

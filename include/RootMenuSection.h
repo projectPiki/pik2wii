@@ -16,9 +16,6 @@ struct MenuSection : public Section {
 	// _00		= VTBL
 	// _00-_3C	= Section
 	bool mIsDone;             // _3C
-	u8 _3D;                   // _3D
-	u8 _3E;                   // _3E
-	u8 _3F;                   // _3F
 	Section* mCurrentSection; // _40
 };
 

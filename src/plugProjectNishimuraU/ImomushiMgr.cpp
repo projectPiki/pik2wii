@@ -1,9 +1,13 @@
 #include "Game/Entities/Imomushi.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "246-ImomushiMgr";
+}
+
 namespace Game {
 namespace Imomushi {
-
-static const char imomushiMgrName[] = "246-ImomushiMgr";
 
 /**
  * @note Address: 0x802BBCD4

@@ -10,24 +10,27 @@
 #include "System.h"
 #include "nans.h"
 
-namespace Game {
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "baseHIOSection";
+}
 
-static const int unusedBaseHIOArray[] = { 0, 0, 0 };
-static const char unusedBaseHIOName[] = "baseHIOSection";
+namespace Game {
 
 /**
  * @note Address: 0x80164BF0
  * @note Size: 0xC0
  */
 BaseHIOSection::BaseHIOSection(JKRHeap* heap)
-    : Section(nullptr, heap, false)
+    : Section(nullptr, heap, false, false)
 {
 	System::assert_fragmentation("BaseHIOSection");
 	mRootNode         = nullptr;
 	u32 freeSize      = JKRHeap::sCurrentHeap->getFreeSize();
 	u32 totalFreeSize = JKRHeap::sCurrentHeap->getTotalFreeSize();
 
-	JUT_ASSERTLINE(314, freeSize == totalFreeSize, "fragmentation occurred : after sound\n");
+	JUT_ASSERTLINE(316, freeSize == totalFreeSize, "fragmentation occurred : after sound\n");
 	mDebugController = new Controller(3);
 }
 
@@ -55,7 +58,7 @@ BaseHIOSection::~BaseHIOSection()
 void BaseHIOSection::setDisplay(JFWDisplay* display, int secondsPer60Frames)
 {
 	// Check if display is being set for the first time
-	P2ASSERTBOOLLINE(333, !mDisplay && display);
+	P2ASSERTBOOLLINE(335, !mDisplay && display);
 
 	// Assign the new display and create a new JUTFader object for it
 	mDisplay = display;

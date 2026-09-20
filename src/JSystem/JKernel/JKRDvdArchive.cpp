@@ -258,12 +258,11 @@ u32 JKRDvdArchive::fetchResource_subroutine(s32 entryNum, u32 offset, u32 size, 
 	}
 
 	case COMPRESSION_YAY0: {
-		OSErrorLine(649, "Sorry, not prepared for SZP archive.\n");
-		return 0;
+		JUTException::panic(__FILE__, 649, "Sorry, not applied for SZP archive.\n");
 	}
 
 	default: {
-		OSErrorLine(655, ":::??? bad sequence\n");
+		JUTException::panic(__FILE__, 653, "??? bad sequence\n");
 	}
 	}
 	return 0;
@@ -318,12 +317,11 @@ u32 JKRDvdArchive::fetchResource_subroutine(s32 entryNum, u32 offset, u32 size, 
 	}
 
 	case COMPRESSION_YAY0: {
-		OSErrorLine(756, "Sorry, not prepared for SZP archive.\n");
-		return 0;
+		JUTException::panic(__FILE__, 754, "Sorry, not applied SZP archive.\n");
 	}
 
 	default: {
-		OSErrorLine(761, ":::??? bad sequence\n");
+		JUTException::panic(__FILE__, 758, "??? bad sequence\n");
 	}
 	}
 	return 0;

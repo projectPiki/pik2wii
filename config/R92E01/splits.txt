@@ -4412,7 +4412,7 @@ plugProjectNishimuraU/Catfish.cpp:
 	.text       start:0x802F9744 end:0x802F9A1C
 	.rodata     start:0x8054DE38 end:0x8054DE58
 	.data       start:0x805A6860 end:0x805A6BA0
-	.sdata2     start:0x80671798 end:0x806717B8
+	.sdata2     start:0x80671798 end:0x806717B4
 
 plugProjectNishimuraU/TadpoleState.cpp:
 	.text       start:0x802F9A1C end:0x802FA868
@@ -4547,7 +4547,9 @@ plugProjectNishimuraU/Queen.cpp:
 
 plugProjectNishimuraU/BabyState.cpp:
 	.text       start:0x8030D8D8 end:0x8030E384
+	.rodata     start:0x8054E330 end:0x8054E360
 	.data       start:0x805A9D90 end:0x805A9E80
+	.sdata2     start:0x80671B10 end:0x80671B28
 
 plugProjectNishimuraU/BabyAnimator.cpp:
 	.text       start:0x8030E384 end:0x8030E3DC
@@ -4555,11 +4557,15 @@ plugProjectNishimuraU/BabyAnimator.cpp:
 
 plugProjectNishimuraU/BabyMgr.cpp:
 	.text       start:0x8030E3DC end:0x8030E728
+	.rodata     start:0x8054E360 end:0x8054E388
 	.data       start:0x805A9EA8 end:0x805A9FC0
+	.sdata2     start:0x80671B28 end:0x80671B40
 
 plugProjectNishimuraU/Baby.cpp:
 	.text       start:0x8030E728 end:0x8030F1A4
+	.rodata     start:0x8054E388 end:0x8054E398
 	.data       start:0x805A9FC0 end:0x805AA340
+	.sdata2     start:0x80671B40 end:0x80671B88
 
 plugProjectNishimuraU/DemonMgr.cpp:
 	.text       start:0x8030F1A4 end:0x8030F458
@@ -6650,12 +6656,12 @@ sysGCU/section.cpp:
 	.data       start:0x805CCAF8 end:0x805CCB48
 	.bss        start:0x806394C0 end:0x806394D0
 	.sbss       start:0x8066D1C0 end:0x8066D1D0
-	.sdata2     start:0x80675660 end:0x80675678
+	.sdata2     start:0x80675660 end:0x80675670
 
 sysGCU/gameflow.cpp:
 	.text       start:0x804AA460 end:0x804AA824
 	.ctors      start:0x8053501C end:0x80535020
-	.rodata     start:0x80559458 end:0x80559648
+	.rodata     start:0x80559458 end:0x80559628
 	.data       start:0x805CCB48 end:0x805CCC70
 	.bss        start:0x806394D0 end:0x806394E0
 	.sdata      start:0x8066B6E8 end:0x8066B6F0
@@ -6663,7 +6669,9 @@ sysGCU/gameflow.cpp:
 
 sysGCU/menuSection.cpp:
 	.text       start:0x804AA824 end:0x804AAA5C
+	.rodata     start:0x80559628 end:0x80559648
 	.data       start:0x805CCC70 end:0x805CCCC0
+	.sdata2     start:0x80675670 end:0x80675678
 
 sysGCU/dvdThread.cpp:
 	.text       start:0x804AAA5C end:0x804AB0E0

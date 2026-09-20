@@ -7,6 +7,12 @@
 #include "RevoSDK/rand.h"
 #include "types.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "246-Sarai";
+}
+
 namespace Game {
 namespace Sarai {
 
@@ -109,7 +115,7 @@ void Obj::getShadowParam(ShadowParam& shadowParam)
 		shadowParam.mBoundingSphere.mRadius = 25.0f;
 	}
 
-	shadowParam.mBoundingSphere.mPosition = Vector3f(0.0f, 1.0f, 0.0f);
+	shadowParam.mBoundingSphere.mPosition.set(0.0f, 1.0f, 0.0f);
 	shadowParam.mSize                     = 12.5f;
 }
 
@@ -275,7 +281,7 @@ int Obj::getCatchTargetNum()
  */
 int Obj::getNextStateOnHeight()
 {
-	if (mHealth <= 0.0f) {
+	if (isDead()) {
 		return SARAI_Fall;
 	}
 
