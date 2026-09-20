@@ -1,11 +1,11 @@
 #ifndef _GAME_ENTITIES_GASHIBA_H
 #define _GAME_ENTITIES_GASHIBA_H
 
-#include "Game/EnemyStateMachine.h"
 #include "Game/EnemyAnimatorBase.h"
-#include "Game/EnemyParmsBase.h"
-#include "Game/EnemyMgrBase.h"
 #include "Game/EnemyBase.h"
+#include "Game/EnemyMgrBase.h"
+#include "Game/EnemyParmsBase.h"
+#include "Game/EnemyStateMachine.h"
 
 /**
  * --Header for Gas Pipe (GasHiba)--
@@ -78,23 +78,6 @@ struct Obj : public EnemyBase {
 	                           // _2D4 = PelletView
 };
 
-struct Mgr : public EnemyMgrBaseAlwaysMovieActor {
-	Mgr(int objLimit, u8 modelType);
-
-	// virtual ~Mgr();                                     // _58 (weak)
-	virtual void doAlloc();                            // _A8
-	virtual void createObj(int count);                 // _A0
-	virtual EnemyBase* getEnemy(int idx);              // _A4
-	virtual EnemyTypeID::EEnemyTypeID getEnemyTypeID() // _AC (weak)
-	{
-		return EnemyTypeID::EnemyID_GasHiba;
-	}
-
-	// _00 		= VTBL
-	// _00-_44	= EnemyMgrBase
-	Obj* mObj; // _44, array of Objs
-};
-
 struct Parms : public EnemyParmsBase {
 	struct ProperParms : public Parameters {
 		inline ProperParms()
@@ -127,6 +110,23 @@ struct Parms : public EnemyParmsBase {
 
 	// _00-_7F8	= EnemyParmsBase
 	ProperParms mProperParms; // _7F8
+};
+
+struct Mgr : public EnemyMgrBaseAlwaysMovieActor {
+	Mgr(int objLimit, u8 modelType);
+
+	// virtual ~Mgr();                                     // _58 (weak)
+	virtual void doAlloc();                            // _A8
+	virtual void createObj(int count);                 // _A0
+	virtual EnemyBase* getEnemy(int idx);              // _A4
+	virtual EnemyTypeID::EEnemyTypeID getEnemyTypeID() // _AC (weak)
+	{
+		return EnemyTypeID::EnemyID_GasHiba;
+	}
+
+	// _00 		= VTBL
+	// _00-_44	= EnemyMgrBase
+	Obj* mObj; // _44, array of Objs
 };
 
 enum AnimID {

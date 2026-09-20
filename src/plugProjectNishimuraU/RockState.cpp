@@ -5,6 +5,12 @@
 #include "Game/rumble.h"
 #include "nans.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "246-RockState";
+}
+
 namespace Game {
 namespace Rock {
 
@@ -15,12 +21,12 @@ namespace Rock {
 void FSM::init(EnemyBase* enemy)
 {
 	create(ROCK_Count);
-	registerState(new StateWait);
-	registerState(new StateAppear);
-	registerState(new StateDropWait);
-	registerState(new StateFall);
-	registerState(new StateMove);
-	registerState(new StateDead);
+	registerState(new StateWait("wait"));
+	registerState(new StateAppear("appear"));
+	registerState(new StateDropWait("dropwait"));
+	registerState(new StateFall("fall"));
+	registerState(new StateMove("move"));
+	registerState(new StateDead("dead"));
 }
 
 /**
@@ -235,7 +241,7 @@ void StateMove::exec(EnemyBase* enemy)
 	rock->updateWaterEffectPosition();
 	rock->getJAIObject()->startSound(PSSE_EN_ROCK_ROLL, 0);
 
-	if (rock->mHealth <= 0.0f || rock->mTimer > 15.0f) {
+	if (rock->isDead() || rock->mTimer > 15.0f) {
 		transit(rock, ROCK_Dead, nullptr);
 	}
 }

@@ -4,6 +4,12 @@
 #include "efx/TEnemyDive.h"
 #include "efx/TPk.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "246-Tadpole";
+}
+
 namespace Game {
 namespace Tadpole {
 
@@ -83,7 +89,7 @@ void Obj::getShadowParam(ShadowParam& param)
 {
 	param.mPosition = getPosition();
 	param.mPosition.y += 2.5f;
-	param.mBoundingSphere.mPosition = Vector3f(0.0f, 1.0f, 0.0f);
+	param.mBoundingSphere.mPosition.set(0.0f, 1.0f, 0.0f);
 	if (isEvent(1, EB2_Earthquake)) {
 		param.mBoundingSphere.mRadius = 50.0f;
 	} else {

@@ -117,23 +117,6 @@ struct Obj : public EnemyBase {
 	                                     // _2E8 = PelletView
 };
 
-struct Mgr : public EnemyMgrBase {
-	Mgr(int objLimit, u8 modelType);
-
-	// virtual ~Mgr();                                     // _58 (weak)
-	virtual void doAlloc();                            // _A8
-	virtual void createObj(int count);                 // _A0
-	virtual EnemyBase* getEnemy(int idx);              // _A4
-	virtual EnemyTypeID::EEnemyTypeID getEnemyTypeID() // _AC (weak)
-	{
-		return EnemyTypeID::EnemyID_Rock;
-	}
-
-	// _00 		= VTBL
-	// _00-_44	= EnemyMgrBase
-	Obj* mObj; // _44, array of Objs
-};
-
 struct Generator : public EnemyGeneratorBase {
 	Generator();
 
@@ -154,6 +137,23 @@ struct Generator : public EnemyGeneratorBase {
 	f32 mSpeed;  // _24
 	f32 mOffset; // _28
 	f32 mScale;  // _2C
+};
+
+struct Mgr : public EnemyMgrBase {
+	Mgr(int objLimit, u8 modelType);
+
+	// virtual ~Mgr();                                     // _58 (weak)
+	virtual void doAlloc();                            // _A8
+	virtual void createObj(int count);                 // _A0
+	virtual EnemyBase* getEnemy(int idx);              // _A4
+	virtual EnemyTypeID::EEnemyTypeID getEnemyTypeID() // _AC (weak)
+	{
+		return EnemyTypeID::EnemyID_Rock;
+	}
+
+	// _00 		= VTBL
+	// _00-_44	= EnemyMgrBase
+	Obj* mObj; // _44, array of Objs
 };
 
 enum AnimID {
@@ -203,9 +203,9 @@ struct State : public EnemyFSMState {
 	// _00-_10 	= EnemyFSMState
 };
 
-struct StateAppear : public State {
-	inline StateAppear()
-	    : State(ROCK_Appear, "appear")
+struct StateWait : public State {
+	inline StateWait(const char* name)
+	    : State(ROCK_Wait, name)
 	{
 	}
 
@@ -217,9 +217,9 @@ struct StateAppear : public State {
 	// _00-_10 	= EnemyFSMState
 };
 
-struct StateDead : public State {
-	inline StateDead()
-	    : State(ROCK_Dead, "dead")
+struct StateAppear : public State {
+	inline StateAppear(const char* name)
+	    : State(ROCK_Appear, name)
 	{
 	}
 
@@ -232,8 +232,8 @@ struct StateDead : public State {
 };
 
 struct StateDropWait : public State {
-	inline StateDropWait()
-	    : State(ROCK_DropWait, "dropwait")
+	inline StateDropWait(const char* name)
+	    : State(ROCK_DropWait, name)
 	{
 	}
 
@@ -246,8 +246,8 @@ struct StateDropWait : public State {
 };
 
 struct StateFall : public State {
-	inline StateFall()
-	    : State(ROCK_Fall, "fall")
+	inline StateFall(const char* name)
+	    : State(ROCK_Fall, name)
 	{
 	}
 
@@ -260,8 +260,8 @@ struct StateFall : public State {
 };
 
 struct StateMove : public State {
-	inline StateMove()
-	    : State(ROCK_Move, "move")
+	inline StateMove(const char* name)
+	    : State(ROCK_Move, name)
 	{
 	}
 
@@ -273,9 +273,9 @@ struct StateMove : public State {
 	// _00-_10 	= EnemyFSMState
 };
 
-struct StateWait : public State {
-	inline StateWait()
-	    : State(ROCK_Wait, "wait")
+struct StateDead : public State {
+	inline StateDead(const char* name)
+	    : State(ROCK_Dead, name)
 	{
 	}
 

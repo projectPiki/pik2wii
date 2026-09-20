@@ -48,8 +48,10 @@ void JFWSystem::firstInit()
 	// UNUSED FUNCTION
 	OSInit();
 	DVDInit();
+	JKRExpHeap::createRoot2(CSetUpParam::maxStdHeaps, false);
 	rootHeap   = JKRExpHeap::createRoot(CSetUpParam::maxStdHeaps, false);
 	systemHeap = JKRExpHeap::create(CSetUpParam::sysHeapSize, rootHeap, false);
+	systemHeap->becomeSystemHeap();
 }
 
 /**

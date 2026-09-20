@@ -121,7 +121,7 @@ struct JKRDecomp : public JKRThread {
 	static bool orderSync(u8*, u8*, u32, u32);
 	static BOOL sendCommand(JKRDecompCommand*);
 
-	static void* sMessageBuffer[4];
+	static void* sMessageBuffer[8];
 	static OSMessageQueue sMessageQueue;
 	static JKRDecomp* sDecompObject;
 };

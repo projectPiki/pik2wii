@@ -1,6 +1,12 @@
 #include "types.h"
 #include "Game/Entities/Catfish.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "246-Catfish";
+}
+
 namespace Game {
 namespace Catfish {
 
@@ -37,7 +43,7 @@ void Obj::getShadowParam(Game::ShadowParam& param)
 	param.mPosition = Vector3f(worldMatrix->mMatrix.mtxView[0][3], worldMatrix->mMatrix.mtxView[1][3], worldMatrix->mMatrix.mtxView[2][3]);
 
 	param.mPosition.y -= 10.0f;
-	param.mBoundingSphere.mPosition = Vector3f(0.0f, 1.0f, 0.0f);
+	param.mBoundingSphere.mPosition.set(0.0f, 1.0f, 0.0f);
 	param.mBoundingSphere.mRadius   = param.mPosition.y - mPosition.y;
 
 	if (isEvent(1, EB2_Earthquake)) {

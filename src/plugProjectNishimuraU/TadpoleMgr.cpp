@@ -1,5 +1,11 @@
 #include "Game/Entities/Tadpole.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "246-TadpoleMgr";
+}
+
 namespace Game {
 namespace Tadpole {
 

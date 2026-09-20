@@ -1,6 +1,12 @@
 #include "Game/EnemyAnimKeyEvent.h"
 #include "Game/Entities/Qurione.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "246-QurioneState";
+}
+
 namespace Game {
 namespace Qurione {
 
@@ -11,12 +17,12 @@ namespace Qurione {
 void FSM::init(EnemyBase* enemy)
 {
 	create(QURIONE_Count);
-	registerState(new StateStay);
-	registerState(new StateAppear);
-	registerState(new StateDisappear);
-	registerState(new StateMove);
-	registerState(new StateDrop);
-	registerState(new StateDead);
+	registerState(new StateStay("stay"));
+	registerState(new StateAppear("appear"));
+	registerState(new StateDisappear("disappear"));
+	registerState(new StateMove("move"));
+	registerState(new StateDrop("drop"));
+	registerState(new StateDead("dead"));
 }
 
 /**
@@ -179,9 +185,7 @@ void StateMove::exec(EnemyBase* enemy)
 	f32 flyDist            = wisp->getFlyDist();
 
 	wisp->getJAIObject()->startSound(PSSE_EN_PIKIMAKI_FLY, 0);
-
-	Vector2f delta(spawnPosition.x - position.x, spawnPosition.z - position.z);
-	if (SQUARE(delta.x) + SQUARE(delta.y) > SQUARE(flyDist)) {
+	if (SQUARE(spawnPosition.x - position.x) + SQUARE(spawnPosition.z - position.z) > SQUARE(flyDist)) {
 		transit(wisp, QURIONE_Disappear, nullptr);
 	}
 }

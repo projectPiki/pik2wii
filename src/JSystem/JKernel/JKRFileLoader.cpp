@@ -118,15 +118,7 @@ const char* JKRFileLoader::fetchVolumeName(char* nameBuffer, s32 bufferLength, c
 
 		while (*path != 0 && *path != '/') {
 			if (bufferLength > 1) {
-				int lower_char;
-				char ch = *path;
-				if (ch == -1) {
-					lower_char = -1;
-				} else {
-					lower_char = __lower_map[ch & 0xFF];
-				}
-
-				*nameBuffer = lower_char;
+				*nameBuffer = _tolower(*path);
 				nameBuffer++;
 				bufferLength--;
 			}

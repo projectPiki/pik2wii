@@ -8,15 +8,21 @@
 enum JSUStreamSeekFrom { SEEK_SET = 0, SEEK_CUR, SEEK_END };
 
 struct JSUIosBase {
-	inline JSUIosBase()
-	    : mIsEOFMaybe(0)
-	{
-	}
+	enum EIoState {
+		IOS_STATE_1 = 1,
+		IOS_STATE_2 = 2,
+	};
+
+	JSUIosBase() { mState = false; }
 
 	virtual ~JSUIosBase() { } //_08 (weak)
 
+	bool isGood() const { return mState == 0; }
+	void clrState(EIoState state) { mState &= ~state; }
+	void setState(EIoState state) { mState |= state; }
+
 	// _00 VTBL
-	u8 mIsEOFMaybe; // _04
+	bool mState; // _04
 };
 
 struct JSUInputStream : public JSUIosBase {
@@ -115,7 +121,7 @@ struct JSURandomInputStream : public JSUInputStream {
 
 	u32 align(s32);
 	size_t peek(void*, s32);
-	void seek(s32, JSUStreamSeekFrom);
+	s32 seek(s32, JSUStreamSeekFrom);
 
 	// _00		= VTBL
 	// _00-_08	= JSUIosBase

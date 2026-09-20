@@ -84,9 +84,7 @@ u16 __ARGetInterruptStatus();
 #define __AR_ARAM_BASE_MEMORY_TOP (0x90000800)
 
 ////////////////////////////////////////////
-
-// im not sure what the deal with this label is, linker option?
-extern const void* lbl_8066A9C0;
+extern u32 __ARALT_AramStartAdr;
 
 #ifdef __cplusplus
 };

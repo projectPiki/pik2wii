@@ -115,7 +115,7 @@ s32 JKRAramStream::writeToAram(JKRAramStreamCommand* command)
 			heap->dump();
 		}
 
-		JUT_PANICLINE(172, "%s", ":::Cannot alloc memory\n");
+		JUTException::panic(__FILE__, 172, ":::Cannot alloc memory\n");
 	}
 
 	if (buffer) {

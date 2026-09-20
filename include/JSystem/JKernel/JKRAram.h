@@ -172,14 +172,14 @@ struct JKRAramArchive : public JKRArchive {
 };
 
 // Size: 0x98
-struct JKRAMCommand : public ARQRequest {
-	typedef void (*Callback)(JKRAMCommand*);
+struct JKRAMCommand {
+	typedef void (*Callback)(u32);
 
 	JKRAMCommand();
 
 	~JKRAMCommand();
 
-	// ARQRequest _00;            // _00
+	ARQRequest _00;            // _00
 	JSULink<JKRAMCommand> _20;        // _20
 	JSULink<JKRAMCommand> _30;        // _30
 	s32 mDirection;                   // _40
@@ -262,7 +262,11 @@ struct JKRAramPiece {
 	~JKRAramPiece(); // unused/inlined
 
 	static void doneDMA(u32 cmdAddr);
+	static bool sync(JKRAMCommand*, int);
+	static JKRAMCommand* orderAsync(int direction, u32 src, u32 dest, u32 length, JKRAramBlock* block, JKRAMCommand::Callback callback);
 	static bool orderSync(int direction, u32 src, u32 dest, u32 length, JKRAramBlock* block);
+	static JKRAMCommand* prepareCommand(int direction, u32 src, u32 dest, u32 length, JKRAramBlock* block,
+                                        JKRAMCommand::Callback callback);
 	static void sendCommand(JKRAMCommand* cmd);
 	static void startDMA(JKRAMCommand* cmd);
 

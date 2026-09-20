@@ -11,8 +11,6 @@
 #include "Sys/TriangleTable.h"
 #include "nans.h"
 
-static const int padding[] = { 0, 0, 0 };
-
 static void _Print(char* format, ...)
 {
 	OSReport("mapMgr");

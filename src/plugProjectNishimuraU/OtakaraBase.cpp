@@ -5,6 +5,12 @@
 #include "Game/generalEnemyMgr.h"
 #include "efx/TOta.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "246-OtakaraBase";
+}
+
 namespace Game {
 namespace OtakaraBase {
 
@@ -164,7 +170,7 @@ void Obj::getShadowParam(ShadowParam& shadowParam)
 	shadowParam.mPosition = Vector3f(mat->mMatrix.mtxView[0][3], mat->mMatrix.mtxView[1][3], mat->mMatrix.mtxView[2][3]);
 	shadowParam.mPosition.y -= 5.0f;
 
-	shadowParam.mBoundingSphere.mPosition = Vector3f(0.0f, 1.0f, 0.0f);
+	shadowParam.mBoundingSphere.mPosition.set(0.0f, 1.0f, 0.0f);
 
 	if (mTreasure) {
 		shadowParam.mBoundingSphere.mRadius = 30.0f;
@@ -465,6 +471,29 @@ void Obj::resetTreasure()
 	EnemyFunc::flickStickPikmin(this, 1.0f, 0.0f, 0.0f, FLICK_BACKWARD_ANGLE, nullptr);
 }
 
+bool Obj::setTreasure(Creature* target)
+{
+	if (target->isAlive() && !target->mCaptureMatrix && target->isPellet() && static_cast<Pellet*>(target)->isPickable()
+	    && isTakeTreasure()) {
+		mTreasure         = target;
+		mTreasureHealth   = C_PROPERPARMS.mOtakaraLife.mValue;
+		mBodyHeightOffset = 0.5f * static_cast<Pellet*>(target)->getCylinderHeight();
+		mCellRadius       = static_cast<Pellet*>(target)->getPickRadius();
+
+		CollPart* bodyPart  = mCollTree->getCollPart('body');
+		bodyPart->mRadius   = static_cast<Pellet*>(target)->getPickRadius();
+		bodyPart->mOffset.y = mBodyHeightOffset;
+
+		CollPart* basePart  = mCollTree->mPart;
+		basePart->mRadius   = 10.0f + static_cast<Pellet*>(target)->getPickRadius();
+		basePart->mOffset.y = mBodyHeightOffset;
+		mCellRadius += 10.0f;
+
+		return true;
+	}
+	return false;
+}
+
 /**
  * @note Address: 0x802B7104
  * @note Size: 0x10C
@@ -492,30 +521,8 @@ bool Obj::isTakeTreasure()
  */
 bool Obj::takeTreasure()
 {
-	Creature* target = mTargetCreature;
-	if (target) {
-		bool check;
-		if (target->isAlive() && !target->mCaptureMatrix && target->isPellet() && static_cast<Pellet*>(target)->isPickable()
-		    && isTakeTreasure()) {
-			mTreasure         = target;
-			mTreasureHealth   = C_PROPERPARMS.mOtakaraLife.mValue;
-			mBodyHeightOffset = 0.5f * static_cast<Pellet*>(target)->getCylinderHeight();
-			mCellRadius       = static_cast<Pellet*>(target)->getPickRadius();
-
-			CollPart* bodyPart  = mCollTree->getCollPart('body');
-			bodyPart->mRadius   = static_cast<Pellet*>(target)->getPickRadius();
-			bodyPart->mOffset.y = mBodyHeightOffset;
-
-			CollPart* basePart  = mCollTree->mPart;
-			basePart->mRadius   = 10.0f + static_cast<Pellet*>(target)->getPickRadius();
-			basePart->mOffset.y = mBodyHeightOffset;
-			mCellRadius += 10.0f;
-			check = true;
-		} else {
-			check = false;
-		}
-
-		if (check) {
+	if (mTargetCreature) {
+		if (setTreasure(mTargetCreature)) {
 			mTreasure->startCapture(mModel->getJoint("otakara")->getWorldMatrix());
 			return true;
 		}

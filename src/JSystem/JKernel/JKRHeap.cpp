@@ -5,14 +5,12 @@
 #include "JSystem/JSupport/JSUList.h"
 #include "JSystem/JUtility/JUTException.h"
 #include "RevoSDK/OS/OSBootInfo.h"
-
-// TODO: This is stupid-hacky. Fix pls.
-typedef void Destructor(void*, s16);
-#define INVOKE_VIRT_DTOR(o, v) (((*(Destructor***)(o))[2])((o), (v)))
+#include "RevoSDK/ar.h"
 
 JKRHeap* JKRHeap::sSystemHeap;
 JKRHeap* JKRHeap::sCurrentHeap;
 JKRHeap* JKRHeap::sRootHeap;
+JKRHeap* JKRHeap::sRootHeap2;
 JKRHeapErrorHandler* JKRHeap::mErrorHandler;
 u8 JKRHeap::sDefaultFillCheckFlag;
 void* JKRHeap::mCodeStart;
@@ -23,6 +21,9 @@ u32 JKRHeap::mMemorySize;
 bool JKRHeap::TState::bVerbose_;
 
 u8 JKRHeap::sDefaultFillFlag = 1;
+u32 ARALT_AramStartAdr     = __AR_ARAM_BASE_MEMORY_TOP;
+//fabricated name
+u32 ARALT_AramEndAdr = ARALT_AramStartAdr + 0x1300000;
 
 /**
  * @note Address: 0x800232B4
@@ -77,38 +78,63 @@ JKRHeap::~JKRHeap()
 	}
 }
 
+bool JKRHeap::initArena2(char** memory, u32* size, int maxHeaps)
+{
+	void* arenaLo = OSGetMEM2ArenaLo();
+	void* arenaHi = OSGetMEM2ArenaHi();
+
+	OSReport("original arenaLo = %p arenaHi = %p\n", arenaLo, arenaHi);
+
+	if (arenaLo == arenaHi)
+		return false;
+
+	arenaLo = (void*)OSRoundUp32B(getAltAramEndAdr());
+	arenaHi = (void*)OSRoundDown32B(arenaHi);
+
+	OSSetMEM2ArenaLo(arenaHi);
+	OSSetMEM2ArenaHi(arenaHi);
+	__ARALT_AramStartAdr = getAltAramStartAdr();
+	OSReport("ARALT_AramStartAdr %x\n", __ARALT_AramStartAdr);
+
+	*memory = (char*)arenaLo;
+	*size   = (u32)arenaHi - (u32)arenaLo;
+
+	return true;
+}
+
 /**
  * @note Address: 0x800234EC
  * @note Size: 0xA8
  */
 bool JKRHeap::initArena(char** memory, u32* size, int maxHeaps)
 {
-	void* ram_start;
-	void* ram_end;
-	void* arenaStart;
-
 	void* arenaLo = OSGetArenaLo();
 	void* arenaHi = OSGetArenaHi();
+
+	OSReport("original arenaLo = %p arenaHi = %p\n", arenaLo, arenaHi);
+
 	if (arenaLo == arenaHi)
 		return false;
 
-	arenaStart = OSInitAlloc(arenaLo, arenaHi, maxHeaps);
-	ram_start  = (void*)OSRoundUp32B(arenaStart);
-	ram_end    = (void*)OSRoundDown32B(arenaHi);
+	arenaLo = (void*)OSRoundUp32B(arenaLo);
+	arenaHi = (void*)OSRoundDown32B(arenaHi);
 
 	OSBootInfo* codeStart = (OSBootInfo*)OSPhysicalToCached(0);
 	mCodeStart            = codeStart;
-	mCodeEnd              = ram_start;
+	mCodeEnd              = arenaLo;
 
-	mUserRamStart = ram_start;
-	mUserRamEnd   = ram_end;
+	mUserRamStart = arenaLo;
+	mUserRamEnd   = arenaHi;
 	mMemorySize   = codeStart->memorySize;
 
-	OSSetArenaLo(ram_end);
-	OSSetArenaHi(ram_end);
+	OSSetArenaLo(arenaHi);
+	OSSetArenaHi(arenaHi);
+	__ARALT_AramStartAdr = getAltAramStartAdr();
+	OSReport("ARALT_AramStartAdr %x\n", __ARALT_AramStartAdr);
 
-	*memory = (char*)ram_start;
-	*size   = (u32)ram_end - (u32)ram_start;
+	*memory = (char*)arenaLo;
+	*size   = (u32)arenaHi - (u32)arenaLo;
+
 	return true;
 }
 
@@ -293,7 +319,15 @@ u32 JKRHeap::getMaxAllocatableSize(int alignment)
  */
 JKRHeap* JKRHeap::findFromRoot(void* memory)
 {
-	return (sRootHeap) ? sRootHeap->find(memory) : nullptr;
+	if (sRootHeap == nullptr) {
+		return nullptr;
+	}
+
+	if (sRootHeap->mStartAddress <= memory && memory < sRootHeap->mEndAddress) {
+		return sRootHeap->find(memory);
+	}
+
+	return sRootHeap->findAllHeap(memory);
 }
 
 /**
@@ -315,6 +349,24 @@ JKRHeap* JKRHeap::find(void* memory) const
 		}
 		return const_cast<JKRHeap*>(this);
 	}
+	return nullptr;
+}
+
+JKRHeap* JKRHeap::findAllHeap(void* memory) const
+{
+	if (mTree.getNumChildren() != 0) {
+		for (JSUTreeIterator<JKRHeap> iterator(mTree.getFirstChild()); iterator != mTree.getEndChild(); ++iterator) {
+			JKRHeap* result = iterator->findAllHeap(memory);
+			if (result) {
+				return result;
+			}
+		}
+	}
+
+	if ((((void*)mStartAddress <= memory) && (memory < (void*)mEndAddress))) {
+		return const_cast<JKRHeap*>(this);
+	}
+
 	return nullptr;
 }
 
@@ -404,7 +456,7 @@ void JKRHeap::copyMemory(void* dst, void* src, u32 size)
  */
 static void JKRDefaultMemoryErrorRoutine(void* heap, u32 size, int alignment)
 {
-	OSErrorLine(791, "abort\n");
+	JUTException::panic(__FILE__, 968, "abort\n");
 }
 
 /**
@@ -603,4 +655,14 @@ void JKRHeap::state_dumpDifference(const TState&, const TState&)
  */
 void JKRHeap::state_dump(const TState&) const
 {
+}
+
+u32 JKRHeap::getAltAramStartAdr()
+{
+	return ARALT_AramStartAdr;
+}
+//fabricated name
+u32 JKRHeap::getAltAramEndAdr()
+{
+	return ARALT_AramEndAdr;
 }

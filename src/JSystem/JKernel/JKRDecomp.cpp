@@ -4,7 +4,7 @@
 #include "RevoSDK/os.h"
 #include "types.h"
 
-void* JKRDecomp::sMessageBuffer[4]      = { 0 };
+void* JKRDecomp::sMessageBuffer[8]      = { 0 };
 OSMessageQueue JKRDecomp::sMessageQueue = { 0 };
 JKRDecomp* JKRDecomp::sDecompObject;
 
@@ -48,7 +48,7 @@ void* JKRDecomp::run()
 {
 	void* inputBuffer[1];
 	JKRDecompCommand* command;
-	OSInitMessageQueue(&sMessageQueue, sMessageBuffer, 4);
+	OSInitMessageQueue(&sMessageQueue, sMessageBuffer, 8);
 	while (true) {
 		while (true) {
 			while (true) {
@@ -83,7 +83,7 @@ void* JKRDecomp::run()
  */
 BOOL JKRDecomp::sendCommand(JKRDecompCommand* command)
 {
-	return OSSendMessage(&sMessageQueue, command, OS_MESSAGE_BLOCK);
+	return OSSendMessage(&sMessageQueue, command, OS_MESSAGE_NOBLOCK);
 }
 
 /**
@@ -98,7 +98,7 @@ bool JKRDecomp::orderSync(u8* srcBuffer, u8* destBuffer, u32 srcLen, u32 destLen
 	command->mSourceLength    = srcLen;
 	command->mDestLength      = destLen;
 	command->mCallback        = nullptr;
-	OSSendMessage(&sMessageQueue, command, OS_MESSAGE_BLOCK);
+	OSSendMessage(&sMessageQueue, command, OS_MESSAGE_NOBLOCK);
 	void* inputBuffer[1];
 	OSReceiveMessage(&command->mMessageQueue, inputBuffer, OS_MESSAGE_BLOCK);
 	delete command;
@@ -280,6 +280,10 @@ JKRCompression JKRDecomp::checkCompressed(u8* p1)
 			return COMPRESSION_YAZ0;
 		}
 	}
+
+	if ((p1[0] == 'A') && (p1[1] == 'S') && (p1[2] == 'R')) {
+        return COMPRESSION_ASR;
+    }
 	return COMPRESSION_None;
 }
 

@@ -291,7 +291,7 @@ void* JKRCompArchive::fetchResource(void* data, u32 compressedSize, JKRArchive::
 			size = JKRDvdArchive::fetchResource_subroutine(mEntryNum, _6C + fileEntry->mDataOffset, alignedSize, (u8*)data,
 			                                               compressedSize & ~31, compression, mCompression);
 		} else {
-			JUT_PANICLINE(776, "%s", "illegal archive."); // why sub a string for a string lol.
+			JUTException::panic(__FILE__, 776, "illegal archive.");
 		}
 	}
 
@@ -373,7 +373,7 @@ u32 JKRCompArchive::getExpandedResSize(const void* resource) const
 		                nullptr, nullptr);
 		DCInvalidateRange(bufPtr, sizeof(buf) / 2);
 	} else {
-		JUT_PANICLINE(943, "%s", "illegal resource.");
+		JUTException::panic(__FILE__, 943, "illegal resource.");
 	}
 
 	u32 expandSize = JKRDecompExpandSize(bufPtr);

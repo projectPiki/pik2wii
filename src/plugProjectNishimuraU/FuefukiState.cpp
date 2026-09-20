@@ -3,6 +3,12 @@
 #include "Game/Entities/Fuefuki.h"
 #include "RevoSDK/rand.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "246-FuefukiState";
+}
+
 namespace Game {
 namespace Fuefuki {
 
@@ -14,15 +20,15 @@ void FSM::init(EnemyBase* enemy)
 {
 	create(FUEFUKI_StateCount);
 
-	registerState(new StateDead);
-	registerState(new StateStay);
-	registerState(new StateLand);
-	registerState(new StateJump);
-	registerState(new StateWait);
-	registerState(new StateTurn);
-	registerState(new StateWalk);
-	registerState(new StateWhisle);
-	registerState(new StateStruggle);
+	registerState(new StateDead("dead"));
+	registerState(new StateStay("stay"));
+	registerState(new StateLand("land"));
+	registerState(new StateJump("jamp"));
+	registerState(new StateWait("wait"));
+	registerState(new StateTurn("turn"));
+	registerState(new StateWalk("walk"));
+	registerState(new StateWhisle("whisle"));
+	registerState(new StateStruggle("struggle"));
 }
 
 /**

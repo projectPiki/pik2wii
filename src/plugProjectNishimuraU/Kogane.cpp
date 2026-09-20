@@ -7,6 +7,12 @@
 #include "RevoSDK/rand.h"
 #include "trig.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "246-Kogane";
+}
+
 namespace Game {
 
 /**
@@ -127,9 +133,9 @@ void Kogane::Obj::getShadowParam(ShadowParam& param)
 {
 	param.mPosition = getBodyJointPos();
 	param.mPosition.y -= 5.0f;
-	param.mBoundingSphere.mPosition = Vector3f(0.0f, 1.0f, 0.0f);
-	param.mBoundingSphere.mRadius   = param.mPosition.y - mPosition.y + 15.0f;
-	param.mSize                     = mScaleTimer * 15.0f;
+	param.mBoundingSphere.mPosition.set(0.0f, 1.0f, 0.0f);
+	param.mBoundingSphere.mRadius = param.mPosition.y - mPosition.y + 15.0f;
+	param.mSize                   = mScaleTimer * 15.0f;
 }
 
 /**
@@ -288,7 +294,7 @@ bool Kogane::Obj::koganeScaleUp()
 		}
 		f32 scale      = mScaleTimer;
 		mScaleModifier = scale;
-		mScale         = scale;
+		setScale(scale);
 		mCollTree->mPart->setScale(mScaleTimer);
 	}
 	return check;
@@ -302,7 +308,7 @@ bool Kogane::Obj::koganeScaleDown()
 {
 	bool check = false;
 	if (mScaleTimer > 0.0001f) {
-		mScaleTimer += -(sys->getDeltaTime() * 10.0f);
+		mScaleTimer -= sys->getDeltaTime() * 10.0f;
 
 		if (mScaleTimer <= 0.0001f) {
 			mScaleTimer = 0.0001f;
@@ -310,7 +316,7 @@ bool Kogane::Obj::koganeScaleDown()
 		}
 		f32 scale      = mScaleTimer;
 		mScaleModifier = scale;
-		mScale         = scale;
+		setScale(scale);
 		mCollTree->mPart->setScale(mScaleTimer);
 	}
 	return check;
@@ -420,7 +426,7 @@ bool Kogane::Obj::createTreasureItem()
 void Kogane::Obj::createPellet(int type, int num)
 {
 	int colors                = 0;
-	int hasColors[OnyonCount] = {};
+	int hasColors[OnyonCount] = { 1, 1, 1 };
 	for (int i = 0; i < OnyonCount; i++) {
 		if (playData->hasMetPikmin(i)) {
 			hasColors[colors] = i;
@@ -442,7 +448,7 @@ void Kogane::Obj::createPellet(int type, int num)
 			pelt->onSetPosition(pos);
 
 			angle += offs;
-			Vector3f vel = Vector3f(1000.0f * sinf(angle), 250.0f, 1000.0f * cosf(angle));
+			Vector3f vel = Vector3f(50.0f * sinf(angle), 250.0f, 50.0f * cosf(angle));
 			pelt->setVelocity(vel);
 		}
 	}

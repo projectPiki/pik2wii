@@ -1,6 +1,12 @@
 #include "Game/Entities/Tank.h"
 #include "Game/MapMgr.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "246-Tank";
+}
+
 namespace Game {
 namespace Tank {
 
@@ -100,7 +106,7 @@ void Obj::getShadowParam(ShadowParam& param)
 {
 	getCommonEffectPos(param.mPosition);
 	param.mPosition.y               = 2.5f + mPosition.y;
-	param.mBoundingSphere.mPosition = Vector3f(0.0f, 1.0f, 0.0f);
+	param.mBoundingSphere.mPosition.set(0.0f, 1.0f, 0.0f);
 	if (isEvent(1, EB2_Earthquake)) {
 		param.mBoundingSphere.mRadius = 50.0f;
 	} else {

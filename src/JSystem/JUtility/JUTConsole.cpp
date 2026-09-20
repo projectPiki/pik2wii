@@ -359,24 +359,17 @@ void JUTConsole::dumpToConsole(JUTConsole*, uint)
 void JUTConsole::scroll(int amount)
 {
 	if (amount < 0) {
-		int indexDiff = mCurrentLineIndex - mStartLineIndex;
-		indexDiff     = mCurrentLineIndex - mStartLineIndex >= 0 ? indexDiff : indexDiff + mMaxLines;
-
+		int indexDiff = diffIndex(mStartLineIndex, mCurrentLineIndex);
 		if (amount < -indexDiff) {
 			amount = -indexDiff;
 		}
 	} else if (amount > 0) {
-		int var2 = mCurrentLineIndex_ - mStartLineIndex;
-		var2     = mCurrentLineIndex_ - mStartLineIndex >= 0 ? var2 : var2 + mMaxLines;
-
-		if (var2 + 1 <= mHeight) {
+		if (diffIndex(mStartLineIndex, mCurrentLineIndex_) + 1 <= mHeight) {
 			amount = 0;
 		} else {
-			int var3 = mCurrentLineIndex_ - mCurrentLineIndex;
-			var3     = mCurrentLineIndex_ - mCurrentLineIndex >= 0 ? var3 : var3 + mMaxLines;
-
-			if (amount > (s32)(var3 - mHeight + 1)) {
-				amount = var3 - mHeight + 1;
+			int var3 = diffIndex(mCurrentLineIndex, mCurrentLineIndex_) - mHeight + 1;
+			if (amount > var3) {
+				amount = var3;
 			}
 		}
 	}

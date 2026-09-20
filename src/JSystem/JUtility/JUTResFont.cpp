@@ -1,4 +1,5 @@
 #include "JSystem/JKernel/JKRHeap.h"
+#include "JSystem/JSupport/JSU.h"
 #include "JSystem/JUtility/JUTConsole.h"
 #include "JSystem/JUtility/JUTFont.h"
 #include "RevoSDK/gx.h"
@@ -339,25 +340,23 @@ f32 JUTResFont::drawChar_scale(f32 posX, f32 posY, f32 width, f32 height, int ch
 	GXSetVtxAttrFmt(GX_VTXFMT0, GX_VA_POS, GX_POS_XYZ, GX_F32, 0);
 	GXBegin(GX_QUADS, GX_VTXFMT0, 4);
 
-	f32 z = 0.0f;
-
 	// Bottom left
-	GXPosition3f32(minPositionX, minPositionY, z);
+	GXPosition3f32(minPositionX, minPositionY, 0.0f);
 	GXColor1u32(mColor1);
 	GXTexCoord2s16(minTextureX, minTextureY);
 
 	// Bottom right
-	GXPosition3f32(maxPositionX, minPositionY, z);
+	GXPosition3f32(maxPositionX, minPositionY, 0.0f);
 	GXColor1u32(mColor2);
 	GXTexCoord2s16(maxTextureX, minTextureY);
 
 	// Top right
-	GXPosition3f32(maxPositionX, maxPositionY, z);
+	GXPosition3f32(maxPositionX, maxPositionY, 0.0f);
 	GXColor1u32(mColor4);
 	GXTexCoord2s16(maxTextureX, maxTextureY);
 
 	// Top left
-	GXPosition3f32(minPositionX, maxPositionY, z);
+	GXPosition3f32(minPositionX, maxPositionY, 0.0f);
 	GXColor1u32(mColor3);
 	GXTexCoord2s16(minTextureX, maxTextureY);
 
@@ -386,20 +385,13 @@ void JUTResFont::loadFont(int chr, GXTexMapID id, JUTFont::TWidth* width)
  */
 void JUTResFont::getWidthEntry(int chr, JUTFont::TWidth* width) const
 {
-	int fontcode                      = getFontCode(chr);
-	width->w0                         = 0;
-	ResFONT::WidthBlock** widthblocks = mWidthBlocks;
-	int cellwidth                     = mInfoBlock->mLeading;
-	width->w1                         = mInfoBlock->mWidth;
+	int fontcode = getFontCode(chr);
+	width->w0    = 0;
+	width->w1    = mInfoBlock->mWidth;
 
 	for (int i = 0; i < mWidthBlockCount; i++) {
-
-		ResFONT::WidthBlock* tmp2 = mWidthBlocks[i];
-		if (tmp2->mStartCode <= fontcode && fontcode <= tmp2->mEndCode) {
-
-			u8* ptr   = &widthblocks[i]->mChunkNum[(fontcode - widthblocks[i]->mStartCode) * 2];
-			width->w0 = ptr[0];
-			width->w1 = ptr[1];
+		if (mWidthBlocks[i]->mStartCode <= fontcode && fontcode <= mWidthBlocks[i]->mEndCode) {
+			*width = *(JUTFont::TWidth*)&mWidthBlocks[i]->mChunkNum[(fontcode - mWidthBlocks[i]->mStartCode) * 2];
 			break;
 		}
 	}
@@ -461,7 +453,7 @@ bool JUTResFont::isLeadByte(int chr) const
  */
 int JUTResFont::getFontCode(int character) const
 {
-	static const u16 halfToFull[95] = {
+	static const u16 halftofull[95] = {
 		0x8140, 0x8149, 0x8168, 0x8194, 0x8190, 0x8193, 0x8195, 0x8166, 0x8169, 0x816A, 0x8196, 0x817B, 0x8143, 0x817C, 0x8144, 0x815E,
 		0x824F, 0x8250, 0x8251, 0x8252, 0x8253, 0x8254, 0x8255, 0x8256, 0x8257, 0x8258, 0x8146, 0x8147, 0x8183, 0x8181, 0x8184, 0x8148,
 		0x8197, 0x8260, 0x8261, 0x8262, 0x8263, 0x8264, 0x8265, 0x8266, 0x8267, 0x8268, 0x8269, 0x826A, 0x826B, 0x826C, 0x826D, 0x826E,
@@ -472,7 +464,7 @@ int JUTResFont::getFontCode(int character) const
 
 	int fontCode = mInfoBlock->mDefaultCode;
 	if (getFontType() == 2 && mMaxCode >= 0x8000U && character >= 0x20 && character < 0x7FU) {
-		character = halfToFull[character - 32];
+		character = (halftofull - 0x20)[character];
 	}
 
 	int mapBlockIndex = 0;
@@ -490,10 +482,16 @@ int JUTResFont::getFontCode(int character) const
 				fontCode = *(&mMapBlocks[mapBlockIndex]->mLeading + ((character - mMapBlocks[mapBlockIndex]->mStartCode)));
 
 			} else if (currentMapBlock->mMappingMethod == ResFONT::MapBlock::MM_BinarySearch) {
+				// invented struct, unsure of real struct
+				struct paired_u16 {
+					u16 fullChar;
+					u16 fontCode;
+				};
+
 				// For binary search mapping, we need to find the font code in the leading array using binary search
-				u16* leadingTemp = &currentMapBlock->mLeading;
-				int lowerBound   = 0;
-				int upperBound   = currentMapBlock->mNumEntries - 1;
+				paired_u16* leadingTemp = (paired_u16*)&currentMapBlock->mLeading;
+				int lowerBound          = 0;
+				int upperBound          = currentMapBlock->mNumEntries - 1;
 
 				while (upperBound >= lowerBound) {
 					// Calculate the midpoint
@@ -501,16 +499,16 @@ int JUTResFont::getFontCode(int character) const
 					int midPoint = (int)((tempSum >> 0x1FU) + upperBound + lowerBound) >> 1;
 
 					// If the character is less than the value at the midpoint, search the left half
-					if (character < leadingTemp[midPoint * 2]) {
+					if (character < leadingTemp[midPoint].fullChar) {
 						upperBound = midPoint - 1;
 					}
 					// If the character is more than the value at the midpoint, search the right half
-					else if (character > leadingTemp[midPoint * 2]) {
+					else if (character > leadingTemp[midPoint].fullChar) {
 						lowerBound = midPoint + 1;
 					}
 					// If the character is equal to the value at the midpoint, we found the font code
 					else {
-						fontCode = leadingTemp[midPoint * 2 + 1];
+						fontCode = leadingTemp[midPoint].fontCode;
 						break;
 					}
 				}
@@ -573,30 +571,22 @@ void JUTResFont::loadImage(int characterCode, GXTexMapID textureMapID)
  * @note Address: 0x80032420
  * @note Size: 0x44
  */
-int JUTResFont::convertSjis(int inputCharacter, u16* inputLead) const
+int JUTResFont::convertSjis(int inChr, u16* inLead) const
 {
-	// Extract the lower byte of the input character
-	int outputCharacter = (u8)inputCharacter;
+	int r29;
+	int tmp  = JSUHiByte(inChr);
+	int tmp2 = JSULoByte(inChr) - 0x40;
 
-	// Extract the upper byte of the input character
-	inputCharacter = ((inputCharacter >> 8) & 0xFF);
-
-	// Adjust the output character by subtracting 0x40
-	outputCharacter -= 0x40;
-
-	// If the output character is greater than or equal to 0x40, decrement it
-	if (outputCharacter >= 0x40) {
-		outputCharacter--;
+	if (0x40 <= tmp2) {
+		tmp2--;
 	}
 
-	// Set the default lead value
 	u16 lead = 0x31c;
 
-	// If an input lead is provided, use it instead
-	if (inputLead) {
-		lead = *inputLead;
+	if (inLead) {
+		lead = *inLead;
 	}
 
-	// Calculate the final character code
-	return outputCharacter + (inputCharacter - 0x88) * 0xbc + -0x5e + lead;
+	r29 = tmp2 + (tmp - 0x88) * 0xbc + -0x5e + lead;
+	return r29;
 }

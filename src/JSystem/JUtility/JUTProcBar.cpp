@@ -1,6 +1,6 @@
+#include "JSystem/JUtility/JUTProcBar.h"
 #include "JSystem/J2D/J2DGrafContext.h"
 #include "JSystem/JKernel/JKRHeap.h"
-#include "JSystem/JUtility/JUTProcBar.h"
 #include "JSystem/JUtility/JUTVideo.h"
 #include "JSystem/JUtility/TColor.h"
 #include "types.h"
@@ -120,10 +120,11 @@ void JUTProcBar::adjustMeterLength(u32 totalUnits, f32* currentLength, f32 maxLe
 {
 	BOOL lengthAdjusted = false;
 	f32 adjustedLength  = *currentLength;
+	u32 frameDuration   = 16666;
 
 	// Reduce length if it exceeds maximum length
 	while (adjustedLength > maxLength) {
-		if (totalUnits * adjustedLength * 20.0f / 16666.0f <= mParams.mWidth - 30.0f) {
+		if (totalUnits * adjustedLength * 20.0f / frameDuration <= mParams.mWidth - 30.0f) {
 			break;
 		}
 
@@ -148,7 +149,7 @@ void JUTProcBar::adjustMeterLength(u32 totalUnits, f32* currentLength, f32 maxLe
 			break;
 		}
 
-		if ((totalUnits * adjustedLength * 20.0f / 16666.0f) < (mParams.mWidth - 60.0f)) {
+		if ((totalUnits * adjustedLength * 20.0f / frameDuration) < (mParams.mWidth - 60.0f)) {
 			adjustedLength += 0.2f;
 		}
 
@@ -390,7 +391,10 @@ int addrToXPos(void* baseAddress, int xPosMultiplier)
  * @note Address: N/A
  * @note Size: 0x68
  */
-int byteToXLen(int byteCount, int xLenMultiplier) { return xLenMultiplier * (byteCount / (f32)JKRHeap::getMemorySize()); }
+int byteToXLen(int byteCount, int xLenMultiplier)
+{
+	return xLenMultiplier * (byteCount / (f32)JKRHeap::getMemorySize());
+}
 /**
  * @note Address: N/A
  * @note Size: 0x264
@@ -418,47 +422,44 @@ void heapBar(JKRHeap* heap, int baseXPos, int baseYPos, int unusedParam, int xPo
  */
 void JUTProcBar::drawHeapBar()
 {
-	// barWidth * 2 / 2 is a workaround, if height / 2 is used and barWidth * 2 gets replaced with height then there will be regswaps
 	if (mHeapBarVisible) {
-		int barHeight      = mParams.mBarHeight;
-		int barPosX        = mParams.mPosX;
-		int barPosY        = mParams.mPosY;
-		int barWidth       = mParams.mWidth;
-		int barTotalHeight = barHeight * 2;
+		int barPosX   = mParams.mPosX;
+		int barPosY   = mParams.mPosY;
+		int barWidth  = mParams.mWidth;
+		int barHeight = mParams.mBarHeight * 2;
 
 		// Draw the background of the heap bar
-		J2DFillBox(barPosX, barPosY - barHeight * 4, barWidth, barTotalHeight, JUtility::TColor(100, 0, 50, 200));
+		J2DFillBox(barPosX, barPosY - barHeight * 2, barWidth, barHeight, JUtility::TColor(100, 0, 50, 200));
 
 		// Draw the frame of the heap bar
-		J2DDrawFrame(barPosX, barPosY - barHeight * 4, barWidth, barTotalHeight, JUtility::TColor(100, 50, 150, 255), 6);
+		J2DDrawFrame(barPosX, barPosY - barHeight * 2, barWidth, barHeight, JUtility::TColor(100, 50, 150, 255), 6);
 
 		// Calculate the start and end positions of the code section in the heap bar
 		int codeStartPos = barPosX + addrToXPos(JKRHeap::getCodeStart(), barWidth);
 		int codeEndPos   = barPosX + addrToXPos(JKRHeap::getCodeEnd(), barWidth);
 
 		// Draw the code section in the heap bar
-		J2DFillBox(codeStartPos, barPosY - barHeight * 4, codeEndPos - codeStartPos, barTotalHeight, JUtility::TColor(255, 50, 150, 255));
+		J2DFillBox(codeStartPos, barPosY - barHeight * 2, codeEndPos - codeStartPos, barHeight, JUtility::TColor(255, 50, 150, 255));
 
 		// Calculate the start and end positions of the data section in the heap bar
 		int userRamStartPos = barPosX + addrToXPos(JKRHeap::getUserRamStart(), barWidth);
 		int userRamEndPos   = barPosX + addrToXPos(JKRHeap::getUserRamEnd(), barWidth);
 
 		// Draw the user RAM usage section of the heap bar
-		J2DFillBox(userRamStartPos, barPosY - barHeight * 4, userRamEndPos - userRamStartPos, barTotalHeight,
-		           JUtility::TColor(0, 50, 150, 255));
+		J2DFillBox(userRamStartPos, barPosY - barHeight * 2, userRamEndPos - userRamStartPos, barHeight, JUtility::TColor(0, 50, 150, 255));
 
 		// Calculate the total free size of the heap
 		int totalFreeSize = byteToXLen(JKRHeap::getRootHeap()->getTotalFreeSize(), barWidth);
 
 		// Draw the free space in the heap bar
-		J2DFillBox(userRamStartPos, barPosY - barHeight * 4, totalFreeSize, barHeight * 2 / 2, JUtility::TColor(0, 250, 250, 255));
+		J2DFillBox(userRamStartPos, barPosY - barHeight * 2, totalFreeSize, barHeight / 2, JUtility::TColor(0, 250, 250, 255));
 
 		// Draw the heap bar if applies
 		if (mDisableHeapBar == 0) {
 			JKRHeap* heap = mWatchHeap ? mWatchHeap : JKRHeap::getCurrentHeap();
 
 			if (heap != JKRHeap::getSystemHeap()) {
-				heapBar(heap, barPosX, barPosY, barTotalHeight, barWidth, barHeight * 2);
+				heapBar(heap, barPosX, barPosY, barHeight, barWidth, barHeight);
 			}
 		}
 	}

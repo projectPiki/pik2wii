@@ -1,11 +1,17 @@
 #include "Game/Entities/WaterOtakara.h"
 #include "LoadResource.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "246-WaterOtakaraMgr";
+}
+
 namespace Game {
 namespace WaterOtakara {
 
 namespace {
-static const char* cOtakaraChangeTexName = "/enemy/data/WaterOtakara/otakara_blue_s3tc.bti";
+static const char* cOtakaraChangeTexName = "enemy/data/WaterOtakara/otakara_blue_s3tc.bti";
 } // namespace
 
 /**

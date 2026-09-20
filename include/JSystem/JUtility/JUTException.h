@@ -84,6 +84,10 @@ struct JUTException : public JKRThread {
 	static void errorHandler(u16, OSContext*, u32, u32);
 	static void setFPException(u32);
 
+	static void panic(const char* file, int line, const char* msg) {
+        panic_f(file, line, "%s", msg);
+    }
+
 	// unused/inlined:
 	static void panic_f_va(const char*, int, const char*, va_list*);
 	static JUTExceptionHandler setPostUserCallback(JUTExceptionHandler);

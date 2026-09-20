@@ -1,9 +1,13 @@
 #include "Game/Entities/GasHiba.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "246-GasHibaMgr";
+}
+
 namespace Game {
 namespace GasHiba {
-
-static const char gasHibaMgrName[] = "246-GasHibaMgr";
 
 /**
  * @note Address: 0x8026CC80

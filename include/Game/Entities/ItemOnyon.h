@@ -130,16 +130,7 @@ struct Onyon : public BaseItem {
 	void updateSpot();
 	void initTube();
 	void init_pmotions();
-
-	inline Vector3f getJointPosition(SysShape::Joint* joint)
-	{
-		Vec outVec;
-		Vector3f offs = Vector3f(0.0f, 0.0f, 7.0f);
-
-		PSMTXMultVec(joint->getWorldMatrix()->mMatrix.mtxView, (Vec*)&offs, &outVec);
-		offs = Vector3f(outVec);
-		return offs;
-	}
+	void start_pmotion(int, int);
 
 	// _00 		= VTBL
 	// _00-_1D8	= BaseItem

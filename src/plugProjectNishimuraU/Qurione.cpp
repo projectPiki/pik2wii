@@ -5,6 +5,12 @@
 #include "Game/generalEnemyMgr.h"
 #include "RevoSDK/rand.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "246-Qurione";
+}
+
 namespace Game {
 namespace Qurione {
 
@@ -121,12 +127,12 @@ void Obj::doDebugDraw(Graphics& gfx)
  */
 void Obj::getShadowParam(ShadowParam& shadowParam)
 {
-	shadowParam.mPosition.x               = mPosition.x;
-	shadowParam.mPosition.y               = mPosition.y - 25.0f;
-	shadowParam.mPosition.z               = mPosition.z;
-	shadowParam.mBoundingSphere.mPosition = Vector3f(0.0f, 1.0f, 0.0f);
-	shadowParam.mSize                     = 7.5f * mQurioneScale;
-	shadowParam.mBoundingSphere.mRadius   = C_PROPERPARMS.mFlightHeight.mValue + C_PROPERPARMS.mPitchAmp.mValue;
+	shadowParam.mPosition.x = mPosition.x;
+	shadowParam.mPosition.y = mPosition.y - 25.0f;
+	shadowParam.mPosition.z = mPosition.z;
+	shadowParam.mBoundingSphere.mPosition.set(0.0f, 1.0f, 0.0f);
+	shadowParam.mSize                   = 7.5f * mQurioneScale;
+	shadowParam.mBoundingSphere.mRadius = C_PROPERPARMS.mFlightHeight.mValue + C_PROPERPARMS.mPitchAmp.mValue;
 }
 
 /**
@@ -215,8 +221,9 @@ void Obj::moveFaceDir()
 
 	addPitchRatio();
 
-	mCurrentVelocity.y
-	    = 2.5f * ((minY + (C_PROPERPARMS.mPitchAmp() * sinf(mPitchRatio) + C_PROPERPARMS.mFlightHeight.mValue)) - mPosition.y);
+	Parms::ProperParms* parms = &C_PROPERPARMS;
+
+	mCurrentVelocity.y = 2.5f * ((minY + (parms->mPitchAmp() * sinf(mPitchRatio) + parms->mFlightHeight.mValue)) - mPosition.y);
 }
 
 /**

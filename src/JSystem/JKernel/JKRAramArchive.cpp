@@ -259,7 +259,7 @@ u32 JKRAramArchive::fetchResource_subroutine(u32 srcAram, u32 size, u8* buf, u32
 		JKRAram::aramToMainRam(srcAram, buf, alignedSize, Switch_1, alignedExpSize, nullptr, -1, &outSize);
 		return outSize;
 	}
-	OSErrorLine(655, ":::??? bad sequence\n");
+	JUTException::panic(__FILE__, 655, "??? bad sequence\n");
 	return 0;
 }
 
@@ -291,7 +291,7 @@ u32 JKRAramArchive::fetchResource_subroutine(u32 srcAram, u32 size, JKRHeap* hea
 		*pBuf = buffer;
 		return resSize;
 	default:
-		OSErrorLine(713, ":::??? bad sequence\n");
+		JUTException::panic(__FILE__, 713, "??? bad sequence\n");
 		return 0;
 	}
 }

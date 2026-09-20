@@ -1,5 +1,11 @@
 #include "Game/Entities/Demon.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "246-DemonMgr";
+}
+
 namespace Game {
 namespace Demon {
 

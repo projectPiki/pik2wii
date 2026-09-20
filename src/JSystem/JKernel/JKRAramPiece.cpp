@@ -8,6 +8,19 @@
 JSUList<JKRAMCommand> JKRAramPiece::sAramPieceCommandList;
 OSMutex JKRAramPiece::mMutex;
 
+JKRAMCommand* JKRAramPiece::prepareCommand(int direction, u32 source, u32 destination, u32 length, JKRAramBlock* block,
+                                           JKRAMCommand::Callback callback)
+{
+	JKRAMCommand* cmd = new (JKRHeap::getSystemHeap(), -4) JKRAMCommand();
+	cmd->mDirection   = direction;
+	cmd->mSource      = source;
+	cmd->mDestination = destination;
+	cmd->mAramBlock   = block;
+	cmd->mLength      = length;
+	cmd->mCallback    = callback;
+	return cmd;
+}
+
 /**
  * @note Address: 0x80019AD8
  * @note Size: 0x20
@@ -22,49 +35,67 @@ struct OrderSyncMsg {
 	JKRAMCommand* _04;
 };
 
+JKRAMCommand* JKRAramPiece::orderAsync(int direction, u32 source, u32 destination, u32 length, JKRAramBlock* block,
+                                       JKRAMCommand::Callback callback)
+{
+	lock();
+	if (!IS_ALIGNED(source, 32) || !IS_ALIGNED(destination, 32)) {
+		OSReport("direction = %x\n", direction);
+		OSReport("source = %x\n", source);
+		OSReport("destination = %x\n", destination);
+		OSReport("length = %x\n", length);
+		JUTException::panic(__FILE__, 108, "illegal address. abort.");
+	}
+
+	JKRAramCommand* msg = new (JKRGetSystemHeap(), -4) JKRAramCommand();
+	JKRAMCommand* cmd   = JKRAramPiece::prepareCommand(direction, source, destination, length, block, callback);
+	msg->setting(1, cmd);
+
+	OSSendMessage(&JKRAram::sMessageQueue, msg, OS_MESSAGE_BLOCK);
+	if (cmd->mCallback) {
+		sAramPieceCommandList.append(&cmd->_20);
+	}
+
+	unlock();
+	return cmd;
+}
+
+bool JKRAramPiece::sync(JKRAMCommand* cmd, int is_non_blocking)
+{
+	OSMessage message;
+
+	lock();
+	if (is_non_blocking == 0) {
+		OSReceiveMessage(&cmd->mMessageQueue, &message, OS_MESSAGE_BLOCK);
+		sAramPieceCommandList.remove(&cmd->_20);
+		unlock();
+		return true;
+	}
+
+	if (!OSReceiveMessage(&cmd->mMessageQueue, &message, OS_MESSAGE_NOBLOCK)) {
+		unlock();
+		return false;
+	}
+
+	sAramPieceCommandList.remove(&cmd->_20);
+	unlock();
+	return true;
+}
+
 /**
  * @note Address: 0x80019AF8
  * @note Size: 0x1AC
  */
 bool JKRAramPiece::orderSync(int direction, u32 source, u32 destination, u32 length, JKRAramBlock* block)
 {
-	OSLockMutex(&mMutex);
-	OSLockMutex(&mMutex);
+	lock();
 
-	if (!IS_ALIGNED(source, 32) || !IS_ALIGNED(destination, 32)) {
-		OSReport("direction = %x\n", direction);
-		OSReport("source = %x\n", source);
-		OSReport("destination = %x\n", destination);
-		OSReport("length = %x\n", length);
-		OSErrorLine(107, "Abort.");
-	}
-	OrderSyncMsg* msg = new (JKRHeap::getSystemHeap(), -4) OrderSyncMsg();
-	JKRAMCommand* cmd = new (JKRHeap::getSystemHeap(), -4) JKRAMCommand();
-	cmd->mDirection   = direction;
-	cmd->mSource      = source;
-	cmd->mDestination = destination;
-	cmd->mAramBlock   = block;
-	cmd->mLength      = length;
-	cmd->mCallback    = nullptr;
-	msg->_00          = 1;
-	msg->_04          = cmd;
+	JKRAMCommand* command = JKRAramPiece::orderAsync(direction, source, destination, length, block, nullptr);
+	bool result           = JKRAramPiece::sync(command, 0);
+	delete command;
 
-	OSSendMessage((OSMessageQueue*)&JKRAram::sMessageQueue, msg, OS_MESSAGE_BLOCK);
-	if (cmd->mCallback) {
-		sAramPieceCommandList.append(&cmd->_20);
-	}
-
-	OSUnlockMutex(&mMutex);
-	OSLockMutex(&mMutex);
-
-	OSMessage recvMsg[2];
-	OSReceiveMessage(&cmd->mMessageQueue, recvMsg, OS_MESSAGE_BLOCK);
-	sAramPieceCommandList.remove(&cmd->_20);
-
-	OSUnlockMutex(&mMutex);
-	delete cmd;
-	OSUnlockMutex(&mMutex);
-	return true;
+	unlock();
+	return result;
 }
 
 /**
@@ -78,7 +109,8 @@ void JKRAramPiece::startDMA(JKRAMCommand* cmd)
 	} else {
 		DCStoreRange((u8*)cmd->mSource, cmd->mLength);
 	}
-	ARQPostRequest(cmd, 0, cmd->mDirection, 0, cmd->mSource, cmd->mDestination, cmd->mLength, doneDMA);
+	ARStartDMA(cmd->mDirection, cmd->mSource, cmd->mDestination, cmd->mLength);
+	doneDMA(cmd->mDirection);
 }
 
 /**
@@ -88,23 +120,17 @@ void JKRAramPiece::startDMA(JKRAMCommand* cmd)
 void JKRAramPiece::doneDMA(u32 cmdAddr)
 {
 	JKRAMCommand* cmd = (JKRAMCommand*)cmdAddr;
-	if (cmd->mDirection == 1) {
-		DCInvalidateRange((u8*)cmd->mDestination, cmd->mLength);
-	}
-	if (cmd->_60) {
+
+	if (cmd->_60 != 0) {
 		if (cmd->_60 == 2) {
 			JKRDecomp::sendCommand(cmd->mDecompCommand);
 		}
-		return;
-	}
-	if (cmd->mCallback) {
-		cmd->mCallback(cmd);
+	} else if (cmd->mCallback) {
+		(*cmd->mCallback)(cmdAddr);
+	} else if (cmd->_5C) {
+		OSSendMessage(cmd->_5C, cmd, OS_MESSAGE_NOBLOCK);
 	} else {
-		if (cmd->_5C) {
-			OSSendMessage(cmd->_5C, cmd, OS_MESSAGE_NOBLOCK);
-		} else {
-			OSSendMessage(&cmd->mMessageQueue, cmd, OS_MESSAGE_NOBLOCK);
-		}
+		OSSendMessage(&cmd->mMessageQueue, cmd, OS_MESSAGE_NOBLOCK);
 	}
 }
 

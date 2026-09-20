@@ -66,16 +66,13 @@ u16 JMessage::TResource::toMessageIndex_messageID(u32 lowerHalf, u32 upperHalf, 
 
 	const u32* lower;
 	if (mMessageID.get_isOrdered()) {
-		lower = std::lower_bound<const u32*, u32>(first, last, val);
+		lower = std::lower_bound(first, last, val);
 
 		if (lower == last || *lower != val) {
 			return 0xFFFF;
 		}
 	} else {
-		lower = first;
-		while (lower != last && *lower != val) {
-			lower++;
-		}
+		lower = std::find(first, last, val);
 		if (lower == last) {
 			return 0xFFFF;
 		}

@@ -122,6 +122,7 @@ struct JKRHeap : public JKRDisposer {
 	u8 getCurrentGroupId();
 	u32 getMaxAllocatableSize(int);
 	JKRHeap* find(void*) const;
+	JKRHeap* findAllHeap(void*) const;
 	void dispose_subroutine(u32 begin, u32 end);
 	u32 dispose(void*, u32);
 	void dispose(void*, void*);
@@ -150,6 +151,8 @@ struct JKRHeap : public JKRDisposer {
 		return parent->getObject();
 	}
 
+	static u32 getAltAramEndAdr();
+
 	// TState related
 	static void setState_u32ID_(TState* state, u32 id) { state->mArgument.mId = id; }
 	static void setState_uUsedSize_(TState* state, u32 usedSize) { state->mUsedSize = usedSize; }
@@ -165,12 +168,14 @@ struct JKRHeap : public JKRDisposer {
 
 	// Static
 	static bool initArena(char**, u32*, int);
+	static bool initArena2(char**, u32*, int);
 	static void* alloc(u32, int, JKRHeap*);
 	static void copyMemory(void*, void*, u32);
 	static void free(void*, JKRHeap*);
 	static void state_dumpDifference(const TState&, const TState&);
 	static JKRHeap* findFromRoot(void*);
 	static JKRHeapErrorHandler* setErrorHandler(JKRHeapErrorHandler*);
+	static u32 getAltAramStartAdr();
 
 	static void* getCodeStart() { return mCodeStart; }
 	static void* getCodeEnd() { return mCodeEnd; }
@@ -179,6 +184,7 @@ struct JKRHeap : public JKRDisposer {
 	static u32 getMemorySize() { return mMemorySize; }
 	static JKRHeap* getCurrentHeap() { return sCurrentHeap; }
 	static JKRHeap* getRootHeap() { return sRootHeap; }
+	static JKRHeap* getRootHeap2() { return sRootHeap2; }
 	static JKRHeap* getSystemHeap() { return sSystemHeap; }
 
 	static void setSystemHeap(JKRHeap* heap) { sSystemHeap = heap; }
@@ -190,6 +196,7 @@ struct JKRHeap : public JKRDisposer {
 	static JKRHeap* sSystemHeap;
 	static JKRHeap* sCurrentHeap;
 	static JKRHeap* sRootHeap;
+	static JKRHeap* sRootHeap2;
 	static JKRHeapErrorHandler* mErrorHandler;
 	static void* mCodeStart;
 	static void* mCodeEnd;
@@ -277,6 +284,9 @@ struct JKRExpHeap : public JKRHeap {
 	void recycleFreeBlock(CMemBlock*);
 	void removeFreeBlock(CMemBlock*);
 	void setFreeBlock(CMemBlock*, CMemBlock*, CMemBlock*);
+	
+	//fabricated
+	static JKRExpHeap* createRoot2(int, bool);
 
 	// unused/inlined:
 	void removeUsedBlock(CMemBlock*);

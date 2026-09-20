@@ -1,9 +1,13 @@
 #include "Game/Entities/Tobi.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "246-TobiMgr";
+}
+
 namespace Game {
 namespace Tobi {
-
-static const char tobiMgrName[] = "246-TobiMgr";
 
 /**
  * @note Address: 0x80269448
