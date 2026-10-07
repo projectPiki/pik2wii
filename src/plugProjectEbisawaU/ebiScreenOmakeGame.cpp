@@ -2,7 +2,11 @@
 #include "ebi/E2DGraph.h"
 #include "ebi/Omake.h"
 
-static const char name[] = "ebiScreenOmakeGame";
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "ebiScreenOmakeGame";
+}
 
 namespace ebi {
 namespace Screen {

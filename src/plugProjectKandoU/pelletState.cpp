@@ -127,14 +127,19 @@ void PelletGoalState::init(Pellet* pellet, StateArg* arg)
 			playData->mOlimarData->getItem(id);
 		}
 	}
+
+	// mark the pellet as dead, this is what makes the pikmin let go of the pellet
 	pellet->setAlive(false);
+
 	bool flag                = false;
 	PelletGoalStateArg* sarg = static_cast<PelletGoalStateArg*>(arg);
 	mOnyon                   = sarg->mCreature;
+	// in story or challenge mode, check if this pellet should trigger any cutscenes
 	if (gameSystem->isStoryMode() || gameSystem->isChallengeMode()) {
 		flag = checkMovie(pellet);
 
 	} else if (gameSystem->isVersusMode()) {
+		// extra checks for versus mode marble collection, since checkMovie doesn't handle this
 		int type = pellet->mPelletFlag;
 		if ((u32)type == Pellet::FLAG_VS_BEDAMA_RED) {
 			pellet->movie_begin(false);
@@ -151,6 +156,7 @@ void PelletGoalState::init(Pellet* pellet, StateArg* arg)
 			gameSystem->mSection->sendMessage(mesg2);
 
 		} else if ((u32)type == Pellet::FLAG_VS_BEDAMA_YELLOW) {
+			// yellow marbles specifically make sure you're carrying to an onion, for some reason
 			if ((int)mOnyon->mObjectTypeID == OBJTYPE_Onyon) {
 				pellet->movie_begin(false);
 				mOnyon->movie_begin(false);
@@ -164,6 +170,7 @@ void PelletGoalState::init(Pellet* pellet, StateArg* arg)
 		}
 	}
 
+	// if a cutscene was triggered, mark the ship/onion and pellet itself for the cutscene
 	if (flag) {
 		mOnyon->movie_begin(false);
 		pellet->movie_begin(false);
@@ -174,21 +181,26 @@ void PelletGoalState::init(Pellet* pellet, StateArg* arg)
 	_14          = 0.0f;
 	mSuckDelay   = 1.5f;
 
+	// cancel vertical velocity
 	Vector3f vel = pellet->getVelocity();
 	vel.y        = 0.0f;
 	pellet->setVelocity(vel);
+
+	// reset pellet scale (mostly only matters for some enemies)
 	mScale = 1.0f;
 
 	if (pellet->mPelletView) {
 		mScale = pellet->mPelletView->viewGetBaseScale();
 	}
 
+	// the onion/ship should make extra collection effects
 	if (((int)mOnyon->mObjectTypeID == OBJTYPE_Onyon || (int)mOnyon->mObjectTypeID <= OBJTYPE_Ufo) && !flag) {
 		static_cast<Onyon*>(mOnyon)->efxSuikomi();
 	}
 	mInDemo     = flag;
 	mDidSuikomi = false;
 	if (!mInDemo) {
+		// if the pellet isnt a cutscene item, clear the active cutscene status of anything carrying the pellet
 		Iterator<Piki> it(pikiMgr);
 		CI_LOOP(it)
 		{
@@ -196,6 +208,7 @@ void PelletGoalState::init(Pellet* pellet, StateArg* arg)
 			piki->movie_end(false);
 		}
 
+		// this probably only exists for breadbugs, but it cancels the cutscene status of every enemy
 		GeneralMgrIterator<EnemyBase> it2(generalEnemyMgr);
 		CI_LOOP(it2)
 		{
@@ -204,7 +217,10 @@ void PelletGoalState::init(Pellet* pellet, StateArg* arg)
 		}
 	}
 
+	// stop this pellet from creating the music treasure mix
 	pellet->sound_otakaraEventFinish();
+	
+	// make the onion register recieving a pellet
 	if (!mOnyon->isSuckArriveWait()) {
 		InteractSuckArrive act(pellet);
 		mOnyon->stimulate(act);
@@ -227,6 +243,7 @@ bool PelletGoalState::checkMovie(Pellet* pelt)
 	if (gameSystem->isStoryMode()) {
 		isGot = playData->firstCarryPellet(pelt);
 	}
+	// For berries and number pellets, always count as a new collect (checking if the cutscene was already seen is done later)
 	if (((pelt->getKind() == PelletType::Berry) ? true : false)) {
 		isGot = true;
 	}
@@ -234,17 +251,18 @@ bool PelletGoalState::checkMovie(Pellet* pelt)
 		isGot = true;
 	}
 
+	// unlock challenge mode if the treasure is The Key
 	if (!strcmp(pelt->mConfig->mParams.mName.mData, "key")) {
 		if (!gameSystem->isChallengeMode()) {
 			sys->getPlayCommonData()->enableChallengeGame();
 			sys->mPlayData->mDoSaveOptions = true;
 		}
-	} else {
-		if (gameSystem->isChallengeMode()) {
-			return false;
-		}
+	} else if (gameSystem->isChallengeMode()) {
+		// When you're in challenge mode, make sure any other treasure nothing here
+		return false;
 	}
 
+	// if the treasure is the King of Bugs then register Louie as rescued for the Piklopedia
 	if (!strcmp(pelt->mConfig->mParams.mName.mData, "loozy")) {
 		sys->getPlayCommonData()->enableLouieRescue();
 		sys->mPlayData->mDoSaveOptions = true;
@@ -255,6 +273,7 @@ bool PelletGoalState::checkMovie(Pellet* pelt)
 	bool doPlay = false;
 	if (isGot) {
 		Onyon* onyon = nullptr;
+		// make carry target only register if its the ship or an onion
 		if ((mOnyon->mObjectTypeID == OBJTYPE_Ufo || mOnyon->mObjectTypeID == OBJTYPE_Onyon)) {
 			onyon = static_cast<Onyon*>(mOnyon);
 		}
@@ -269,6 +288,7 @@ bool PelletGoalState::checkMovie(Pellet* pelt)
 					if ((int)pelt->mPelletColor == SPRAY_TYPE_SPICY) {
 						int dope0 = playData->getDopeFruitCount(type);
 						playData->addDopeFruit(type);
+						// play the first berry cutscene if it hasnt been seen
 						if (!playData->isDemoFlag(DEMO_First_Spicy_Berry)) {
 							playData->setDemoFlag(DEMO_First_Spicy_Berry);
 							gameSystem->mSection->setDraw2DCreature(pelt);
@@ -279,8 +299,10 @@ bool PelletGoalState::checkMovie(Pellet* pelt)
 							doPlay = true;
 
 						} else if (!playData->isDemoFlag(DEMO_First_Spicy_Spray_Made)) {
+							// if enough berries are collected to make a spray, play the spray cutscene
 							if (dope0 + 1 >= _aiConstants->mDopeCount.mData) {
 								playData->setDemoFlag(DEMO_First_Spicy_Spray_Made);
+								// spawn in a nectar drop specifically for the cutscene to show to the player
 								BaseItem* item = ItemHoney::mgr->birth();
 								ItemHoney::InitArg arg(HONEY_R, true);
 								item->init(&arg);
@@ -302,6 +324,7 @@ bool PelletGoalState::checkMovie(Pellet* pelt)
 					} else {
 						int dope0 = playData->getDopeFruitCount(type);
 						playData->addDopeFruit(type);
+						// play the first berry cutscene if it hasnt been seen
 						if (!playData->isDemoFlag(DEMO_First_Bitter_Berry)) {
 							playData->setDemoFlag(DEMO_First_Bitter_Berry);
 							gameSystem->mSection->setDraw2DCreature(pelt);
@@ -311,8 +334,10 @@ bool PelletGoalState::checkMovie(Pellet* pelt)
 							moviePlayer->play(arg);
 							doPlay = true;
 						} else if (!playData->isDemoFlag(DEMO_First_Bitter_Spray_Made)) {
+							// if enough berries are collected to make a spray, play the spray cutscene
 							if (dope0 + 1 >= _aiConstants->mDopeCount.mData) {
 								playData->setDemoFlag(DEMO_First_Bitter_Spray_Made);
+								// spawn in a nectar drop specifically for the cutscene to show to the player
 								BaseItem* item = ItemHoney::mgr->birth();
 								ItemHoney::InitArg arg(HONEY_B, true);
 								item->init(&arg);
@@ -332,7 +357,8 @@ bool PelletGoalState::checkMovie(Pellet* pelt)
 					}
 
 				} else if (((pelt->getKind() == PelletType::Treasure) ? true : false)) {
-					// Treasure carried to the ship (assume above ground)
+					// Treasure carried to the ship
+					// since this only runs for the ship and not the pod, the game assumes you're above ground
 					gameSystem->mSection->setDraw2DCreature(pelt);
 					BaseGameSection* section = gameSystem->mSection;
 					MoviePlayArg moviearg("s10_suck_treasure", const_cast<char*>(section->getCurrentCourseInfo()->mName),
@@ -343,13 +369,13 @@ bool PelletGoalState::checkMovie(Pellet* pelt)
 
 				} else if (((pelt->getKind() == PelletType::Upgrade) ? true : false)) {
 					// Upgrade carried to the ship (this only appears with the globe in AW normally)
-					// strangely, upgrades with an ID of 8 or more use a different theme
 					gameSystem->mSection->setDraw2DCreature(pelt);
 					BaseGameSection* section = gameSystem->mSection;
 					MoviePlayArg moviearg("s17_suck_equipment", const_cast<char*>(section->getCurrentCourseInfo()->mName),
 					                      section->mMovieFinishCallback, 0);
 					moviearg.mPelletName = pelt->mConfig->mParams.mName.mData;
 					moviearg.mStreamID   = P2_STREAM_SOUND_ID(PSSTR_EQUIP_GET);
+					// The Prototype Detector, five-man napsack and both globes use a different theme, for some reason
 					if (pelt->mConfig->mParams.mIndex >= 8) {
 						moviearg.mStreamID = P2_STREAM_SOUND_ID(PSSTR_POWERUP_GET);
 					}
@@ -368,6 +394,7 @@ bool PelletGoalState::checkMovie(Pellet* pelt)
 		} else if (onyon && onyon->mOnyonType == ONYON_TYPE_POD) {
 			if (((pelt->getKind() == PelletType::Treasure) ? true : false)) {
 				// Treasure carried to the cave pod
+				// The game assumes you're in a cave for this
 				gameSystem->mSection->setDraw2DCreature(pelt);
 				MoviePlayArg moviearg("s22_cv_suck_treasure", nullptr, gameSystem->mSection->mMovieFinishCallback, 0);
 				moviearg.mOrigin        = mOnyon->getPosition();
@@ -380,6 +407,7 @@ bool PelletGoalState::checkMovie(Pellet* pelt)
 
 			} else if (((pelt->getKind() == PelletType::Upgrade) ? true : false)) {
 				// Upgrade carried to the cave pod
+				// Again the game assumes you're in a cave for this
 				gameSystem->mSection->setDraw2DCreature(pelt);
 				BaseGameSection* section = gameSystem->mSection;
 				MoviePlayArg moviearg("s22_cv_suck_equipment", nullptr, section->mMovieFinishCallback, 0);
@@ -388,6 +416,7 @@ bool PelletGoalState::checkMovie(Pellet* pelt)
 				moviearg.mOrigin        = mOnyon->getPosition();
 				moviearg.mAngle         = mOnyon->getFaceDir();
 				moviearg.mStreamID      = P2_STREAM_SOUND_ID(PSSTR_EQUIP_GET);
+				// The Prototype Detector, five-man napsack and both globes use a different theme, for some reason
 				if (pelt->mConfig->mParams.mIndex >= 8) {
 					moviearg.mStreamID = P2_STREAM_SOUND_ID(PSSTR_POWERUP_GET);
 				}
@@ -396,7 +425,9 @@ bool PelletGoalState::checkMovie(Pellet* pelt)
 
 			} else if ((((pelt->getKind() == PelletType::Carcass) ? true : false)) && pelt->mPelletFlag != Pellet::FLAG_NAVI_NAPSACK
 			           && !playData->isDemoFlag(DEMO_First_Corpse_In_Cave)) {
-				// first corpse collected in cave
+				// first enemy corpse collected in a cave
+				// Due to a bug, this can only play if the enemy in question wasn't already collected above ground
+				// napsack captain is considered an enemy corpse so that is checked for
 				playData->setDemoFlag(DEMO_First_Corpse_In_Cave);
 				BaseGameSection* section = gameSystem->mSection;
 				MoviePlayArg moviearg("x08_cv_suck_carcass", nullptr, section->mMovieFinishCallback, 0);
@@ -408,6 +439,7 @@ bool PelletGoalState::checkMovie(Pellet* pelt)
 				doPlay = true;
 			}
 		} else if (onyon && onyon->mOnyonType <= ONYON_TYPE_YELLOW) {
+			// first number pellet carried to an onion
 			if ((((pelt->getKind() == PelletType::Number) ? true : false)) && !playData->isDemoFlag(DEMO_First_Number_Pellet)) {
 				playData->setDemoFlag(DEMO_First_Number_Pellet);
 				BaseGameSection* section = gameSystem->mSection;
@@ -424,6 +456,7 @@ bool PelletGoalState::checkMovie(Pellet* pelt)
 
 	if (doPlay) {
 		Pellet* pelt2 = nullptr;
+		// mark the pellet to be active in the current cutscene
 		if (((pelt->getKind() == PelletType::Carcass) ? true : false)) {
 			pelt->mPelletView->mCreature->movie_begin(false);
 		} else if (((pelt->getKind() == PelletType::Number) ? true : false)) {
@@ -534,6 +567,7 @@ void PelletGoalState::exec(Pellet* pelt)
 	InteractSuckDone suckDone(pelt, 0);
 	mOnyon->stimulate(suckDone);
 
+	// stripped debug stuff
 	if (Radar::mgr) {
 		Radar::Mgr::getNumOtakaraItems();
 		Radar::Mgr::getNumOtakaraItems();
@@ -543,6 +577,7 @@ void PelletGoalState::exec(Pellet* pelt)
 		}
 	}
 
+	// check if all treasures in the area have been collected, to make the music/ background sfx change
 	if (!gameSystem->isVersusMode() && (pelt->getKind() == PelletType::Treasure || pelt->getKind() == PelletType::Upgrade)
 	    && Radar::Mgr::getNumOtakaraItems() <= 1) {
 		if (gameSystem->mIsInCave) {
@@ -551,6 +586,7 @@ void PelletGoalState::exec(Pellet* pelt)
 			PSM::Scene_Cave* scene = static_cast<PSM::Scene_Cave*>(mgr->getChildScene());
 			PSSystem::checkGameScene(scene);
 			scene->stopPollutionSe();
+			// when the key is collected in challenge mode, change the music and background sfx
 			if (gameSystem->isChallengeMode()) {
 				if (strcmp(pelt->mConfig->mParams.mName.mData, "key")) {
 					PSSystem::SceneMgr* mgr = PSSystem::getSceneMgr();
@@ -574,15 +610,21 @@ void PelletGoalState::exec(Pellet* pelt)
 	if (gameSystem->isVersusMode() && suckDone._08) {
 		return;
 	}
+
 	if (!mInDemo) {
+		// if the pelelt isn't a cutscene item, always kill it on collect
+
+		// play an extra sound when a napsack captain hits the onion
 		if (!strcmp("orima", pelt->mConfig->mParams.mName.mData)) {
 			pelt->mSoundMgr->startSound(PSSE_EV_ONYON_BOUND_PLAYER, 0);
 		}
 		pelt->kill(nullptr);
 	} else {
+		// if the pellet is a cutscene item, only kill it if it is an enemy carcass or number pellet, otherwise it gets killed later
 		if (pelt->getKind() == PelletType::Carcass || pelt->getKind() == PelletType::Number) {
 			pelt->kill(nullptr);
 		} else if (pelt->getKind() == PelletType::Upgrade || pelt->getKind() == PelletType::Treasure) {
+			// reset carry animation for treasures
 			pelt->mAnimSpeed = sys->getDeltaTime() * 30.0f;
 			pelt->mCarryAnim.setFrameByKeyType(0);
 		}
@@ -1452,6 +1494,8 @@ void PelletAppearState::exec(Pellet* pelt)
 		if (mTime < _1C + _20) {
 			scale = SQUARE((mTime - _1C) / _20);
 		} else {
+			// effects and sounds for spiderwort berries
+			// the game assumes only the berries will use this state
 			if (!mEfxMade) {
 				Vector3f translation;
 				pelt->mBaseTrMatrix.getColumn(3, translation);
@@ -1522,6 +1566,7 @@ void PelletScaleAppearState::exec(Pellet* pelt)
 		if (mTime < _1C + _20) {
 			scale = ((mTime - _1C) / _20);
 		} else {
+			// carry-over from PelletAppearState, does nothing here
 			if (!mEfxMade) {
 				mEfxMade = true;
 			}
@@ -1643,8 +1688,10 @@ void PelletUpState::cleanup(Pellet*)
 PelletReturnState::PelletReturnState()
     : PelletState(PELSTATE_Return)
 {
+	// Marble return in 2-Player battle
 	mEfx    = nullptr;
 	mEfxAct = nullptr;
+	// re-uses the captain beacon effects as a generic red/blue colored light, very clever
 	if (gameSystem->isVersusMode()) {
 		mEfx    = new ::efx::TOrimaLight;
 		mEfxAct = new ::efx::TOrimaLightAct;

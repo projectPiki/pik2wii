@@ -31,11 +31,14 @@
 #include "nans.h"
 #include "utilityU.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "VsGameSection";
+}
+
 namespace Game {
 namespace VsGame {
-
-static const char someVsArray[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-static const char vsName[]      = "VsGameSection";
 
 /**
  * @note Address: 0x801C0DF8
@@ -361,7 +364,7 @@ void VsGameSection::onSetupFloatMemory()
 
 		PelletConfig* pelletConfig = PelletList::Mgr::getConfigAndKind(const_cast<char*>(marbles[i]), cKind);
 
-		JUT_ASSERTLINE(904, pelletConfig, "zannenn\n"); // 'disappointing'
+		JUT_ASSERTLINE(924, pelletConfig, "zannenn\n"); // 'disappointing'
 
 		initArg.mPelletIndex    = pelletConfig->mParams.mIndex;
 		initArg.mTextIdentifier = pelletConfig->mParams.mName.mData;
@@ -415,8 +418,8 @@ void VsGameSection::loadChallengeStageList()
 {
 	// If KFesVersion is enabled, use the alternate stage list config
 	void* file = JKRDvdRipper::loadToMainRAM(
-	    gGameConfig.mParms.mKFesVersion() ? "/user/Matoba/challenge/kfes-stages.txt" : "/user/Matoba/challenge/stages.txt", nullptr,
-	    Switch_0, nullptr, nullptr, JKRDvdRipper::ALLOC_DIR_BOTTOM, nullptr, nullptr, nullptr);
+	    gGameConfig.mParms.mKFesVersion() ? "user/Matoba/challenge/kfes-stages.txt" : "user/Matoba/challenge/stages.txt", nullptr, Switch_0,
+	    nullptr, nullptr, JKRDvdRipper::ALLOC_DIR_BOTTOM, nullptr, nullptr, nullptr);
 
 	if (!file) {
 		return;
@@ -433,7 +436,7 @@ void VsGameSection::loadChallengeStageList()
  */
 void VsGameSection::loadVsStageList()
 {
-	void* file = JKRDvdRipper::loadToMainRAM("/user/abe/vs/stages.txt", nullptr, Switch_0, nullptr, nullptr, JKRDvdRipper::ALLOC_DIR_BOTTOM,
+	void* file = JKRDvdRipper::loadToMainRAM("user/abe/vs/stages.txt", nullptr, Switch_0, nullptr, nullptr, JKRDvdRipper::ALLOC_DIR_BOTTOM,
 	                                         nullptr, nullptr, nullptr);
 	if (!file) {
 		return;
@@ -719,11 +722,11 @@ void VsGameSection::createFallPikmins(PikiContainer& setPikmin, int unused2)
 void VsGameSection::createVsPikmins()
 {
 	Onyon* redOnyon = ItemOnyon::mgr->getOnyon(ONYON_TYPE_RED);
-	P2ASSERTLINE(1349, redOnyon);
+	P2ASSERTLINE(1369, redOnyon);
 	Vector3f redOnyonPos = redOnyon->getPosition();
 
 	Onyon* blueOnyon = ItemOnyon::mgr->getOnyon(ONYON_TYPE_BLUE);
-	P2ASSERTLINE(1354, blueOnyon);
+	P2ASSERTLINE(1374, blueOnyon);
 	Vector3f blueOnyonPos = blueOnyon->getPosition();
 	PikiContainer* pikmin = &mContainer1;
 	pikmin->clear();
@@ -891,7 +894,7 @@ bool GameMessagePelletBorn::actVs(VsGameSection* section)
 				return true;
 			}
 		}
-		JUT_PANICLINE(1592, "no space for new yellow\n");
+		JUT_PANICLINE(1612, "no space for new yellow\n");
 	}
 	return false;
 }
@@ -909,7 +912,7 @@ bool GameMessagePelletDead::actVs(VsGameSection* section)
 				return true;
 			}
 		}
-		JUT_PANICLINE(1617, "no entry for pellet\n");
+		JUT_PANICLINE(1637, "no entry for pellet\n");
 	}
 
 	return false;
@@ -1035,7 +1038,7 @@ Pellet* VsGameSection::createCardPellet()
 	PelletInitArg pelletArg;
 
 	PelletConfig* config = PelletList::Mgr::getConfigAndKind(name, kind);
-	JUT_ASSERTLINE(1759, config, "zannenn\n");
+	JUT_ASSERTLINE(1779, config, "zannenn\n");
 	pelletArg.mPelletIndex       = config->mParams.mIndex;
 	pelletArg.mTextIdentifier    = config->mParams.mName.mData;
 	pelletArg.mPelletType        = kind;
@@ -1068,7 +1071,7 @@ void VsGameSection::initCardPellets()
 	PelletInitArg arg;
 
 	PelletConfig* config = PelletList::Mgr::getConfigAndKind(name, kind);
-	JUT_ASSERTLINE(1796, config, "zannenn\n"); // 'disappointing'
+	JUT_ASSERTLINE(1816, config, "zannenn\n"); // 'disappointing'
 	arg.mPelletIndex    = config->mParams.mIndex;
 	arg.mTextIdentifier = config->mParams.mName.mData;
 	arg.mPelletType     = kind;
@@ -1083,7 +1086,7 @@ void VsGameSection::initCardPellets()
 			pellet->setPosition(position, false);
 			mCherryArray[j] = pellet;
 		} else {
-			JUT_PANICLINE(1813, "birth failed !\n");
+			JUT_PANICLINE(1833, "birth failed !\n");
 		}
 	}
 
@@ -1252,7 +1255,7 @@ void VsGameSection::createYellowBedamas(int bedamas)
 	PelletInitArg pelletArg;
 
 	PelletConfig* config = PelletList::Mgr::getConfigAndKind(name, kind);
-	JUT_ASSERTLINE(2154, config, "zannenn\n"); // 'disappointing'
+	JUT_ASSERTLINE(2174, config, "zannenn\n"); // 'disappointing'
 
 	pelletArg.mPelletIndex = config->mParams.mIndex;
 
@@ -1260,7 +1263,7 @@ void VsGameSection::createYellowBedamas(int bedamas)
 	pelletArg.mPelletType     = kind;
 	pelletArg.mMinCarriers    = VS_MARBLE_MIN_WEIGHT;
 	pelletArg.mMaxCarriers    = VS_MARBLE_MAX_WEIGHT;
-	JUT_ASSERTLINE(2163, bedamas <= 50, "oosugi %d\n", bedamas);
+	JUT_ASSERTLINE(2183, bedamas <= 50, "oosugi %d\n", bedamas);
 
 	Vector3f positions[50];
 	Cave::randMapMgr->getItemDropPosition(positions, bedamas, 0.4f, 0.6f);
@@ -1281,7 +1284,7 @@ void VsGameSection::createRedBlueBedamas(Vector3f& pos)
 		PelletInitArg pelletArg;
 		char* name           = const_cast<char*>(marbles[i]);
 		PelletConfig* config = PelletList::Mgr::getConfigAndKind(name, kind);
-		JUT_ASSERTLINE(2211, config, "zannenn\n"); // 'disappointing'
+		JUT_ASSERTLINE(2231, config, "zannenn\n"); // 'disappointing'
 		pelletArg.mPelletIndex    = config->mParams.mIndex;
 		pelletArg.mTextIdentifier = config->mParams.mName.mData;
 		pelletArg.mPelletType     = kind;
@@ -1325,10 +1328,12 @@ void VsGameSection::calcVsScores()
 
 			Vector3f marblePosition   = marble->getPosition();
 			Vector3f redOnyonPosition = onyons[0]->getPosition();
-			f32 expDistRed            = _distanceXZ(marblePosition, redOnyonPosition);
+			Vector2f expDistRedOffset(marblePosition.x - redOnyonPosition.x, marblePosition.z - redOnyonPosition.z);
+			f32 expDistRed = sqrtfClamped(expDistRedOffset.sqrLength());
 
 			Vector3f blueOnyonPosition = onyons[1]->getPosition();
-			f32 expDistBlue            = _distanceXZ(marblePosition, blueOnyonPosition);
+			Vector2f expDistBlueOffset(marblePosition.x - blueOnyonPosition.x, marblePosition.z - blueOnyonPosition.z);
+			f32 expDistBlue = sqrtfClamped(expDistBlueOffset.sqrLength());
 
 			f32 score  = 1.0f / ((f32)exp((expDistBlue / (expDistRed + expDistBlue) - 0.5f) * -10.0f) + 1.0f);
 			bool check = false;
@@ -1384,12 +1389,14 @@ void VsGameSection::calcVsScores()
 		if (marble) {
 			Vector3f marblePosition = marble->getPosition();
 			Vector3f onyonPosition  = onyon->getPosition();
-			f32 expDistRed          = _distanceXZ(marblePosition, onyonPosition);
+			Vector2f expDistRedOffset(marblePosition.x - onyonPosition.x, marblePosition.z - onyonPosition.z);
+			f32 expDistRed = sqrtfClamped(expDistRedOffset.sqrLength());
 
 			Vector3f otherOnyonPosition = onyons[(1 - i)]->getPosition();
-			f32 expDistBlue             = _distanceXZ(marblePosition, otherOnyonPosition);
-			redBlueScore[i]             = 1.0f / ((f32)exp((expDistRed / (expDistRed + expDistBlue) - 0.5f) * -10.0f) + 1.0f);
-			mRedBlueScore[i]            = redBlueScore[i];
+			Vector2f expDistBlueOffset(marblePosition.x - otherOnyonPosition.x, marblePosition.z - otherOnyonPosition.z);
+			f32 expDistBlue  = sqrtfClamped(expDistBlueOffset.sqrLength());
+			redBlueScore[i]  = 1.0f / ((f32)exp((expDistRed / (expDistRed + expDistBlue) - 0.5f) * -10.0f) + 1.0f);
+			mRedBlueScore[i] = redBlueScore[i];
 		}
 	}
 
@@ -1415,11 +1422,13 @@ void VsGameSection::calcVsScores()
 			}
 			Vector3f cherryPosition   = cherry->getPosition();
 			Vector3f redOnyonPosition = onyons[0]->getPosition();
-			f32 expDistRed            = _distanceXZ(cherryPosition, redOnyonPosition);
+			Vector2f expDistRedOffset(cherryPosition.x - redOnyonPosition.x, cherryPosition.z - redOnyonPosition.z);
+			f32 expDistRed = sqrtfClamped(expDistRedOffset.sqrLength());
 
 			Vector3f blueOnyonPosition = onyons[1]->getPosition();
-			f32 expDistBlue            = _distanceXZ(cherryPosition, blueOnyonPosition);
-			f32 score                  = 1.0f / ((f32)exp((expDistBlue / (expDistRed + expDistBlue) - 0.5f) * -10.0f) + 1.0f);
+			Vector2f expDistBlueOffset(cherryPosition.x - blueOnyonPosition.x, cherryPosition.z - blueOnyonPosition.z);
+			f32 expDistBlue = sqrtfClamped(expDistBlueOffset.sqrLength());
+			f32 score       = 1.0f / ((f32)exp((expDistBlue / (expDistRed + expDistBlue) - 0.5f) * -10.0f) + 1.0f);
 
 			bool check = false;
 			if (cherry->mCaptureMatrix) {
@@ -1488,8 +1497,8 @@ void VsGameSection::clearGetDopeCount()
  */
 int& VsGameSection::getGetDopeCount(int player, int type)
 {
-	JUTASSERTBOUNDSINCLUSIVELINE(2567, 0, player, 1, "%d playerID\n");
-	JUTASSERTBOUNDSINCLUSIVELINE(2568, 0, type, 1, "%d typeID\n");
+	JUTASSERTBOUNDSINCLUSIVELINE(2587, 0, player, 1, "%d playerID\n");
+	JUTASSERTBOUNDSINCLUSIVELINE(2588, 0, type, 1, "%d typeID\n");
 	return mDopeCounts[player][type];
 }
 

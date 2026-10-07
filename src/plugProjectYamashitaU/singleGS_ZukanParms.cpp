@@ -18,22 +18,22 @@ static const int unusedIllustratedBookArray[] = { 0, 0, 0 };
 ColorSetting::ColorSetting()
     : CNode("色設定")
 {
-	mColorListA[0][0] = Color4(88, 91, 153, 255);
-	mColorListA[0][1] = Color4(64, 64, 64, 255);
-	mColorListA[1][0] = Color4(166, 232, 253, 255);
-	mColorListA[1][1] = Color4(255, 255, 255, 255);
-	mColorListA[2][0] = Color4(166, 232, 253, 255);
-	mColorListA[2][1] = Color4(255, 255, 255, 255);
-	mColorListA[3][0] = Color4(255, 192, 128, 255);
-	mColorListA[3][1] = Color4(255, 255, 143, 255);
-	mColorListA[4][0] = Color4(255, 255, 255, 255);
-	mColorListA[4][1] = Color4(255, 255, 255, 255);
+	mBgGradientColors[SUNTIME_Night][BGGRAD_Top]      = Color4(88, 91, 153, 255);
+	mBgGradientColors[SUNTIME_Night][BGGRAD_Bottom]   = Color4(64, 64, 64, 255);
+	mBgGradientColors[SUNTIME_Morning][BGGRAD_Top]    = Color4(166, 232, 253, 255);
+	mBgGradientColors[SUNTIME_Morning][BGGRAD_Bottom] = Color4(255, 255, 255, 255);
+	mBgGradientColors[SUNTIME_Noon][BGGRAD_Top]       = Color4(166, 232, 253, 255);
+	mBgGradientColors[SUNTIME_Noon][BGGRAD_Bottom]    = Color4(255, 255, 255, 255);
+	mBgGradientColors[SUNTIME_Evening][BGGRAD_Top]    = Color4(255, 192, 128, 255);
+	mBgGradientColors[SUNTIME_Evening][BGGRAD_Bottom] = Color4(255, 255, 143, 255);
+	mBgGradientColors[SUNTIME_Demo][BGGRAD_Top]       = Color4(255, 255, 255, 255);
+	mBgGradientColors[SUNTIME_Demo][BGGRAD_Bottom]    = Color4(255, 255, 255, 255);
 
-	mColorListB[0] = Color4(73, 73, 73, 255);
-	mColorListB[1] = Color4(8, 8, 8, 255);
-	mColorListB[2] = Color4(50, 50, 40, 255);
-	mColorListB[3] = Color4(52, 32, 10, 255);
-	mColorListB[4] = Color4(32, 32, 10, 255);
+	mGlowColors[SUNTIME_Night]   = Color4(73, 73, 73, 255);
+	mGlowColors[SUNTIME_Morning] = Color4(8, 8, 8, 255);
+	mGlowColors[SUNTIME_Noon]    = Color4(50, 50, 40, 255);
+	mGlowColors[SUNTIME_Evening] = Color4(52, 32, 10, 255);
+	mGlowColors[SUNTIME_Demo]    = Color4(32, 32, 10, 255);
 }
 
 /**
@@ -42,13 +42,13 @@ ColorSetting::ColorSetting()
  */
 void ColorSetting::read(Stream& stream)
 {
-	for (int i = 0; i < 4; i++) {
-		mColorListA[i][0].read(stream);
-		mColorListA[i][1].read(stream);
+	for (int i = 0; i < SUNTIME_Demo; i++) {
+		mBgGradientColors[i][BGGRAD_Top].read(stream);
+		mBgGradientColors[i][BGGRAD_Bottom].read(stream);
 	}
 
-	for (int i = 0; i < 4; i++) {
-		mColorListB[i].read(stream);
+	for (int i = 0; i < SUNTIME_Demo; i++) {
+		mGlowColors[i].read(stream);
 	}
 }
 
@@ -85,49 +85,53 @@ void ColorSetting::update()
 		break;
 	}
 
-	f32 ratio             = gameSystem->mTimeMgr->mLightSettingRatio;
-	Color4* startColor40  = &mColorListB[start];
-	Color4* middleColor40 = &mColorListB[middle];
-	Color4* stopColor40   = &mColorListB[stop];
+	Color4* startBgTop     = getBgColor(start, BGGRAD_Top);
+	Color4* middleBgTop    = getBgColor(middle, BGGRAD_Top);
+	Color4* stopBgTop      = getBgColor(stop, BGGRAD_Top);
+	Color4* startBgBottom  = getBgColor(start, BGGRAD_Bottom);
+	Color4* middleBgBottom = getBgColor(middle, BGGRAD_Bottom);
+	Color4* stopBgBottom   = getBgColor(stop, BGGRAD_Bottom);
+	Color4* startGlow      = getGlowColor(start);
+	Color4* middleGlow     = getGlowColor(middle);
+	Color4* stopGlow       = getGlowColor(stop);
 
-	// how are these meant to get loaded in/pointed to?
-	Color4* startColor18  = mColorListA[start];
-	Color4* middleColor18 = mColorListA[middle];
-	Color4* stopColor18   = mColorListA[stop];
+	f32 ratio = gameSystem->mTimeMgr->mLightSettingRatio;
+	f32 t     = ratio;
 
 	if (ratio < 0.5f) {
-		ratio *= 2.0f;
-		mActiveColorA.r = INTERPOLATE_BETWEEN(startColor18[0].r, middleColor18[0].r, ratio);
-		mActiveColorA.g = INTERPOLATE_BETWEEN(startColor18[0].g, middleColor18[0].g, ratio);
-		mActiveColorA.b = INTERPOLATE_BETWEEN(startColor18[0].b, middleColor18[0].b, ratio);
-		mActiveColorA.a = INTERPOLATE_BETWEEN(startColor18[0].a, middleColor18[0].a, ratio);
+		// first half of the slot: start -> middle
+		t *= 2.0f;
+		mActiveBgTopColor.r = INTERPOLATE_BETWEEN(startBgTop->r, middleBgTop->r, t);
+		mActiveBgTopColor.g = INTERPOLATE_BETWEEN(startBgTop->g, middleBgTop->g, t);
+		mActiveBgTopColor.b = INTERPOLATE_BETWEEN(startBgTop->b, middleBgTop->b, t);
+		mActiveBgTopColor.a = INTERPOLATE_BETWEEN(startBgTop->a, middleBgTop->a, t);
 
-		mActiveColorB.r = INTERPOLATE_BETWEEN(startColor18[1].r, middleColor18[1].r, ratio);
-		mActiveColorB.g = INTERPOLATE_BETWEEN(startColor18[1].g, middleColor18[1].g, ratio);
-		mActiveColorB.b = INTERPOLATE_BETWEEN(startColor18[1].b, middleColor18[1].b, ratio);
-		mActiveColorB.a = INTERPOLATE_BETWEEN(startColor18[1].a, middleColor18[1].a, ratio);
+		mActiveBgBottomColor.r = INTERPOLATE_BETWEEN(startBgBottom->r, middleBgBottom->r, t);
+		mActiveBgBottomColor.g = INTERPOLATE_BETWEEN(startBgBottom->g, middleBgBottom->g, t);
+		mActiveBgBottomColor.b = INTERPOLATE_BETWEEN(startBgBottom->b, middleBgBottom->b, t);
+		mActiveBgBottomColor.a = INTERPOLATE_BETWEEN(startBgBottom->a, middleBgBottom->a, t);
 
-		mActiveColorC.r = INTERPOLATE_BETWEEN(startColor40->r, middleColor40->r, ratio);
-		mActiveColorC.g = INTERPOLATE_BETWEEN(startColor40->g, middleColor40->g, ratio);
-		mActiveColorC.b = INTERPOLATE_BETWEEN(startColor40->b, middleColor40->b, ratio);
-		mActiveColorC.a = INTERPOLATE_BETWEEN(startColor40->a, middleColor40->a, ratio);
-
+		mActiveGlowColor.r = INTERPOLATE_BETWEEN(startGlow->r, middleGlow->r, t);
+		mActiveGlowColor.g = INTERPOLATE_BETWEEN(startGlow->g, middleGlow->g, t);
+		mActiveGlowColor.b = INTERPOLATE_BETWEEN(startGlow->b, middleGlow->b, t);
+		mActiveGlowColor.a = INTERPOLATE_BETWEEN(startGlow->a, middleGlow->a, t);
 	} else {
-		ratio           = 2.0f * (ratio - 0.5f);
-		mActiveColorA.r = INTERPOLATE_BETWEEN(middleColor18[0].r, stopColor18[0].r, ratio);
-		mActiveColorA.g = INTERPOLATE_BETWEEN(middleColor18[0].g, stopColor18[0].g, ratio);
-		mActiveColorA.b = INTERPOLATE_BETWEEN(middleColor18[0].b, stopColor18[0].b, ratio);
-		mActiveColorA.a = INTERPOLATE_BETWEEN(middleColor18[0].a, stopColor18[0].a, ratio);
+		// second half of the slot: middle -> stop
+		t                   = 2.0f * (ratio - 0.5f);
+		mActiveBgTopColor.r = INTERPOLATE_BETWEEN(middleBgTop->r, stopBgTop->r, t);
+		mActiveBgTopColor.g = INTERPOLATE_BETWEEN(middleBgTop->g, stopBgTop->g, t);
+		mActiveBgTopColor.b = INTERPOLATE_BETWEEN(middleBgTop->b, stopBgTop->b, t);
+		mActiveBgTopColor.a = INTERPOLATE_BETWEEN(middleBgTop->a, stopBgTop->a, t);
 
-		mActiveColorB.r = INTERPOLATE_BETWEEN(middleColor18[1].r, stopColor18[1].r, ratio);
-		mActiveColorB.g = INTERPOLATE_BETWEEN(middleColor18[1].g, stopColor18[1].g, ratio);
-		mActiveColorB.b = INTERPOLATE_BETWEEN(middleColor18[1].b, stopColor18[1].b, ratio);
-		mActiveColorB.a = INTERPOLATE_BETWEEN(middleColor18[1].a, stopColor18[1].a, ratio);
+		mActiveBgBottomColor.r = INTERPOLATE_BETWEEN(middleBgBottom->r, stopBgBottom->r, t);
+		mActiveBgBottomColor.g = INTERPOLATE_BETWEEN(middleBgBottom->g, stopBgBottom->g, t);
+		mActiveBgBottomColor.b = INTERPOLATE_BETWEEN(middleBgBottom->b, stopBgBottom->b, t);
+		mActiveBgBottomColor.a = INTERPOLATE_BETWEEN(middleBgBottom->a, stopBgBottom->a, t);
 
-		mActiveColorC.r = INTERPOLATE_BETWEEN(middleColor40->r, stopColor40->r, ratio);
-		mActiveColorC.g = INTERPOLATE_BETWEEN(middleColor40->g, stopColor40->g, ratio);
-		mActiveColorC.b = INTERPOLATE_BETWEEN(middleColor40->b, stopColor40->b, ratio);
-		mActiveColorC.a = INTERPOLATE_BETWEEN(middleColor40->a, stopColor40->a, ratio);
+		mActiveGlowColor.r = INTERPOLATE_BETWEEN(middleGlow->r, stopGlow->r, t);
+		mActiveGlowColor.g = INTERPOLATE_BETWEEN(middleGlow->g, stopGlow->g, t);
+		mActiveGlowColor.b = INTERPOLATE_BETWEEN(middleGlow->b, stopGlow->b, t);
+		mActiveGlowColor.a = INTERPOLATE_BETWEEN(middleGlow->a, stopGlow->a, t);
 	}
 	/*
 	stwu     r1, -0x1a0(r1)

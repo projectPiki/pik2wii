@@ -91,13 +91,13 @@ void MiniHoudaiShotGunNode::startShotGun(bool check)
  */
 bool MiniHoudaiShotGunNode::update()
 {
-	bool result       = false;               // r30
-	Vector3f startPos = mPosition;           // 0x230
-	Sys::Sphere moveSphere(startPos, 10.0f); // 0x78
+	bool result       = false;
+	Vector3f startPos = mPosition;            // 0x230
+	Sys::Sphere moveSphere(mPosition, 10.0f); // 0x78
 
 	MoveInfo moveInfo(&moveSphere, &mVelocity, 0.0f); // 0x1B0
 	moveInfo.mMovingCreature = mOwner;
-	mapMgr->traceMove(moveInfo, sys->getDeltaTime());
+	mapMgr->traceMove(moveInfo, sys->mDeltaTime);
 
 	setPosition(moveSphere.mPosition);
 
@@ -166,15 +166,16 @@ bool MiniHoudaiShotGunNode::update()
 		Vector3f searchCenter((startPos.x + newPos.x) * 0.5f, (startPos.y + newPos.y) * 0.5f, (startPos.z + newPos.z) * 0.5f);
 		f32 searchRadius = dist + radius;
 		f32 hitangle2    = hitangle * hitangle;
-		Vector3f vec1    = newPos - startPos; // f29, f28, f30
+		Vector3f vec1    = newPos - startPos;
 		vec1.normalise();
 
 		Vector3f yAxis(0.0f, 1.0f, 0.0f);
 
-		Vector3f vec2 = cross(yAxis, vec1); // f27, f26, f25
+		Vector3f vec3(0.0f, 0.0f, 0.0f);
+		Vector3f vec2 = cross(yAxis, vec1);
 		vec2.normalise();
 
-		Vector3f vec3 = cross(vec1, vec2); // f23, f22, f21
+		vec3 = cross(vec1, vec2);
 		vec3.normalise();
 
 		Sys::Sphere searchSphere(searchCenter, dist + hitangle);
@@ -225,9 +226,9 @@ bool MiniHoudaiShotGunNode::update()
 
 			if (result && check) {
 				if (target->isNavi() || target->isPiki()) {
-					Vector3f tempSep(newPos - creaturePos);
-					if (tempSep.sqrMagnitude() < hitangle2) {
-						f32 dist           = _sqrtf2(SQUARE(tempSep.x) + SQUARE(tempSep.y) + SQUARE(tempSep.z));
+					f32 sqrDist = newPos.sqrDistance(creaturePos);
+					if (sqrDist < hitangle2) {
+						f32 dist           = sqrtfClamped(sqrDist);
 						Vector3f targetSep = creaturePos - newPos;
 						f32 factor         = dist / hitangle;
 						f32 mag            = 150.0f * (1.0f - factor) + 75.0f * factor;
@@ -1800,8 +1801,9 @@ Vector3f MiniHoudaiShotGunMgr::getShotGunPosition()
 bool MiniHoudaiShotGunMgr::searchShotGunRotation()
 {
 	Vector3f pos = getShotGunPosition();
-	f32 dx = pos.x - mTargetPosition.x;
-	f32 dz = pos.z - mTargetPosition.z;
+	f32 dz, dx;
+	dx = pos.x - mTargetPosition.x;
+	dz = pos.z - mTargetPosition.z;
 	Vector2f sep2D(dx, dz);
 	f32 dist = sep2D.length() - 50.0f;
 	if (dist < 1.0f) {
@@ -1818,9 +1820,9 @@ bool MiniHoudaiShotGunMgr::searchShotGunRotation()
 		}
 	}
 
-	f32 b = (val / sys->mDeltaTime) / 20.0f;
-	Vector2f vec2D((0.45f * dist) / (b / 20.0f) / sys->mDeltaTime, b);
-	mShellSpeed = _sqrtf2(SQUARE(vec2D.y) + SQUARE(vec2D.x));
+	f32 b = (val / sys->getDeltaTime()) / 20.0f;
+	Vector2f vec2D((0.45f * dist) / (b / 20.0f) / sys->getDeltaTime(), b);
+	mShellSpeed = sqrtfClamped(SQUARE(vec2D.y) + SQUARE(vec2D.x));
 
 	f32 angleDist = angDist(mAngle, HALF_PI - JMAAtan2Radian(vec2D.x, vec2D.y));
 
@@ -1982,18 +1984,10 @@ lbl_802EF4A4:
  */
 bool MiniHoudaiShotGunMgr::returnShotGunRotation()
 {
-	f32 val = 0.0f;
-	if (val >= mAngle) {
-		if (TAU - (val - mAngle) < (val - mAngle)) {
-			val -= TAU;
-		}
-	} else if (TAU - (mAngle - val) < (mAngle - val)) {
-		val += TAU;
-	}
+	f32 targetAngle = getNearestZeroAngle(mAngle);
+	mAngle          = approach(mAngle, targetAngle, 0.025f);
 
-	mAngle = (absVal(mAngle - val) < 0.025f) ? val : (mAngle < val) ? mAngle + 0.025f : mAngle - 0.025f;
-
-	if (absVal(mAngle - val) < 0.01f) {
+	if (absVal(mAngle - targetAngle) < 0.01f) {
 		return true;
 	}
 

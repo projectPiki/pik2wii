@@ -6,10 +6,10 @@
 #include "types.h"
 
 struct J3DIndTexCoordScaleInfo {
-	void operator=(const J3DIndTexCoordScaleInfo& other)
+	J3DIndTexCoordScaleInfo& operator=(const J3DIndTexCoordScaleInfo& other)
 	{
-		mScaleS = other.mScaleS;
-		mScaleT = other.mScaleT;
+		__memcpy(this, &other, sizeof(J3DIndTexCoordScaleInfo));
+        return *this;
 	}
 
 	u8 mScaleS; // _00
@@ -21,7 +21,7 @@ struct J3DIndTexCoordScaleInfo {
 extern const J3DIndTexCoordScaleInfo j3dDefaultIndTexCoordScaleInfo;
 
 struct J3DIndTexCoordScale : public J3DIndTexCoordScaleInfo {
-	J3DIndTexCoordScale() { *(J3DIndTexCoordScaleInfo*)this = j3dDefaultIndTexCoordScaleInfo; }
+	J3DIndTexCoordScale() { J3DIndTexCoordScaleInfo::operator=(j3dDefaultIndTexCoordScaleInfo); }
 	explicit J3DIndTexCoordScale(const J3DIndTexCoordScaleInfo& info) { *(J3DIndTexCoordScaleInfo*)this = info; }
 	
 	J3DIndTexCoordScale& operator=(const J3DIndTexCoordScale& other) {
@@ -144,10 +144,10 @@ struct J3DIndBlock {
 
 struct J3DIndBlockFull : public J3DIndBlock {
 	inline J3DIndBlockFull() { initialize(); }
-
-	virtual void reset(J3DIndBlock*);                                                                               // _08
+	
 	virtual void diff(u32);                                                                                         // _0C
 	virtual void load();                                                                                            // _10
+	virtual void reset(J3DIndBlock*);                                                                               // _08
 	virtual u32 countDLSize();                                                                                      // _14
 	virtual JBlockType getType() { return JBT_IndFull; }                                                            // _18 (weak)
 	virtual void setIndTexStageNum(u8 stageNum) { mIndTexStageNum = stageNum; }                                     // _1C (weak)

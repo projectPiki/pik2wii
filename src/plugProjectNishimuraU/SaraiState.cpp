@@ -370,7 +370,7 @@ void StateMove::exec(EnemyBase* enemy)
 
 	FakePiki* target = sarai->getAttackableTarget();
 
-	if (target || sarai->mGeneralTimer > 10.0f || sqrDistanceXZ(pos, targetPos) < 625.0f) {
+	if (target || sarai->mGeneralTimer > 10.0f || pos.sqrDistance2D(targetPos) < 625.0f) {
 		sarai->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 		sarai->finishMotion();
 	} else {
@@ -1024,7 +1024,7 @@ void StateCatchFly::exec(EnemyBase* enemy)
 	Vector3f pos       = sarai->getPosition();
 	Vector3f targetPos = Vector3f(sarai->mTargetPos);
 
-	if (sarai->mGeneralTimer > 10.0f || sqrDistanceXZ(pos, targetPos) < 625.0f) {
+	if (sarai->mGeneralTimer > 10.0f || pos.sqrDistance2D(targetPos) < 625.0f) {
 		sarai->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 		sarai->finishMotion();
 	} else {

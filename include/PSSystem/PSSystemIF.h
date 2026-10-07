@@ -8,11 +8,13 @@
 #include "JSystem/JMath.h"
 #include "P2Macros.h"
 #include "PSGame/BASARC.h"
-#include "PSM/Se.h"
 #include "PSSystem/PSSeq.h"
-#include "PSSystem/SeqData.h"
 #include "RevoSDK/os.h"
 #include "types.h"
+
+namespace PSM {
+struct SeSound;
+} // namespace PSM
 
 namespace PSSystem {
 struct SeqBase;
@@ -52,43 +54,6 @@ struct SeqSound : public JAISequence, public SeqSoundBase {
 
 	// _00 - _6A0: JAISequence
 	// _6A0 - _6A8: SeqSoundBase
-};
-
-/**
- * @size = 0x74
- */
-struct StreamBgm : public BgmSeq {
-	StreamBgm(u32 id, const JAInter::SoundInfo& info);
-
-	virtual ~StreamBgm();                                  // _08
-	virtual void init();                                   // _0C
-	virtual void scene1st(TaskChecker*) { }                // _10 (weak)
-	virtual void startSeq();                               // _14
-	virtual u8 getCastType() { return TYPE_StreamBgm; }    // _24 (weak)
-	virtual u32 getSeqType() { return 0; }                 // _28 (weak)
-	virtual bool isPlaying();                              // _34
-	virtual JAISound** getHandleP() { return &mJaiSound; } // _3C (weak)
-	virtual void setConfigVolume();                        // _40
-
-	void setId(u32);
-
-	// _00-_10  = JSULink<SeqBase>
-	// _10      = VTABLE
-	// _14-_6C  = BgmSeq
-	JAISound* mJaiSound; // _6C
-	u32 mId;             // _70
-};
-
-/**
- * @size = 0x20
- */
-struct StreamDataList : public TextDataBase, public SingletonBase<StreamDataList> {
-	StreamDataList();
-
-	virtual ~StreamDataList();                         // _08 (weak)
-	virtual bool read(Stream& input) { return false; } // _0C (weak)
-
-	int getStreamVolume(u32);
 };
 
 /**
@@ -208,6 +173,9 @@ struct ArcMgr : public JKRDisposer {
 	JKRArchive* mArchive; // _18
 };
 
+template <typename T>
+ArcMgr<T>* ArcMgr<T>::sInstance;
+
 inline JKRFileLoader* getLoaderInstance()
 {
 	P2ASSERTLINE(88, PSSystem::ArcMgr<PSGame::BASARC>::sInstance);
@@ -225,8 +193,7 @@ inline PSSystem::SysIF* PSGetSystemIFA()
 
 inline u32 isValidSeType(u32 soundID)
 {
-	u32 ass = (soundID >> 12) & 0xF;
-	// problem here
+	u32 ass = (soundID & 0xF000) >> 12;
 	if ((soundID >> 30) == 0) {
 		return ass;
 	}

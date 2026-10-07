@@ -280,13 +280,13 @@ void MenuMgr::calcCenter(J2DPane* pane, Vector2f* center)
  * @note Address: N/A
  * @note Size: 0x34
  */
-// regswaps in here
 void MenuMgr::calcPoint(Vector2f& vec1, Vector2f& vec2, f32 scale, Vector2f* outVec)
 {
-	Vector2f newPoint = vec2 * (1.0f - scale);
-	newPoint.x += vec1.x * scale;
-	newPoint.y += vec1.y * scale;
-	outVec->set(newPoint.x, newPoint.y);
+	Vector2f from(vec2);
+	Vector2f to(vec1);
+	f32 inv   = 1.0f - scale;
+	outVec->x = to.x * scale + from.x * inv;
+	outVec->y = to.y * scale + from.y * inv;
 }
 
 /**

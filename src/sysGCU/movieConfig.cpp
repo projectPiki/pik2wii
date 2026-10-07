@@ -3,11 +3,14 @@
 #include "JSystem/JKernel/JKRDvdRipper.h"
 #include "nans.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "movieConfig";
+}
+
 namespace Game {
 MovieList* movieList;
-
-static const int padding[]    = { 0, 0, 0 };
-static const char className[] = "movieConfig";
 
 /**
  * @note Address: N/A

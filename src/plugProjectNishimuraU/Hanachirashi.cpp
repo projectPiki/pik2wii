@@ -56,7 +56,7 @@ void Obj::onInit(CreatureInitArg* initArg)
 	mEfxMatrix          = mModel->getJoint("hana3")->getWorldMatrix();
 	setupEffect();
 
-	mCurrentAttackRadius = 0.0f;
+	mWindScaleTimer = 0.0f;
 
 	mFsm->start(this, HANACHIRASHI_Wait, nullptr);
 
@@ -445,7 +445,7 @@ Piki* Obj::getSearchedPikmin()
 			if (FABS(sightDiff) <= FOV) {
 				Vector3f pos      = getPosition();
 				Vector3f pikiPos2 = piki->getPosition();
-				if (sqrDistanceXZ(pikiPos2, pos) < sqrSight) {
+				if (pikiPos2.sqrDistance2D(pos) < sqrSight) {
 					return piki;
 				}
 			}
@@ -694,7 +694,7 @@ Creature* Obj::isAttackable()
 		Piki* piki = *iter;
 		if (piki->isAlive() && piki->isPikmin() && !piki->isStickToMouth() && piki->mSticker != this) {
 			Vector3f pikiPos = piki->getPosition();
-			if (sqrDistanceXZ(pikiPos, vec) < radius) {
+			if (pikiPos.sqrDistance2D(vec) < radius) {
 				return piki;
 			}
 		}
@@ -1015,37 +1015,53 @@ Vector3f Obj::getAttackPosition()
 bool Obj::windTarget()
 {
 	bool isHitPiki = false;
-	if (mCurrentAttackRadius < 1.0f) {
-		mCurrentAttackRadius += 3.0f * sys->mDeltaTime;
-		if (mCurrentAttackRadius > 1.0f) {
-			mCurrentAttackRadius = 1.0f;
+	if (mWindScaleTimer < 1.0f) {
+		mWindScaleTimer += 3.0f * sys->getDeltaTime();
+		if (mWindScaleTimer > 1.0f) {
+			mWindScaleTimer = 1.0f;
 		}
 	}
 
-	f32 radius    = mCurrentAttackRadius * C_GENERALPARMS.mAttackRadius.mValue;
-	Vector3f vec1 = mEfxPosition;                                                     // f16
-	Vector3f vec2 = mFaceDirection;                                                   // f29
-	f32 slope     = (f32)tan(PI * (DEG2RAD * C_GENERALPARMS.mAttackHitAngle.mValue)); // f20
+	f32 radius              = mWindScaleTimer * C_GENERALPARMS.mAttackRadius();
+	Vector3f attackStartPos = mEfxPosition;
+	Vector3f faceDirection  = mFaceDirection;
+	f32 slope               = tan(TORADIANS(C_GENERALPARMS.mAttackHitAngle()));
 
-	// this is probably a new vector
-	vec2.z = -vec2.z;
+	Vector3f attackNormal = Vector3f(-faceDirection.z, 0.0f, faceDirection.x);
+	attackNormal.normalise();
 
-	f32 len2 = _normalise2(vec2);
+	Vector3f crossDir = attackNormal;
+	crossDir.CP(faceDirection);
+	Vector3f::normalise(crossDir);
 
-	// more vector manip.
+	Vector3f attackDirection2D = faceDirection;
+	attackDirection2D.toFlatDirection();
 
 	Iterator<Navi> iterNavi(naviMgr);
 	CI_LOOP(iterNavi)
 	{
 		Navi* navi = *iterNavi;
 		if (navi->isAlive()) {
-			Vector3f naviPos = navi->getPosition();
-			Vector3f sep     = naviPos - vec1;
-			f32 dotProd      = sep.dot(vec2);
-			if (dotProd < radius && dotProd > 0.0f) {
-				// more vector math here.
-				InteractWind wind(this, 0.0f, &vec2); // not vec2
-				navi->stimulate(wind);
+			Vector3f naviPosition  = navi->getPosition();
+			Vector3f separationVec = naviPosition - attackStartPos;
+			f32 dotProduct         = faceDirection.dot(separationVec);
+
+			if (dotProduct < radius && dotProduct > 0.0f) {
+				f32 attackRadius = dotProduct * slope;
+
+				f32 crossProj   = crossDir.dot(separationVec);
+				f32 normalProj  = attackNormal.dot(separationVec);
+				f32 projSqrDist = SQUARE(normalProj) + SQUARE(crossProj);
+				if (projSqrDist < SQUARE(attackRadius)) {
+					f32 slideFactor  = sqrtfClamped(projSqrDist) / attackRadius;
+					f32 windStrength = slideFactor * 0.2f + (1.0f - slideFactor);
+
+					Vector3f direction(windStrength * (attackDirection2D.x * crossProj + attackNormal.x * normalProj), 0.0f,
+					                   windStrength * (attackDirection2D.z * crossProj + attackNormal.z * normalProj));
+
+					InteractWind wind(this, C_GENERALPARMS.mAttackDamage(), &direction); // not vec2
+					navi->stimulate(wind);
+				}
 			}
 		}
 	}
@@ -1054,14 +1070,26 @@ bool Obj::windTarget()
 	CI_LOOP(iterPiki)
 	{
 		Piki* piki = *iterPiki;
-		if (piki->isAlive()) {
-			Vector3f pikiPos = piki->getPosition();
-			Vector3f sep     = pikiPos - vec1;
-			f32 dotProd      = sep.dot(vec2);
-			if (dotProd < radius && dotProd > 0.0f) {
-				// more vector math here.
-				InteractHanaChirashi hanachirashi(this, 0.0f, &vec2); // not vec2
-				isHitPiki = piki->stimulate(hanachirashi);
+		if (piki->isAlive() && piki->isPikmin()) {
+			Vector3f pikiPos       = piki->getPosition();
+			Vector3f separationVec = pikiPos - attackStartPos;
+
+			f32 dotProduct = faceDirection.dot(separationVec);
+			if (dotProduct < radius && dotProduct > 0.0f) {
+				f32 attackRadius = dotProduct * slope;
+
+				Vector2f dots = Vector2f(attackNormal.dot(separationVec), crossDir.dot(separationVec));
+				if (dots.sqrLength() < SQUARE(attackRadius)) {
+					f32 slideFactor = dots.length() / attackRadius;
+
+					f32 windStrength = (1.0f - slideFactor) * 5.0f + slideFactor;
+					Vector3f direction(windStrength * (attackDirection2D.x * dots.y + attackNormal.x * dots.x),
+					                   (1.0f - slideFactor) * 50.0f + slideFactor * 10.0f,
+					                   windStrength * (attackDirection2D.z * dots.y + attackNormal.z * dots.x));
+
+					InteractHanaChirashi wind(this, C_GENERALPARMS.mAttackDamage(), &direction); // not vec2
+					isHitPiki = piki->stimulate(wind);
+				}
 			}
 		}
 	}

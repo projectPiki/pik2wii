@@ -100,9 +100,9 @@ void HoudaiShotGunNode::startShotGun()
  */
 bool HoudaiShotGunNode::update()
 {
-	bool result       = false;               // r30
-	Vector3f startPos = mPosition;           // f16, f24, f15
-	Sys::Sphere moveSphere(startPos, 10.0f); // 0x78
+	bool result       = false;
+	Vector3f startPos = mPosition;
+	Sys::Sphere moveSphere(mPosition, 10.0f); // 0x78
 
 	MoveInfo moveInfo(&moveSphere, &mVelocity, 0.0f); // 0x1B0
 	moveInfo.mMovingCreature = mOwner;
@@ -176,15 +176,16 @@ bool HoudaiShotGunNode::update()
 	if (dist > 0.0f) {
 		Vector3f searchCenter((startPos.x + newPos.x) * 0.5f, (startPos.y + newPos.y) * 0.5f, (startPos.z + newPos.z) * 0.5f);
 		f32 searchRadius = dist + radius;
-		Vector3f vec1    = newPos - startPos; // f29, f28, f30
+		Vector3f vec1    = newPos - startPos;
 		vec1.normalise();
 
 		Vector3f yAxis(0.0f, 1.0f, 0.0f);
 
-		Vector3f vec2 = cross(yAxis, vec1); // f27, f26, f25
+		Vector3f vec3(0.0f, 0.0f, 0.0f);
+		Vector3f vec2 = cross(yAxis, vec1);
 		vec2.normalise();
 
-		Vector3f vec3 = cross(vec1, vec2); // f23, f22, f21
+		vec3 = cross(vec1, vec2);
 		vec3.normalise();
 
 		Sys::Sphere searchSphere(searchCenter, searchRadius);
@@ -1172,8 +1173,8 @@ void HoudaiShotGunMgr::setShotGunTarget(Vector3f& pos)
  */
 void HoudaiShotGunMgr::emitShotGun()
 {
-	HoudaiShotGunNode* node = mInactiveNodes->getChild();
-	if (!node) {
+	CNode* child = mInactiveNodes->mChild;
+	if (!child) {
 		return;
 	}
 
@@ -1182,12 +1183,10 @@ void HoudaiShotGunMgr::emitShotGun()
 
 	xVec.normalise();
 
-	Game::EnemyParmsBase::Parms& parms = CG_GENERALPARMS(mOwner);
-
-	const f32 factor = parms.mAttackHitAngle.mValue * 2.0f;
-	xVec.x += randWeightFloat(factor) - parms.mAttackHitAngle.mValue;
-	xVec.y += randWeightFloat(factor) - parms.mAttackHitAngle.mValue;
-	xVec.z += randWeightFloat(factor) - parms.mAttackHitAngle.mValue;
+	const f32 factor = CG_GENERALPARMS(mOwner).mAttackHitAngle() * 2.0f;
+	xVec.x += randWeightFloat(factor) - CG_GENERALPARMS(mOwner).mAttackHitAngle();
+	xVec.y += randWeightFloat(factor) - CG_GENERALPARMS(mOwner).mAttackHitAngle();
+	xVec.z += randWeightFloat(factor) - CG_GENERALPARMS(mOwner).mAttackHitAngle();
 
 	xVec.normalise();
 
@@ -1195,6 +1194,7 @@ void HoudaiShotGunMgr::emitShotGun()
 	right.scale(45.0f);
 	gunPos += right;
 
+	HoudaiShotGunNode* node = static_cast<HoudaiShotGunNode*>(child);
 	node->setPosition(gunPos);
 
 	xVec.scale(600.0f);
@@ -1580,13 +1580,13 @@ bool HoudaiShotGunMgr::searchShotGunRotation()
  */
 bool HoudaiShotGunMgr::returnShotGunRotation()
 {
-	const f32 yawDifference = _normaliseAngle(mYaw);
-	mYaw                    = _clampAngle(mYaw, yawDifference, 0.025f);
+	f32 targetYaw = getNearestZeroAngle(mYaw);
+	mYaw          = approach(mYaw, targetYaw, 0.025f);
 
-	const f32 pitchDifference = _normaliseAngle(mPitch);
-	mPitch                    = _clampAngle(mPitch, pitchDifference, 0.025f);
+	f32 targetPitch = getNearestZeroAngle(mPitch);
+	mPitch          = approach(mPitch, targetPitch, 0.025f);
 
-	if (absVal(mYaw - yawDifference) < 0.01f && absVal(mPitch - pitchDifference) < 0.01f) {
+	if (absVal(mYaw - targetYaw) < 0.01f && absVal(mPitch - targetPitch) < 0.01f) {
 		return true;
 	}
 

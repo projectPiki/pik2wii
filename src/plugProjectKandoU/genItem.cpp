@@ -3,6 +3,12 @@
 #include "Game/itemMgr.h"
 #include "types.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "genItem";
+}
+
 /**
  * @note Address: 0x801ACD20
  * @note Size: 0x9C
@@ -174,5 +180,9 @@ Creature* GenItem::birth(Game::GenArg* arg)
 	return baseItem;
 }
 
-static const char unusedGenItemStr[] = "オニョンを発生";
+static void dummy()
+{
+	OSReport("オニョンを発生");
+}
+
 } // namespace Game

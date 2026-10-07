@@ -36,7 +36,7 @@ struct Vector3 {
 	{
 	}
 
-	inline Vector3(JGeometry::TVec3<T> vec) { __memcpy(this, &vec, sizeof(Vector3)); }
+	inline Vector3(JGeometry::TVec3<T> vec) { FAST_COPY(this, &vec, sizeof(Vector3)); }
 	inline Vector3(Vec& vec)
 	{
 		x = vec.x;
@@ -97,7 +97,7 @@ struct Vector3 {
 		this->y /= other.y;
 		this->z /= other.z;
 	}
-	inline Vector3 operator-() const;
+	inline Vector3 operator-() const { return Vector3<T>(-x, -y, -z); }
 
 	// Set Functions
 	inline void set(const Vector3& vec)
@@ -127,19 +127,29 @@ struct Vector3 {
 	}
 
 	// Utility Functions
-	inline void negate();
-	inline void negate2();
+	inline void negate()
+	{
+		x = -x;
+		y = -y;
+		z = -z;
+	}
 	inline void addXZ(const Vector3& other);
 	inline void addXY(const Vector3& other);
 	inline void scaleXY(const Vector3& other);
 	inline void scale2D(T other);
 	inline void set2D(const Vector3& other);
-	inline void setZero();
+	inline void setZero() { this->x = this->y = this->z = 0; }
 	inline void add(const Vector3& other);
 	inline void add(Vector3& a, Vector3& b);
 	inline void sub(const Vector3& other);
 	inline void sub(Vector3& a, Vector3& b);
-	inline void setMiddle(Vector3& a, Vector3& b);
+	inline void setMiddle(Vector3& a, Vector3& b)
+	{
+		x = (a.x + b.x) * 0.5f;
+		y = (a.y + b.y) * 0.5f;
+		z = (a.z + b.z) * 0.5f;
+	}
+	static inline Vector3<T> add2(const Vector3& a, const Vector3& b) { return Vector3(a.x + b.x, a.y + b.y, a.z + b.z); }
 	static inline Vector3<T> sub2(const Vector3& a, const Vector3& b) { return Vector3(a.x - b.x, a.y - b.y, a.z - b.z); }
 
 	// Direction Functions
@@ -152,24 +162,42 @@ struct Vector3 {
 		return res;
 	}
 	static inline T getDirectionFromTo(const Vector3& from, Vector3& to);
-	static inline T getFlatDirectionFromTo(Vector3& from, Vector3& to);
+	static inline T getFlatDirectionFromTo(Vector3& from, Vector3& to)
+	{
+		to -= from;
+		to.y = 0.0f;
+		return to.normalise();
+	}
 	inline T setDirectionFromTo(const Vector3& from, const Vector3& to);
 	inline void setFlatDirectionFromTo(Vector3& from, Vector3& to);
-	inline void toFlatDirection();
+	inline void toFlatDirection()
+	{
+		this->y = 0.0f;
+		this->normalise();
+	}
 
 	// Calculation Functions
 	inline T dot(const Vector3& other) { return this->x * other.x + this->y * other.y + this->z * other.z; }
 	inline Vector3 cross(const Vector3& other)
 	{
-		Vector3 outVec;
-		outVec.x = y * other.z - z * other.y;
-		outVec.y = z * other.x - x * other.z;
-		outVec.z = x * other.y - y * other.x;
-		return outVec;
+		T dx = y * other.z - z * other.y;
+		T dy = z * other.x - x * other.z;
+		T dz = x * other.y - y * other.x;
+		return Vector3(dx, dy, dz);
 	}
 	inline void cross(const Vector3& v1, const Vector3& v2)
 	{
 		set(v1.y * v2.z - v1.z * v2.y, v1.z * v2.x - v1.x * v2.z, v1.x * v2.y - v1.y * v2.z);
+	}
+	inline void CP(const Vector3& other)
+	{
+		Vector3 tmp;
+		tmp.x = y * other.z - z * other.y;
+		tmp.y = z * other.x - x * other.z;
+		tmp.z = x * other.y - y * other.x;
+		x     = tmp.x;
+		y     = tmp.y;
+		z     = tmp.z;
 	}
 	inline T absX() { return (T)absF(x); }
 	inline T absY() { return (T)absF(y); }
@@ -177,12 +205,17 @@ struct Vector3 {
 	inline bool isBoundedX(T bound) { return absX() < bound; }
 	inline bool isBoundedY(T bound) { return absY() < bound; }
 	inline bool isBoundedZ(T bound) { return absZ() < bound; }
-	inline void scale(T scale);
+	inline void scale(T scale)
+	{
+		x *= scale;
+		y *= scale;
+		z *= scale;
+	}
 
 	// Magnitude Functions
-	inline T sqrMagnitude() const { return this->x * this->x + this->y * this->y + this->z * this->z; }
+	inline T sqrLength() const { return this->x * this->x + this->y * this->y + this->z * this->z; }
 	inline T sqrMagnitude2D() const { return this->x * this->x + this->z * this->z; }
-	inline T qLength() const { return pikmin2_sqrtf(this->sqrMagnitude()); }
+	inline T qLength() const { return pikmin2_sqrtf(this->sqrLength()); }
 	inline T qLength2D() const { return pikmin2_sqrtf(this->sqrMagnitude2D()); }
 	inline T qNormalise()
 	{
@@ -198,9 +231,15 @@ struct Vector3 {
 	}
 
 	// Distance Functions
-	inline T qDistance(Vector3& them);
-	inline T sqrDistanceToSphere(Vector3& them);
-	static inline T distance(Vector3& a, Vector3& b);
+	inline T qDistance(Vector3& them)
+	{
+		T diffX = this->x - them.x;
+		T diffY = this->y - them.y;
+		T diffZ = this->z - them.z;
+
+		return pikmin2_sqrtf(SQUARE(diffX) + SQUARE(diffY) + SQUARE(diffZ));
+	}
+	static inline T distance(Vector3& a, Vector3& b) { return (a - b).length(); }
 	T distance(Vector3&);
 	T distance2D(Vector3&);
 	T sqrDistance(Vector3& them)
@@ -222,10 +261,12 @@ struct Vector3 {
 
 	// Length and Normalise Functions
 	T length() const;
-	T lengthWeird() const;
+	T magnitude() const; // this is only used once in Kando's library, but seems necessary
 	T normalise();
+	T normalize(); // this is ALSO only used once in Kando's library, but seems necessary
 	T length2D() const;
 	T normalise2D();
+	static inline T normalise(Vector3<T>& vec);
 
 	// I/O Functions
 	void read(Stream&);
@@ -240,11 +281,9 @@ typedef Vector3<int> Vector3i;
 
 inline Vector3f operator+(const Vector3f& a, const Vector3f& b)
 {
-	return Vector3f(a.x + b.x, a.y + b.y, a.z + b.z);
+	return Vector3f::add2(a, b);
 }
 
-// Using sub2 here fixes inline depth issues for navi_demoCheck and itemUjamushi
-// (panModokiState has an instance of needing to call sub2 directly because its quirky like that)
 inline Vector3f operator-(const Vector3f& a, const Vector3f& b)
 {
 	return Vector3f::sub2(a, b);
@@ -310,39 +349,9 @@ inline T Vector3<T>::getDirectionFromTo(const Vector3& from, Vector3& to)
 }
 
 template <typename T>
-inline T Vector3<T>::getFlatDirectionFromTo(Vector3& from, Vector3& to)
-{
-	to -= from;
-	to.y = 0.0f;
-	return to.normalise();
-}
-
-template <typename T>
 inline Vector3<T> Vector3<T>::operator*(const Vector3<T>& other) const
 {
 	return Vector3<T>(x * other.x, y * other.y, z * other.z);
-}
-
-template <typename T>
-inline void Vector3<T>::negate()
-{
-	x *= -1.0f;
-	y *= -1.0f;
-	z *= -1.0f;
-}
-
-template <typename T>
-inline void Vector3<T>::negate2()
-{
-	x = -x;
-	y = -y;
-	z = -z;
-}
-
-template <typename T>
-inline Vector3<T> Vector3<T>::operator-() const
-{
-	return Vector3<T>(-x, -y, -z);
 }
 
 template <typename T>
@@ -385,22 +394,10 @@ inline void Vector3<T>::set2D(const Vector3& other)
 }
 
 template <typename T>
-inline void Vector3<T>::setZero()
-{
-	this->x = this->y = this->z = 0;
-}
-
-template <typename T>
 inline T Vector3<T>::setDirectionFromTo(const Vector3& from, const Vector3& to)
 {
 	*this = to - from;
 	return this->normalise();
-}
-
-template <typename T>
-inline T Vector3<T>::distance(Vector3& a, Vector3& b)
-{
-	return (a - b).length();
 }
 
 template <typename T>
@@ -432,22 +429,6 @@ inline void Vector3<T>::sub(Vector3& a, Vector3& b)
 }
 
 template <typename T>
-inline void Vector3<T>::setMiddle(Vector3& a, Vector3& b)
-{
-	x = (a.x + b.x) * 0.5f;
-	y = (a.y + b.y) * 0.5f;
-	z = (a.z + b.z) * 0.5f;
-}
-
-template <typename T>
-inline void Vector3<T>::scale(T scale)
-{
-	x *= scale;
-	y *= scale;
-	z *= scale;
-}
-
-template <typename T>
 inline void Vector3<T>::setFlatDirectionFromTo(Vector3& from, Vector3& to)
 {
 	*this   = to - from;
@@ -455,47 +436,20 @@ inline void Vector3<T>::setFlatDirectionFromTo(Vector3& from, Vector3& to)
 	this->normalise();
 }
 
-template <typename T>
-inline void Vector3<T>::toFlatDirection()
-{
-	this->y = 0.0f;
-	this->normalise();
-}
-
-template <typename T>
-inline T Vector3<T>::qDistance(Vector3& them)
-{
-	T diffX = this->x - them.x;
-	T diffY = this->y - them.y;
-	T diffZ = this->z - them.z;
-
-	return pikmin2_sqrtf(SQUARE(diffX) + SQUARE(diffY) + SQUARE(diffZ));
-}
-
-template <typename T>
-inline T Vector3<T>::sqrDistanceToSphere(Vector3& them)
-{
-	T diffX = this->x - them.x;
-	T diffY = this->y - them.y;
-	T diffZ = this->z - them.z;
-
-	return SQUARE(diffX) + SQUARE(diffY) + SQUARE(diffZ);
-}
-
 template <>
 inline f32 Vector3f::length() const
 {
-	f32 sqrLen = sqrMagnitude();
-	return stdSqrtf(sqrLen);
+	f32 sqrLen = sqrLength();
+	return sqrtfClamped(sqrLen);
 }
 
 template <>
-inline f32 Vector3f::lengthWeird() const
+inline f32 Vector3f::magnitude() const
 {
-	if (sqrMagnitude() > 0.0f) {
+	if (sqrLength() > 0.0f) {
 		Vector3f vec = Vector3f(x, y, z);
 		f32 sqrLen   = SQUARE(vec.x) + SQUARE(y) + SQUARE(z);
-		return sqrtf2(sqrLen);
+		return sqrtf(sqrLen);
 	} else {
 		return 0.0f;
 	}
@@ -504,8 +458,13 @@ inline f32 Vector3f::lengthWeird() const
 template <>
 inline f32 Vector3f::length2D() const
 {
-	f32 sqrLen = sqrMagnitude2D();
-	return stdSqrtf(sqrLen);
+	if (sqrMagnitude2D() > 0.0f) {
+		Vector3f vec = Vector3f(x, y, z);
+		f32 sqrLen   = SQUARE(vec.x) + SQUARE(z);
+		return sqrtfInPlace(sqrLen);
+	} else {
+		return 0.0f;
+	}
 }
 
 template <>
@@ -519,6 +478,22 @@ inline f32 Vector3f::normalise()
 		y *= norm;
 		z *= norm;
 		return len;
+	}
+	return 0.0f;
+}
+
+template <>
+inline f32 Vector3f::normalize()
+{
+	Vector3f vec = *this;
+	vec.y *= vec.y;
+	vec.z *= vec.z;
+	f32 dist = vec.y + vec.x * vec.x + vec.z;
+	dist     = (dist > 0.0f) ? sqrtfInPlace(dist) : 0.0f;
+	if (dist > 0.0f) {
+		f32 norm = 1.0f / dist;
+		*this    = *this * norm;
+		return dist;
 	}
 	return 0.0f;
 }
@@ -539,10 +514,25 @@ inline f32 Vector3f::normalise2D()
 }
 
 template <>
+inline f32 Vector3f::normalise(Vector3f& vec)
+{
+	vec.y *= vec.y;
+	vec.z *= vec.z;
+	f32 dist = vec.y + vec.x * vec.x + vec.z;
+	dist     = (dist > 0.0f) ? sqrtfInPlace(dist) : 0.0f;
+	if (dist > 0.0f) {
+		f32 norm = 1.0f / dist;
+		vec      = vec * norm;
+		return dist;
+	}
+	return 0.0f;
+}
+
+template <>
 inline f32 Vector3f::distance(Vector3f& them)
 {
 	f32 sqrLen = sqrDistance(them);
-	return stdSqrtf(sqrLen);
+	return sqrtfClamped(sqrLen);
 }
 
 template <>
@@ -555,7 +545,7 @@ inline f32 Vector3f::distance2D(Vector3f& them)
 	return Vector3f(diffX, diffY, diffZ).length2D();
 }
 
-// this is wacky and shows up in efxEnemy.cpp
+// JGeometry distances use their own sqrt function, not ours
 template <>
 inline f32 Vector3f::distance(JGeometry::TVec3f& them)
 {
@@ -567,205 +557,27 @@ inline f32 Vector3f::distance(JGeometry::TVec3f& them)
 	f32 Y = diffY * diffY;
 	f32 Z = diffZ * diffZ;
 
-	f32 mag = X + Y + Z;
-	if (mag <= 0.0f) {
-		return mag;
-	}
-
-	f32 root = __frsqrte(mag);
-	f32 v1   = root * root;
-	f32 v2   = 0.5f * root;
-	f32 v3   = v2 * (3.0f - mag * v1);
-	return mag * v3;
+	return JGeometry::TUtil<f32>::sqrt(X + Y + Z);
 }
 
-inline bool isWithinSphere(Vector3f& pToCheck, f32 pRadius)
+inline f32 qdist3(const Vector3f& a, const Vector3f& b)
 {
-	f32 distance = pToCheck.sqrMagnitude2D();
-	f32 radius   = pRadius;
-	radius *= radius;
-	return distance > radius;
+	return qdist3(a.x, a.y, a.z, b.x, b.y, b.z);
 }
 
-inline f32 stickMagnitude(Vector3f& vec)
+inline bool insideRadius2D(f32 r, Vector3f& vec1, Vector3f& vec2)
 {
-	Vector3f a = vec;
-	a.z *= a.z;
-	return _sqrtf(a.x * a.x + a.y * a.y + a.z);
+	return vec1.sqrDistance2D(vec2) < r * r;
 }
 
-inline f32 _length2(Vector3f& vec)
+inline bool outsideRadius2D(f32 r, Vector3f& vec1, Vector3f& vec2)
 {
-	Vector3f a = vec;
-	a.x *= a.x;
-	a.y *= a.y;
-	return _sqrtf(a.x + a.z * a.z + a.y);
-}
-
-inline f32 _length(Vector3f& vec)
-{
-	Vector3f a = vec;
-	a.y *= a.y;
-	a.z *= a.z;
-	return _sqrtf(a.y + a.x * a.x + a.z);
-}
-
-inline f32 _normalise2(Vector3f& diff)
-{
-	f32 dist = _length(diff);
-	if (dist > 0.0f) {
-		f32 norm = 1.0f / dist;
-		diff     = diff * norm;
-		return dist;
-	}
-	return 0.0f;
-}
-
-inline void _normaliseScale(Vector3f& vec, f32 scale)
-{
-	Vector2f sqr(vec.z * vec.z, vec.x * vec.x + vec.y * vec.y);
-	f32 length = sqr.x + sqr.y;
-	__sqrtf(length, &length);
-
-	if (length > 0.0f) {
-		f32 norm = 1.0f / length;
-		vec *= norm;
-	}
-
-	vec *= scale;
-}
-
-inline f32 _normaliseXZ(Vector3f& vec)
-{
-	Vector2f sqr(vec.z * vec.z, vec.x * vec.x + vec.y * vec.y);
-	f32 length = sqr.x + sqr.y;
-	__sqrtf(length, &length);
-
-	if (length > 0.0f) {
-		f32 norm = 1.0f / length;
-		vec.x *= norm;
-		vec.z *= norm;
-	}
-
-	return length;
-}
-
-inline f32 _normaliseVec(Vector3f& vec)
-{
-	Vector2f sqr(vec.z * vec.z, vec.x * vec.x + vec.y * vec.y);
-	f32 length = sqr.x + sqr.y;
-	__sqrtf(length, &length);
-
-	if (length > 0.0f) {
-		f32 norm = 1.0f / length;
-		vec      = vec * norm;
-		return length;
-	}
-	return 0.0f;
-}
-
-inline f32 sqrDistanceXZ(Vector3f& vec1, Vector3f& vec2)
-{
-	f32 x = vec1.x - vec2.x;
-	f32 z = vec1.z - vec2.z;
-	return x * x + z * z;
-}
-
-inline bool inRadius(f32 r, Vector3f& vec1, Vector3f& vec2)
-{
-	return sqrDistanceXZ(vec1, vec2) < r * r;
-}
-
-inline bool outsideRadius(f32 r, Vector3f& vec1, Vector3f& vec2)
-{
-	return sqrDistanceXZ(vec1, vec2) > r * r;
-}
-
-inline f32 _distanceXZ(Vector3f& vec1, Vector3f& vec2)
-{
-	Vector2f vec;
-	vec.x = vec1.x - vec2.x;
-	vec.y = vec1.z - vec2.z;
-	return _sqrtf(vec.x * vec.x + vec.y * vec.y);
-}
-
-inline f32 _distanceXZflag(Vector3f& vec1, Vector3f& vec2)
-{
-	Vector2f vec;
-	vec.x = vec1.x - vec2.x;
-	vec.y = vec1.z - vec2.z;
-	vec.y *= vec.y;
-	return _sqrtf(vec.y + vec.x * vec.x);
-}
-
-inline void sumXY(Vector3f vec, f32* sum)
-{
-	*sum = (vec.x *= vec.x) + (vec.y *= vec.y);
-}
-
-inline void sumZ(Vector3f vec, f32* sum)
-{
-	f32 z = vec.z * vec.z;
-	*sum  = z + *sum;
-}
-
-inline f32 _normaliseDistance(Vector3f& vec1, Vector3f& vec2)
-{
-	Vector3f vec = vec1 - vec2;
-	Vector2f sqr(vec.z * vec.z, vec.x * vec.x + vec.y * vec.y);
-	f32 length = sqr.x + sqr.y;
-	__sqrtf(length, &length);
-
-	if (length > 0.0f) {
-		f32 norm = 1.0f / length;
-		vec      = vec * norm;
-		return length;
-	}
-	return 0.0f;
-}
-
-inline void setAccel(Vector3f& outputVec, const Vector3f& inputVec, f32 massRatio, f32 fps, f32 groundFactor, f32 airFactor)
-{
-	outputVec.x = inputVec.x * (groundFactor * fps * massRatio);
-	outputVec.z = inputVec.z * (groundFactor * fps * massRatio);
-	outputVec.y = inputVec.y * (airFactor * fps * massRatio);
-}
-
-inline void setOpAccel(Vector3f& outputVec, const Vector3f& inputVec, f32 massRatio, f32 fps, f32 groundFactor, f32 airFactor)
-{
-	outputVec.x = -inputVec.x * (groundFactor * fps * massRatio);
-	outputVec.z = -inputVec.z * (groundFactor * fps * massRatio);
-	outputVec.y = -inputVec.y * (airFactor * fps * massRatio);
-}
-
-inline void addAccel(Vector3f& outputVec, const Vector3f& inputVec, f32 massRatio, f32 fps, f32 groundFactor, f32 airFactor)
-{
-	outputVec.x += inputVec.x * (groundFactor * fps * massRatio);
-	outputVec.z += inputVec.z * (groundFactor * fps * massRatio);
-	outputVec.y += inputVec.y * (airFactor * fps * massRatio);
+	return vec1.sqrDistance2D(vec2) > r * r;
 }
 
 inline Vector3f cross(Vector3f& vec1, Vector3f& vec2)
 {
 	return Vector3f(vec1.y * vec2.z - vec1.z * vec2.y, vec1.z * vec2.x - vec1.x * vec2.z, vec1.x * vec2.y - vec1.y * vec2.x);
-}
-
-inline Vector3f scaleAndTranslate(const Vector3f& vec1, const Vector3f& vec2, f32 scale)
-{
-	Vector3f outVec;
-	outVec.x = vec1.x * scale + vec2.x;
-	outVec.y = vec1.y * scale + vec2.y;
-	outVec.z = vec1.z * scale + vec2.z;
-	return outVec;
-}
-
-inline f32 sqrDistance(Vector3f& vec1, Vector3f& vec2)
-{
-	f32 x = vec1.x - vec2.x;
-	f32 y = vec1.y - vec2.y;
-	f32 z = vec1.z - vec2.z;
-
-	return x * x + y * y + z * z;
 }
 
 #endif

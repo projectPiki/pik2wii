@@ -205,48 +205,6 @@ u32 CellPyramid::getCheckCount() { return mPassID; }
 // 	// UNUSED FUNCTION
 // }
 
-// inline f32 temp(f32 input) {
-// 	if (input > 0.0f) {
-// 		return (f32)__frsqrte(input) * input;
-// 	}
-// 	return 0.0f;
-// }
-
-// inline f32 fakepikmin2_sqrtf(f32 x)
-// {
-// 	if (!(x > 0.0f)) { // if x <= 0
-// 		return x;
-// 	}
-
-// 	register f32 reg1 = x;
-// 	register f32 reg2 = 0.0f;
-// 	register f32 result;
-
-// #ifdef __MWERKS__ // clang-format off
-// 	asm {
-//       frsqrte reg2, reg1
-//       fmuls result, reg2, reg1
-// 	}
-// #endif // clang-format on
-
-// 	return result;
-// }
-
-// f32 qdist32(f32 x1, f32 y1, f32 z1, f32 x2, f32 y2, f32 z2)
-// {
-// 	f32 xdiff = (x2 - x1);
-// 	f32 ydiff = (y2 - y1);
-// 	f32 zdiff = (z2 - z1);
-
-// 	f32 dist = (SQUARE(xdiff) + SQUARE(ydiff) + SQUARE(zdiff));
-// 	if (dist > 0.0f) {
-// 		dist *= (__frsqrte(dist));
-// 	} else {
-// 		dist = 0.0f;
-// 	}
-// 	return dist;
-// }
-
 /**
  * @note Address: N/A
  * @note Size: 0xB8
@@ -571,18 +529,11 @@ void Cell::rec_resolveColl()
  */
 void Cell::clearAllCollBuffer()
 {
-	// UNUSED FUNCTION
-	// if (mLeg ) {
 	for (CellLeg* leg = mLeg; leg != nullptr; leg = leg->mNext) {
 		if (leg->mObject) {
 			leg->mObject->mCollisionBuffer.clear();
 		}
-		// CellObject* object = leg->mObject;
-		// if (object ) {
-		// 	object->mCollisionBuffer.clear();
-		// }
 	}
-	// }
 }
 
 /**
@@ -592,7 +543,6 @@ void Cell::clearAllCollBuffer()
  */
 void CellLayer::clearAllCollBuffer()
 {
-	// UNUSED FUNCTION
 	for (int i = 0; i < mSizeX * mSizeY; i++) {
 		if (mCells[i].mLeg) {
 			mCells[i].clearAllCollBuffer();
@@ -777,7 +727,6 @@ void Cell::entry(CellLeg* leg, bool isPikiOrNavi)
  */
 void CellLayer::clear()
 {
-	// UNUSED FUNCTION
 	mCurrCell.mNextCell = nullptr;
 	mCurrCell.mPrevCell = nullptr;
 	for (int i = 0; i < mSizeX * mSizeY; i++) {
@@ -792,18 +741,12 @@ void CellLayer::clear()
  */
 void CellLayer::createBottom(int sizeX, int sizeY)
 {
-	mSizeX              = sizeX;
-	mSizeY              = sizeY;
-	mLayerSize          = 1;
-	mLayerIdx           = 0;
-	mCells              = new Cell[mSizeX * mSizeY];
-	mCurrCell.mNextCell = nullptr;
-	mCurrCell.mPrevCell = nullptr;
-
-	for (int i = 0; i < mSizeX * mSizeY; i++) {
-		mCells[i].clear();
-		mCells[i].mLayerIdx = mLayerIdx;
-	}
+	mSizeX     = sizeX;
+	mSizeY     = sizeY;
+	mLayerSize = 1;
+	mLayerIdx  = 0;
+	mCells     = new Cell[mSizeX * mSizeY];
+	clear();
 }
 
 /**
@@ -1590,14 +1533,10 @@ void CellPyramid::entry(CellObject* object, Sys::Sphere& sphere, int& layerIndex
  */
 void CellPyramid::create(BoundBox2d& box, f32 scale)
 {
-	mFreeMemory = JKRHeap::sCurrentHeap->getFreeSize();
+	mFreeMemory = JKRGetCurrentHeap()->getFreeSize();
 
 	mBounds.set(box.mMin.y, box.mMin.x);
-	// setLeftRight(box.mMin.x, box.mMin.y);
-	// mLeft         = box.mMin.x;
-	// mRight        = box.mMax.x;
 
-	// Calculate dimensions in pixels
 	f32 absDiffX    = absF(box.mMax.x - box.mMin.x);
 	f32 absDiffY    = absF(box.mMax.y - box.mMin.y);
 	mScale          = scale;
@@ -1618,16 +1557,15 @@ void CellPyramid::create(BoundBox2d& box, f32 scale)
 	int layerCount = (f32)ceil(log10f(maxDimension) / log10f(2.0f));
 	pow(2.0, (f64)layerCount);
 
-	mLayerCount       = layerCount + 1;
-	mLayers           = new CellLayer[mLayerCount];
-	CellLayer* layer0 = getLayer(0);
-	layer0->createBottom(pixelWidth, pixelHeight);
+	mLayerCount = layerCount + 1;
+	mLayers     = new CellLayer[mLayerCount];
+	mLayers[0].createBottom(pixelWidth, pixelHeight);
 
 	for (int i = 1; i < mLayerCount; i++) {
 		getLayer(i)->pileup(mLayers[i - 1]);
 	}
 
-	mFreeMemory = mFreeMemory - JKRHeap::sCurrentHeap->getFreeSize();
+	mFreeMemory -= JKRGetCurrentHeap()->getFreeSize();
 }
 
 /**

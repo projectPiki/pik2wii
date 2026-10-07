@@ -6,7 +6,7 @@
 
 namespace Sys {
 struct IndexList : public ArrayContainer<int> {
-	virtual ~IndexList() { }                          // _08 (weak)
+	//virtual ~IndexList() { }                          // _08 (weak)
 	virtual void writeObject(Stream& stream, int& p1) // _2C (weak)
 	{
 		stream.writeInt(p1);

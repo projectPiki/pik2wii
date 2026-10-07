@@ -8,7 +8,6 @@
 #include "Game/generalEnemyMgr.h"
 #include "Game/rumble.h"
 #include "PS.h"
-#include "PSM/EnemyBoss.h"
 #include "PSSystem/PSMainSide_ObjSound.h"
 #include "RevoSDK/rand.h"
 #include "nans.h"
@@ -311,13 +310,13 @@ void Obj::getThrowupItemVelocity(Vector3f* velocity)
  */
 void Obj::getTargetPosition()
 {
-	if (sqrDistanceXZ(mPosition, mHomePosition) < SQUARE(C_GENERALPARMS.mTerritoryRadius())) {
+	if (mPosition.sqrDistance2D(mHomePosition) < SQUARE(C_GENERALPARMS.mTerritoryRadius())) {
 		ConditionNotStickClient condition(this);
 		Piki* piki
 		    = EnemyFunc::getNearestPikmin(this, C_GENERALPARMS.mViewAngle.mValue, C_GENERALPARMS.mSightRadius.mValue, nullptr, &condition);
 		if (piki) {
 			mTargetPosition = piki->getPosition();
-		} else if (sqrDistanceXZ(mPosition, mTargetPosition) < 625.0f) {
+		} else if (mPosition.sqrDistance2D(mTargetPosition) < 625.0f) {
 			f32 range       = (C_GENERALPARMS.mTerritoryRadius.mValue - C_GENERALPARMS.mHomeRadius.mValue);
 			f32 randDist    = C_GENERALPARMS.mHomeRadius.mValue + randWeightFloat(range);
 			f32 angleToHome = JMAAtan2Radian(mPosition.x - mHomePosition.x, mPosition.z - mHomePosition.z);

@@ -7,9 +7,6 @@
 #include "PSSystem/SeqTrack.h"
 #include "stream.h"
 
-PSSystem::SeqDataList* PSSystem::SingletonBase<PSSystem::SeqDataList>::sInstance;
-PSSystem::StreamDataList* PSSystem::SingletonBase<PSSystem::StreamDataList>::sInstance;
-
 namespace PSSystem {
 
 /**
@@ -280,6 +277,7 @@ SeqBase::SeqBase(char const* bmsFileName, JAInter::SoundInfo const& info)
 		mBmsFileName = new char[strlen(bmsFileName) + 1];
 		strcpy(mBmsFileName, bmsFileName);
 	}
+	FORCE_DONT_INLINE;
 }
 
 /**
@@ -585,8 +583,8 @@ void StreamBgm::startSeq()
 	P2ASSERTLINE(704, mJaiSound);
 	P2ASSERTLINE(705, mId == mJaiSound->mSoundID);
 	if (mId == P2_STREAM_SOUND_ID(PSSTR_PIKMIN_GREET)) {
-		(*getHandleP())->setVolume(1.0f, 0, SOUNDPARAM_Unk8);
-		(*getHandleP())->setVolume(0.8f, 0, SOUNDPARAM_Unk3);
+		getHandle()->setVolume(1.0f, 0, SOUNDPARAM_Unk8);
+		getHandle()->setVolume(0.8f, 0, SOUNDPARAM_Unk3);
 	} else {
 		setConfigVolume();
 	}
@@ -599,8 +597,8 @@ void StreamBgm::startSeq()
 void StreamBgm::setConfigVolume()
 {
 	f32 vol = PSGetSystemIFA()->mBgmVolume;
-	(*getHandleP())->setVolume(vol, 0, SOUNDPARAM_Unk8);
-	(*getHandleP())->setVolume(0.5f, 0, SOUNDPARAM_Unk3);
+	getHandle()->setVolume(vol, 0, SOUNDPARAM_Unk8);
+	getHandle()->setVolume(0.5f, 0, SOUNDPARAM_Unk3);
 }
 
 /**
@@ -636,7 +634,7 @@ void SeSeq::seqLoadAfter()
  */
 void SeSeq::setConfigVolume()
 {
-	(*getHandleP())->setVolume(1.0f, 0, SOUNDPARAM_Unk3);
+	getHandle()->setVolume(1.0f, 0, SOUNDPARAM_Unk3);
 }
 
 /**

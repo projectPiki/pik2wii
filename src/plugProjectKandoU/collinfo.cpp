@@ -19,6 +19,32 @@
 #include "stream.h"
 #include "types.h"
 
+/**
+ * One of the few remnants of the Age editing tools that probably existed - see P1.
+ *
+ * This lives in here because it's never called or used anywhere else, and its functions
+ * are needed for weak function ordering in this file, so.
+ *
+ * @note Size: 0x198.
+ */
+struct AgePlatform : public Platform {
+	AgePlatform();
+
+	virtual ~AgePlatform() { } // _08 (weak)
+
+	void directCreate(u8*);
+	void createGrid(int, int);
+
+	// Unused/inlined:
+	void setVertices(ArrayContainer<Vector3f>& vertices, Vector3f* array, int count) { vertices.setArray(array, count); }
+	void addVertex(ArrayContainer<Vector3f>& vertices, Vector3f& vertex) { vertices.addOne(vertex); }
+
+	// _00     = VTBL
+	// _00-_1C = Platform
+	Sys::OBBTree mOBBTree;         // _01C
+	Sys::GridDivider mGridDivider; // _14C
+};
+
 bool CollTree::mDebug;
 
 // TODO: fix this up
@@ -201,8 +227,31 @@ Platform* PlatAttacher::getPlatform(int i)
  */
 AgePlatform::AgePlatform()
 {
-	mTriDivider = new Sys::OBBTree[2]; // something here has to generate four weak dtors
-	new Sys::GridDivider[2];
+	Sys::GridInfo info;
+	// some other unknown nonsense here.
+}
+
+/**
+ * @note Address: N/A
+ * @note Size: 0x6C
+ */
+void AgePlatform::directCreate(u8* data)
+{
+	// this is a guess, but it fits the function size + generates the right weak function ordering.
+	RamStream input(data, -1);
+	mOBBTree.read(input);
+	setTriDivider(&mOBBTree);
+	mGridDivider.read(input);
+}
+
+/**
+ * @note Address: N/A
+ * @note Size: 0x40
+ */
+void AgePlatform::createGrid(int x, int z)
+{
+	// again, a guess, but size is right + generates the right weak function ordering.
+	mGridDivider.create(mGridDivider.mBoundingBox, x, z, mTriDivider->mVertexTable, mTriDivider->mTriangleTable);
 }
 
 /**
@@ -243,7 +292,7 @@ void CollTree::createSingleSphere(SysShape::MtxObject* mtxObject, int jointIndex
 
 	mPart->mRadius     = sphere.mRadius;
 	mPart->mBaseRadius = sphere.mRadius;
-	mPart->mOffset     = 0.0f;
+	mPart->mOffset.set(0.0f, 0.0f, 0.0f);
 	mPart->mJointIndex = jointIndex;
 	mPart->mAttribute  = 0;
 	mPart->mCurrentID.setID('root');
@@ -632,7 +681,9 @@ CollPart* CollTree::findCollPart(FindCollPartArg& findArg)
 		for (int i = 0; i < numParts; i++) {
 			CollPart* currPart = partArray[i];
 			if ((!findArg.mCondition || findArg.mCondition->satisfy(currPart)) && currPart->isSphere()) {
-				f32 distance = sqrDistance(findArg.getHitPosition(), currPart->mPosition) - currPart->getSqrRadius();
+				Vector3f diff = findArg.getHitPosition();
+				diff          = Vector3f::sub2(diff, currPart->mPosition);
+				f32 distance  = diff.sqrLength() - currPart->getSqrRadius();
 
 				if (distance < minDist) {
 					foundPart = currPart;
@@ -748,6 +799,10 @@ CollPart* CollTree::getRandomCollPart()
 		if (randIndex >= 16) {
 			JUT_PANICLINE(889, "num=%d : random=%d\n", numParts, randIndex);
 		}
+		if (randIndex >= numParts) {
+			JUT_PANICLINE(895, "getRandomCollPart rand : %d >= %d\n", randIndex, numParts);
+			randIndex = 0;
+		}
 		return partArray[randIndex];
 	}
 	return nullptr;
@@ -795,7 +850,7 @@ void CollPart::init(SysShape::MtxObject* mtxObject)
 	clearRelations();
 	mRadius     = 0.0f;
 	mBaseRadius = 0.0f;
-	mOffset     = 0.0f;
+	mOffset.set(0.0f, 0.0f, 0.0f);
 	mPosition.set(0.0f, 0.0f, 0.0f);
 	mModel      = mtxObject;
 	mJointIndex = -1;
@@ -906,167 +961,6 @@ void CollPart::calcStickLocal(Vector3f& input, Vector3f& localPosition)
 		localPosition.y = tube.getPosRatio(input);
 		break;
 	}
-	/*
-	stwu     r1, -0xf0(r1)
-	mflr     r0
-	stw      r0, 0xf4(r1)
-	stfd     f31, 0xe0(r1)
-	psq_st   f31, 232(r1), 0, qr0
-	stw      r31, 0xdc(r1)
-	stw      r30, 0xd8(r1)
-	stw      r29, 0xd4(r1)
-	mr       r29, r3
-	mr       r30, r4
-	lbz      r0, 0x58(r3)
-	mr       r31, r5
-	cmpwi    r0, 0
-	beq      lbl_801375F8
-	blt      lbl_801377B8
-	cmpwi    r0, 3
-	bge      lbl_801377B8
-	b        lbl_801377A0
-
-lbl_801375F8:
-	lwz      r0, 0x2c(r29)
-	cmpwi    r0, -1
-	beq      lbl_80137648
-	addi     r3, r1, 0x34
-	bl       PSMTXIdentity
-	lfs      f0, 0x20(r29)
-	stfs     f0, 0x40(r1)
-	lfs      f0, 0x24(r29)
-	stfs     f0, 0x50(r1)
-	lfs      f0, 0x28(r29)
-	stfs     f0, 0x60(r1)
-	lwz      r3, 0x5c(r29)
-	lwz      r4, 0x2c(r29)
-	lwz      r12, 0(r3)
-	lwz      r12, 8(r12)
-	mtctr    r12
-	bctrl
-	addi     r4, r1, 0x34
-	addi     r5, r1, 0x94
-	bl       PSMTXConcat
-
-lbl_80137648:
-	addi     r3, r1, 0x94
-	addi     r4, r1, 0x64
-	bl       PSMTXInverse
-	lfs      f0, 0x94(r1)
-	lfs      f1, 0x98(r1)
-	fmuls    f3, f0, f0
-	lfs      f4, 0x9c(r1)
-	fmuls    f2, f1, f1
-	lfs      f0, lbl_80518210@sda21(r2)
-	fmuls    f1, f4, f4
-	fadds    f3, f3, f2
-	fadds    f3, f3, f1
-	fcmpo    cr0, f3, f0
-	ble      lbl_80137690
-	ble      lbl_80137694
-	frsqrte  f0, f3
-	fmuls    f3, f0, f3
-	b        lbl_80137694
-
-lbl_80137690:
-	fmr      f3, f0
-
-lbl_80137694:
-	fabs     f1, f3
-	lfs      f0, lbl_80518220@sda21(r2)
-	frsp     f1, f1
-	fcmpo    cr0, f1, f0
-	bge      lbl_801376BC
-	lfs      f0, lbl_80518210@sda21(r2)
-	stfs     f0, 0(r31)
-	stfs     f0, 4(r31)
-	stfs     f0, 8(r31)
-	b        lbl_801377B8
-
-lbl_801376BC:
-	lfs      f0, lbl_80518224@sda21(r2)
-	mr       r4, r30
-	addi     r3, r1, 0x64
-	addi     r5, r1, 8
-	fdivs    f31, f0, f3
-	bl       PSMTXMultVec
-	lfs      f2, 0xc(r1)
-	lfs      f3, 0x10(r1)
-	lfs      f0, 8(r1)
-	lfs      f1, lbl_80518210@sda21(r2)
-	stfs     f0, 0(r31)
-	stfs     f2, 4(r31)
-	stfs     f3, 8(r31)
-	lfs      f3, 0(r31)
-	lfs      f2, 4(r31)
-	lfs      f4, 8(r31)
-	fmuls    f0, f3, f3
-	fmuls    f2, f2, f2
-	fmuls    f4, f4, f4
-	fadds    f0, f0, f2
-	fadds    f0, f4, f0
-	fcmpo    cr0, f0, f1
-	ble      lbl_80137734
-	fmadds   f0, f3, f3, f2
-	fadds    f2, f4, f0
-	fcmpo    cr0, f2, f1
-	ble      lbl_80137738
-	frsqrte  f0, f2
-	fmuls    f2, f0, f2
-	b        lbl_80137738
-
-lbl_80137734:
-	fmr      f2, f1
-
-lbl_80137738:
-	lfs      f0, lbl_80518210@sda21(r2)
-	fcmpo    cr0, f2, f0
-	ble      lbl_80137770
-	lfs      f1, lbl_80518224@sda21(r2)
-	lfs      f0, 0(r31)
-	fdivs    f1, f1, f2
-	fmuls    f0, f0, f1
-	stfs     f0, 0(r31)
-	lfs      f0, 4(r31)
-	fmuls    f0, f0, f1
-	stfs     f0, 4(r31)
-	lfs      f0, 8(r31)
-	fmuls    f0, f0, f1
-	stfs     f0, 8(r31)
-
-lbl_80137770:
-	lfs      f1, 0x1c(r29)
-	lfs      f0, 0(r31)
-	fmuls    f3, f1, f31
-	lfs      f1, 4(r31)
-	lfs      f2, 8(r31)
-	fmuls    f0, f0, f3
-	fmuls    f1, f1, f3
-	fmuls    f2, f2, f3
-	stfs     f0, 0(r31)
-	stfs     f1, 4(r31)
-	stfs     f2, 8(r31)
-	b        lbl_801377B8
-
-lbl_801377A0:
-	addi     r4, r1, 0x14
-	bl       getTube__8CollPartFRQ23Sys4Tube
-	mr       r4, r30
-	addi     r3, r1, 0x14
-	bl       "getPosRatio__Q23Sys4TubeFRC10Vector3<f>"
-	stfs     f1, 4(r31)
-
-lbl_801377B8:
-	psq_l    f31, 232(r1), 0, qr0
-	lwz      r0, 0xf4(r1)
-	lfd      f31, 0xe0(r1)
-	lwz      r31, 0xdc(r1)
-	lwz      r30, 0xd8(r1)
-	lwz      r29, 0xd4(r1)
-	mtlr     r0
-	addi     r1, r1, 0xf0
-	blr
-	*/
 }
 
 /**
@@ -1116,7 +1010,6 @@ void CollPart::calcStickGlobal(Vector3f& input, Vector3f& globalPosition)
  * @note Address: 0x80137944
  * @note Size: 0x4C8
  */
-// WIP: https://decomp.me/scratch/rvuzC
 void CollPart::calcPoseMatrix(Vector3f& input, Matrixf& poseMatrix)
 {
 	switch (mPartType) {
@@ -1125,8 +1018,8 @@ void CollPart::calcPoseMatrix(Vector3f& input, Matrixf& poseMatrix)
 		makeMatrixTo(mtx);
 
 		Vector3f pos = mtx.getTranslation();
-		pos = pos - input;
-		f32 len = pos.normalise();
+		pos          = Vector3f::sub2(pos, input);
+		f32 len      = pos.normalise();
 
 		if (len == 0.0f) {
 			pos.set(0.0f, 0.0f, 1.0f);
@@ -1158,7 +1051,6 @@ void CollPart::calcPoseMatrix(Vector3f& input, Matrixf& poseMatrix)
 		}
 		Vector3f path = CRSplineTangent(input.y, controls);
 		path.normalise();
-		f32 returnVal = input.x;
 
 		poseMatrix.makeNaturalPosture(path, input.x);
 		break;
@@ -1169,17 +1061,19 @@ void CollPart::calcPoseMatrix(Vector3f& input, Matrixf& poseMatrix)
 
 		Vector3f axis;
 		tube.getAxisVector(axis);
-		axis = -axis;
+		axis.negate();
 
-		Vector3f axisCross = input.cross(axis);
-		_normaliseVec(axisCross);
+		Vector3f axisCross = input;
+		axisCross.CP(axis);
+		axisCross.normalise();
 
-		Vector3f thirdAxis = axisCross.cross(axis);
-		_normaliseVec(thirdAxis);
+		crossProd = axisCross;
+		crossProd.CP(axis);
+		crossProd.normalise();
 
 		poseMatrix.setColumn(0, axisCross);
 		poseMatrix.setColumn(1, axis);
-		poseMatrix.setColumn(2, thirdAxis);
+		poseMatrix.setColumn(2, crossProd);
 		break;
 	}
 	/*
@@ -1567,7 +1461,7 @@ void CollPart::setScale(f32 scale)
  */
 void CollPart::getSphere(Sys::Sphere& sphere)
 {
-	P2ASSERTLINE(1289, isSphere());
+	P2ASSERTLINE(1298, isSphere());
 	f32 radius       = mRadius;
 	sphere.mPosition = mPosition;
 	sphere.mRadius   = radius;
@@ -1579,7 +1473,7 @@ void CollPart::getSphere(Sys::Sphere& sphere)
  */
 void CollPart::getTube(Sys::Tube& tube)
 {
-	P2ASSERTLINE(1295, (isTubeLike()));
+	P2ASSERTLINE(1304, (isTubeLike()));
 	CollPart* child = getChild();
 
 	f32 v1            = mRadius;
@@ -1608,7 +1502,7 @@ MouthCollPart::MouthCollPart()
 	clearRelations();
 	mRadius     = 0.0f;
 	mBaseRadius = 0.0f;
-	mOffset     = 0.0f;
+	mOffset.set(0.0f, 0.0f, 0.0f);
 	mPosition.set(0.0f, 0.0f, 0.0f);
 	mModel      = nullptr;
 	mJointIndex = -1;
@@ -1697,7 +1591,7 @@ void MouthSlots::update()
  */
 void MouthSlots::setup(int slotIndex, SysShape::Model* model, char* jointName)
 {
-	P2ASSERTBOUNDSLINE(1485, 0, slotIndex, mMax);
+	P2ASSERTBOUNDSLINE(1494, 0, slotIndex, mMax);
 	mSlots[slotIndex].setup(model, jointName, Vector3f::zero);
 }
 
@@ -1707,7 +1601,7 @@ void MouthSlots::setup(int slotIndex, SysShape::Model* model, char* jointName)
  */
 MouthCollPart* MouthSlots::getSlot(int slotIndex)
 {
-	P2ASSERTBOUNDSLINE(1491, 0, slotIndex, mMax);
+	P2ASSERTBOUNDSLINE(1500, 0, slotIndex, mMax);
 	return &mSlots[slotIndex];
 }
 
@@ -1742,7 +1636,7 @@ CollPartFactory* CollPartFactory::load(JKRFileLoader* loader, char* path)
 	void* data = loader->getResource(path);
 	CollPartFactory* factory;
 	if (data == nullptr) {
-		factory = nullptr;
+		return nullptr;
 	} else {
 		RamStream input(data, -1);
 		input.mMode = STREAM_MODE_TEXT;
@@ -1789,7 +1683,7 @@ CollPart* CollPart::clone(SysShape::MtxObject* mtxObject, CollPartMgr* mgr)
 		if (copy = birthObj) {
 			copy->init(mtxObject);
 		}
-		JUT_ASSERTLINE(1571, copy != nullptr, "collpart birth failed !\n");
+		JUT_ASSERTLINE(1580, copy != nullptr, "collpart birth failed !\n");
 		copy->init(mtxObject);
 	} else {
 		copy = new CollPart(mtxObject);

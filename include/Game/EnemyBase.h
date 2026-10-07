@@ -12,7 +12,7 @@
 
 #include "SysShape/MotionListener.h"
 
-#include "PSM/EnemyBase.h"
+#include "PSSystem/PSMainSide_ObjSound.h"
 #include "efx/TEnemyPiyo.h"
 
 #include "trig.h"
@@ -404,6 +404,8 @@ struct EnemyBase : public Creature, public SysShape::MotionListener, virtual pub
 	inline bool isAlertLife() { return bool(mHealth < E_GENERALPARMS.mLifeBeforeAlert()); }
 	inline bool isFiniteLifetime() { return mExistDuration != 0.0f; }
 
+	inline void getPosition2D(Vector3f& pos) { pos = Vector3f(mPosition.x, 0.0f, mPosition.z); }
+
 	inline Vector3f getTargetVelocity() { return mTargetVelocity; }
 
 	inline void setTargetVelocity(const Vector3f& ref) { mTargetVelocity = ref; }
@@ -637,7 +639,7 @@ struct EnemyBase : public Creature, public SysShape::MotionListener, virtual pub
 		Vector3f targetCreaturePos;
 		targetCreaturePos.z = mTargetCreature->getPosition().z;
 		targetCreaturePos.x = mTargetCreature->getPosition().x;
-		return inRadius(rad, pos, targetCreaturePos);
+		return insideRadius2D(rad, pos, targetCreaturePos);
 	}
 
 	// Creature: _000 - _178

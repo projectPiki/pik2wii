@@ -10,8 +10,6 @@
 #include "og/newScreen/SMenu.h"
 #include "og/newScreen/ogUtil.h"
 
-static const u32 padding[] = { 0, 0, 0 };
-
 namespace og {
 namespace newScreen {
 
@@ -43,14 +41,14 @@ Game::Navi* getNaviPtr(int index)
  */
 ObjSMenuMap::ObjSMenuMap(char const* name)
 {
-	mMapPosition           = Vector2f(0.0f);
-	mCurrentZoom           = 1.0f;
-	mMapAngle              = 0.0f;
-	mMapTexScale           = Vector2f(1.0f);
-	mMapTextureDimensions  = Vector2f(0.0f);
-	mMapBounds             = Vector2f(0.0f);
-	_108                   = Vector2f(1.0f);
-	mMapRotationOrigin     = Vector2f(0.0f);
+	mMapPosition.set(0.0f, 0.0f);
+	mCurrentZoom = 1.0f;
+	mMapAngle    = 0.0f;
+	mMapTexScale.set(1.0f, 1.0f);
+	mMapTextureDimensions.set(0.0f, 0.0f);
+	mMapBounds.set(0.0f, 0.0f);
+	_108.set(1.0f, 1.0f);
+	mMapRotationOrigin.set(0.0f, 0.0f);
 	mDisp                  = nullptr;
 	mMapCounter            = nullptr;
 	mAnimGroup             = nullptr;
@@ -98,7 +96,8 @@ ObjSMenuMap::~ObjSMenuMap()
  */
 void ObjSMenuMap::calcMapScale()
 {
-	// UNUSED FUNCTION
+	mMapTexScale.x = mMapBounds.x / mMapTextureDimensions.x;
+	mMapTexScale.y = mMapBounds.y / mMapTextureDimensions.y;
 }
 
 /**
@@ -107,27 +106,25 @@ void ObjSMenuMap::calcMapScale()
  */
 void ObjSMenuMap::calcMapPos(Vector2f pos, Vector2f* outPos)
 {
-	Vector2f newPos(0.0f);
-	if (mDisp->mInCave) {
-		Vector2f offset;
-		offset.x = -0.2f + pos.x * 0.047f;
-		offset.y = -0.6f + pos.y * 0.047f;
-		newPos.x += offset.x;
-		newPos.y += offset.y;
+	f32 x    = pos.x;
+	f32 y    = pos.y;
+	f32 mapX = outPos->x;
+	f32 mapY = outPos->y;
 
+	if (mDisp->mInCave) {
+		mapX += -0.2f + x * 0.047f;
+		mapY += -0.6f + y * 0.047f;
 	} else {
-		f32 xOffset = newPos.x;
+		f32 xOffset = mapX;
 		if (mDisp->mCourseIndex == og::Screen::DispMemberSMenuMap::COURSE_Last) {
 			xOffset = (mMapTextureDimensions.x * 1400.0f) / 4705.6f;
 		}
-		Vector2f offset;
-		offset.x = 24.5f + (mMapTextureDimensions.x / 2 + pos.x * 0.058f) + xOffset;
-		offset.y = -8.85f + (mMapTextureDimensions.y / 2 + pos.y * 0.058f);
-		newPos.x += offset.x;
-		newPos.y += offset.y;
+		mapX += 24.5f + (mMapTextureDimensions.x / 2 + x * 0.058f) + xOffset;
+		mapY += -8.85f + (mMapTextureDimensions.y / 2 + y * 0.058f);
 	}
 
-	*outPos = newPos;
+	outPos->x = mapX;
+	outPos->y = mapY;
 }
 
 /**
@@ -147,7 +144,7 @@ void ObjSMenuMap::setMapTexture()
 			mMapTexPane->changeTexture(mRadarMapTexture->mTexInfo, 0);
 			mUpdateCaveTex = 1;
 		} else {
-			JUT_PANICLINE(390, "SMenuMap : randMapMgr is not found!!!\n");
+			JUT_PANICLINE(391, "SMenuMap : randMapMgr is not found!!!\n");
 		}
 	} else {
 		switch (mDisp->mCourseIndex) {
@@ -202,9 +199,6 @@ void ObjSMenuMap::setMapPos()
 			mMapPosition.y = -mapPos.y;
 		}
 	}
-	mMapTexScale.x = mMapBounds.x / mMapTextureDimensions.x;
-	mMapTexScale.y = mMapBounds.y / mMapTextureDimensions.y;
-	// UNUSED FUNCTION
 }
 
 /**
@@ -294,6 +288,7 @@ void ObjSMenuMap::initMapIcon(JKRArchive* arc)
 
 	setMapTexture();
 	setMapPos();
+	calcMapScale();
 	setCompass();
 
 	// set up list of all radar map icon panes
@@ -369,7 +364,8 @@ void ObjSMenuMap::initMapIcon(JKRArchive* arc)
 						copyPic->setBlack(black);
 					}
 					if (objType == Radar::MAP_INCOMPLETE_CAVE || objType == Radar::MAP_COMPLETED_CAVE) {
-						u64 caveTag = og::Screen::maskTag(caveIDtoMsgID(cPoint->mCaveID), 1, 3);
+						u64 caveTag = caveIDtoMsgID(cPoint->mCaveID);
+						caveTag     = og::Screen::maskTag(caveTag, 1, 3);
 						appendCaveName(copyPic, (u16)count, caveTag);
 					}
 					mRadarPaneList[count][0] = copyPic;
@@ -1337,25 +1333,9 @@ void ObjSMenuMap::transMap()
 	f32 angle    = (mMapAngle * TAU) / 360.0f;
 	f32 anglecos = cosf(angle);
 	f32 anglesin = sinf(angle);
-	Vector2f inputs;
-	inputs.x = mController->getMainStickX();
-	inputs.y = mController->getMainStickY();
-
-	if (mController->isButtonHeld(JUTGamePad::PRESS_DPAD_UP)) {
-		inputs.y = 1.0f;
-	}
-	if (mController->isButtonHeld(JUTGamePad::PRESS_DPAD_DOWN)) {
-		inputs.y = -1.0f;
-	}
-	if (mController->isButtonHeld(JUTGamePad::PRESS_DPAD_LEFT)) {
-		inputs.x = -1.0f;
-	}
-	if (mController->isButtonHeld(JUTGamePad::PRESS_DPAD_RIGHT)) {
-		inputs.x = 1.0f;
-	}
-	f32 X   = SQUARE(inputs.x);
-	f32 Y   = SQUARE(inputs.y);
-	f32 mag = _sqrtf(X + Y);
+	f32 X = mController->getMainStickX();
+	f32 Y = mController->getMainStickY();
+	f32 mag = sqrtfClamped(SQUARE(X) + SQUARE(Y));
 	if (mag > 1.0f) {
 		mag = 1.0f;
 	}
@@ -1364,22 +1344,22 @@ void ObjSMenuMap::transMap()
 		diff = 0.0f;
 	f32 move = getMapAdjustVal(diff, factor);
 
-	if (inputs.x > 0.1f) {
+	if (X > 0.1f) {
 		mMapPosition.x -= move * anglecos;
 		mMapPosition.y -= move * anglesin;
 		ogSound->setScroll();
 	}
-	if (inputs.x < -0.1f) {
+	if (X < -0.1f) {
 		mMapPosition.x += move * anglecos;
 		mMapPosition.y += move * anglesin;
 		ogSound->setScroll();
 	}
-	if (inputs.y > 0.1f) {
+	if (Y > 0.1f) {
 		mMapPosition.x -= move * anglesin;
 		mMapPosition.y += move * anglecos;
 		ogSound->setScroll();
 	}
-	if (inputs.y < -0.1f) {
+	if (Y < -0.1f) {
 		mMapPosition.x += move * anglesin;
 		mMapPosition.y -= move * anglecos;
 		ogSound->setScroll();

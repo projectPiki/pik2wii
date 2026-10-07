@@ -38,7 +38,7 @@ struct CounterKeta {
 		mPicture      = pic;
 		mTextureIndex = 0;
 		mScaleMgr     = new ScaleMgr;
-		mSize         = Vector2f(1.0f);
+		mSize.set(1.0f, 1.0f);
 	}
 
 	void setSuji(ResTIMG**, u32);

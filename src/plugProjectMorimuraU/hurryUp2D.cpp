@@ -41,12 +41,10 @@ void THuWhitePaneSet::drawSelf(f32 height, f32 width, Mtx* mtx)
 	GXLoadPosMtxImm(test, 0);
 	GXBegin(GX_QUADS, GX_VTXFMT0, 4);
 
-	f32 depth = 0.0f;
-
-	GXPosition3f32(width, height, depth);
-	GXPosition3f32(xOffs, height, depth);
-	GXPosition3f32(xOffs, yOffs, depth);
-	GXPosition3f32(width, yOffs, depth);
+	GXPosition3f32(width, height, 0.0f);
+	GXPosition3f32(xOffs, height, 0.0f);
+	GXPosition3f32(xOffs, yOffs, 0.0f);
+	GXPosition3f32(width, yOffs, 0.0f);
 
 	GXSetDstAlpha(GX_FALSE, 0);
 	J2DPictureEx::drawSelf(height, width, mtx);
@@ -56,18 +54,17 @@ void THuWhitePaneSet::drawSelf(f32 height, f32 width, Mtx* mtx)
 	f32 xFactor = f32(255 - mAlpha) * getWidth() / 255.0f;
 	GXLoadPosMtxImm(test, 0);
 	GXBegin(GX_QUADS, GX_VTXFMT0, 4);
-	xFactor = xOffs - xFactor;
 
-	GXPosition3f32(xFactor, height, depth);
-	GXPosition3f32(xOffs, height, depth);
-	GXPosition3f32(xOffs, yOffs, depth);
-	GXPosition3f32(xFactor, yOffs, depth);
+	GXPosition3f32(xOffs - xFactor, height, 0.0f);
+	GXPosition3f32(xOffs, height, 0.0f);
+	GXPosition3f32(xOffs, yOffs, 0.0f);
+	GXPosition3f32(xOffs - xFactor, yOffs, 0.0f);
 
 	GXSetDstAlpha(GX_FALSE, 0);
 	GXSetColorUpdate(GX_TRUE);
 	PSMTXCopy(test, mMatrix.mMatrix.mtxView);
 
-	_1A8 = Vector2f(xFactor, yOffs - getHeight() * 0.5f);
+	_1A8.set(xOffs - xFactor, yOffs - getHeight() * 0.5f);
 }
 
 /**
@@ -142,14 +139,14 @@ void THurryUp2D::doCreate(JKRArchive* arc)
 	mPaneSundown2 = mScreen->search('sun2');
 	P2ASSERTLINE(165, mPaneSundown2);
 
-	mWhitePane = new THuWhitePaneSet(mPaneSunW);
+	mWhitePane = new THuWhitePaneSet(mPaneSunW, "sunh_w.bti");
 	P2ASSERTLINE(169, mPaneSunW);
 	mWhitePane->setBasePosition(J2DPOS_Center);
 	mWhitePane->setAlpha(0);
 	mWhitePane->mAlpha = 0;
 	mPaneSunL->appendChild(mWhitePane);
-	mPane1Pos = JGeometry::TVec2f(mPaneHurry->mOffset);
-	mPane2Pos = JGeometry::TVec2f(mPaneSundown->mOffset);
+	mPane1Pos.set(mPaneHurry->mTranslateX, mPaneHurry->mTranslateY);
+	mPane2Pos.set(mPaneSundown->mTranslateX, mPaneSundown->mTranslateY);
 }
 
 /**
@@ -576,6 +573,8 @@ void THurryUp2D::init()
 	mTimer   = 0.0f;
 	mTimeMax = 0.0f;
 
+	f32 half = 0.5f;
+
 	mParams[1].mAlpha1    = 100;
 	mParams[1].mAlpha2    = 255;
 	mParams[1].mScale     = 0.5f;
@@ -594,13 +593,13 @@ void THurryUp2D::init()
 	mPaneHurry->hide();
 	mPaneHurry->setOffset(mPane1Pos.x + mInitPosX, mPane1Pos.y);
 	mPaneHurry->setBasePosition(J2DPOS_Center);
-	mPaneHurry->updateScale(0.5f);
+	mPaneHurry->updateScale(half);
 	mPaneHurry->setAlpha(100);
 
 	mPaneSundown->hide();
 	mPaneSundown->setOffset(mPane2Pos.x - mInitPosX, mPane2Pos.y);
 	mPaneSundown->setBasePosition(J2DPOS_Center);
-	mPaneSundown->updateScale(0.5f);
+	mPaneSundown->updateScale(half);
 	mPaneSundown->setAlpha(100);
 
 	mPaneSunL->setBasePosition(J2DPOS_Center);
@@ -613,28 +612,25 @@ void THurryUp2D::init()
 	mPaneSunW->hide();
 
 	mPaneHurry2->setBasePosition(J2DPOS_Center);
-	mPaneHurry2->updateScale(0.5f);
+	mPaneHurry2->updateScale(half);
 	mPaneHurry2->hide();
 	mPaneHurry2->setAlpha(100);
 
 	mPaneSundown2->setBasePosition(J2DPOS_Center);
-	mPaneSundown2->updateScale(0.5f);
+	mPaneSundown2->updateScale(half);
 	mPaneSundown2->hide();
 	mPaneSundown2->setAlpha(100);
 
 	if (mDoDraw) {
 		mWhitePane->show();
 		J2DBlend info1(GX_BM_BLEND, GX_BL_DSTALPHA, GX_BL_INVDSTALPHA, GX_LO_CLEAR);
-		// J2DBlend blend(info1);
 		static_cast<J2DPictureEx*>(mPaneSunW)->getMaterial()->mPeBlock.setBlend(info1);
 
 		J2DBlend info2(GX_BM_BLEND, GX_BL_ONE, GX_BL_ZERO, GX_LO_CLEAR);
-		// J2DBlend blend2(info2);
 		mWhitePane->getMaterial()->mPeBlock.setBlend(info2);
 		mWhitePane->mAlpha = 0;
 	} else {
 		J2DBlend info(GX_BM_BLEND, GX_BL_SRCALPHA, GX_BL_INVSRCALPHA, GX_LO_CLEAR);
-		// J2DBlend blend(info);
 		J2DPictureEx* pane = static_cast<J2DPictureEx*>(mScreen->search('sunw'));
 		pane->getMaterial()->mPeBlock.setBlend(info);
 		mWhitePane->hide();
@@ -658,321 +654,6 @@ void THurryUp2D::init()
 	}
 	mTimer = count;
 	changeState(mState, mTimer);
-
-	/*
-	stwu     r1, -0x30(r1)
-	mflr     r0
-	li       r4, 0
-	lfs      f0, lbl_8051E258@sda21(r2)
-	stw      r0, 0x34(r1)
-	li       r0, 0xff
-	lfs      f4, lbl_8051E260@sda21(r2)
-	stw      r31, 0x2c(r1)
-	mr       r31, r3
-	lfs      f3, lbl_8051E270@sda21(r2)
-	stw      r4, 0xb0(r3)
-	li       r3, 0x64
-	lfs      f2, lbl_8051E2B8@sda21(r2)
-	stfs     f0, 0xb4(r31)
-	lfs      f1, lbl_8051E2BC@sda21(r2)
-	stfs     f0, 0xcc(r31)
-	lfs      f0, lbl_8051E2C0@sda21(r2)
-	stb      r3, 0xdc(r31)
-	stb      r0, 0xdd(r31)
-	stfs     f4, 0xe0(r31)
-	stfs     f3, 0xe4(r31)
-	stb      r3, 0xe8(r31)
-	stb      r0, 0xe9(r31)
-	stfs     f2, 0xec(r31)
-	stfs     f1, 0xf0(r31)
-	stb      r0, 0x100(r31)
-	stb      r4, 0x101(r31)
-	stfs     f3, 0x104(r31)
-	stfs     f0, 0x108(r31)
-	lwz      r3, 0x80(r31)
-	stb      r4, 0xb0(r3)
-	lfs      f1, 0x9c(r31)
-	lfs      f0, mInitPosX__Q28Morimura10THurryUp2D@sda21(r13)
-	lwz      r3, 0x80(r31)
-	fadds    f0, f1, f0
-	lfs      f1, 0xa0(r31)
-	stfs     f0, 0xd4(r3)
-	stfs     f1, 0xd8(r3)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x2c(r12)
-	mtctr    r12
-	bctrl
-	lwz      r3, 0x80(r31)
-	li       r4, 4
-	bl       setBasePosition__7J2DPaneF15J2DBasePosition
-	lwz      r3, 0x80(r31)
-	lfs      f0, lbl_8051E260@sda21(r2)
-	stfs     f0, 0xcc(r3)
-	stfs     f0, 0xd0(r3)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x2c(r12)
-	mtctr    r12
-	bctrl
-	lwz      r3, 0x80(r31)
-	li       r4, 0x64
-	lwz      r12, 0(r3)
-	lwz      r12, 0x24(r12)
-	mtctr    r12
-	bctrl
-	lwz      r3, 0x84(r31)
-	li       r0, 0
-	stb      r0, 0xb0(r3)
-	lfs      f1, 0xa4(r31)
-	lfs      f0, mInitPosX__Q28Morimura10THurryUp2D@sda21(r13)
-	lwz      r3, 0x84(r31)
-	fsubs    f0, f1, f0
-	lfs      f1, 0xa8(r31)
-	stfs     f0, 0xd4(r3)
-	stfs     f1, 0xd8(r3)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x2c(r12)
-	mtctr    r12
-	bctrl
-	lwz      r3, 0x84(r31)
-	li       r4, 4
-	bl       setBasePosition__7J2DPaneF15J2DBasePosition
-	lwz      r3, 0x84(r31)
-	lfs      f0, lbl_8051E260@sda21(r2)
-	stfs     f0, 0xcc(r3)
-	stfs     f0, 0xd0(r3)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x2c(r12)
-	mtctr    r12
-	bctrl
-	lwz      r3, 0x84(r31)
-	li       r4, 0x64
-	lwz      r12, 0(r3)
-	lwz      r12, 0x24(r12)
-	mtctr    r12
-	bctrl
-	lwz      r3, 0x90(r31)
-	li       r4, 4
-	bl       setBasePosition__7J2DPaneF15J2DBasePosition
-	lwz      r3, 0x90(r31)
-	lfs      f0, 0xec(r31)
-	stfs     f0, 0xcc(r3)
-	stfs     f0, 0xd0(r3)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x2c(r12)
-	mtctr    r12
-	bctrl
-	lwz      r3, 0x90(r31)
-	li       r4, 0x64
-	lwz      r12, 0(r3)
-	lwz      r12, 0x24(r12)
-	mtctr    r12
-	bctrl
-	lwz      r3, 0x90(r31)
-	li       r0, 0
-	li       r4, 4
-	stb      r0, 0xb0(r3)
-	lwz      r3, 0x88(r31)
-	bl       setBasePosition__7J2DPaneF15J2DBasePosition
-	lwz      r3, 0x88(r31)
-	lfs      f0, lbl_8051E270@sda21(r2)
-	stfs     f0, 0xcc(r3)
-	stfs     f0, 0xd0(r3)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x2c(r12)
-	mtctr    r12
-	bctrl
-	lwz      r3, 0x88(r31)
-	li       r0, 0
-	li       r4, 4
-	stb      r0, 0xb0(r3)
-	lwz      r3, 0x94(r31)
-	bl       setBasePosition__7J2DPaneF15J2DBasePosition
-	lwz      r3, 0x94(r31)
-	lfs      f0, lbl_8051E260@sda21(r2)
-	stfs     f0, 0xcc(r3)
-	stfs     f0, 0xd0(r3)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x2c(r12)
-	mtctr    r12
-	bctrl
-	lwz      r3, 0x94(r31)
-	li       r0, 0
-	li       r4, 0x64
-	stb      r0, 0xb0(r3)
-	lwz      r3, 0x94(r31)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x24(r12)
-	mtctr    r12
-	bctrl
-	lwz      r3, 0x98(r31)
-	li       r4, 4
-	bl       setBasePosition__7J2DPaneF15J2DBasePosition
-	lwz      r3, 0x98(r31)
-	lfs      f0, lbl_8051E260@sda21(r2)
-	stfs     f0, 0xcc(r3)
-	stfs     f0, 0xd0(r3)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x2c(r12)
-	mtctr    r12
-	bctrl
-	lwz      r3, 0x98(r31)
-	li       r0, 0
-	li       r4, 0x64
-	stb      r0, 0xb0(r3)
-	lwz      r3, 0x98(r31)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x24(r12)
-	mtctr    r12
-	bctrl
-	lbz      r0, 0xc4(r31)
-	cmplwi   r0, 0
-	beq      lbl_803471EC
-	lwz      r3, 0x8c(r31)
-	li       r6, 1
-	li       r5, 6
-	li       r4, 7
-	stb      r6, 0xb0(r3)
-	li       r0, 0
-	lwz      r3, 0x88(r31)
-	stb      r6, 0x1c(r1)
-	lwz      r12, 0(r3)
-	stb      r5, 0x1d(r1)
-	lwz      r12, 0x13c(r12)
-	stb      r4, 0x1e(r1)
-	stb      r0, 0x1f(r1)
-	lwz      r0, 0x1c(r1)
-	stw      r0, 0x10(r1)
-	mtctr    r12
-	bctrl
-	lbz      r6, 0x10(r1)
-	li       r4, 1
-	li       r0, 0
-	lbz      r5, 0x11(r1)
-	stb      r6, 0x7c(r3)
-	lbz      r6, 0x12(r1)
-	stb      r5, 0x7d(r3)
-	lbz      r5, 0x13(r1)
-	stb      r6, 0x7e(r3)
-	stb      r5, 0x7f(r3)
-	lwz      r3, 0x8c(r31)
-	stb      r4, 0x18(r1)
-	lwz      r12, 0(r3)
-	stb      r4, 0x19(r1)
-	lwz      r12, 0x13c(r12)
-	stb      r0, 0x1a(r1)
-	stb      r0, 0x1b(r1)
-	lwz      r0, 0x18(r1)
-	stw      r0, 0xc(r1)
-	mtctr    r12
-	bctrl
-	lbz      r5, 0xc(r1)
-	li       r0, 0
-	lbz      r4, 0xd(r1)
-	stb      r5, 0x7c(r3)
-	lbz      r5, 0xe(r1)
-	stb      r4, 0x7d(r3)
-	lbz      r4, 0xf(r1)
-	stb      r5, 0x7e(r3)
-	stb      r4, 0x7f(r3)
-	lwz      r3, 0x8c(r31)
-	stb      r0, 0x1e0(r3)
-	b        lbl_80347270
-
-lbl_803471EC:
-	lwz      r3, 0x7c(r31)
-	li       r6, 1
-	li       r5, 4
-	li       r7, 5
-	lwz      r12, 0(r3)
-	li       r0, 0
-	lis      r4, 0x73756E77@ha
-	stb      r6, 0x14(r1)
-	lwz      r12, 0x3c(r12)
-	addi     r6, r4, 0x73756E77@l
-	stb      r5, 0x15(r1)
-	li       r5, 0
-	stb      r7, 0x16(r1)
-	stb      r0, 0x17(r1)
-	mtctr    r12
-	bctrl
-	lwz      r12, 0(r3)
-	lwz      r0, 0x14(r1)
-	lwz      r12, 0x13c(r12)
-	stw      r0, 8(r1)
-	mtctr    r12
-	bctrl
-	lbz      r5, 8(r1)
-	li       r0, 0
-	lbz      r4, 9(r1)
-	stb      r5, 0x7c(r3)
-	lbz      r5, 0xa(r1)
-	stb      r4, 0x7d(r3)
-	lbz      r4, 0xb(r1)
-	stb      r5, 0x7e(r3)
-	stb      r4, 0x7f(r3)
-	lwz      r3, 0x8c(r31)
-	stb      r0, 0xb0(r3)
-
-lbl_80347270:
-	lbz      r0, mIsSection__Q28Morimura9TTestBase@sda21(r13)
-	li       r6, 0x4b
-	lfs      f2, lbl_8051E2B0@sda21(r2)
-	li       r4, 9
-	cmplwi   r0, 0
-	li       r3, 0x40
-	li       r0, 6
-	beq      lbl_80347294
-	lfs      f2, lbl_8051E2B4@sda21(r2)
-
-lbl_80347294:
-	lwz      r7, 0xac(r31)
-	li       r5, 1
-	lfs      f1, 8(r7)
-	lfs      f0, 0xc(r7)
-	fsubs    f0, f1, f0
-	stw      r5, 0xb0(r31)
-	fdivs    f0, f0, f2
-	fctiwz   f0, f0
-	stfd     f0, 0x20(r1)
-	lwz      r7, 0x24(r1)
-	cmpw     r7, r6
-	blt      lbl_80347304
-	subf     r7, r6, r7
-	li       r5, 2
-	cmpw     r7, r4
-	stw      r5, 0xb0(r31)
-	blt      lbl_80347304
-	subf     r7, r4, r7
-	li       r5, 3
-	cmpw     r7, r3
-	stw      r5, 0xb0(r31)
-	blt      lbl_80347304
-	subf     r7, r3, r7
-	li       r5, 4
-	cmpw     r7, r0
-	stw      r5, 0xb0(r31)
-	blt      lbl_80347304
-	subf     r7, r0, r7
-
-lbl_80347304:
-	xoris    r3, r7, 0x8000
-	lis      r0, 0x4330
-	stw      r3, 0x24(r1)
-	mr       r3, r31
-	lfd      f1, lbl_8051E268@sda21(r2)
-	stw      r0, 0x20(r1)
-	lfd      f0, 0x20(r1)
-	fsubs    f0, f0, f1
-	stfs     f0, 0xb4(r31)
-	lwz      r4, 0xb0(r31)
-	lfs      f1, 0xb4(r31)
-	bl       changeState__Q28Morimura10THurryUp2DFif
-	lwz      r0, 0x34(r1)
-	lwz      r31, 0x2c(r1)
-	mtlr     r0
-	addi     r1, r1, 0x30
-	blr
-	*/
 }
 
 /**
@@ -989,12 +670,12 @@ void THurryUp2D::move()
 	mPaneHurry->setAlpha(alpha);
 	mPaneSundown->setAlpha(alpha);
 
-	if (mPaneHurry->mOffset.x < mPane1Pos.x) {
+	if (mPaneHurry->mTranslateX < mPane1Pos.x) {
 		mPaneHurry2->show();
 		mPaneSundown2->show();
 		f32 scale     = mParams[mState].mScale;
 		f32 gscale    = mParams[mState].mGoalScale;
-		int i         = FABS(mPane1Pos.x - mPaneHurry->mOffset.x) / time;
+		int i         = FABS(mPane1Pos.x - mPaneHurry->mTranslateX) / time;
 		const f32 mod = mScaleRate;
 		for (i; i > 0; i--) {
 			if (scale < gscale) {
@@ -1014,7 +695,7 @@ void THurryUp2D::move()
 		mPaneSundown2->updateScale(scale);
 	}
 
-	if (mPaneHurry->mOffset.x < mPane1Pos.x - mInitPosX && (mPaneHurry2->mScale.x >= mParams[mState].mGoalScale)) {
+	if (mPaneHurry->mTranslateX < mPane1Pos.x - mInitPosX && (mPaneHurry2->mScaleX >= mParams[mState].mGoalScale)) {
 		changeState(StateScaleUp1, 0.0f);
 	}
 }
@@ -1028,7 +709,7 @@ void THurryUp2D::scaleUp1()
 	J2DPane* pane = mPaneSunL;
 	f32 goal      = mParams[mState].mGoalScale;
 	f32 scale;
-	if (pane->mScale.x < goal) {
+	if (pane->mScaleX < goal) {
 		f32 factor = mTimer * mScaleSp1 * 60.0f;
 		scale      = factor * sys->getDeltaTime() + mParams[mState].mScale;
 		if (scale >= goal) {
@@ -1079,7 +760,7 @@ void THurryUp2D::colorUp()
 void THurryUp2D::scaleUp2()
 {
 	f32 goal = mParams[mState].mGoalScale;
-	if (mPaneSunL->mScale.x < goal) {
+	if (mPaneSunL->mScaleX < goal) {
 		f32 factor = mTimer * mScaleSp2 * 60.0f;
 		f32 scale  = factor * sys->getDeltaTime() + mParams[mState].mScale;
 		if (scale > goal) {
@@ -1115,6 +796,7 @@ void THurryUp2D::changeState(int state, f32 speed)
 {
 	mState = state;
 	mTimer = speed;
+	f32 one = 1.0f;
 
 	f32 alpha  = mParams[mState].mAlpha2;
 	mAlphaMod1 = (alpha - mParams[mState].mAlpha1) / (mParams[mState].mGoalScale - mParams[mState].mScale);
@@ -1131,8 +813,8 @@ void THurryUp2D::changeState(int state, f32 speed)
 	case StateScaleUp1:
 		mPaneHurry->hide();
 		mPaneSundown->hide();
-		mPaneHurry2->updateScale(1.0f);
-		mPaneSundown2->updateScale(1.0f);
+		mPaneHurry2->updateScale(one);
+		mPaneSundown2->updateScale(one);
 		mPaneHurry2->show();
 		mPaneSundown2->show();
 		mPaneSunL->show();
@@ -1142,10 +824,10 @@ void THurryUp2D::changeState(int state, f32 speed)
 	case StateScaleUp2:
 		mPaneSunL->setAlpha(0);
 		mPaneSunW->setAlpha(0);
-		mPaneHurry2->updateScale(1.0f);
-		mPaneSundown2->updateScale(1.0f);
-		mPaneSunL->updateScale(1.0f);
-		mPaneSunW->updateScale(1.0f);
+		mPaneHurry2->updateScale(one);
+		mPaneSundown2->updateScale(one);
+		mPaneSunL->updateScale(one);
+		mPaneSunW->updateScale(one);
 		mPaneHurry2->show();
 		mPaneSundown2->show();
 		mPaneSunL->show();

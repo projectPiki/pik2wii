@@ -11,6 +11,12 @@
 #define WATER_NAVI_FLICK_CHANCE (1.0f)
 #define ELEC_NAVI_FLICK_CHANCE  (0.5f)
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "246-BigTreasureAttack";
+}
+
 namespace Game {
 namespace BigTreasure {
 
@@ -32,10 +38,10 @@ AttackShadowNode::AttackShadowNode(int mtxCount)
 void AttackShadowNode::makeShadowSRT()
 {
 	Vector3f matVecs[4];
-	matVecs[0]   = Vector3f(mAngle, 0.0f, 0.0f);
-	matVecs[1]   = Vector3f(0.0f, 15.0f, 0.0f);
-	matVecs[2]   = Vector3f(0.0f, 0.0f, mAngle);
-	matVecs[3]   = Vector3f(mPosition->x, mPosition->y, mPosition->z);
+	matVecs[0].set(mAngle, 0.0f, 0.0f);
+	matVecs[1].set(0.0f, 15.0f, 0.0f);
+	matVecs[2].set(0.0f, 0.0f, mAngle);
+	matVecs[3].set(mPosition->x, mPosition->y, mPosition->z);
 	matVecs[3].y = mapMgr->getMinY(matVecs[3]) + 2.5f;
 
 	mMainMtx->setColumn(0, matVecs[0]);
@@ -114,7 +120,7 @@ bool BigTreasureFireAttack::update()
 			Vector3f creaturePos = creature->getPosition();
 			f32 yDiff            = absVal(pos.y - creaturePos.y);
 
-			if (yDiff < yComp && sqrDistanceXZ(pos, creaturePos) < radius) {
+			if (yDiff < yComp && pos.sqrDistance2D(creaturePos) < radius) {
 				InteractFire fire(mOwner, CG_GENERALPARMS(mOwner).mAttackDamage.mValue);
 				if (creature->isNavi()) {
 					if (!creature->stimulate(fire)) {
@@ -216,7 +222,7 @@ bool BigTreasureGasAttack::update()
 		Creature* creature = static_cast<Creature*>(*iter);
 		if (creature->isAlive()) {
 			Vector3f creaturePos = creature->getPosition();
-			if (absVal(gasPos.y - creaturePos.y) < 30.0f && sqrDistanceXZ(gasPos, creaturePos) < gasDist) {
+			if (absVal(gasPos.y - creaturePos.y) < 30.0f && gasPos.sqrDistance2D(creaturePos) < gasDist) {
 				InteractGas gas(mOwner, CG_GENERALPARMS(mOwner).mAttackDamage());
 				if (creature->isNavi()) {
 					if (creature->stimulate(gas)) {
@@ -342,7 +348,12 @@ bool BigTreasureWaterAttack::update()
  */
 void BigTreasureWaterAttack::finish()
 {
-	// UNUSED FUNCTION
+	mEfxWaterBomb->fade();
+
+	efx::Arg fxArg(mPosition);
+	efx::TOootaWbHit hitFX;
+	hitFX.create(&fxArg);
+	PSStartSoundVec(PSSE_EN_BIGTAKARA_W_GROUND, (Vec*)&mPosition);
 }
 
 /**
@@ -1398,11 +1409,13 @@ void BigTreasureAttackMgr::startNewGasList()
  */
 void BigTreasureAttackMgr::updateGasAttack()
 {
-	bool checks[]                 = { true, true, true, true };
+	bool checks[] = { true, true, true, true };
+	BigTreasureGasAttack* nextNode;
+	int i                         = 0;
 	BigTreasureGasAttack* gasNode = static_cast<BigTreasureGasAttack*>(mActiveGasList->mChild);
 
-	for (int i = 0; gasNode; i++) {
-		BigTreasureGasAttack* nextNode = static_cast<BigTreasureGasAttack*>(gasNode->mNext);
+	while (gasNode) {
+		nextNode = static_cast<BigTreasureGasAttack*>(gasNode->mNext);
 
 		if (gasNode->update()) {
 			gasNode->del();
@@ -1429,6 +1442,7 @@ void BigTreasureAttackMgr::updateGasAttack()
 		}
 
 		gasNode = nextNode;
+		i++;
 	}
 
 	if (!mIsStartAttack[BIGATTACK_Gas]) {
@@ -1808,8 +1822,8 @@ void BigTreasureAttackMgr::startNewWaterList()
 	efx::TOootaWbShot waterShot(mObj->mModel->getJoint("otakara_water_eff")->getWorldMatrix());
 	waterShot.create(nullptr);
 
-	Vector3f emitPos = mWaterEmitPosition; // f30, f29, f28
-	Vector3f targetPos;                    // f27, na, f26
+	Vector3f emitPos = mWaterEmitPosition;
+	Vector3f targetPos;
 	Creature* target = getWaterTargetCreature();
 	if (target) {
 		targetPos = target->getPosition();
@@ -1821,20 +1835,24 @@ void BigTreasureAttackMgr::startNewWaterList()
 		targetPos.z += randDist * cosf(randAngle);
 	}
 
-	f32 dist        = targetPos.distance2D(emitPos);     // f25
-	f32 offset      = mAttackData->mWaterJitterDistance; // f31
+	Vector3f diff = targetPos;
+	diff -= emitPos;
+	f32 sqrDist     = diff.sqrMagnitude2D();
+	f32 dist        = sqrtfClamped(sqrDist);
+	f32 offset      = mAttackData->mWaterJitterDistance;
 	f32 speedFactor = dist + (randWeightFloat(2.0f * offset) - offset);
 
 	if (speedFactor < 1.0f) {
 		speedFactor = 1.0f;
 	}
 
-	f32 vertSpeed = (350.0f / sys->getDeltaTime()) / 20.0f;
+	f32 speed, vertSpeed;
+	f32 deltaTime = sys->getDeltaTime();
+	vertSpeed     = 350.0f / deltaTime / 20.0f;
 
-	f32 speed = ((0.5f * speedFactor) / (vertSpeed / 20.0f)) / sys->getDeltaTime();
+	speed = ((0.5f * speedFactor) / (vertSpeed / 20.0f)) / deltaTime;
 
-	Vector3f sep  = targetPos - emitPos;
-	f32 angleDist = JMAAtan2Radian(sep.x, sep.z); // f31
+	f32 angleDist = JMAAtan2Radian(targetPos.x - emitPos.x, targetPos.z - emitPos.z);
 
 	f32 angOffset = mAttackData->mWaterJitterAngle;
 	f32 randAngle = angleDist + (randWeightFloat(2.0f * angOffset) - angOffset);
@@ -2174,12 +2192,7 @@ void BigTreasureAttackMgr::updateWaterAttack()
 	while (waterNode) {
 		BigTreasureWaterAttack* nextNode = waterNode->getNext();
 		if (waterNode->update()) {
-			waterNode->mEfxWaterBomb->fade();
-
-			efx::Arg fxArg(waterNode->mPosition);
-			efx::TOootaWbHit hitFX;
-			hitFX.create(&fxArg);
-			PSStartSoundVec(PSSE_EN_BIGTAKARA_W_GROUND, (Vec*)&waterNode->mPosition);
+			waterNode->finish();
 			waterNode->del();
 			mWaterAttackNodes->add(waterNode);
 			delAttackShadow(waterNode);
@@ -2341,7 +2354,7 @@ void BigTreasureAttackMgr::startElecAttack()
 		}
 	}
 
-	Vector3f effectPos = mObj->mModel->getJoint("otakara_elec_eff")->getWorldMatrix()->getColumn(3); // f31, f30, f29
+	Vector3f effectPos = mObj->mModel->getJoint("otakara_elec_eff")->getWorldMatrix()->getColumn(3);
 
 	BigTreasureElecAttack* elecNode = static_cast<BigTreasureElecAttack*>(mElecAttackNodes->mChild);
 	if (elecNode) {
@@ -2352,19 +2365,20 @@ void BigTreasureAttackMgr::startElecAttack()
 		mEfxElecAttack1->create(nullptr);
 	}
 
-	f32 randAngle                  = randWeightFloat(TAU);                  // f28
-	f32 angleOffset                = TAU / (f32)mAttackData->mElecMaxNodes; // f27
-	int counter                    = 0;
-	BigTreasureElecAttack* newNode = static_cast<BigTreasureElecAttack*>(mElecAttackNodes->mChild);
-	while (newNode) {
-		BigTreasureElecAttack* nextNode = newNode->getNext();
+	f32 randAngle   = randWeightFloat(TAU);
+	f32 angleOffset = TAU / (f32)mAttackData->mElecMaxNodes;
+	int counter     = 0;
+	CNode* node     = mElecAttackNodes->mChild;
+	while (node) {
+		CNode* nextNode = node->mNext;
 
 		if (counter < mAttackData->mElecMaxNodes) {
-			f32 angle       = randAngle + (randWeightFloat(0.2f) - 0.1f);
-			f32 randSpeedXZ = mAttackData->mElecJitterHSpeed;
-			f32 randSpeedY  = mAttackData->mElecJitterVSpeed;
-			f32 speedXZ     = mAttackData->mElecBaseHSpeed + randWeightFloat(randSpeedXZ);
-			f32 yVel        = mAttackData->mElecBaseVSpeed + randWeightFloat(randSpeedY);
+			BigTreasureElecAttack* newNode = static_cast<BigTreasureElecAttack*>(node);
+			f32 angle                      = randAngle + (randWeightFloat(0.2f) - 0.1f);
+			f32 randSpeedXZ                = mAttackData->mElecJitterHSpeed;
+			f32 randSpeedY                 = mAttackData->mElecJitterVSpeed;
+			f32 speedXZ                    = mAttackData->mElecBaseHSpeed + randWeightFloat(randSpeedXZ);
+			f32 yVel                       = mAttackData->mElecBaseVSpeed + randWeightFloat(randSpeedY);
 
 			Vector3f vel = Vector3f(speedXZ * sinf(angle), yVel, speedXZ * cosf(angle));
 
@@ -2375,13 +2389,13 @@ void BigTreasureAttackMgr::startElecAttack()
 			mActiveElecList->add(newNode);
 			addAttackShadow(newNode);
 		}
-		newNode = nextNode;
+		node = nextNode;
 		counter++;
 	}
 
-	f32 attackVal = (f32)mAttackData->mElecMaxNodes * 0.25f;
+	f32 attackVal = (f32)mAttackData->mElecMaxNodes / 4.0f;
 	for (int i = 0; i < 3; i++) {
-		mElecSENodeIDs[i] = attackVal * f32(i);
+		mElecSENodeIDs[i] = attackVal * (f32)(i + 1);
 	}
 
 	/*
@@ -2752,10 +2766,12 @@ void BigTreasureAttackMgr::startNewElecList()
  */
 void BigTreasureAttackMgr::updateElecAttack()
 {
+	BigTreasureElecAttack* nextNode;
+	int i                           = 0;
 	BigTreasureElecAttack* elecNode = static_cast<BigTreasureElecAttack*>(mActiveElecList->mChild);
-	for (int i = 0; elecNode; i++) {
-		BigTreasureElecAttack* nextNode = elecNode->getNext();
-		BigTreasureElecAttack* prevNode = elecNode->getPrev();
+	while (elecNode) {
+		nextNode                        = static_cast<BigTreasureElecAttack*>(elecNode->mNext);
+		BigTreasureElecAttack* prevNode = static_cast<BigTreasureElecAttack*>(elecNode->mPrev);
 		elecNode->update();
 
 		if (elecNode == mActiveElecList->mChild && elecNode->mConnectedNode) {
@@ -2772,6 +2788,7 @@ void BigTreasureAttackMgr::updateElecAttack()
 		}
 
 		elecNode = nextNode;
+		i++;
 	}
 
 	if (mIsStartAttack[BIGATTACK_Elec]) {

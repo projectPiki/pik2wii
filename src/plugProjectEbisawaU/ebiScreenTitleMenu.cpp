@@ -6,7 +6,11 @@
 #include "ebi/E2DGraph.h"
 #include "ebi/Screen/TTitleMenu.h"
 
-static const char name[] = "ebiScreenTitleMenu";
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "ebiScreenTitleMenu";
+}
 
 namespace ebi {
 namespace Screen {

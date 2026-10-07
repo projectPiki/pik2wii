@@ -127,11 +127,8 @@ void StateBomb::exec(EnemyBase* enemy)
 			EnemyTypeID::EEnemyTypeID id = enemy->getEnemyTypeID();
 			efx::ArgEnemyType fxArg(effectPos, id, 1.0f);
 			efx::TBombrock bombEffect;
-			efx::TBombrockABCD* abcdPtr = &bombEffect.mEfxBombABCD;
-			efx::TBombrockEFGH* efghPtr = &bombEffect.mEfxBombEFGH;
-
-			if (abcdPtr->create(&fxArg)) {
-				efghPtr->create(&fxArg);
+			if (bombEffect.mEfxBombABCD.create(&fxArg)) {
+				bombEffect.mEfxBombEFGH.create(&fxArg);
 			}
 			OBJ(enemy)->mEfxLight->forceKill();
 			enemy->mSoundObj->startSound(PSSE_PK_SE_BOMB, 0);
@@ -144,14 +141,13 @@ void StateBomb::exec(EnemyBase* enemy)
 			rumbleMgr->startRumble(RUMBLETYPE_Fixed15, effectPos, RUMBLEID_Both);
 
 			Vector3f position = enemy->getPosition();
-			Parms* parms      = CG_PARMS(enemy);
-			f32 offset        = parms->mProperParms.mBlastRangeHeight.mValue;
+			f32 offset        = CG_PARMS(enemy)->mProperParms.mBlastRangeHeight.mValue;
 			f32 max           = position.y + offset;
 			f32 min           = position.y - offset;
 
 			Sys::Sphere sphere;
 			sphere.mPosition.set(position);
-			sphere.mRadius   = parms->mGeneral.mAttackRadius.mValue;
+			sphere.mRadius   = CG_PARMS(enemy)->mGeneral.mAttackRadius.mValue;
 			CellIteratorArg iteratorArg(sphere);
 			iteratorArg.mUseCustomRadius = 1;
 
@@ -179,7 +175,7 @@ void StateBomb::exec(EnemyBase* enemy)
 
 							Vector3f sep = creature->getPosition();
 							sep -= position;
-							_normaliseXZ(sep);
+							sep.normalise();
 
 							f32 pikiWeight = 100.0f;
 							if (creature->isPiki()) {

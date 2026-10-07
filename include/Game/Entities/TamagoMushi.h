@@ -256,6 +256,28 @@ struct State : public EnemyFSMState {
 	// _00-_10 	= EnemyFSMState
 };
 
+struct StateWalk : public State {
+	StateWalk(int);
+
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+
+	// _00		= VTBL
+	// _00-_10 	= EnemyFSMState
+	int mWalkTimer;   // _10
+	int mWalkMaxTime; // _14
+};
+
+struct StateTurn : public State {
+	StateTurn(int);
+
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+
+	// _00		= VTBL
+	// _00-_10 	= EnemyFSMState
+};
+
 struct StateAppear : public State {
 	StateAppear(int);
 
@@ -271,16 +293,6 @@ struct StateAppear : public State {
 	bool mNeedPlayAppearSound; // _20
 };
 
-struct StateDead : public State {
-	StateDead(int);
-
-	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
-	virtual void exec(EnemyBase* enemy);                     // _0C
-
-	// _00		= VTBL
-	// _00-_10 	= EnemyFSMState
-};
-
 struct StateHide : public State {
 	StateHide(int);
 
@@ -291,8 +303,8 @@ struct StateHide : public State {
 	// _00-_10 	= EnemyFSMState
 };
 
-struct StateTurn : public State {
-	StateTurn(int);
+struct StateDead : public State {
+	StateDead(int);
 
 	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
 	virtual void exec(EnemyBase* enemy);                     // _0C
@@ -309,18 +321,6 @@ struct StateWait : public State {
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState
-};
-
-struct StateWalk : public State {
-	StateWalk(int);
-
-	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
-	virtual void exec(EnemyBase* enemy);                     // _0C
-
-	// _00		= VTBL
-	// _00-_10 	= EnemyFSMState
-	int mWalkTimer;   // _10
-	int mWalkMaxTime; // _14
 };
 
 /////////////////////////////////////////////////////////////////

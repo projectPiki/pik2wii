@@ -1,7 +1,7 @@
 #include "Game/Entities/ItemHoney.h"
 #include "Game/AIConstants.h"
 #include "Game/Navi.h"
-#include "PSM/Navi.h"
+#include "PSSystem/PSMainSide_ObjSound.h"
 #include "RevoSDK/rand.h"
 #include "efx/THoneydown.h"
 

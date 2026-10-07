@@ -52,7 +52,8 @@ void FSMState_OmakeScreen::do_init(TMgr* mgr, Game::StateArg*)
 {
 	if (!mgr->mStateMachine.mCurrentID) {
 
-		Screen::ArgOpenOmake arg(sys->getPlayCommonData()->mChallengeFlags.isSet(1), sys->getPlayCommonData()->mChallengeFlags.isSet(2),
+		Screen::ArgOpenOmake arg(sys->getPlayCommonData()->mCommonStoryFlags.isSet(Game::PlayCommonData::CommonData_DebtRepayed),
+		                         sys->getPlayCommonData()->mCommonStoryFlags.isSet(Game::PlayCommonData::CommonData_AllTreasures),
 		                         sys->getPlayCommonData()->isPerfectChallenge());
 		arg.mUnusedVal = -1;
 
@@ -193,7 +194,7 @@ void FSMState_SelectGame::do_exec(TMgr* mgr)
 			mgr->mOmakeGame.setSelfControl();
 			mStatus = Idle;
 		}
-		if (mTimer > 2 && mgr->mController->getButtonDown() & Controller::PRESS_B) {
+		if (mTimer > 2 && mgr->mController->isButtonDown(Controller::PRESS_B)) {
 			PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_CANCEL, 0);
 			mTimer    = 1;
 			mTimerMax = 1;
@@ -299,7 +300,7 @@ bool TMgr::isFinish()
 void TMgr::update()
 {
 	mIsFinished = false;
-	u8 close    = mOmake.isCloseScreen();
+	bool close    = mOmake.isCloseScreen();
 	mStateMachine.exec(this);
 	if (getStateID() != Standby) {
 		if (getStateID() != Movie) {

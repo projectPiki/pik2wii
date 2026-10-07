@@ -21,7 +21,7 @@
 #include "Iterator.h"
 #include "JSystem/J3D/J3DJoint.h"
 #include "P2Macros.h"
-#include "PSM/Navi.h"
+#include "PSSystem/PSMainSide_ObjSound.h"
 #include "PSSystem/PSSystemIF.h"
 #include "PikiAI.h"
 #include "PowerPC_EABI_Support/MSL_C/MSL_Common/arith.h"
@@ -293,7 +293,7 @@ bool Navi::procActionButton()
 	{
 		BaseItem* item             = *iter;
 		ItemPikihead::Item* sprout = (ItemPikihead::Item*)item;
-		Vector3f sproutPos         = sprout->getPosition();
+		Vector3f sproutPos         = item->getPosition();
 		Vector3f naviPos           = getPosition();
 		f32 heightDistance         = absF(sproutPos.y - naviPos.y);
 		Vector3f diff              = sproutPos - naviPos;
@@ -325,12 +325,15 @@ bool Navi::procActionButton()
 			// find (closest) pluckable sprout within range that -isn't- the same as main captain's target
 			CI_LOOP(iter)
 			{
-				ItemPikihead::Item* sprout = *iter;
+				BaseItem* item             = *iter;
+				ItemPikihead::Item* sprout = (ItemPikihead::Item*)item;
 				if (sprout != targetSprout) {
-					Vector3f sproutPos = sprout->getPosition();
+					Vector3f sproutPos = item->getPosition();
 					Vector3f naviPos   = getPosition();
-					f32 heightDiff     = FABS(sproutPos.y - naviPos.y);
-					f32 sqrXZ          = sqrDistanceXZ(sproutPos, naviPos);
+					Vector3f diff      = sproutPos;
+					diff -= naviPos;
+					f32 heightDiff = absF(diff.y);
+					f32 sqrXZ      = diff.sqrMagnitude2D();
 
 					// sprout has to be pluckable, closer than current/within range, not at massive height difference
 					// (we don't care about VS mode now bc can't have a following captain)
@@ -345,7 +348,7 @@ bool Navi::procActionButton()
 			if (otherTargetSprout) {
 				NaviNukuAdjustStateArg nukuAdjustArg2;
 				otherNavi->setupNukuAdjustArg(otherTargetSprout, nukuAdjustArg2);
-				nukuAdjustArg2.mIsFollowing  = true;
+				nukuAdjustArg2.mIsFollowing = true;
 				otherNavi->mFsm->transit(otherNavi, NSID_NukuAdjust, &nukuAdjustArg2);
 			}
 		}
@@ -826,7 +829,7 @@ void Navi::setupNukuAdjustArg(ItemPikihead::Item* item, NaviNukuAdjustStateArg& 
 	Vector3f direction = item->getPosition() - getPosition();
 	arg.mAngleToItem   = angDist(roundAng(pikmin2_atan2f(direction.x, direction.z)), mFaceDir) / 10.0f;
 
-	f32 distance = pikmin2_sqrtf(direction.sqrMagnitude());
+	f32 distance = pikmin2_sqrtf(direction.sqrLength());
 	f32 norm     = 1.0f / distance;
 
 	// These two lines are unused
@@ -1400,7 +1403,7 @@ void Navi::doAnimation()
 		if (mapMgr) {
 			FakePiki::doAnimation();
 		} else {
-			f32 time = sys->getDeltaTime();
+			f32 time = sys->mDeltaTime;
 			updateCell();
 			if (!gameSystem->mIsFrozen) {
 				mAnimator.mSelfAnimator.animate(mAnimSpeed * time);
@@ -1413,17 +1416,12 @@ void Navi::doAnimation()
 			mModel->mJ3dModel->calc();
 			mCollTree->update();
 		}
-		Matrixf* mtx    = mBeaconJoint->getWorldMatrix();
-		mBeaconPosition = Vector3f(5.0f, 0.0f, 0.0f);
-		Vec calcpos;
-		PSMTXMultVec(mtx->mMatrix.mtxView, (Vec*)&mBeaconPosition, &calcpos);
-		mBeaconPosition = Vector3f(calcpos);
+		updateBeaconPosition();
 
 		f32 rad = mWhistle->mRadius;
 		if (mController1) {
-			mEffectsObj->updateCursor(rad);
+			mEffectsObj->updateCursor_(*mEffectsObj->mNaviPos, rad);
 		} else {
-			//		mEffectsObj->updateCursor(rad); the inline gets it a bit closer for the upper one, but not the lower one
 			mEffectsObj->updateCursor_(*mEffectsObj->mNaviPos, rad);
 		}
 		updateCursor();
@@ -1625,17 +1623,22 @@ void Navi::doAnimation()
 void Navi::updateCursor()
 {
 	Vector3f whistlePos = mWhistle->mPosition;
-	Vector3f sep        = whistlePos - getPosition(); // f28, f27, f26
-	sep.qNormalise();
-	Vector3f yVec = mWhistle->mNormal; // f25, f24, f23
-	Vector3f xVec = cross(yVec, sep);
-	xVec.qNormalise();
-	Vector3f zVec = cross(xVec, yVec);
+	Vector3f dir        = whistlePos - getPosition();
+	dir.qNormalise();
+
+	Vector3f yVec = mWhistle->mNormal;
+	Vector3f xVec = yVec;
+	xVec.CP(dir);
+	dir = xVec;
+	dir.qNormalise();
+
+	Vector3f zVec = dir;
+	zVec.CP(yVec);
 	zVec.qNormalise();
 
 	Matrixf mtx;
 
-	mtx.setColumn(0, xVec);
+	mtx.setColumn(0, dir);
 	mtx.setColumn(1, yVec);
 	mtx.setColumn(2, zVec);
 	mtx.setColumn(3, whistlePos);
@@ -2066,7 +2069,7 @@ void Navi::movieUserCommand(u32 command, MoviePlayer* player)
 
 	case CC_MovieCommand3: {
 		Creature* hole = player->mTargetObject;
-		JUT_ASSERTLINE(2134, hole != nullptr, "no target!! HOLEIN\n");
+		JUT_ASSERTLINE(2652, hole != nullptr, "no target!! HOLEIN\n");
 
 		Vector3f pos = Vector3f(hole->getPosition());
 		holeinAllPikis(pos);
@@ -2075,7 +2078,7 @@ void Navi::movieUserCommand(u32 command, MoviePlayer* player)
 
 	case CC_MovieCommand4: {
 		Creature* fountain = player->mTargetObject;
-		JUT_ASSERTLINE(2148, fountain, "no target!! FOUNTAINON\n");
+		JUT_ASSERTLINE(2666, fountain, "no target!! FOUNTAINON\n");
 
 		Vector3f pos = Vector3f(fountain->getPosition());
 		fountainonAllPikis(pos);
@@ -2113,14 +2116,14 @@ void Navi::movieUserCommand(u32 command, MoviePlayer* player)
 	}
 
 	case CC_MovieCommand7: {
-		// mEffectsObj->setMovieEffect(); using the inline fixes this part, but breaks everything else
 		efx::TNaviEffect* fx = mEffectsObj;
 		if (fx->isFlag(efx::NAVIFX_IsSaved)) {
 			fx->restoreFlags();
 		}
 
-		if (fx->isFlag(efx::NAVIFX_InWater)) {
-			fx->enterWater(fx->isFlag(efx::NAVIFX_InWater));
+		u32 inWater = fx->mFlags.typeView & efx::NAVIFX_InWater;
+		if (inWater) {
+			fx->enterWater(inWater);
 		}
 
 		if (fx->isFlag(efx::NAVIFX_LightOn)) {
@@ -2642,7 +2645,7 @@ ItemHole::Item* Navi::checkHole()
 		ItemHole::Item* hole = static_cast<ItemHole::Item*>(*iterator);
 		if (hole->isAlive() && hole->canRide() && !hole->mBarrel) {
 			Vector3f holepos = hole->getPosition();
-			if (sqrDistanceXZ(holepos, mPosition) < 3600.0f) {
+			if (holepos.sqrDistance2D(mPosition) < 3600.0f) {
 				return hole;
 			}
 		}
@@ -2673,7 +2676,7 @@ ItemCave::Item* Navi::checkCave()
 		ItemCave::Item* hole = static_cast<ItemCave::Item*>(*iterator);
 		if (hole->isAlive() && !hole->mBarrel) {
 			Vector3f holepos = hole->getPosition();
-			if (sqrDistanceXZ(holepos, mPosition) < 6400.0f) {
+			if (holepos.sqrDistance2D(mPosition) < 6400.0f) {
 				return hole;
 			}
 		}
@@ -2703,7 +2706,7 @@ ItemBigFountain::Item* Navi::checkBigFountain()
 		ItemBigFountain::Item* hole = static_cast<ItemBigFountain::Item*>(*iterator);
 		if (hole->canRide()) {
 			Vector3f holepos = hole->getPosition();
-			if (sqrDistanceXZ(holepos, mPosition) < 6400.0f) {
+			if (holepos.sqrDistance2D(mPosition) < 6400.0f) {
 				return hole;
 			}
 		}
@@ -2894,21 +2897,19 @@ void Navi::makeVelocity()
 	Vector3f side = mCamera->getSideVector();
 	Vector3f up   = mCamera->getUpVector();
 	Vector3f view = mCamera->getViewVector();
-	side.y        = 0.0f;
+	Vector3f side2D(side.x, 0.0f, side.z);
+	side2D.qNormalise();
 
-	side.qNormalise();
-
+	Vector3f front;
 	if (up.y > view.y) {
-		view.x = view.x;
-		view.z = view.z;
+		front = view;
 	} else {
-		view.x = up.x;
-		view.z = up.z;
+		front = up;
 	}
-	Vector3f view2D(view.x, 0.0f, view.z);
-	view2D.qNormalise();
+	Vector3f front2D(front.x, 0.0f, front.z);
+	front2D.qNormalise();
 
-	Vector3f result(side * x + view2D * z);
+	Vector3f result(side2D * x + front2D * z);
 
 	f32 speed;
 	if (playData->mOlimarData->hasItem(OlimarData::ODII_RepugnantAppendage)) {
@@ -3762,9 +3763,9 @@ bool Navi::releasePikis()
 	InteractKaisan act(this);
 	loozy->stimulate(act);
 
-	s32 pikis = 0;
-	Piki* buffer[MAX_PIKI_COUNT];
 	Iterator<Creature> iterator(mCPlateMgr);
+	Piki* buffer[MAX_PIKI_COUNT];
+	s32 pikis = 0;
 	CI_LOOP(iterator)
 	{
 		Piki* piki = static_cast<Piki*>(*iterator);
@@ -3789,8 +3790,9 @@ bool Navi::releasePikis()
 		position[i] = 0;
 		number[i]   = 0;
 	}
+	int i;
 	for (int cColor = 0; cColor < 8; cColor++) {
-		for (int i = 0; i < pikis; i++) {
+		for (i = 0; i < pikis; i++) {
 			if (cColor != Yellow) {
 				if (cColor == buffer[i]->getKind()) {
 					number[cColor]++;
@@ -3813,7 +3815,7 @@ bool Navi::releasePikis()
 		}
 	}
 
-	loozy = naviMgr->getAt(GET_OTHER_NAVI(this));
+	Navi* otherNavi = naviMgr->getAt(GET_OTHER_NAVI(this));
 	for (int i = 0; i < 4; i++) {
 		for (int cColor = 0; cColor < 8; cColor++) {
 			if (number[cColor] > 0) {
@@ -3825,8 +3827,8 @@ bool Navi::releasePikis()
 					dist = 20.0f - dist;
 					position[cColor] += diff * dist;
 				}
-				if (loozy->isAlive()) {
-					Vector3f naviPos = loozy->getPosition();
+				if (otherNavi->isAlive()) {
+					Vector3f naviPos = otherNavi->getPosition();
 					Vector3f diff    = position[cColor] - naviPos;
 					f32 dist         = diff.qNormalise();
 					dist             = dist - distList[cColor] - 25.0f;
@@ -3843,9 +3845,10 @@ bool Navi::releasePikis()
 					f32 dist      = diff.qNormalise();
 					dist          = dist - distList[cColor] - distList[j];
 					if (dist < 20.0f) {
-						dist = 20.0f - dist;
-						position[cColor] += diff * dist;
-						position[j] -= diff * dist;
+						dist          = 20.0f - dist;
+						Vector3f push = diff * dist;
+						position[cColor] += push;
+						position[j] -= push;
 					}
 				}
 			}
@@ -3854,7 +3857,8 @@ bool Navi::releasePikis()
 
 	for (int i = 0; i < pikis; i++) {
 		Piki* piki = buffer[i];
-		PikiAI::ActFreeArg arg(distList[piki->getKind()], position[piki->getKind()], true);
+		int kind   = piki->getKind();
+		PikiAI::ActFreeArg arg(position[kind], distList[piki->getKind()], true);
 		buffer[i]->mSoundObj->startFreePikiSound(PSSE_PK_VC_BREAKUP, 0x5a, 0);
 		buffer[i]->mBrain->start(PikiAI::ACT_Free, &arg);
 	}
@@ -4509,40 +4513,38 @@ bool Navi::releasePikis()
 
 void Navi::makeCStick(bool disable)
 {
-	Vector3f stickPos;
-	stickPos.x = 0.0f;
-	stickPos.z = stickPos.x;
+	f32 x = 0.0f;
+	f32 z = x;
 
 	if (mController1 && moviePlayer->mDemoState == DEMOSTATE_Inactive) {
-		stickPos.x = -mController1->getSubStickX();
-		stickPos.z = mController1->getSubStickY();
+		x = -mController1->getSubStickX();
+		z = mController1->getSubStickY();
 	}
 
-	Vector3f cameraSide        = mCamera->getSideVector();
-	Vector3f transformedMotion = mCamera->getUpVector();
-	Vector3f cameraView        = mCamera->getViewVector();
-	cameraSide.y               = 0.0f;
-	cameraSide.qNormalise();
+	Vector3f cameraSide = mCamera->getSideVector();
+	Vector3f cameraUp   = mCamera->getUpVector();
+	Vector3f cameraView = mCamera->getViewVector();
+	Vector3f side2D(cameraSide.x, 0.0f, cameraSide.z);
+	side2D.qNormalise();
 
-	if (transformedMotion.y > cameraView.y) {
-		cameraView.x = cameraView.x;
-		cameraView.z = cameraView.z;
+	Vector3f cameraFront;
+	if (cameraUp.y > cameraView.y) {
+		cameraFront = cameraView;
 	} else {
-		cameraView.x = transformedMotion.x;
-		cameraView.z = transformedMotion.z;
+		cameraFront = cameraUp;
 	}
 
 	// Transform the C-Stick according to the direction of the camera
-	Vector3f normalisedView(cameraView.x, 0.0f, cameraView.z);
-	normalisedView.qNormalise();
+	Vector3f front2D(cameraFront.x, 0.0f, cameraFront.z);
+	front2D.qNormalise();
 
-	transformedMotion = (cameraSide * stickPos.x) + (normalisedView * stickPos.z);
+	Vector3f transformedMotion = (side2D * x) + (front2D * z);
 	if (disable) {
 		transformedMotion = 0.0f;
 	}
 
 	mCStickPosition  = 0.0f;
-	f32 moveStrength = transformedMotion.sqrMagnitude();
+	f32 moveStrength = transformedMotion.sqrLength();
 	mCommandOn2      = false;
 
 	// If the C-Stick is being used
@@ -4562,12 +4564,10 @@ void Navi::makeCStick(bool disable)
 		f32 plateAngleCos  = pikmin2_cosf(plateAngle);
 		f32 plateSineAngle = pikmin2_sinf(plateAngle);
 
-		f32 angleLimit = pikmin2_cosf(2.0f * PI / 3.0f);
-
 		f32 newAngle = 0.0f;
 
 		// If the angle of the C-Stick is greater than the angle limit
-		if ((stickAngleSine * plateSineAngle + newAngle) + (stickAngleCos * plateAngleCos) > angleLimit) {
+		if ((stickAngleSine * plateSineAngle + newAngle) + (stickAngleCos * plateAngleCos) > pikmin2_cosf(2.0f * PI / 3.0f)) {
 			// Interpolate from the Plate angle to the C-Stick angle
 			newAngle = angDist(stickAngle, plateAngle) * 0.4f + plateAngle;
 		} else {
@@ -4613,7 +4613,6 @@ void Navi::makeCStick(bool disable)
 		if ((!_2FC && mTargetVelocity.qLength() < 50.0f) && getStateID() != NSID_ThrowWait) {
 			dir          = mCStickAngle;
 			Vector3f pos = getPosition();
-
 			mCPlateMgr->setPos(pos, dir, mVelocity, 1.0f);
 		} else {
 			_2FC = true;
@@ -5334,7 +5333,7 @@ void Navi::findNextThrowPiki()
 		Piki* piki       = static_cast<Piki*>(*iterator);
 		Vector3f naviPos = getPosition();
 		Vector3f pikiPos = piki->getPosition();
-		f32 dist         = pikmin2_sqrtf(sqrDistanceXZ(naviPos, pikiPos));
+		f32 dist         = pikmin2_sqrtf(naviPos.sqrDistance2D(pikiPos));
 		if (piki->mNavi == this && dist < minDist && piki->getStateID() == PIKISTATE_Walk && piki->isThrowable()) {
 			mNextThrowPiki = piki;
 			minDist        = dist;
@@ -5542,19 +5541,6 @@ u32 Navi::ogGetNextThrowPiki()
 // extern f32 pikmin2_cosf(f32 theta);
 // extern f32 pikmin2_sinf(f32 theta);
 
-inline f32 pikmin2_normalise(Vector3f& vec)
-{
-	f32 length = pikmin2_sqrtf(vec.sqrMagnitude());
-	if (length > 0) {
-		f32 norm = 1.0f / length;
-		vec *= norm;
-	} else {
-		length = 0.0f;
-	}
-
-	return length;
-}
-
 /**
  * @note Address: 0x80146A54
  * @note Size: 0x2C0
@@ -5621,17 +5607,16 @@ void Navi::throwPiki(Piki* piki, Vector3f& cursorPos)
 	f32 xSpeed = dist2D / (2.0f * newTimeToPeak);
 
 	// Velocity to use in movement calcs needs to be in 3D, not 2D, so adjust XZ components.
-	piki->mVelocity = Vector3f(xSpeed * pikmin2_sinf(angDist), ySpeed, xSpeed * pikmin2_cosf(angDist));
+	piki->mVelocity.set(xSpeed * pikmin2_sinf(angDist), ySpeed, xSpeed * pikmin2_cosf(angDist));
 
 	// Add navi 'momentum' to piki (XZ) velocity - ignore y.
-	Vector3f momentum;
 	// Momentum is navi simulation velocity components, scaled by 1.0f.
 	//  -- I suspect devs toyed around with this value in development.
-	momentum.set2D(mVelocity * 1.0f);
-	momentum.y = 0.0f;
+	Vector3f momentum = mVelocity;
+	momentum          = Vector3f(momentum.x, 0.0f, momentum.z) * 1.0f;
 
 	// Normalise vector into just a 'direction' and grab the 'length' - this is just navi ground speed.
-	f32 magnitude = pikmin2_normalise(momentum);
+	f32 magnitude = momentum.qNormalise();
 
 	// If the player is in a cutscene, disregard movement
 	if (mSceneAnimationTimer > 0.0f) {
@@ -5639,7 +5624,9 @@ void Navi::throwPiki(Piki* piki, Vector3f& cursorPos)
 	}
 
 	// Adjust piki sim and real velocities.
-	piki->mVelocity += momentum * magnitude;
+	Vector3f addVel = momentum;
+	addVel *= magnitude;
+	piki->mVelocity += addVel;
 	piki->mTargetVelocity = piki->mVelocity;
 	/*
 	.loc_0x0:

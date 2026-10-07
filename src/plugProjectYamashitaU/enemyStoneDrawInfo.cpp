@@ -594,5 +594,3 @@ void DrawInfo::dead(EnemyBase* enemy)
 }
 } // namespace EnemyStone
 } // namespace Game
-
-PSGame::SeMgr* PSSystem::SingletonBase<PSGame::SeMgr>::sInstance;

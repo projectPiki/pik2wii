@@ -7,7 +7,6 @@
 #include "JSystem/JKernel/JKRDisposer.h"
 #include "JSystem/JKernel/JKRHeap.h"
 #include "JSystem/JAudio/JAD/JADUtility.h"
-#include "JSystem/JAudio/JAD/JADStr.h"
 
 namespace PSAutoBgm {
 struct Track;
@@ -119,7 +118,6 @@ struct PrmDataMgrNode : public DataMgrNode {
 	{
 	}
 
-	virtual ~PrmDataMgrNode<A, B>() { } // _08 (weak)
 	virtual JKRHeap* getObjHeap()  = 0; // _14 (weak)
 	virtual JKRHeap* getDataHeap() = 0; // _18 (weak)
 	virtual bool initInstance(void* buffer, s32 bufferLength)

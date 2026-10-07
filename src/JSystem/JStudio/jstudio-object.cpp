@@ -207,6 +207,7 @@ void TAdaptor::adaptor_setVariableValue_n(JStudio::TObject* object, u32 const* v
 	// UNUSED FUNCTION
 	StaticCapsSetVariableValueFunction func;
 	u32 offset;
+	const void* data = p5;
 	switch (operation) {
 	case data::TEOD_Unknown_01:
 		offset = 0;
@@ -230,8 +231,8 @@ void TAdaptor::adaptor_setVariableValue_n(JStudio::TObject* object, u32 const* v
 
 	JGadget::TEnumerator<const u32*> enumerator(values, &values[p3]);
 	while (enumerator) {
-		func(this, object, **enumerator, p5, offset);
-		p5 = ((u8*)p5) + offset;
+		func(this, object, **enumerator, data, offset);
+		data = ((u8*)data) + offset;
 	}
 }
 
@@ -637,9 +638,9 @@ void TObject_actor::do_paragraph(u32 p1, const void* p2, u32 p3)
 		return;
 
 	case 0x32:
+		doFunc = (TAdaptor::AdaptorDoFunction)&TAdaptor_actor::adaptor_do_PARENT_ENABLE;
 		output = &soovv_actor_PARENT_ENABLE_;
 		value  = 12;
-		doFunc = (TAdaptor::AdaptorDoFunction)&TAdaptor_actor::adaptor_do_PARENT_ENABLE;
 		goto output_type_1;
 		return;
 
@@ -659,9 +660,9 @@ void TObject_actor::do_paragraph(u32 p1, const void* p2, u32 p3)
 		return;
 
 	case 0x35:
+		doFunc = (TAdaptor::AdaptorDoFunction)&TAdaptor_actor::adaptor_do_RELATION_ENABLE;
 		output = &soovv_actor_RELATION_ENABLE_;
 		value  = 13;
-		doFunc = (TAdaptor::AdaptorDoFunction)&TAdaptor_actor::adaptor_do_RELATION_ENABLE;
 		goto output_type_1;
 		return;
 
@@ -2095,7 +2096,6 @@ const u32 TAdaptor_fog::sauVariableValue_3_COLOR_RGB[3]       = { 0, 1, 2 };
 const u32 TAdaptor_fog::sauVariableValue_4_COLOR_RGBA[4]      = { 0, 1, 2, 3 };
 const u32 TAdaptor_fog::sauVariableValue_2_RANGE_BEGIN_END[2] = { 4, 5 };
 
-
 /**
  * @note Address: N/A
  * @note Size: 0x6C
@@ -2472,7 +2472,7 @@ void TObject_light::do_paragraph(u32 p1, const void* p2, u32 p3)
 		doFunc = (TAdaptor::AdaptorDoFunction)&TAdaptor_light::adaptor_do_ENABLE;
 		value  = 12;
 		output = &soovv_light_ENABLE_;
-		
+
 		goto output_type_1;
 		return;
 
@@ -3752,10 +3752,10 @@ void TObject_sound::do_paragraph(u32 p1, const void* p2, u32 p3)
 	u32 v1                          = p1 >> 5;
 	data::TEOperationData operation = (data::TEOperationData)(p1 & 0x1F);
 
-	soundParagraphFunc doFunc = nullptr;
-	u32 value                          = -1;
-	const u32* values                  = nullptr;
-	TVariableValue::TOutput* output    = nullptr;
+	soundParagraphFunc doFunc       = nullptr;
+	u32 value                       = -1;
+	const u32* values               = nullptr;
+	TVariableValue::TOutput* output = nullptr;
 
 	switch (v1) {
 	case 0x3C:

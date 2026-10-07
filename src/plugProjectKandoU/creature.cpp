@@ -20,9 +20,13 @@
 #define DEATH_PLANE   (-500.0f) // at what height do Pikis and enemies die?
 #define RESPAWN_PLANE (-300.0f) // at what height do treasures and bodies warp to a waypoint?
 
-namespace Game {
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "creature";
+}
 
-static const char unused[] = "creature";
+namespace Game {
 
 Creature* Creature::currOp;
 bool Creature::usePacketCulling = true;
@@ -724,18 +728,18 @@ void Creature::resolveOneColl(CollPart* source, CollPart* dest, Vector3f& direct
 	f32 fps = 1.0f / sys->getDeltaTime();
 	if (isNavi() && !op->isNavi()) {
 		if (!op->isPiki()) {
-			addAccel(mAcceleration, direction, massRatioThisCreature, fps, xzDrag, yDrag);
+			addCollisionAcceleration(mAcceleration, direction, massRatioThisCreature, fps, xzDrag, yDrag);
 		}
 	} else {
-		setAccel(mAcceleration, direction, massRatioThisCreature, fps, xzDrag, yDrag);
+		setCollisionAcceleration(mAcceleration, direction, massRatioThisCreature, fps, xzDrag, yDrag);
 	}
 
 	if (op->isNavi() && !isNavi()) {
 		if (!isPiki()) {
-			setOpAccel(op->mAcceleration, direction, massRatioOtherCreature, fps, xzDrag, yDrag);
+			setOpposingCollisionAcceleration(op->mAcceleration, direction, massRatioOtherCreature, fps, xzDrag, yDrag);
 		}
 	} else {
-		setOpAccel(op->mAcceleration, direction, massRatioOtherCreature, fps, xzDrag, yDrag);
+		setOpposingCollisionAcceleration(op->mAcceleration, direction, massRatioOtherCreature, fps, xzDrag, yDrag);
 	}
 
 	f32 accelMag = mAcceleration.length();

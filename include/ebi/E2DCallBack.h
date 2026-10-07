@@ -38,84 +38,17 @@ struct E2DCallBack_Base : public P2DScreen::CallBackNode {
 	bool mIsEnabled; // _1C
 };
 
-// Size: 0x3C
-struct E2DCallBack_AnmBase : public E2DCallBack_Base {
-	E2DCallBack_AnmBase() { }
+// Size: 0x40
+struct E2DCallBack_Purupuru : public E2DCallBack_Base {
+	E2DCallBack_Purupuru() { mScale = 1.0f; }
 
-	virtual ~E2DCallBack_AnmBase() { } // _08 (weak)
-	virtual void do_update();          // _1C
-
-	void loadAnm(char* path, JKRArchive* archive, s32 frame, s32 maxFrame);
-	void play(f32 speed, J3DAnmAttr attr, bool doPlayFromStart);
-	void playBack(f32 speed, bool doPlayFromEnd);
-	void stop();
-	void setStartFrame();
-	void setEndFrame();
-	void setRandFrame();
-	f32 getPlayFinRate();
-	bool isFinish();
-
-	// unused/inlined:
-	void disconnect();
+	virtual ~E2DCallBack_Purupuru() { } // _08 (weak)
+	virtual void do_update();           // _1C
 
 	// _00     = VTBL
 	// _00-_20 = E2DCallBack_Base
-	J3DFrameCtrl mFrameCtrl; // _20
-	J2DAnmBase* mAnim;       // _34
-	bool mIsFinished;        // _38
-};
-
-struct E2DCallBack_BlinkAlpha : public E2DCallBack_Base {
-	E2DCallBack_BlinkAlpha()
-	{
-		mWeight         = 0.0f;
-		mSpeed          = 0.03333f;
-		mIsTowardAlpha0 = true;
-		_29             = false;
-		mAlpha0         = 255;
-		mAlpha1         = 0;
-	}
-	virtual ~E2DCallBack_BlinkAlpha() { } // _08 (weak)
-	virtual void do_update();             // _1C
-
-	inline f32 getAlphaWeight() { return mWeight; }
-
-	inline void enable()
-	{
-		mAlpha0         = 255;
-		mAlpha1         = 85;
-		mIsEnabled      = true;
-		mSpeed          = sys->getDeltaTime() * 3.33333333f;
-		mWeight         = 0.0f;
-		mIsTowardAlpha0 = true;
-		_29             = false;
-	}
-
-	inline void startToward0()
-	{
-		mIsEnabled      = true;
-		mSpeed          = sys->getDeltaTime() * 1.6666666f;
-		mWeight         = 0.0f;
-		mIsTowardAlpha0 = true;
-		_29             = false;
-	}
-
-	inline void disable()
-	{
-		mIsTowardAlpha0 = false;
-		_29             = true;
-	}
-
-	// _00     = VTBL
-	// _00-_20 = E2DCallBack_Base
-	f32 mWeight;          // _20, weight to give alpha0 when calcing blend
-	f32 mSpeed;           // _24, speed at which alpha blends between alpha0 and alpha1
-	bool mIsTowardAlpha0; // _28, is amount of alpha0 increasing in blend?
-	u8 _29;               // _29
-	u8 _2A;               // _2A, unknown
-	u8 _2B;               // _2B, unknown
-	u8 mAlpha0;           // _2C, blends between alpha0 and alpha1
-	u8 mAlpha1;           // _2D
+	og::Screen::ScaleMgr mScaleMgr; // _20
+	f32 mScale;                     // _3C
 };
 
 // Size: 0x4C
@@ -171,21 +104,98 @@ struct E2DCallBack_BlinkFontColor : public E2DCallBack_Base {
 	{
 		mIsEnabled = false;
 		if (mPane) {
-			J2DTextBox* pane = static_cast<J2DTextBox*>(mPane);
-			pane->setCharColor(mFonts[colorID].mCol1);
-			pane->setGradColor(mFonts[colorID].mCol2);
-			pane->setWhite(mFonts[colorID].mWhite);
-			pane->setBlack(mFonts[colorID].mBlack);
+			mFonts[colorID].applyColorsToPane(static_cast<J2DTextBox*>(mPane));
 		}
 	}
 
 	// _00     = VTBL
 	// _00-_20 = E2DCallBack_Base
+	u16 _1E;                    // _1E, unk padding
 	E2DFullFontColor mFonts[2]; // _20
 	f32 mColor1Weight;          // _40, weight to give 'second' color in blend calc
 	f32 mSpeed;                 // _44
 	bool mIsTowardColor1;       // _48, is amount of color1 increasing in blend?
 	u8 _49;                     // _49
+};
+
+struct E2DCallBack_BlinkAlpha : public E2DCallBack_Base {
+	E2DCallBack_BlinkAlpha()
+	{
+		mWeight         = 0.0f;
+		mSpeed          = 0.03333f;
+		mIsTowardAlpha0 = true;
+		_29             = false;
+		mAlpha0         = 255;
+		mAlpha1         = 0;
+	}
+	virtual ~E2DCallBack_BlinkAlpha() { } // _08 (weak)
+	virtual void do_update();             // _1C
+
+	inline f32 getAlphaWeight() { return mWeight; }
+
+	inline void enable()
+	{
+		mAlpha0         = 255;
+		mAlpha1         = 85;
+		mIsEnabled      = true;
+		mSpeed          = sys->getDeltaTime() * 3.33333333f;
+		mWeight         = 0.0f;
+		mIsTowardAlpha0 = true;
+		_29             = false;
+	}
+
+	inline void startToward0()
+	{
+		mIsEnabled      = true;
+		mSpeed          = sys->getDeltaTime() * 1.6666666f;
+		mWeight         = 0.0f;
+		mIsTowardAlpha0 = true;
+		_29             = false;
+	}
+
+	inline void disable()
+	{
+		mIsTowardAlpha0 = false;
+		_29             = true;
+	}
+
+	// _00     = VTBL
+	// _00-_20 = E2DCallBack_Base
+	f32 mWeight;          // _20, weight to give alpha0 when calcing blend
+	f32 mSpeed;           // _24, speed at which alpha blends between alpha0 and alpha1
+	bool mIsTowardAlpha0; // _28, is amount of alpha0 increasing in blend?
+	u8 _29;               // _29
+	u8 _2A;               // _2A, unknown
+	u8 _2B;               // _2B, unknown
+	u8 mAlpha0;           // _2C, blends between alpha0 and alpha1
+	u8 mAlpha1;           // _2D
+};
+
+// Size: 0x3C
+struct E2DCallBack_AnmBase : public E2DCallBack_Base {
+	E2DCallBack_AnmBase() { }
+
+	virtual ~E2DCallBack_AnmBase() { } // _08 (weak)
+	virtual void do_update();          // _1C
+
+	void loadAnm(char* path, JKRArchive* archive, s32 frame, s32 maxFrame);
+	void play(f32 speed, J3DAnmAttr attr, bool doPlayFromStart);
+	void playBack(f32 speed, bool doPlayFromEnd);
+	void stop();
+	void setStartFrame();
+	void setEndFrame();
+	void setRandFrame();
+	f32 getPlayFinRate();
+	bool isFinish();
+
+	// unused/inlined:
+	void disconnect();
+
+	// _00     = VTBL
+	// _00-_20 = E2DCallBack_Base
+	J3DFrameCtrl mFrameCtrl; // _20
+	J2DAnmBase* mAnim;       // _34
+	bool mIsFinished;        // _38
 };
 
 struct E2DCallBack_CalcAnimation : public E2DCallBack_Base {
@@ -203,24 +213,13 @@ struct E2DCallBack_CalcAnimation : public E2DCallBack_Base {
 	// _00-_20 = E2DCallBack_Base
 };
 
-// Size: 0x40
-struct E2DCallBack_Purupuru : public E2DCallBack_Base {
-	E2DCallBack_Purupuru() { mScale = 1.0f; }
-
-	virtual ~E2DCallBack_Purupuru() { } // _08 (weak)
-	virtual void do_update();           // _1C
-
-	// _00     = VTBL
-	// _00-_20 = E2DCallBack_Base
-	og::Screen::ScaleMgr mScaleMgr; // _20
-	f32 mScale;                     // _3C
-};
-
 struct E2DCallBack_WindowCursor : public E2DCallBack_Base {
 
 	E2DCallBack_WindowCursor()
 	    : mCounter(0)
 	    , mCounterMax(0)
+	    , mBounds1(0.0f, 0.0f, 0.0f, 0.0f)
+	    , mBounds2(0.0f, 0.0f, 0.0f, 0.0f)
 	{
 		mScale      = 1.0f;
 		mWindowPane = nullptr;

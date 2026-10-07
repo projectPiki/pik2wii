@@ -234,7 +234,7 @@ bool Obj::isAppear()
  */
 bool Obj::isDisappear()
 {
-	if (sqrDistanceXZ(mPosition, mHomePosition) < SQUARE(C_GENERALPARMS.mHomeRadius())) {
+	if (mPosition.sqrDistance2D(mHomePosition) < SQUARE(C_GENERALPARMS.mHomeRadius())) {
 		if (!getSearchedTarget()) {
 			return true;
 		}
@@ -274,15 +274,14 @@ void Obj::setNextMoveInfo()
  */
 void Obj::updateMoveState()
 {
-	if (sqrDistanceXZ(mPosition, mHomePosition) > SQUARE(C_GENERALPARMS.mTerritoryRadius())) {
+	if (mPosition.sqrDistance2D(mHomePosition) > SQUARE(C_GENERALPARMS.mTerritoryRadius())) {
 		mTargetPosition = mHomePosition;
 	}
 
 	if (mWaterBox) {
 		Vector3f velocity    = getVelocity();
-		Vector3f newVelocity = velocity;
-		newVelocity.y += 5.0f;
-		setVelocity(newVelocity);
+		velocity.y += 5.0f;
+		setVelocity(velocity);
 
 		mMoveVelocity = approach(mMoveVelocity, C_PROPERPARMS.mUnderwaterMoveSpeed.mValue, 10.0f);
 

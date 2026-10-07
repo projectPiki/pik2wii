@@ -29,6 +29,41 @@ J2DWindow::J2DWindow()
 }
 
 /**
+ * @note Address: N/A
+ * @note Size: 0xF8
+ */
+J2DWindow::J2DWindow(u64 tag, const JGeometry::TBox2f& box)
+    : J2DPane(tag, box)
+    , mFrameTextureA(nullptr)
+    , mFrameTextureB(nullptr)
+    , mFrameTextureC(nullptr)
+    , mFrameTextureD(nullptr)
+    , mContentsTexture(nullptr)
+    , mPalette(nullptr)
+{
+	mWrapFlags = 0;
+	setContentsColor(TCOLOR_WHITE_U32);
+	mBlack = TCOLOR_BLACK_U32;
+	mWhite = TCOLOR_WHITE_U32;
+}
+
+/**
+ * @note Address: N/A
+ * @note Size: 0xA0
+ */
+J2DWindow::J2DWindow(J2DPane* parent, JSURandomInputStream* input)
+    : J2DPane()
+    , mFrameTextureA(nullptr)
+    , mFrameTextureB(nullptr)
+    , mFrameTextureC(nullptr)
+    , mFrameTextureD(nullptr)
+    , mContentsTexture(nullptr)
+    , mPalette(nullptr)
+{
+	private_readStream(parent, input, nullptr);
+}
+
+/**
  * @note Address: 0x8004263C
  * @note Size: 0xAC
  */
@@ -155,6 +190,107 @@ J2DWindow::J2DWindow(J2DPane* parent, JSURandomInputStream* input, J2DMaterial* 
 }
 
 /**
+ * @note Address: N/A
+ * @note Size: 0xB0
+ */
+J2DWindow::J2DWindow(u64 tag, const JGeometry::TBox2f& box, const ResTIMG* timg1, const ResTIMG* timg2, const ResTIMG* timg3,
+                     const ResTIMG* timg4, const ResTLUT* tlut)
+    : J2DPane(tag, box)
+    , mFrameTextureA(nullptr)
+    , mFrameTextureB(nullptr)
+    , mFrameTextureC(nullptr)
+    , mFrameTextureD(nullptr)
+    , mContentsTexture(nullptr)
+    , mPalette(nullptr)
+{
+	initiate(timg1, timg2, timg3, timg4, tlut, WINDOWMIRROR_39, box);
+}
+
+/**
+ * @note Address: N/A
+ * @note Size: 0xDC
+ */
+J2DWindow::J2DWindow(u64 tag, const JGeometry::TBox2f& box, const char* name1, const char* name2, const char* name3, const char* name4,
+                     const ResTLUT* tlut)
+    : J2DPane(tag, box)
+    , mFrameTextureA(nullptr)
+    , mFrameTextureB(nullptr)
+    , mFrameTextureC(nullptr)
+    , mFrameTextureD(nullptr)
+    , mContentsTexture(nullptr)
+    , mPalette(nullptr)
+{
+	initiate((const ResTIMG*)J2DScreen::getNameResource(name1), (const ResTIMG*)J2DScreen::getNameResource(name2),
+	         (const ResTIMG*)J2DScreen::getNameResource(name3), (const ResTIMG*)J2DScreen::getNameResource(name4), tlut, WINDOWMIRROR_39,
+	         box);
+}
+
+/**
+ * @note Address: N/A
+ * @note Size: 0xB0
+ */
+J2DWindow::J2DWindow(u64 tag, const JGeometry::TBox2f& box, const ResTIMG* timg, J2DTextureBase texBase, const ResTLUT* tlut)
+    : J2DPane(tag, box)
+    , mFrameTextureA(nullptr)
+    , mFrameTextureB(nullptr)
+    , mFrameTextureC(nullptr)
+    , mFrameTextureD(nullptr)
+    , mContentsTexture(nullptr)
+    , mPalette(nullptr)
+{
+	initiate(timg, timg, timg, timg, tlut, convertMirror(texBase), box);
+}
+
+/**
+ * @note Address: N/A
+ * @note Size: 0xC0
+ */
+J2DWindow::J2DWindow(u64 tag, const JGeometry::TBox2f& box, const char* name, J2DTextureBase texBase, const ResTLUT* tlut)
+    : J2DPane(tag, box)
+    , mFrameTextureA(nullptr)
+    , mFrameTextureB(nullptr)
+    , mFrameTextureC(nullptr)
+    , mFrameTextureD(nullptr)
+    , mContentsTexture(nullptr)
+    , mPalette(nullptr)
+{
+	const ResTIMG* timg = (const ResTIMG*)J2DScreen::getNameResource(name);
+	initiate(timg, timg, timg, timg, tlut, convertMirror(texBase), box);
+}
+
+/**
+ * @note Address: N/A
+ * @note Size: 0x268
+ */
+void J2DWindow::initiate(const ResTIMG* timg1, const ResTIMG* timg2, const ResTIMG* timg3, const ResTIMG* timg4, const ResTLUT* tlut,
+                         J2DWindowMirror mirror, const JGeometry::TBox2f& box)
+{
+	if (timg1) {
+		mFrameTextureA = new JUTTexture(timg1, 0);
+	}
+	if (timg2) {
+		mFrameTextureB = new JUTTexture(timg2, 0);
+	}
+	if (timg3) {
+		mFrameTextureC = new JUTTexture(timg3, 0);
+	}
+	if (timg4) {
+		mFrameTextureD = new JUTTexture(timg4, 0);
+	}
+	if (tlut) {
+		mPalette = new JUTPalette(GX_TLUT0, const_cast<ResTLUT*>(tlut));
+	}
+	mWrapFlags = mirror;
+	if (mFrameTextureA && mFrameTextureB && mFrameTextureC && mFrameTextureD) {
+		mWindowArea.set(mFrameTextureA->getSizeX(), mFrameTextureA->getSizeY(), box.getWidth() - mFrameTextureB->getSizeX(),
+		                box.getHeight() - mFrameTextureC->getSizeY());
+	} else {
+		mWindowArea.set(0.0f, 0.0f, box.getWidth(), box.getHeight());
+	}
+	initinfo();
+}
+
+/**
  * @note Address: 0x80042C48
  * @note Size: 0x4E4
  */
@@ -220,6 +356,19 @@ void J2DWindow::private_readStream(J2DPane* parent, JSURandomInputStream* input,
 }
 
 /**
+ * @note Address: N/A
+ * @note Size: 0xBC
+ */
+void J2DWindow::initinfo()
+{
+	mBloBlockType = 'WIN1';
+	setContentsColor(TCOLOR_WHITE_U32);
+	mBlack = TCOLOR_BLACK_U32;
+	mWhite = TCOLOR_WHITE_U32;
+	initinfo2();
+}
+
+/**
  * @note Address: 0x8004312C
  * @note Size: 0x27C
  */
@@ -248,6 +397,30 @@ void J2DWindow::initinfo2()
 	if (*mFrameTextureC != *tex) {
 		_145 |= 4;
 	}
+}
+
+/**
+ * @note Address: N/A
+ * @note Size: 0x50
+ */
+J2DWindowMirror J2DWindow::convertMirror(J2DTextureBase texBase)
+{
+	J2DWindowMirror mirror = WINDOWMIRROR_39;
+	switch (texBase) {
+	case TEXTUREBASE_0:
+		mirror = WINDOWMIRROR_39;
+		break;
+	case TEXTUREBASE_1:
+		mirror = WINDOWMIRROR_141;
+		break;
+	case TEXTUREBASE_2:
+		mirror = WINDOWMIRROR_114;
+		break;
+	case TEXTUREBASE_3:
+		mirror = WINDOWMIRROR_216;
+		break;
+	}
+	return mirror;
 }
 
 /**

@@ -163,7 +163,7 @@ void StateMove::exec(EnemyBase* enemy)
 
 	Vector3f pos       = mar->getPosition();
 	Vector3f targetPos = Vector3f(mar->mTargetPosition);
-	f32 sqrDist = sqrDistanceXZ(pos, targetPos);
+	f32 sqrDist = pos.sqrDistance2D(targetPos);
 
 	Creature* target = mar->getSearchedPikmin();
 	if (target) {
@@ -351,7 +351,7 @@ void StateChase::exec(EnemyBase* enemy)
 
 			mar->turnToTarget(target, CG_GENERALPARMS(mar).mTurnSpeed(), CG_GENERALPARMS(mar).mMaxTurnAngle());
 
-			if (sqrDistanceXZ(marPos, targetPos) > 225.0f) {
+			if (marPos.sqrDistance2D(targetPos) > 225.0f) {
 				f32 x = CG_GENERALPARMS(mar).mMoveSpeed() * sinf(angle);
 				f32 y = mar->getTargetVelocity().y;
 				f32 z = CG_GENERALPARMS(mar).mMoveSpeed() * cosf(angle);
@@ -361,7 +361,7 @@ void StateChase::exec(EnemyBase* enemy)
 				mar->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 			}
 
-			if (sqrDistanceXZ(marPos, homePos) > SQUARE(CG_GENERALPARMS(mar).mTerritoryRadius())) {
+			if (marPos.sqrDistance2D(homePos) > SQUARE(CG_GENERALPARMS(mar).mTerritoryRadius())) {
 				transit(mar, MAR_ChaseInside, nullptr);
 			} else if (mar->isTargetLost()) {
 				Piki* piki = mar->getSearchedPikmin();
@@ -811,7 +811,7 @@ void StateChaseInside::exec(EnemyBase* enemy)
 
 	Vector3f marPos    = mar->getPosition();   // f28, f31
 	Vector3f targetPos = mar->mTargetPosition; // f30, f29
-	if (sqrDistanceXZ(marPos, targetPos) < 10000.0f) {
+	if (marPos.sqrDistance2D(targetPos) < 10000.0f) {
 		transit(mar, MAR_Chase, nullptr);
 	} else {
 		Creature* target = mar->mTargetCreature;
@@ -933,11 +933,9 @@ void StateFall::exec(EnemyBase* enemy)
 	} else {
 		Vector3f pos = mar->getPosition();
 		Vector3f vel = mar->getVelocity();
-
-		f32 fallSpeed = vel.y;
-
+		
 		f32 heightDiff = pos.y - mapMgr->getMinY(pos);
-		if (heightDiff < 50.0f || fallSpeed > 0.0f) {
+		if (heightDiff < 50.0f || vel.y > 0.0f) {
 			mar->finishMotion();
 		}
 

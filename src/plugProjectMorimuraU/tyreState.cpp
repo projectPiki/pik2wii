@@ -113,7 +113,7 @@ void Tyre::StateLand::exec(EnemyBase* enemy)
 	Obj* tyre = OBJ(enemy);
 	if (tyre->mFloorTriangle) {
 		tyre->flick();
-		Vector3f position = tyre->getPosition();
+		Vector3f position = Vector3f(tyre->getPosition());
 		tyre->landEffect(position);
 		shadowMgr->setForceVisible(tyre, false);
 		transit(tyre, TYRE_Freeze, nullptr);

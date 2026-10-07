@@ -8,6 +8,17 @@ static void __Print(const char** fmt, ...)
 
 namespace Game {
 
+void FieldVtxColorInfo::setVtxColorIndex(u16 idx)
+{
+	if (mColorIdx != 0xFFFF) {
+		if (mColorIdx != idx) {
+			return;
+		}
+		return;
+	}
+	mColorIdx = idx;
+}
+
 /**
  * @note Address: N/A
  * @note Size: 0x44
@@ -73,11 +84,12 @@ void FieldVtxColorMgr::createFieldVtxColorInfo()
 	FieldVtxColorInfo* newInfos = new FieldVtxColorInfo[mInfoCount];
 
 	int infoCount = 0;
+	FieldVtxColorInfo* oldInfo;
 	for (u16 i = 0; i < mModelData->getVertexNum(); i++) {
-		FieldVtxColorInfo& oldInfo = getColorInfo(i);
+		oldInfo = &mInfo[i];
 
-		if (color[oldInfo.mColorIdx].a) {
-			newInfos[infoCount++] = oldInfo;
+		if (color[oldInfo->mColorIdx].a) {
+			newInfos[infoCount++] = *oldInfo;
 		}
 	}
 
@@ -246,7 +258,7 @@ lbl_801226D4:
  * @note Address: N/A
  * @note Size: 0xE0
  */
-void FieldVtxColorMgr::updateFieldVtxColorControl(FieldVtxColorControl* control)
+inline void FieldVtxColorMgr::updateFieldVtxColorControl(FieldVtxColorControl* control)
 {
 	FieldVtxColorControlInfo* controlInfo = control->mControlInfo;
 	if (FABS(control->mCurrentPower - control->mPower) < mSmoothingRate) {
@@ -256,15 +268,13 @@ void FieldVtxColorMgr::updateFieldVtxColorControl(FieldVtxColorControl* control)
 	}
 
 	f32 alphaFlt = 255.0f * control->mCurrentPower;
-	u8 alpha     = ROUND_F32_TO_U8(alphaFlt);
+	u8 alpha     = (int)(ROUND_F32_TO_U8(alphaFlt));
 	for (controlInfo; controlInfo; controlInfo = controlInfo->mNext) {
 		FieldVtxColorInfo* info = controlInfo->mInfo;
 		if (controlInfo->mAlphaThreshold <= alpha) {
-			if (info->mAlpha < 255) {
-				info->mAlpha = 255;
-			}
-		} else if ((int)info->mAlpha < 0) { // idk how to get this to check below zero but also be cmplwi (not cmpwi)
-			info->mAlpha = 0;
+			info->raiseAlpha(255);
+		} else {
+			info->raiseAlpha(0);
 		}
 	}
 }
@@ -472,7 +482,7 @@ void FieldVtxColorMgr::calc(J3DVertexBuffer* buffer)
 		}
 
 		for (int i = 0; i < mInfoCount; i++) {
-			int idx  = mInfo[i].mColorIdx;
+			int idx  = (u16)mInfo[i].mColorIdx;
 			u8 alpha = mInfo[i].mAlpha;
 
 			GXColor& color = colorList[idx];
@@ -729,27 +739,22 @@ lbl_80122B3C:
  */
 void FieldVtxColorMgr::setupFieldVtxColorInfoFromFan(void* fan, int p1, int p2, int p3, int p4)
 {
-	u8* vertex        = static_cast<u8*>(fan);
-	u16 positionIndex = *reinterpret_cast<u16*>(vertex + p1);
-	u16 colorIndex    = *reinterpret_cast<u16*>(vertex + p2);
-	if (mInfo[positionIndex].mColorIdx == 0xFFFF) {
-		mInfo[positionIndex].mColorIdx = colorIndex;
-	}
+	u8* vertex0 = static_cast<u8*>(fan);
+	u8* vertex1 = static_cast<u8*>(fan) + p1;
 
-	vertex        = vertex + p3;
-	positionIndex = *reinterpret_cast<u16*>(vertex + p1);
-	colorIndex    = *reinterpret_cast<u16*>(vertex + p2);
-	if (mInfo[positionIndex].mColorIdx == 0xFFFF) {
-		mInfo[positionIndex].mColorIdx = colorIndex;
-	}
+	u16 positionIndex0 = *reinterpret_cast<u16*>(vertex0 + p2);
+	u16 positionIndex1 = *reinterpret_cast<u16*>(vertex1 + p2);
+	u16 colorIndex0    = *reinterpret_cast<u16*>(vertex0 + p3);
+	u16 colorIndex1    = *reinterpret_cast<u16*>(vertex1 + p3);
 
-	for (int j = 2; j < p4; j++) {
-		vertex        = vertex + j * p3;
-		positionIndex = *reinterpret_cast<u16*>(vertex + p1);
-		colorIndex    = *reinterpret_cast<u16*>(vertex + p2);
-		if (mInfo[positionIndex].mColorIdx == 0xFFFF) {
-			mInfo[positionIndex].mColorIdx = colorIndex;
-		}
+	mInfo[positionIndex0].setVtxColorIndex(colorIndex0);
+	mInfo[positionIndex1].setVtxColorIndex(colorIndex1);
+
+	for (int i = 2; i < p4; i++) {
+		u8* vertex2        = static_cast<u8*>(fan) + i * p1;
+		u16 positionIndex2 = *reinterpret_cast<u16*>(vertex2 + p2);
+		u16 colorIndex2    = *reinterpret_cast<u16*>(vertex2 + p3);
+		mInfo[positionIndex2].setVtxColorIndex(colorIndex2);
 	}
 }
 
@@ -772,159 +777,27 @@ void FieldVtxColorMgr::setupFieldVtxColorInfoFromStrip(void* strip, int p1, int 
 	u16 colorIndex2    = *reinterpret_cast<u16*>(vertex2 + p3);
 
 	if (p4 <= 3) {
-		if (mInfo[positionIndex0].mColorIdx == 0xFFFF) {
-			mInfo[positionIndex0].mColorIdx = colorIndex0;
-		}
-		if (mInfo[positionIndex1].mColorIdx == 0xFFFF) {
-			mInfo[positionIndex1].mColorIdx = colorIndex1;
-		}
-		if (mInfo[positionIndex2].mColorIdx == 0xFFFF) {
-			mInfo[positionIndex2].mColorIdx = colorIndex2;
-		}
+		mInfo[positionIndex0].setVtxColorIndex(colorIndex0);
+		mInfo[positionIndex1].setVtxColorIndex(colorIndex1);
+		mInfo[positionIndex2].setVtxColorIndex(colorIndex2);
 	} else {
-		int offset        = 0;
-		int triangleCount = p4 - 2;
-		for (int i = 0; i < triangleCount; i++) {
-			vertex0 = vertices + offset;
-			vertex1 = vertices + (i + 1) * p1;
-			vertex2 = vertices + (i + 2) * p1;
+		for (int i = 0; i < p4 - 2; i++) {
+			u8* v0 = vertices + p1 * i;
+			u8* v1 = vertices + p1 * (i + 1);
+			u8* v2 = vertices + p1 * (i + 2);
 
-			positionIndex0 = *reinterpret_cast<u16*>(vertex0 + p2);
-			positionIndex1 = *reinterpret_cast<u16*>(vertex1 + p2);
-			positionIndex2 = *reinterpret_cast<u16*>(vertex2 + p2);
-			colorIndex0    = *reinterpret_cast<u16*>(vertex0 + p3);
-			colorIndex1    = *reinterpret_cast<u16*>(vertex1 + p3);
-			colorIndex2    = *reinterpret_cast<u16*>(vertex2 + p3);
+			u16 pos0 = *reinterpret_cast<u16*>(v0 + p2);
+			u16 pos1 = *reinterpret_cast<u16*>(v1 + p2);
+			u16 pos2 = *reinterpret_cast<u16*>(v2 + p2);
+			u16 col0 = *reinterpret_cast<u16*>(v0 + p3);
+			u16 col1 = *reinterpret_cast<u16*>(v1 + p3);
+			u16 col2 = *reinterpret_cast<u16*>(v2 + p3);
 
-			if (mInfo[positionIndex0].mColorIdx == 0xFFFF) {
-				mInfo[positionIndex0].mColorIdx = colorIndex0;
-			}
-			if (mInfo[positionIndex1].mColorIdx == 0xFFFF) {
-				mInfo[positionIndex1].mColorIdx = colorIndex1;
-			}
-			if (mInfo[positionIndex2].mColorIdx == 0xFFFF) {
-				mInfo[positionIndex2].mColorIdx = colorIndex2;
-			}
-			offset += p1;
+			mInfo[pos0].setVtxColorIndex(col0);
+			mInfo[pos1].setVtxColorIndex(col1);
+			mInfo[pos2].setVtxColorIndex(col2);
 		}
 	}
-	/*
-	.loc_0x0:
-	  stwu      r1, -0x20(r1)
-	  rlwinm    r0,r5,1,0,30
-	  add       r9, r4, r5
-	  cmpwi     r8, 0x3
-	  stw       r31, 0x1C(r1)
-	  add       r10, r4, r0
-	  stw       r30, 0x18(r1)
-	  stw       r29, 0x14(r1)
-	  stw       r28, 0x10(r1)
-	  lhzx      r11, r9, r6
-	  lhzx      r12, r10, r6
-	  lhzx      r0, r4, r6
-	  lhzx      r31, r4, r7
-	  lhzx      r9, r9, r7
-	  lhzx      r10, r10, r7
-	  bgt-      .loc_0x98
-	  mulli     r0, r0, 0x6
-	  lwz       r4, 0x28(r3)
-	  lhzx      r5, r4, r0
-	  cmplwi    r5, 0xFFFF
-	  beq-      .loc_0x58
-	  b         .loc_0x5C
-
-	.loc_0x58:
-	  sthx      r31, r4, r0
-
-	.loc_0x5C:
-	  mulli     r0, r11, 0x6
-	  lwz       r4, 0x28(r3)
-	  lhzx      r5, r4, r0
-	  cmplwi    r5, 0xFFFF
-	  beq-      .loc_0x74
-	  b         .loc_0x78
-
-	.loc_0x74:
-	  sthx      r9, r4, r0
-
-	.loc_0x78:
-	  mulli     r0, r12, 0x6
-	  lwz       r3, 0x28(r3)
-	  lhzx      r4, r3, r0
-	  cmplwi    r4, 0xFFFF
-	  beq-      .loc_0x90
-	  b         .loc_0x140
-
-	.loc_0x90:
-	  sthx      r10, r3, r0
-	  b         .loc_0x140
-
-	.loc_0x98:
-	  subic.    r0, r8, 0x2
-	  li        r12, 0
-	  li        r11, 0
-	  mtctr     r0
-	  ble-      .loc_0x140
-
-	.loc_0xAC:
-	  add       r31, r4, r11
-	  addi      r8, r12, 0x1
-	  lhzx      r0, r31, r6
-	  addi      r9, r12, 0x2
-	  mullw     r10, r5, r8
-	  lwz       r8, 0x28(r3)
-	  lhzx      r30, r31, r7
-	  mullw     r9, r5, r9
-	  add       r10, r4, r10
-	  lhzx      r31, r10, r6
-	  lhzx      r29, r10, r7
-	  add       r9, r4, r9
-	  mulli     r0, r0, 0x6
-	  lhzx      r10, r9, r6
-	  lhzx      r28, r9, r7
-	  lhzx      r9, r8, r0
-	  cmplwi    r9, 0xFFFF
-	  beq-      .loc_0xF8
-	  b         .loc_0xFC
-
-	.loc_0xF8:
-	  sthx      r30, r8, r0
-
-	.loc_0xFC:
-	  mulli     r0, r31, 0x6
-	  lwz       r8, 0x28(r3)
-	  lhzx      r9, r8, r0
-	  cmplwi    r9, 0xFFFF
-	  beq-      .loc_0x114
-	  b         .loc_0x118
-
-	.loc_0x114:
-	  sthx      r29, r8, r0
-
-	.loc_0x118:
-	  mulli     r0, r10, 0x6
-	  lwz       r8, 0x28(r3)
-	  lhzx      r9, r8, r0
-	  cmplwi    r9, 0xFFFF
-	  beq-      .loc_0x130
-	  b         .loc_0x134
-
-	.loc_0x130:
-	  sthx      r28, r8, r0
-
-	.loc_0x134:
-	  add       r11, r11, r5
-	  addi      r12, r12, 0x1
-	  bdnz+     .loc_0xAC
-
-	.loc_0x140:
-	  lwz       r31, 0x1C(r1)
-	  lwz       r30, 0x18(r1)
-	  lwz       r29, 0x14(r1)
-	  lwz       r28, 0x10(r1)
-	  addi      r1, r1, 0x20
-	  blr
-	*/
 }
 
 /**
@@ -969,7 +842,6 @@ void FieldVtxColorMgr::setupFieldVtxColorInfo(J3DShape* shape)
 			u16 val = *reinterpret_cast<u16*>(ptr + 1);
 			if (ptr[0] == 152) {
 				setupFieldVtxColorInfoFromStrip(&ptr[3], p3, p1, p2, val);
-
 			} else if (ptr[0] == 160) {
 				setupFieldVtxColorInfoFromFan(&ptr[3], p3, p1, p2, val);
 			} else {
@@ -1166,119 +1038,10 @@ FieldVtxColorControl* FieldVtxColorMgr::createNewControl(Vector3f& position, f32
 	if (newControl) {
 		setupFieldVtxColorControl(newControl, position, radius, power);
 
-		FieldVtxColorControl* oldControl = mControl;
-		if (!oldControl) {
-			mControl = newControl;
-		} else {
-			newControl->mNext = nullptr;
-
-			FieldVtxColorControl* nextControl = oldControl->mNext;
-			if (!nextControl) {
-				oldControl->mNext = newControl;
-			} else {
-				while (nextControl) {
-					if (!nextControl->mNext) {
-						break;
-					}
-
-					nextControl = nextControl->mNext;
-				}
-
-				nextControl->mNext = newControl;
-			}
-		}
+		addControl(newControl);
 	}
 
 	return newControl;
-	/*
-	stwu     r1, -0x40(r1)
-	mflr     r0
-	stw      r0, 0x44(r1)
-	stfd     f31, 0x30(r1)
-	psq_st   f31, 56(r1), 0, qr0
-	stfd     f30, 0x20(r1)
-	psq_st   f30, 40(r1), 0, qr0
-	stw      r31, 0x1c(r1)
-	stw      r30, 0x18(r1)
-	stw      r29, 0x14(r1)
-	fmr      f30, f1
-	mr       r29, r3
-	fmr      f31, f2
-	mr       r30, r4
-	li       r3, 0x20
-	bl       __nw__FUl
-	or.      r31, r3, r3
-	beq      lbl_80122F4C
-	li       r0, 0
-	lis      r3, "zero__10Vector3<f>"@ha
-	stw      r0, 0(r31)
-	lfs      f2, lbl_80517CC0@sda21(r2)
-	lfsu     f0, "zero__10Vector3<f>"@l(r3)
-	lfs      f1, lbl_80517CC4@sda21(r2)
-	stfs     f0, 4(r31)
-	lfs      f0, lbl_80517CC8@sda21(r2)
-	lfs      f3, 4(r3)
-	stfs     f3, 8(r31)
-	lfs      f3, 8(r3)
-	stfs     f3, 0xc(r31)
-	stfs     f2, 0x10(r31)
-	stfs     f1, 0x14(r31)
-	stfs     f0, 0x18(r31)
-	stw      r0, 0x1c(r31)
-
-lbl_80122F4C:
-	cmplwi   r31, 0
-	beq      lbl_80122FBC
-	fmr      f1, f30
-	mr       r3, r29
-	fmr      f2, f31
-	mr       r4, r31
-	mr       r5, r30
-	bl
-"setupFieldVtxColorControl__Q24Game16FieldVtxColorMgrFPQ24Game20FieldVtxColorControlR10Vector3<f>ff"
-	lwz      r3, 0x30(r29)
-	cmplwi   r3, 0
-	bne      lbl_80122F80
-	stw      r31, 0x30(r29)
-	b        lbl_80122FBC
-
-lbl_80122F80:
-	li       r0, 0
-	stw      r0, 0(r31)
-	lwz      r4, 0(r3)
-	cmplwi   r4, 0
-	bne      lbl_80122FB0
-	stw      r31, 0(r3)
-	b        lbl_80122FBC
-	b        lbl_80122FB0
-
-lbl_80122FA0:
-	lwz      r0, 0(r4)
-	cmplwi   r0, 0
-	beq      lbl_80122FB8
-	mr       r4, r0
-
-lbl_80122FB0:
-	cmplwi   r4, 0
-	bne      lbl_80122FA0
-
-lbl_80122FB8:
-	stw      r31, 0(r4)
-
-lbl_80122FBC:
-	mr       r3, r31
-	psq_l    f31, 56(r1), 0, qr0
-	lfd      f31, 0x30(r1)
-	psq_l    f30, 40(r1), 0, qr0
-	lfd      f30, 0x20(r1)
-	lwz      r31, 0x1c(r1)
-	lwz      r30, 0x18(r1)
-	lwz      r0, 0x44(r1)
-	lwz      r29, 0x14(r1)
-	mtlr     r0
-	addi     r1, r1, 0x40
-	blr
-	*/
 }
 
 /**
@@ -1298,27 +1061,7 @@ void FieldVtxColorMgr::setupFieldVtxColorControl(Game::FieldVtxColorControl* con
 		f32 dist                = pos.distance(*vtxPos);
 		if (dist < radius) {
 			FieldVtxColorControlInfo* ctrlInfo = new FieldVtxColorControlInfo(info, dist / radius);
-			FieldVtxColorControlInfo* currInfo = control->mControlInfo;
-			if (!currInfo) {
-				control->mControlInfo = ctrlInfo;
-				continue;
-			}
-
-			ctrlInfo->mNext = nullptr;
-
-			FieldVtxColorControlInfo* nextInfo = currInfo->mNext;
-			if (!nextInfo) {
-				currInfo->mNext = ctrlInfo;
-				continue;
-			}
-
-			while (nextInfo) {
-				if (!nextInfo->mNext) {
-					break;
-				}
-				nextInfo = nextInfo->mNext;
-			}
-			nextInfo->mNext = ctrlInfo;
+			control->addControlInfo(ctrlInfo);
 		}
 	}
 

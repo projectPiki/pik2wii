@@ -72,11 +72,11 @@ void CallBack_LifeGauge::init(P2DScreen::Mgr* mgr, DataNavi* data, LifeGaugeType
 		mNa_i = TagSearch(mgr, 'na_i');
 		mLi_i = TagSearch(mgr, 'li_i');
 
-		mNaviIconOffset.x = mNa_i->mOffset.x;
-		mNaviIconOffset.y = mNa_i->mOffset.y;
+		mNaviIconOffset.x = mNa_i->mTranslateX;
+		mNaviIconOffset.y = mNa_i->mTranslateY;
 
-		mLifeIconOffset.x = mLi_i->mOffset.x;
-		mLifeIconOffset.y = mLi_i->mOffset.y;
+		mLifeIconOffset.x = mLi_i->mTranslateX;
+		mLifeIconOffset.y = mLi_i->mTranslateY;
 
 		mPin1->hide();
 		mPin2->hide();
@@ -150,7 +150,7 @@ void CallBack_LifeGauge::setType(LifeGaugeType lifeGaugeType)
 void CallBack_LifeGauge::setOffset(f32 x, f32 y)
 {
 	if (!mPane) {
-		JUT_PANICLINE(243, "ERR! : NULL Pane !!!\n");
+		JUT_PANICLINE(245, "ERR! : NULL Pane !!!\n");
 	} else {
 		mOffsetX = (mPane->getWidth() / 2) + x;
 		mOffsetY = (mPane->getHeight() / 2) + y;
@@ -285,17 +285,7 @@ void NaviLifeGauge::setCallBack(DataNavi* data, CallBack_LifeGauge::LifeGaugeTyp
 		mCallBackLifeGauge->init(this, data, lifeGaugeType);
 		addCallBack('life', mCallBackLifeGauge);
 		mCallBackDrawAfter = setCallBack_DrawAfter(this, 'mete');
-
-		CallBack_LifeGauge* cback = mCallBackLifeGauge;
-		J2DPane* pane             = cback->mPane;
-		if (!pane) {
-			JUT_PANICLINE(243, "ERR! : NULL Pane !!!\n");
-		} else {
-			f32 temp        = 0.0f;
-			cback->mOffsetX = (pane->getWidth()) / 2 + temp;
-			J2DPane* pane2  = cback->mPane;
-			cback->mOffsetY = (pane2->getHeight()) / 2 + temp;
-		}
+		mCallBackLifeGauge->setOffset(0.0f, 0.0f);
 	}
 }
 

@@ -1,15 +1,15 @@
 #ifndef _EBI_TITLE_ENTITIES_TPIKMIN_H
 #define _EBI_TITLE_ENTITIES_TPIKMIN_H
 
-#include "CNode.h"
-#include "Vector2.h"
-#include "ebi/Geometry.h"
-#include "ebi/E3DGraph.h"
-#include "ebi/title/TObjects.h"
-#include "ebi/title/TCoordMgr.h"
-#include "Parameters.h"
 #include "BaseParm.h"
+#include "CNode.h"
 #include "JSystem/J3D/J3DFrameCtrl.h"
+#include "Parameters.h"
+#include "Vector2.h"
+#include "ebi/E3DGraph.h"
+#include "ebi/Geometry.h"
+#include "ebi/title/TCoordMgr.h"
+#include "ebi/title/TObjects.h"
 
 struct JKRArchive;
 
@@ -128,6 +128,15 @@ struct TBoidParamMgr : public CNode {
 
 	void update();
 
+	f32 getWalkSpeed() const { return mCurrWalkSpeed; }
+	f32 getMaxTurnSpeed() const { return mCurrMaxTurnSpeed; }
+	f32 getTurnMag() const { return mCurrTurnMag; }
+	f32 getBoidCenter() const { return mCurrBoidCenter; }
+	f32 getBoidSpeedMatch() const { return mCurrBoidSpeedMatch; }
+	f32 getBoidColl() const { return mCurrBoidColl; }
+	f32 getGroupCenter() const { return mCurrGroupCenter; }
+	f32 getBoidNeighbor() const { return mCurrBoidNeighbor; }
+
 	// _00     = VTBL
 	// _00-_18 = CNode
 	u32 mCurrentState;       // _18
@@ -158,24 +167,28 @@ struct TUnit : public TObjBase {
 
 	TUnit()
 	{
-		mCounter            = 0;
-		mCounter2           = 0;
-		mDestPos            = Vector2f(0.0f, 0.0f);
-		mManager            = nullptr;
-		mRandAnimSpeeds     = Vector2f(1.0f, 1.0f);
-		mEnemyObj           = nullptr;
-		mTargetPos          = Vector2f(0.0f);
-		mVelocity           = Vector2f(0.0f);
-		mGroupPosDifference = Vector2f(0.0f);
-		mCurrentState       = STATE_Hidden;
-		mPreviousState      = STATE_Hidden;
-		mIsDead             = false;
+		mCounter  = 0;
+		mCounter2 = 0;
+		mDestPos.set(0.0f, 0.0f);
+		mManager = nullptr;
+		mRandAnimSpeeds.set(1.0f, 1.0f);
+		mEnemyObj = nullptr;
+		mTargetPos.set(0.0f, 0.0f);
+		mVelocity.set(0.0f, 0.0f);
+		mGroupPosDifference.set(0.0f, 0.0f);
+		mCurrentState  = STATE_Hidden;
+		mPreviousState = STATE_Hidden;
+		mIsDead        = false;
 	}
-
-	~TUnit() { }
 
 	virtual u32 getCreatureType() { return TITLECREATURE_Pikmin; } // _08 (weak)
 	virtual bool isCalc();                                         // _0C
+
+	inline void setDestPos(const Vector2f& position)
+	{
+		mDestPos.x = position.x;
+		mDestPos.y = position.y;
+	}
 
 	void init(TMgr*, s32);
 	void goDestination();

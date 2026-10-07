@@ -911,11 +911,13 @@ void TDnkmsThunderA::doExecuteEmitterOperation(JPABaseEmitter* emit)
 	emit->setGlobalRTMatrix(mtx);
 
 	f32 z = (*mPosition).distance(*mPartnerPosition);
-	JGeometry::TVec3f v;
-	emit->getLocalScale(v);
+	Vector3f v;
+	v.x = emit->mLocalScl.x;
+	v.y = emit->mLocalScl.y;
+	v.z = emit->mLocalScl.z;
 	v.z = z / 120.0f;
 
-	emit->setScaleMain(v);
+	emit->setScaleMain((JGeometry::TVec3f&)v);
 	/*
 	stwu     r1, -0x70(r1)
 	mflr     r0
@@ -1218,7 +1220,7 @@ bool TDenkiHiba::create(Arg* arg)
 		Mtx mtx;
 		makeMtxZAxisAlongPosPos(mtx, pos1, pos2);
 		for (int i = 0; i < 3; i++) {
-			JPABaseEmitter* emit = mItems[i].mEmitter;
+			JPABaseEmitter* emit = mItems[i].getEmitter();
 			if (emit) {
 				emit->setGlobalRTMatrix(mtx);
 				if (denarg->mType == ArgDenkiHiba::TYPE_VsRed) {
@@ -1232,12 +1234,13 @@ bool TDenkiHiba::create(Arg* arg)
 		}
 		f32 dist = pos1.distance(pos2);
 		dist /= 120.0f;
-		mItems[0].mEmitter->setScaleMain(1.0f, 1.0f, dist);
-		mItems[1].mEmitter->setScaleMain(1.0f, dist, 1.0);
+		Vector3f scl0(1.0f, 1.0f, dist);
+		mItems[0].mEmitter->setScaleMain((JGeometry::TVec3f&)scl0);
+		Vector3f scl1(1.0f, dist, 1.0f);
+		mItems[1].mEmitter->setScaleMain((JGeometry::TVec3f&)scl1);
 
-		// same issue as elsewhere in this file
 		JGeometry::TVec3f scl;
-		mItems[2].mEmitter->getLocalScale(scl);
+		scl.set(mItems[2].mEmitter->mLocalScl);
 		scl.y *= dist;
 		mItems[2].mEmitter->setScaleMain(scl);
 		return true;

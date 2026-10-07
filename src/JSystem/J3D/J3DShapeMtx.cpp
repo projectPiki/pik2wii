@@ -391,7 +391,7 @@ void J3DShapeMtx::load() const
  */
 void J3DShapeMtx::calcNBTScale(const Vec& scale, Mtx33* srcArray, Mtx33* dstArray)
 {
-	// J3DPSMtx33Copy(srcArray[mUseMtxIndex], dstArray[mUseMtxIndex]);
+	J3DPSMtx33Copy(srcArray[mUseMtxIndex], dstArray[mUseMtxIndex]);
 	J3DScaleNrmMtx33(dstArray[mUseMtxIndex], scale);
 }
 

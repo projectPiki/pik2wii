@@ -63,7 +63,7 @@ struct ArrayContainer : public Container<T> {
 	}
 
 	/////////////////// VTABLE
-	virtual ~ArrayContainer() { } // _08 (weak)
+	//virtual ~ArrayContainer() { } // _08 (weak)
 
 	virtual void writeObject(Stream&, T&) { } // _2C (weak)
 	virtual void readObject(Stream&, T&) { }  // _30 (weak)
@@ -115,24 +115,9 @@ struct ArrayContainer : public Container<T> {
 		mCount   = count;
 	}
 
-	virtual T* get(void* index) // _20 (weak)
+	virtual int getTo() // _28 (weak)
 	{
-		return &mObjects[(s32)index];
-	}
-
-	virtual void* getNext(void* index) // _14 (weak)
-	{
-		return (void*)((s32)index + 1);
-	}
-
-	virtual void* getStart() // _18 (weak)
-	{
-		return 0;
-	}
-
-	virtual void* getEnd() // _1C (weak)
-	{
-		return (void*)mCount;
+		return mLimit;
 	}
 
 	virtual T* getAt(int index) // _24 (weak)
@@ -140,9 +125,25 @@ struct ArrayContainer : public Container<T> {
 		return &mObjects[index];
 	}
 
-	virtual int getTo() // _28 (weak)
+
+	virtual void* getEnd() // _1C (weak)
 	{
-		return mLimit;
+		return (void*)mCount;
+	}
+
+	virtual void* getStart() // _18 (weak)
+	{
+		return 0;
+	}
+
+	virtual void* getNext(void* index) // _14 (weak)
+	{
+		return (void*)((s32)index + 1);
+	}
+
+	virtual T* get(void* index) // _20 (weak)
+	{
+		return &mObjects[(s32)index];
 	}
 
 	/////////////////// END VTABLE

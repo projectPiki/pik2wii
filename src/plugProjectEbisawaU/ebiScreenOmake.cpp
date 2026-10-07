@@ -48,7 +48,7 @@ void TOmake::doSetArchive(JKRArchive* arc)
 	E2DPane_setTreeInfluencedAlpha(mPaneAButton, true);
 	E2DPane_setTreeInfluencedAlpha(mPaneBButton, true);
 
-	for (int i = 0; i < 7; i++) {
+	for (int i = 0; i < 6; i++) {
 		mPaneList1[i]          = E2DScreen_searchAssert(mScreenMain, i + 'Nn00');
 		mPaneList2[i]          = E2DScreen_searchAssert(mScreenMain, i + 'Ww00');
 		mPaneListMesg[i]       = static_cast<J2DTextBox*>(E2DScreen_searchAssert(mScreenMain, i + 'Tt00'));
@@ -57,7 +57,7 @@ void TOmake::doSetArchive(JKRArchive* arc)
 
 	mPaneSelect = E2DScreen_searchAssert(mScreenMain, 'Wselctw');
 
-	for (int i = 0; i < 7; i++) {
+	for (int i = 0; i < 6; i++) {
 		mMesgTags[i] = mPaneListMesg[i]->mMessageID;
 	}
 
@@ -75,7 +75,7 @@ void TOmake::doSetArchive(JKRArchive* arc)
 	mAnims2.loadAnm("omake.bck", arc, 0, 20);
 	mScreenMain->addCallBack('Wselctw', &mCursor);
 
-	for (int i = 0; i < 7; i++) {
+	for (int i = 0; i < 6; i++) {
 
 		// J2DTextBox* pane1 = static_cast<J2DTextBox*>(E2DScreen_searchAssert(mScreenMain, 'Tscolor'));
 		// J2DTextBox* pane2 = static_cast<J2DTextBox*>(E2DScreen_searchAssert(mScreenMain, 'Tt00'));
@@ -84,23 +84,9 @@ void TOmake::doSetArchive(JKRArchive* arc)
 		mScreenMain->addCallBackPane(mPaneListMesg[i], &mFonts[i]);
 	}
 
-	J2DTextBox* cPane = static_cast<J2DTextBox*>(E2DScreen_searchAssert(mScreenMain, 'Tscolor'));
-	mColor0           = cPane->mCharColor.toUInt32();
-	mColor1           = cPane->mGradientColor.toUInt32();
-	mColor2           = cPane->getWhite();
-	mColor3           = cPane->getBlack();
-
-	cPane   = static_cast<J2DTextBox*>(E2DScreen_searchAssert(mScreenMain, 'Tt00'));
-	mColor4 = cPane->mCharColor.toUInt32();
-	mColor5 = cPane->mGradientColor.toUInt32();
-	mColor6 = cPane->getWhite();
-	mColor7 = cPane->getBlack();
-
-	cPane    = static_cast<J2DTextBox*>(E2DScreen_searchAssert(mScreenMain, 'Thscolor'));
-	mColor8  = cPane->mCharColor.toUInt32();
-	mColor9  = cPane->mGradientColor.toUInt32();
-	mColor10 = cPane->getWhite();
-	mColor11 = cPane->getBlack();
+	mFontColorSelect.setColors(static_cast<J2DTextBox*>(E2DScreen_searchAssert(mScreenMain, 'Tscolor')));
+	mFontColorDefault.setColors(static_cast<J2DTextBox*>(E2DScreen_searchAssert(mScreenMain, 'Tt00')));
+	mFontColorInactive.setColors(static_cast<J2DTextBox*>(E2DScreen_searchAssert(mScreenMain, 'Thscolor')));
 
 	/*
 stwu     r1, -0x60(r1)
@@ -498,7 +484,7 @@ blr
  */
 void TOmake::doOpenScreen(ArgOpen* arg)
 {
-	P2ASSERTLINE(109, arg);
+	P2ASSERTLINE(114, arg);
 
 	ArgOpenOmake* oarg = static_cast<ArgOpenOmake*>(arg);
 	u8 flag1           = oarg->mIsDebtComplete;
@@ -506,7 +492,7 @@ void TOmake::doOpenScreen(ArgOpen* arg)
 	u32 flag3          = oarg->mIsLouieDarkSecret;
 
 	// enable all options by default
-	for (int i = 0; i < 7; i++) {
+	for (int i = 0; i < 6; i++) {
 		mFonts[i].setPaneColors(0);
 		mPaneListMesg[i]->setMsgID(mMesgTags[i]);
 		mPaneListMesgShadow[i]->setMsgID(mMesgTags[i]);
@@ -538,15 +524,6 @@ void TOmake::doOpenScreen(ArgOpen* arg)
 		mPaneListMesgShadow[5]->setMsgID('4844_00');
 	}
 
-	// disable e-reader if not on JP version
-	if (sys->getLanguage() != System::LANG_Japanese) {
-		setMsgColor(mPaneListMesg[6]);
-
-		mPaneListMesg[6]->setMsgID('4844_00');       // "?"
-		mPaneListMesgShadow[6]->setMsgID('4844_00'); // "?"
-		mPaneList1[6]->hide();
-	}
-
 	mAnims1.play(sys->getDeltaTime() * 60.0f, J3DAA_UNKNOWN_0, true);
 	u32 count   = E2DFader::kFadeTime / sys->getDeltaTime();
 	mCounter    = count;
@@ -559,7 +536,7 @@ void TOmake::doOpenScreen(ArgOpen* arg)
 
 	mCurrSel = 0;
 
-	JGeometry::TBox2f bounds;
+	JGeometry::TBox2f bounds(0.0f, 0.0f, 0.0f, 0.0f);
 	bounds = *mPaneList2[mCurrSel]->getBounds();
 
 	count               = (0.1f / sys->getDeltaTime());
@@ -1036,7 +1013,7 @@ bool TOmake::doUpdateStateWait()
 			if (id < mCurrSel) {
 				while (mPaneListMesg[mCurrSel]->getUserInfo() == '4844_00') {
 					mCurrSel++;
-					if (mCurrSel >= 7) {
+					if (mCurrSel >= 6) {
 						mCurrSel = id;
 						break;
 					}
@@ -1052,7 +1029,7 @@ bool TOmake::doUpdateStateWait()
 			}
 
 			if (mCurrSel != id) {
-				JGeometry::TBox2f bounds;
+				JGeometry::TBox2f bounds(0.0f, 0.0f, 0.0f, 0.0f);
 				bounds           = *mPaneList2[mCurrSel]->getBounds();
 				mCursor.mBounds1 = mCursor.mBounds2;
 				mCursor.mBounds2 = bounds;
@@ -1069,10 +1046,6 @@ bool TOmake::doUpdateStateWait()
 			if (input & Controller::PRESS_A) {
 				PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_DECIDE, 0);
 				switch (mCurrSel) {
-				case 6:
-					mAnims2.play(sys->getDeltaTime() * 60.0f, J3DAA_UNKNOWN_0, true);
-					mState2 = 2;
-					break;
 				default:
 					u32 count   = ebi::E2DFader::kFadeTime / sys->getDeltaTime();
 					mCounter    = count;
@@ -1089,10 +1062,10 @@ bool TOmake::doUpdateStateWait()
 		break;
 	case 2:
 		f32 calc  = mAnims2.getPlayFinRate();
-		f32 alpha = (1.0f - calc) * 255.0f;
-		mPaneTitle->setAlpha(alpha);
-		mPaneAButton->setAlpha(alpha);
-		mPaneBButton->setAlpha(alpha);
+		f32 alpha = (1.0f - calc);
+		mPaneTitle->setAlpha(alpha * 255.0f);
+		mPaneAButton->setAlpha(alpha * 255.0f);
+		mPaneBButton->setAlpha(alpha * 255.0f);
 		if (mAnims2.isFinish()) {
 			hidePanes_();
 			mState2 = 1;
@@ -1100,10 +1073,9 @@ bool TOmake::doUpdateStateWait()
 		break;
 	case 3:
 		calc  = mAnims1.getPlayFinRate();
-		alpha = calc * 255.0f;
-		mPaneTitle->setAlpha(alpha);
-		mPaneAButton->setAlpha(alpha);
-		mPaneBButton->setAlpha(alpha);
+		mPaneTitle->setAlpha(calc * 255.0f);
+		mPaneAButton->setAlpha(calc * 255.0f);
+		mPaneBButton->setAlpha(calc * 255.0f);
 		if (mAnims1.isFinish()) {
 			mState2 = 0;
 		}
@@ -1512,8 +1484,8 @@ void TOmake::doDraw()
 		break;
 	}
 	graf->setColor(color);
-	u32 y    = System::getRenderModeObj()->efbHeight;
-	u32 x    = System::getRenderModeObj()->fbWidth;
+	f32 y    = System::getRenderModeObj()->efbHeight;
+	f32 x    = System::getRenderModeObj()->fbWidth;
 	f32 zero = 0.0f;
 	JGeometry::TBox2f box(0.0f, 0.0f, zero + x, zero + y);
 	graf->fillBox(box);
@@ -1526,7 +1498,7 @@ void TOmake::doDraw()
 void TOmake::setController(Controller* in)
 {
 	mController = in;
-	mInput.init(in, 0, 6, (s32*)&mCurrSel, EUTPadInterface_countNum::MODE_DOWNUP, 0.66f, 0.15f);
+	mInput.init(in, 0, 5, (s32*)&mCurrSel, EUTPadInterface_countNum::MODE_DOWNUP, 0.66f, 0.15f);
 }
 
 /**
@@ -1539,7 +1511,7 @@ void TOmake::showPanes_()
 	mPaneTitle->show();
 	mPaneAButton->show();
 	mPaneBButton->show();
-	for (int i = 0; i < 7; i++) {
+	for (int i = 0; i < 6; i++) {
 		mPaneList2[i]->hide();
 	}
 }

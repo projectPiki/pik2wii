@@ -86,11 +86,7 @@ void KindCounter::addTo(KindCounter& other)
  */
 u8& KindCounter::operator()(int index)
 {
-	bool isValidIndex = false;
-	if (0 <= index && index < mNumKinds) {
-		isValidIndex = true;
-	}
-	P2ASSERTLINE(330, isValidIndex);
+	P2ASSERTBOUNDSLINE(330, 0, index, mNumKinds);
 	return mKinds[index];
 }
 
@@ -176,6 +172,7 @@ int PelletCropMemory::calcEarnKinds()
  */
 int PelletCropMemory::calcNumKinds()
 {
+	return mOtakara.getNumKinds() + mItem.getNumKinds();
 }
 
 /**
@@ -193,25 +190,29 @@ PelletFirstMemory::PelletFirstMemory(int p1, int p2, int p3)
  */
 bool PelletFirstMemory::firstCarryPellet(Pellet* pellet)
 {
+	// Effectively the same purpose as obtainPellet, sets the same collected flag
+	// but this one returns if that pellet was collected for the first time or not
+	// (this really serves no purpose since any treasure can only be obtained once)
+
 	if ((pellet->getKind() == PelletType::Treasure) ? true : false) {
 		int id = pellet->getConfigIndex();
 
-		if (!(mOtakara(id) & 2)) {
-			mOtakara(id) |= 2;
+		if (!(mOtakara(id) & KindCounter::KCF_Earned)) {
+			mOtakara(id) |= KindCounter::KCF_Earned;
 			return true;
 		}
 
 	} else if ((pellet->getKind() == PelletType::Upgrade) ? true : false) {
 		int id = pellet->getConfigIndex();
-		if (!(mItem(id) & 2)) {
-			mItem(id) |= 2;
+		if (!(mItem(id) & KindCounter::KCF_Earned)) {
+			mItem(id) |= KindCounter::KCF_Earned;
 			return true;
 		}
 
 	} else if (pellet->getKind() == PelletType::Carcass) {
 		int id = pellet->getConfigIndex();
-		if (!(mCarcass(id) & 2)) {
-			mCarcass(id) |= 2;
+		if (!(mCarcass(id) & KindCounter::KCF_Earned)) {
+			mCarcass(id) |= KindCounter::KCF_Earned;
 			return true;
 		}
 	}
@@ -225,11 +226,12 @@ bool PelletFirstMemory::firstCarryPellet(Pellet* pellet)
  */
 void PelletFirstMemory::obtainPellet(BasePelletMgr* mgr, int id)
 {
+	// find the collection flag of the treasure with the given manager and index, and mark it as collected
 	if (mgr->getMgrID() == PelletType::Treasure) {
-		mOtakara(id) |= 2;
+		mOtakara(id) |= KindCounter::KCF_Earned;
 
 	} else if (mgr->getMgrID() == PelletType::Upgrade) {
-		mItem(id) |= 2;
+		mItem(id) |= KindCounter::KCF_Earned;
 
 	} else {
 		mgr->getMgrID();
@@ -242,11 +244,13 @@ void PelletFirstMemory::obtainPellet(BasePelletMgr* mgr, int id)
  */
 void PelletFirstMemory::losePellet(Game::BasePelletMgr* mgr, int id)
 {
+	// find the collection flag of the treasure with the given manager and index, and mark it as uncollected
+	// (mainly for giving up/losing in caves)
 	if (mgr->getMgrID() == PelletType::Treasure) {
-		mOtakara(id) &= ~0x2;
+		mOtakara(id) &= ~KindCounter::KCF_Earned;
 
 	} else if (mgr->getMgrID() == PelletType::Upgrade) {
-		mItem(id) &= ~0x2;
+		mItem(id) &= ~KindCounter::KCF_Earned;
 
 	} else {
 		mgr->getMgrID();
@@ -273,7 +277,13 @@ bool PlayData::isCompletePelletTrigger()
  */
 bool PelletCropMemory::completeAll()
 {
-	return (!mOtakara.completeAll()) ? false : mItem.completeAll();
+	// check that all treasures and items are marked as collected
+	if (!mOtakara.completeAll())
+		return false;
+	if (!mItem.completeAll())
+		return false;
+
+	return true;
 }
 
 /**
@@ -282,8 +292,9 @@ bool PelletCropMemory::completeAll()
  */
 bool KindCounter::completeAll()
 {
-	for (int i = 0; i < mNumKinds; ++i) {
-		if (mKinds[i] == 0)
+	// return false if any item in the set isnt marked as collected or new
+	for (int i = 0; i < mNumKinds; i++) {
+		if (mKinds[i] == KCF_Unset)
 			return false;
 	}
 	return true;
@@ -295,6 +306,7 @@ bool KindCounter::completeAll()
  */
 int KindCounter::getEarnKinds()
 {
+	// Returns the total number of items in the set that are marked as collected
 	int earnedKinds = 0;
 	for (int i = 0; i < mNumKinds; i++) {
 		if (mKinds[i] & KCF_Earned) {
@@ -310,8 +322,6 @@ int KindCounter::getEarnKinds()
  */
 OlimarData::OlimarData()
 {
-	mFlags[0] = 0;
-	mFlags[1] = 0;
 	clear();
 }
 
@@ -321,8 +331,7 @@ OlimarData::OlimarData()
  */
 void OlimarData::clear()
 {
-	mFlags[0] = 0;
-	mFlags[1] = 0;
+	mFlags.clear();
 }
 
 /**
@@ -332,10 +341,7 @@ void OlimarData::clear()
 bool OlimarData::hasItem(int index)
 {
 	P2ASSERTBOUNDSLINE(588, ODII_BruteKnuckles, index, ODII_LAST_NON_EXPLORATION_KIT_ITEM);
-	int data_idx = (index >> 3);
-	int rot      = (data_idx << 3);
-	int bits     = 1 << (index - rot);
-	return (mFlags[1 - data_idx] & bits) != false;
+	return mFlags.isBitSet(index);
 }
 
 /**
@@ -344,20 +350,17 @@ bool OlimarData::hasItem(int index)
  */
 void OlimarData::getItem(int item)
 {
-	bool validItem = item >= ODII_BruteKnuckles && item < ODII_LAST_NON_EXPLORATION_KIT_ITEM;
-	P2ASSERTLINE(601, validItem);
+	P2ASSERTBOUNDSLINE(601, ODII_BruteKnuckles, item, ODII_LAST_NON_EXPLORATION_KIT_ITEM);
 
-	if (item < 16) {
-		int data_idx = (item >> 3);
-		mFlags[1 - data_idx] |= 1 << (item - (data_idx << 3));
-	}
+	mFlags.setBit(item);
 
+	// the two globes immediately unlock the stage upon collection
 	switch (item) {
 	case ODII_SphericalAtlas:
-		playData->openCourse(1);
+		playData->openCourse(1); // awakening wood
 		return;
 	case ODII_GeographicProjection:
-		playData->openCourse(2);
+		playData->openCourse(2); // perplexing pool
 		return;
 	}
 }
@@ -424,7 +427,7 @@ PlayData::PlayData()
 	mZukanStat      = new PelletFirstMemory(treasures, items, carcasses);
 	mMainCropMemory = new PelletCropMemory(treasures, items, carcasses);
 	mCaveCropMemory = new PelletCropMemory(treasures, items, carcasses);
-	mDemoFlags.create(57, nullptr);
+	mDemoFlags.create(DEMO_COUNT, nullptr);
 	mDemoFlags.reset();
 	mFindItemFlags.create(PelletList::Mgr::getCount(PelletList::PLK_Item), nullptr);
 	mFindItemFlags.reset();
@@ -453,18 +456,13 @@ void PlayData::reset()
 	mNaviLifeMax[1]        = 0.0f;
 	mNaviLifeMax[0]        = 0.0f;
 	mDeadNaviID.typeView   = 0;
-	u64 osTime             = OSGetTime();
-	mOsTime                = osTime;
+	mOsTime                = OSGetTime();
 	mDoAllowDebugPikiSpawn = false;
-	mLoadType              = 0;
-	mStoryFlags            = 0;
+	mLoadType              = STORYSAVE_NewFile;
+	mStoryFlags.clear();
 	mDebtProgressFlags.clear();
-	mBackupDebtProgressFlags.clear();
 	for (int i = 0; i <= -1; i++) {
-		if (i < 16) {
-			int byte = i >> 3;
-			getDebtProgressFlags(1 - byte) |= 1 << (i - (byte << 3));
-		}
+		mDebtProgressFlags.setBit(i);
 	}
 	generatorCache->clearCache();
 	mPokoCount     = 0;
@@ -509,15 +507,18 @@ void PlayData::reset()
  */
 void PlayData::setDevelopSetting(bool isDevelop, bool setDemos)
 {
+	// development function that sets up save data for testing
+	// still gets used in the final game for versus mode/2p battle, where most of this does nothing
 	mDoAllowDebugPikiSpawn = isDevelop;
 	if (isDevelop) {
-		initCourses(true);
-		debugSetContainerFlagOn();
-		mDemoFlags.all_one();
-		mFindItemFlags.all_one();
-		mOlimarData[0].mFlags[0] |= 4;
-		playData->openCourse(1);
-		initCourses(true);
+		initCourses(true);                                       // unlock all levels
+		debugSetContainerFlagOn();                               // mark all Pikmin types as unlocked
+		mDemoFlags.all_one();                                    // mark all cutscenes as seen
+		mFindItemFlags.all_one();                                // mark all explorer kit items as seen (not collected)
+		mOlimarData[0].getItem(OlimarData::ODII_SphericalAtlas); // make Awakening Wood unlocked
+		initCourses(true);                                       // unlock all levels, again I guess
+
+		// unmark these cutscenes in particular if required
 		if (!setDemos) {
 			mDemoFlags.resetFlag(DEMO_Waterwraith_Appears);
 			mDemoFlags.resetFlag(DEMO_First_Spicy_Berry);
@@ -575,9 +576,11 @@ bool PlayData::hasContainer(int pikminColor)
  */
 bool PlayData::hasMetPikmin(int pikminColor)
 {
+	// consider bulbmin as always been having met
 	if (pikminColor == Bulbmin) {
 		return true;
 	}
+
 	return mMeetPikminFlags & (1 << pikminColor);
 }
 
@@ -587,17 +590,13 @@ bool PlayData::hasMetPikmin(int pikminColor)
  */
 bool PlayData::hasBootContainer(int pikminColor)
 {
-	bool isValidIndex;
+	// never even check for purples or whites here, they have no onion silly
 	if (pikminColor == White || pikminColor == Purple) {
 		return false;
-	} else {
-		isValidIndex = false;
-		if (FirstPikmin <= pikminColor && pikminColor <= LastOnyon) {
-			isValidIndex = true;
-		}
-		P2ASSERTLINE(1018, isValidIndex);
-		return mHasBootContainerFlags & (1 << pikminColor);
-	}
+	} 
+
+	P2ASSERTBOUNDSINCLUSIVELINE(1018, FirstPikmin, pikminColor, LastOnyon);
+	return mHasBootContainerFlags & (1 << pikminColor);
 }
 
 /**
@@ -606,11 +605,7 @@ bool PlayData::hasBootContainer(int pikminColor)
  */
 void PlayData::setContainer(int pikminColor)
 {
-	bool isValidIndex = false;
-	if (FirstPikmin <= pikminColor && pikminColor < StoredPikiCount) {
-		isValidIndex = true;
-	}
-	P2ASSERTLINE(1024, isValidIndex);
+	P2ASSERTBOUNDSLINE(1024, FirstPikmin, pikminColor, StoredPikiCount);
 	mHasContainerFlags |= (1 << pikminColor);
 }
 
@@ -620,11 +615,7 @@ void PlayData::setContainer(int pikminColor)
  */
 void PlayData::setMeetPikmin(int pikminColor)
 {
-	bool isValidIndex = false;
-	if (FirstPikmin <= pikminColor && pikminColor < StoredPikiCount) {
-		isValidIndex = true;
-	}
-	P2ASSERTLINE(1030, isValidIndex);
+	P2ASSERTBOUNDSLINE(1030, FirstPikmin, pikminColor, StoredPikiCount);
 	mMeetPikminFlags |= (1 << pikminColor);
 }
 
@@ -634,11 +625,7 @@ void PlayData::setMeetPikmin(int pikminColor)
  */
 void PlayData::setBootContainer(int pikminColor)
 {
-	bool isValidIndex = false;
-	if (FirstPikmin <= pikminColor && pikminColor <= LastOnyon) {
-		isValidIndex = true;
-	}
-	P2ASSERTLINE(1036, isValidIndex);
+	P2ASSERTBOUNDSINCLUSIVELINE(1036, FirstPikmin, pikminColor, LastOnyon);
 	mHasBootContainerFlags |= (1 << pikminColor);
 }
 
@@ -648,20 +635,25 @@ void PlayData::setBootContainer(int pikminColor)
  */
 void PlayData::debugSetContainerFlagOn()
 {
-	mHasContainerFlags |= 0x01;
-	mHasContainerFlags |= 0x02;
-	mHasContainerFlags |= 0x04;
-	mHasContainerFlags |= 0x10;
-	mHasContainerFlags |= 0x08;
-	mHasBootContainerFlags |= 0x01;
-	mHasBootContainerFlags |= 0x02;
-	mHasBootContainerFlags |= 0x04;
-	mMeetPikminFlags |= 0x01;
-	mMeetPikminFlags |= 0x02;
-	mMeetPikminFlags |= 0x04;
-	mMeetPikminFlags |= 0x10;
-	mMeetPikminFlags |= 0x08;
-	mLoadType = 1;
+	// Mark all Pikmin types as unlocked fully
+	setContainer(Blue);
+	setContainer(Red);
+	setContainer(Yellow);
+	setContainer(White);
+	setContainer(Purple);
+
+	setBootContainer(Blue);
+	setBootContainer(Red);
+	setBootContainer(Yellow);
+
+	setMeetPikmin(Blue);
+	setMeetPikmin(Red);
+	setMeetPikmin(Yellow);
+	setMeetPikmin(White);
+	setMeetPikmin(Purple);
+
+	// mark the game as set to load into world map (not sure why its being done here)
+	mLoadType = STORYSAVE_WorldMap;
 }
 
 /**
@@ -805,6 +797,7 @@ void PlayData::losePellet(Game::BasePelletMgr* mgr, int p2)
  */
 void PlayData::obtainPellet_Main(Game::Pellet* pellet)
 {
+	// increase the number of the collected item
 	mMainCropMemory->obtainPellet(pellet);
 
 	BasePelletMgr* mgr = 0;
@@ -814,10 +807,13 @@ void PlayData::obtainPellet_Main(Game::Pellet* pellet)
 		mgr = PelletItem::mgr;
 	}
 
+	// mark the treasure as collected in the piklopedia
 	if (mgr) {
-		mZukanStat->obtainPellet(mgr, pellet->getConfigIndex());
+		obtainPellet(mgr, pellet->getConfigIndex());
 	}
-	mPokoCount += pellet->mConfig->mParams.mMoney.mData;
+
+	// add poko count immediately (unlike in caves where its only done on escaping)
+	mPokoCount += pellet->getPokoValue();
 }
 
 /**
@@ -827,6 +823,8 @@ void PlayData::obtainPellet_Main(Game::Pellet* pellet)
 void PlayData::obtainPellet_Cave(Game::Pellet* pellet)
 {
 	mCaveCropMemory->obtainPellet(pellet);
+	// treasures in caves are not marked in the piklopedia yet, that is done on cave escape (SingleGame::State::accountEarnings)
+	// same for the poko count
 }
 
 /**
@@ -841,7 +839,21 @@ void PlayData::confirmCaveCropMemory()
  * @note Address: N/A
  * @note Size: 0x150
  */
-// bool PlayData::isPelletEverGot(Pellet*) { }
+bool PlayData::isPelletEverGot(Pellet* pellet)
+{
+	u8 type = pellet->getKind();
+	int id  = pellet->getConfigIndex();
+
+	if (type == PelletType::Upgrade) {
+		int itemID = mZukanStat->mItem(id);
+		return itemID > 0;
+	}
+	if (type == PelletType::Treasure) {
+		int treasureID = mZukanStat->mOtakara(id);
+		return treasureID > 0;
+	}
+	JUT_PANICLINE(1407, "otakara or item !");
+}
 
 /**
  * @note Address: 0x801E7B98
@@ -865,21 +877,22 @@ bool PlayData::isPelletEverGot(u8 type, u8 id)
  * @note Address: 0x801E7C9C
  * @note Size: 0x128
  */
-bool PlayData::isPelletZukanVisible(int id)
+bool PlayData::isPelletZukanVisible(int dictionaryID)
 {
+	// returns if the pellet is collected, as determined from the dictionary (treasure hoard) index
 	PelletConfigList* list = PelletList::Mgr::getConfigList(PelletList::PLK_Otakara);
-	PelletConfig* config   = list->getPelletConfig_ByDictionaryNo(id);
+	PelletConfig* config   = list->getPelletConfig_ByDictionaryNo(dictionaryID);
 	if (config) {
 		int index = config->mParams.mIndex;
-		if (IS_FLAG(mZukanStat->mOtakara(index), 2)) {
+		if (IS_FLAG(mZukanStat->mOtakara(index), KindCounter::KCF_Earned)) {
 			return true;
 		}
 	} else {
 		list   = PelletList::Mgr::getConfigList(PelletList::PLK_Item);
-		config = list->getPelletConfig_ByDictionaryNo(id);
+		config = list->getPelletConfig_ByDictionaryNo(dictionaryID);
 		if (config) {
 			int index = config->mParams.mIndex;
-			if (IS_FLAG(mZukanStat->mItem(index), 2)) {
+			if (IS_FLAG(mZukanStat->mItem(index), KindCounter::KCF_Earned)) {
 				return true;
 			}
 		}
@@ -893,12 +906,14 @@ bool PlayData::isPelletZukanVisible(int id)
  */
 bool PlayData::isPelletZukanWhatsNew(int id)
 {
+	// Check if any collected treasures are still new, specifically that their ZukanStat flag is set to KCF_Earned but without KCF_IsOld set
+	// this is done seperately for normal treasures and explorer kit items
 	PelletConfigList* list = PelletList::Mgr::getConfigList(PelletList::PLK_Otakara);
 	PelletConfig* config   = list->getPelletConfig_ByDictionaryNo(id);
 	if (config) {
 		int index = config->mParams.mIndex;
 		u8 kinds  = mZukanStat->mOtakara(index);
-		if (kinds & 2 && !(kinds & 4)) {
+		if (kinds & KindCounter::KCF_Earned && !(kinds & KindCounter::KCF_IsOld)) {
 			return true;
 		}
 	} else {
@@ -907,7 +922,7 @@ bool PlayData::isPelletZukanWhatsNew(int id)
 		if (config) {
 			int index = config->mParams.mIndex;
 			u8 kinds  = mZukanStat->mItem(index);
-			if (kinds & 2 && !(kinds & 4)) {
+			if (kinds & KindCounter::KCF_Earned && !(kinds & KindCounter::KCF_IsOld)) {
 				return true;
 			}
 		}
@@ -924,7 +939,7 @@ bool PlayData::hasPelletZukanWhatsNew()
 	PelletFirstMemory* zukanStat = getZukanStat();
 	for (int i = 0; i < zukanStat->mOtakara.mNumKinds; i++) {
 		u8 kinds = zukanStat->mOtakara(i);
-		if (kinds && !(IS_FLAG(zukanStat->mOtakara(i), 4)))
+		if (kinds != KindCounter::KCF_Unset && !(IS_FLAG(zukanStat->mOtakara(i), KindCounter::KCF_IsOld)))
 			return true;
 	}
 
@@ -932,7 +947,7 @@ bool PlayData::hasPelletZukanWhatsNew()
 	for (int i = 0; i < zukanStat2->mItem.mNumKinds; i++) {
 
 		u8 kinds = zukanStat2->mItem(i);
-		if (kinds && !(IS_FLAG(zukanStat2->mItem(i), 4)))
+		if (kinds != KindCounter::KCF_Unset && !(IS_FLAG(zukanStat2->mItem(i), KindCounter::KCF_IsOld)))
 			return true;
 	}
 	return false;
@@ -947,16 +962,16 @@ void PlayData::setPelletZukanOutOfDateAll()
 	PelletFirstMemory* zukanStat = getZukanStat();
 	for (int i = 0; i < zukanStat->mOtakara.mNumKinds; i++) {
 		u8 kinds = zukanStat->mOtakara(i);
-		if (kinds) {
-			SET_FLAG(zukanStat->mOtakara(i), 4);
+		if (kinds != KindCounter::KCF_Unset) {
+			SET_FLAG(zukanStat->mOtakara(i), KindCounter::KCF_IsOld);
 		}
 	}
 
 	PelletFirstMemory* zukanStat2 = getZukanStat();
 	for (int i = 0; i < zukanStat2->mItem.mNumKinds; i++) {
 		u8 kinds = zukanStat2->mItem(i);
-		if (kinds) {
-			SET_FLAG(zukanStat2->mItem(i), 4);
+		if (kinds != KindCounter::KCF_Unset) {
+			SET_FLAG(zukanStat2->mItem(i), KindCounter::KCF_IsOld);
 		}
 	}
 }
@@ -1038,11 +1053,7 @@ void PlayData::incDopeCount(int sprayIndex)
  */
 bool PlayData::hasDope(int sprayIndex)
 {
-	bool isValidIndex = false;
-	if (0 <= sprayIndex && sprayIndex < 2) {
-		isValidIndex = true;
-	}
-	P2ASSERTLINE(1592, isValidIndex);
+	P2ASSERTBOUNDSLINE(1592, 0, sprayIndex, 2);
 	return (0 < mSprayCount[sprayIndex]);
 }
 
@@ -1052,11 +1063,7 @@ bool PlayData::hasDope(int sprayIndex)
  */
 int PlayData::getDopeFruitCount(int sprayIndex)
 {
-	bool isValidIndex = false;
-	if (0 <= sprayIndex && sprayIndex < 2) {
-		isValidIndex = true;
-	}
-	P2ASSERTLINE(1598, isValidIndex);
+	P2ASSERTBOUNDSLINE(1598, 0, sprayIndex, 2);
 	return mBerryCount[sprayIndex];
 }
 
@@ -1066,20 +1073,17 @@ int PlayData::getDopeFruitCount(int sprayIndex)
  */
 bool PlayData::addDopeFruit(int sprayIndex)
 {
-	bool isValidIndex = false;
-	if (0 <= sprayIndex && sprayIndex < 2) {
-		isValidIndex = true;
-	}
-	P2ASSERTLINE(1604, isValidIndex);
+	P2ASSERTBOUNDSLINE(1604, 0, sprayIndex, 2);
 
 	mBerryCount[sprayIndex]++;
+	// once enough berries are collected for a spray, reset the berry count and increase the spray count
 	if (mBerryCount[sprayIndex] >= _aiConstants->mDopeCount.mData) {
 		mBerryCount[sprayIndex] = 0;
 		mSprayCount[sprayIndex]++;
 		return true;
-	} else {
-		return false;
 	}
+
+	return false;
 }
 
 /**
@@ -1088,11 +1092,7 @@ bool PlayData::addDopeFruit(int sprayIndex)
  */
 void PlayData::useDope(int sprayIndex)
 {
-	bool isValidIndex = false;
-	if (0 <= sprayIndex && sprayIndex < 2) {
-		isValidIndex = true;
-	}
-	P2ASSERTLINE(1616, isValidIndex);
+	P2ASSERTBOUNDSLINE(1616, 0, sprayIndex, 2);
 	if (hasDope(sprayIndex)) {
 		mSprayCount[sprayIndex]--;
 	}
@@ -1219,13 +1219,15 @@ int PlayData::getOtakaraMax_Course_CaveID(int courseIndex, ID32& caveID)
  */
 void PlayData::initCaveOtakaras()
 {
-	u16 max = stageList->mCourseCount;
+	int max = stageList->getCourseCount();
 	for (int i = 0; i < max; i++) {
-		mCaveOtakara[i].clear();
+		CaveOtakara* ota = &mCaveOtakara[i];
+		ota->clear();
 	}
 
 	for (int i = 0; i < max; i++) {
-		mCaveOtakaraOld[i].clear();
+		CaveOtakara* ota = &mCaveOtakaraOld[i];
+		ota->clear();
 	}
 }
 
@@ -1235,7 +1237,7 @@ void PlayData::initCaveOtakaras()
  */
 void PlayData::read_CaveOtakara(Stream& ram)
 {
-	u16 max = stageList->getCourseCount();
+	int max = stageList->getCourseCount();
 	for (int i = 0; i < max; i++) {
 		mCaveOtakara[i].read(ram);
 	}
@@ -1248,7 +1250,7 @@ void PlayData::read_CaveOtakara(Stream& ram)
 void PlayData::write_CaveOtakara(Stream& ram)
 {
 	ram.textBeginGroup("＊洞窟情報＊");
-	u16 max = stageList->getCourseCount();
+	int max = stageList->getCourseCount();
 	for (int i = 0; i < max; i++) {
 		mCaveOtakara[i].write(ram);
 	}
@@ -1333,12 +1335,9 @@ bool PlayData::checkRepayLevelFirstClear()
 {
 	int id = getRepayLevel();
 
-	if (id >= 0) {
-		int byte = id >> 3;
-		if ((getDebtProgressFlags(1 - byte) & 1 << (id - (byte << 3))) == 0) {
-			return true;
-		}
-	}
+	if (id >= 0 && !mDebtProgressFlags.isBitSet(id))
+		return true;
+
 	return false;
 }
 
@@ -1352,10 +1351,7 @@ void PlayData::experienceRepayLevelFirstClear()
 
 	if (id >= 0) {
 		for (int i = 0; i <= id; i++) {
-			if (i < 16) {
-				int byte = i >> 3;
-				getDebtProgressFlags(1 - byte) |= 1 << (i - (byte << 3));
-			}
+			mDebtProgressFlags.setBit(i);
 		}
 	}
 }
@@ -1366,7 +1362,7 @@ void PlayData::experienceRepayLevelFirstClear()
  */
 void PlayData::initLimitGens()
 {
-	u16 courseCount = stageList->getCourseCount();
+	int courseCount = stageList->getCourseCount();
 	for (int i = 0; i < courseCount; i++) {
 		LimitGen* gen = &mLimitGen[i];
 		gen->init();
@@ -1377,9 +1373,10 @@ void PlayData::initLimitGens()
  * @note Address: 0x801E92FC
  * @note Size: 0x6C
  */
-void PlayData::initCourses(bool type)
+void PlayData::initCourses(bool debugSet)
 {
-	if (type) {
+	// if debugSet is true, make all stages unlocked, otherwise close all stages
+	if (debugSet) {
 		for (int i = 0; i < stageList->getCourseCount(); i++) {
 			mBitfieldPerCourse[i] = 3;
 		}
@@ -1389,7 +1386,7 @@ void PlayData::initCourses(bool type)
 			mBitfieldPerCourse[i] = 0;
 		}
 	}
-	mBitfieldPerCourse[0] = 3; // valley of repose always unlocked
+	mBitfieldPerCourse[0] = 3; // valley of repose always unlocked regardless of debug setting
 }
 
 /**
@@ -1480,7 +1477,7 @@ CaveSaveData::CaveSaveData()
     , _30()
 {
 	mCavePikis.clear();
-	mTime      = 0.0f;
+	mDayTime   = 0.0f;
 	mIsInCave  = false;
 	mCourseIdx = -1;
 	mCurrentCaveID.setID('none');
@@ -1496,7 +1493,7 @@ CaveSaveData::CaveSaveData()
 void CaveSaveData::clear()
 {
 	mCavePikis.clear();
-	mTime      = 0.0f;
+	mDayTime   = 0.0f;
 	mIsInCave  = false;
 	mCourseIdx = -1;
 	mCurrentCaveID.setID('none');
@@ -1595,7 +1592,7 @@ bool PlayData::isCaveFirstTime_Old(int courseIndex, ID32& caveID)
  */
 void PlayData::read_CaveOtakara_Old(Stream& ram)
 {
-	u16 max = stageList->mCourseCount;
+	int max = stageList->getCourseCount();
 	for (int i = 0; i < max; i++) {
 		CaveOtakara* ota = &mCaveOtakaraOld[i];
 		ota->read(ram);
@@ -1609,7 +1606,7 @@ void PlayData::read_CaveOtakara_Old(Stream& ram)
 void PlayData::write_CaveOtakara_Old(Stream& ram)
 {
 	ram.textBeginGroup("＊洞窟情報(Old)＊");
-	u16 max = stageList->getCourseCount();
+	int max = stageList->getCourseCount();
 	for (int i = 0; i < max; i++) {
 		CaveOtakara* ota = &mCaveOtakaraOld[i];
 		ota->write(ram);

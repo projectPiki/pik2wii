@@ -59,10 +59,12 @@ void RandEnemyUnit::setEnemySlot()
  */
 void RandEnemyUnit::setEnemyTypeWeight()
 {
-	int enemyTypes[4] = { BaseGen::CGT_EnemyEasy, BaseGen::CGT_EnemyHard, BaseGen::CGT_DoorSeam, BaseGen::CGT_EnemySpecial }; // _38
+	EnemyNode* mainNode = mGenerator->mMainEnemies;
 
-	int weightList[4]; // _28
-	int countList[4];  // _18
+	int enemyTypes[4] = { BaseGen::CGT_EnemyEasy, BaseGen::CGT_EnemyHard, BaseGen::CGT_DoorSeam, BaseGen::CGT_EnemySpecial };
+
+	int weightList[4];
+	int countList[4];
 	int totalWeights = 0;
 
 	for (int i = 0; i < 4; i++) {
@@ -75,7 +77,7 @@ void RandEnemyUnit::setEnemyTypeWeight()
 		countList[i]  = 0;
 	}
 
-	FOREACH_NODE(EnemyNode, mGenerator->mMainEnemies->mChild, currEnemy)
+	FOREACH_NODE(EnemyNode, mainNode->mChild, currEnemy)
 	{
 		TekiInfo* tekiInfo = currEnemy->getTekiInfo();
 		if (tekiInfo) {
@@ -98,207 +100,23 @@ void RandEnemyUnit::setEnemyTypeWeight()
 
 	int tallyWeights[4];
 
-	tallyWeights[0] = weightList[0];
-	tallyWeights[1] = tallyWeights[0] + weightList[1];
-	tallyWeights[2] = tallyWeights[1] + weightList[2];
-	tallyWeights[3] = tallyWeights[2] + weightList[3];
-
-	int totalNum = countList[0];
-	for (int i = 1; i < 4; i++) {
+	int tally    = 0;
+	int totalNum = 0;
+	for (int i = 0; i < 4; i++) {
 		totalNum += countList[i];
+		tally += weightList[i];
+		tallyWeights[i] = tally;
 	}
 
-	for (totalNum; totalNum < mMaxEnemies; totalNum++) {
+	for (int i = totalNum; i < mMaxEnemies; i++) {
 		int randEnemy = randInt(totalWeights);
-		for (int i = 0; i < 4; i++) {
-			if (randEnemy < tallyWeights[i]) {
-				mTypeMax[i]++;
+		for (int j = 0; j < 4; j++) {
+			if (randEnemy < tallyWeights[j]) {
+				mTypeMax[j]++;
 				break;
 			}
 		}
 	}
-	/*
-	stwu     r1, -0xa0(r1)
-	mflr     r0
-	stw      r0, 0xa4(r1)
-	stfd     f31, 0x90(r1)
-	psq_st   f31, 152(r1), 0, qr0
-	stfd     f30, 0x80(r1)
-	psq_st   f30, 136(r1), 0, qr0
-	stmw     r27, 0x6c(r1)
-	mr       r30, r3
-	li       r3, 0
-	lwz      r10, 0(r30)
-	lis      r4, lbl_804840C0@ha
-	lwzu     r7, lbl_804840C0@l(r4)
-	addi     r0, r1, 0x28
-	lwz      r10, 0x14(r10)
-	addi     r8, r1, 0x18
-	lwz      r6, 4(r4)
-	li       r9, 0
-	lwz      r5, 8(r4)
-	lwz      r4, 0xc(r4)
-	stw      r3, 0x28(r1)
-	stw      r3, 0x10(r30)
-	stw      r3, 0x20(r30)
-	stw      r3, 0x14(r30)
-	stw      r3, 0x24(r30)
-	stw      r3, 0x18(r30)
-	stw      r3, 0x28(r30)
-	stw      r3, 0x1c(r30)
-	stw      r3, 0x2c(r30)
-	stw      r7, 0x38(r1)
-	lwz      r10, 0x10(r10)
-	stw      r6, 0x3c(r1)
-	stw      r5, 0x40(r1)
-	stw      r4, 0x44(r1)
-	stw      r3, 0x18(r1)
-	stw      r3, 0x2c(r1)
-	stw      r3, 0x1c(r1)
-	stw      r3, 0x30(r1)
-	stw      r3, 0x20(r1)
-	stw      r3, 0x34(r1)
-	stw      r3, 0x24(r1)
-	b        lbl_80248B74
-
-lbl_80248AC0:
-	lwz      r3, 0x18(r10)
-	lwz      r3, 0(r3)
-	cmplwi   r3, 0
-	beq      lbl_80248B70
-	li       r11, 4
-	mr       r5, r0
-	mr       r6, r30
-	mr       r7, r8
-	addi     r4, r1, 0x38
-	mtctr    r11
-
-lbl_80248AE8:
-	lwz      r12, 0x20(r3)
-	lwz      r11, 0(r4)
-	cmpw     r12, r11
-	bne      lbl_80248B5C
-	lis      r11, 0x66666667@ha
-	lwz      r29, 0x1c(r3)
-	addi     r11, r11, 0x66666667@l
-	mulhw    r11, r11, r29
-	srawi    r12, r11, 2
-	srwi     r28, r12, 0x1f
-	srawi    r11, r11, 2
-	add      r12, r12, r28
-	mulli    r28, r12, 0xa
-	srwi     r12, r11, 0x1f
-	add      r31, r11, r12
-	subf.    r12, r28, r29
-	beq      lbl_80248B3C
-	lwz      r11, 0(r5)
-	add      r9, r9, r12
-	add      r11, r11, r12
-	stw      r11, 0(r5)
-
-lbl_80248B3C:
-	cmpwi    r31, 0
-	beq      lbl_80248B5C
-	lwz      r12, 0x20(r6)
-	lwz      r11, 0(r7)
-	add      r12, r12, r31
-	add      r11, r11, r31
-	stw      r12, 0x20(r6)
-	stw      r11, 0(r7)
-
-lbl_80248B5C:
-	addi     r4, r4, 4
-	addi     r5, r5, 4
-	addi     r6, r6, 4
-	addi     r7, r7, 4
-	bdnz     lbl_80248AE8
-
-lbl_80248B70:
-	lwz      r10, 4(r10)
-
-lbl_80248B74:
-	cmplwi   r10, 0
-	bne      lbl_80248AC0
-	lwz      r4, 0x28(r1)
-	addi     r31, r1, 8
-	lwz      r0, 0x2c(r1)
-	xoris    r29, r9, 0x8000
-	lwz      r5, 0x18(r1)
-	lis      r28, 0x4330
-	lwz      r3, 0x1c(r1)
-	add      r6, r4, r0
-	lwz      r0, 0x30(r1)
-	stw      r6, 0xc(r1)
-	add      r5, r5, r3
-	lwz      r3, 0x20(r1)
-	add      r6, r6, r0
-	lwz      r0, 0x34(r1)
-	stw      r6, 0x10(r1)
-	add      r5, r5, r3
-	lwz      r3, 0x24(r1)
-	add      r6, r6, r0
-	stw      r4, 8(r1)
-	add      r5, r5, r3
-	lfd      f30, lbl_8051A790@sda21(r2)
-	stw      r6, 0x14(r1)
-	mr       r27, r5
-	lfs      f31, lbl_8051A788@sda21(r2)
-	b        lbl_80248C60
-
-lbl_80248BE0:
-	bl       rand
-	xoris    r3, r3, 0x8000
-	stw      r28, 0x48(r1)
-	li       r0, 4
-	mr       r4, r31
-	stw      r3, 0x4c(r1)
-	li       r5, 0
-	lfd      f0, 0x48(r1)
-	stw      r29, 0x54(r1)
-	fsubs    f0, f0, f30
-	stw      r28, 0x50(r1)
-	fdivs    f1, f0, f31
-	lfd      f0, 0x50(r1)
-	fsubs    f0, f0, f30
-	fmuls    f0, f0, f1
-	fctiwz   f0, f0
-	stfd     f0, 0x58(r1)
-	lwz      r3, 0x5c(r1)
-	mtctr    r0
-
-lbl_80248C2C:
-	lwz      r0, 0(r4)
-	cmpw     r3, r0
-	bge      lbl_80248C50
-	slwi     r3, r5, 2
-	addi     r4, r3, 0x20
-	lwzx     r3, r30, r4
-	addi     r0, r3, 1
-	stwx     r0, r30, r4
-	b        lbl_80248C5C
-
-lbl_80248C50:
-	addi     r4, r4, 4
-	addi     r5, r5, 1
-	bdnz     lbl_80248C2C
-
-lbl_80248C5C:
-	addi     r27, r27, 1
-
-lbl_80248C60:
-	lwz      r0, 0xc(r30)
-	cmpw     r27, r0
-	blt      lbl_80248BE0
-	psq_l    f31, 152(r1), 0, qr0
-	lfd      f31, 0x90(r1)
-	psq_l    f30, 136(r1), 0, qr0
-	lfd      f30, 0x80(r1)
-	lmw      r27, 0x6c(r1)
-	lwz      r0, 0xa4(r1)
-	mtlr     r0
-	addi     r1, r1, 0xa0
-	blr
-	*/
 }
 
 /**
@@ -525,8 +343,8 @@ void RandEnemyUnit::setSlotEnemyTypeC(int& doorIdx, int vsColor)
 				sign    = 1;
 			}
 		}
-		MapNode* node;
-		for (node = static_cast<MapNode*>(placedNodes->mChild); node; node = static_cast<MapNode*>(node->mNext)) {
+		for (CNode* child = placedNodes->mChild; child; child = child->mNext) {
+			MapNode* node = static_cast<MapNode*>(child);
 			// caps are always connected to not-caps, so don't need to worry about them
 			if (node->mUnitInfo->getUnitKind() == UNITKIND_Room || node->mUnitInfo->getUnitKind() == UNITKIND_Corridor) {
 				int numDoors = node->getNumDoors();
@@ -546,8 +364,8 @@ void RandEnemyUnit::setSlotEnemyTypeC(int& doorIdx, int vsColor)
 		}
 
 	} else { // story mode
-		MapNode* node;
-		for (node = static_cast<MapNode*>(placedNodes->mChild); node; node = static_cast<MapNode*>(node->mNext)) {
+		for (CNode* child = placedNodes->mChild; child; child = child->mNext) {
+			MapNode* node = static_cast<MapNode*>(child);
 			// caps are always connected to not-caps, so don't need to worry about them
 			if (node->mUnitInfo->getUnitKind() == UNITKIND_Room || node->mUnitInfo->getUnitKind() == UNITKIND_Corridor) {
 				int numDoors = node->getNumDoors();
@@ -578,7 +396,7 @@ void RandEnemyUnit::setSlotEnemyTypeC(int& doorIdx, int vsColor)
 		return;
 	}
 
-	int randScoreThreshold = (f32)scoreTally * randFloat();
+	int randScoreThreshold = randInt(scoreTally);
 	int scoreCounter       = 0;
 	for (int i = 0; i < counter; i++) {
 		scoreCounter += doorScores[i];
@@ -588,244 +406,6 @@ void RandEnemyUnit::setSlotEnemyTypeC(int& doorIdx, int vsColor)
 			return;
 		}
 	}
-	/*
-	stwu     r1, -0xc60(r1)
-	mflr     r0
-	stw      r0, 0xc64(r1)
-	stmw     r17, 0xc24(r1)
-	mr       r30, r3
-	mr       r31, r4
-	li       r22, 0
-	li       r21, 0
-	lwz      r3, 0(r3)
-	lbz      r0, 2(r3)
-	lwz      r17, 0x28(r3)
-	cmplwi   r0, 0
-	beq      lbl_802494B8
-	cmpwi    r5, 0
-	li       r20, 0
-	li       r19, 0
-	bne      lbl_802493B8
-	lwz      r3, 4(r30)
-	li       r4, 3
-	bl       getFixObjNode__Q34Game4Cave12RandMapScoreFi
-	cmplwi   r3, 0
-	beq      lbl_802493E0
-	bl       getVersusScore__Q34Game4Cave7MapNodeFv
-	li       r19, -1
-	mr       r20, r3
-	b        lbl_802493E0
-
-lbl_802493B8:
-	cmpwi    r5, 1
-	bne      lbl_802493E0
-	lwz      r3, 4(r30)
-	li       r4, 4
-	bl       getFixObjNode__Q34Game4Cave12RandMapScoreFi
-	cmplwi   r3, 0
-	beq      lbl_802493E0
-	bl       getVersusScore__Q34Game4Cave7MapNodeFv
-	li       r19, 1
-	mr       r20, r3
-
-lbl_802493E0:
-	lwz      r18, 0x10(r17)
-	addi     r25, r1, 0x808
-	addi     r24, r1, 0x408
-	addi     r23, r1, 8
-	b        lbl_802494AC
-
-lbl_802493F4:
-	lwz      r3, 0x18(r18)
-	bl       getUnitKind__Q34Game4Cave8UnitInfoFv
-	cmpwi    r3, 1
-	beq      lbl_80249414
-	lwz      r3, 0x18(r18)
-	bl       getUnitKind__Q34Game4Cave8UnitInfoFv
-	cmpwi    r3, 2
-	bne      lbl_802494A8
-
-lbl_80249414:
-	mr       r3, r18
-	bl       getNumDoors__Q34Game4Cave7MapNodeFv
-	mr       r29, r3
-	mr       r28, r25
-	mr       r27, r24
-	mr       r26, r23
-	li       r17, 0
-	b        lbl_802494A0
-
-lbl_80249434:
-	mr       r3, r18
-	mr       r4, r17
-	bl       isGateSetDoor__Q34Game4Cave7MapNodeFi
-	clrlwi.  r0, r3, 0x18
-	bne      lbl_8024949C
-	stw      r18, 0(r28)
-	stw      r17, 0(r27)
-	lwz      r3, 0(r28)
-	bl       getVersusScore__Q34Game4Cave7MapNodeFv
-	add      r0, r20, r3
-	mullw    r0, r19, r0
-	stw      r0, 0(r26)
-	lwz      r0, 0(r26)
-	cmpwi    r0, 0
-	bgt      lbl_80249478
-	li       r0, 1
-	stw      r0, 0(r26)
-
-lbl_80249478:
-	lwz      r0, 0(r26)
-	addi     r25, r25, 4
-	addi     r24, r24, 4
-	addi     r23, r23, 4
-	add      r21, r21, r0
-	addi     r22, r22, 1
-	addi     r28, r28, 4
-	addi     r27, r27, 4
-	addi     r26, r26, 4
-
-lbl_8024949C:
-	addi     r17, r17, 1
-
-lbl_802494A0:
-	cmpw     r17, r29
-	blt      lbl_80249434
-
-lbl_802494A8:
-	lwz      r18, 4(r18)
-
-lbl_802494AC:
-	cmplwi   r18, 0
-	bne      lbl_802493F4
-	b        lbl_80249580
-
-lbl_802494B8:
-	lwz      r26, 0x10(r17)
-	addi     r23, r1, 0x808
-	addi     r24, r1, 0x408
-	addi     r25, r1, 8
-	b        lbl_80249578
-
-lbl_802494CC:
-	lwz      r3, 0x18(r26)
-	bl       getUnitKind__Q34Game4Cave8UnitInfoFv
-	cmpwi    r3, 1
-	beq      lbl_802494EC
-	lwz      r3, 0x18(r26)
-	bl       getUnitKind__Q34Game4Cave8UnitInfoFv
-	cmpwi    r3, 2
-	bne      lbl_80249574
-
-lbl_802494EC:
-	mr       r3, r26
-	bl       getNumDoors__Q34Game4Cave7MapNodeFv
-	mr       r17, r3
-	lwz      r3, 0x18(r26)
-	li       r27, 1
-	bl       getUnitKind__Q34Game4Cave8UnitInfoFv
-	cmpwi    r3, 1
-	bne      lbl_80249510
-	li       r27, 0x64
-
-lbl_80249510:
-	mr       r18, r23
-	mr       r19, r24
-	mr       r20, r25
-	li       r28, 0
-	b        lbl_8024956C
-
-lbl_80249524:
-	mr       r3, r26
-	mr       r4, r28
-	bl       isGateSetDoor__Q34Game4Cave7MapNodeFi
-	clrlwi.  r0, r3, 0x18
-	bne      lbl_80249568
-	stw      r27, 0(r20)
-	addi     r23, r23, 4
-	addi     r24, r24, 4
-	addi     r25, r25, 4
-	lwz      r0, 0(r20)
-	addi     r20, r20, 4
-	stw      r26, 0(r18)
-	addi     r18, r18, 4
-	add      r21, r21, r0
-	addi     r22, r22, 1
-	stw      r28, 0(r19)
-	addi     r19, r19, 4
-
-lbl_80249568:
-	addi     r28, r28, 1
-
-lbl_8024956C:
-	cmpw     r28, r17
-	blt      lbl_80249524
-
-lbl_80249574:
-	lwz      r26, 4(r26)
-
-lbl_80249578:
-	cmplwi   r26, 0
-	bne      lbl_802494CC
-
-lbl_80249580:
-	li       r0, 0
-	cmpwi    r22, 0
-	stw      r0, 0x30(r30)
-	stw      r0, 0x34(r30)
-	beq      lbl_80249634
-	bl       rand
-	lis      r4, 0x4330
-	xoris    r0, r3, 0x8000
-	stw      r0, 0xc0c(r1)
-	xoris    r0, r21, 0x8000
-	lfd      f2, lbl_8051A790@sda21(r2)
-	addi     r5, r1, 8
-	stw      r4, 0xc08(r1)
-	li       r6, 0
-	lfs      f0, lbl_8051A788@sda21(r2)
-	li       r7, 0
-	lfd      f1, 0xc08(r1)
-	stw      r0, 0xc14(r1)
-	fsubs    f1, f1, f2
-	stw      r4, 0xc10(r1)
-	fdivs    f1, f1, f0
-	lfd      f0, 0xc10(r1)
-	fsubs    f0, f0, f2
-	fmuls    f0, f0, f1
-	fctiwz   f0, f0
-	stfd     f0, 0xc18(r1)
-	lwz      r3, 0xc1c(r1)
-	mtctr    r22
-	cmpwi    r22, 0
-	ble      lbl_80249634
-
-lbl_802495F8:
-	lwz      r0, 0(r5)
-	add      r6, r6, r0
-	cmpw     r6, r3
-	ble      lbl_80249628
-	slwi     r0, r7, 2
-	addi     r3, r1, 0x808
-	lwzx     r4, r3, r0
-	addi     r3, r1, 0x408
-	lwzx     r0, r3, r0
-	stw      r4, 0x30(r30)
-	stw      r0, 0(r31)
-	b        lbl_80249634
-
-lbl_80249628:
-	addi     r5, r5, 4
-	addi     r7, r7, 1
-	bdnz     lbl_802495F8
-
-lbl_80249634:
-	lmw      r17, 0xc24(r1)
-	lwz      r0, 0xc64(r1)
-	mtlr     r0
-	addi     r1, r1, 0xc60
-	blr
-	*/
 }
 
 /**
@@ -871,7 +451,7 @@ void RandEnemyUnit::setUnitRandEnemyTypeC()
 		return;
 	}
 
-	int randWeightThreshold = (f32)weightTally * randFloat();
+	int randWeightThreshold = randInt(weightTally);
 	int ctr                 = 0;
 	for (int i = 0; i < counter; i++) {
 		ctr += weightList[i];
@@ -968,8 +548,7 @@ void RandEnemyUnit::setSlotEnemyTypeF(int vsColor)
 				continue;
 			}
 
-			Vector3f spawnPos   = fixNode->getBaseGenGlobalPosition(fixGen);
-			vecArray[counter]   = spawnPos;
+			vecArray[counter]   = fixNode->getBaseGenGlobalPosition(fixGen);
 			floatArray[counter] = 400.0f;
 
 			if (vsColor == Blue && counter == 0) {
@@ -987,8 +566,7 @@ void RandEnemyUnit::setSlotEnemyTypeF(int vsColor)
 			fixNode = mMapScore->getFixObjNode(i);
 			fixGen  = mMapScore->getFixObjGen(i);
 			if (fixNode) {
-				Vector3f spawnPos = fixNode->getBaseGenGlobalPosition(fixGen);
-				vecArray[counter] = spawnPos;
+				vecArray[counter] = fixNode->getBaseGenGlobalPosition(fixGen);
 				counter++;
 			}
 		}
@@ -1046,7 +624,7 @@ void RandEnemyUnit::setSlotEnemyTypeF(int vsColor)
 		return;
 	}
 
-	int randScoreThreshold = (f32)scoreTally * randFloat();
+	int randScoreThreshold = randInt(scoreTally);
 	int scoreCounter       = 0;
 	for (int i = 0; i < spawnCounter; i++) {
 		scoreCounter += scoreList[i];
@@ -1101,7 +679,7 @@ void RandEnemyUnit::setUnitRandEnemyTypeF()
 		return;
 	}
 
-	int randWeightThreshold = (f32)weightTally * randFloat();
+	int randWeightThreshold = randInt(weightTally);
 	int ctr                 = 0;
 	for (int i = 0; i < counter; i++) {
 		ctr += weightList[i];
@@ -1195,8 +773,7 @@ void RandEnemyUnit::setSlotEnemyTypeB(int vsColor)
 				continue;
 			}
 
-			Vector3f spawnPos   = fixNode->getBaseGenGlobalPosition(fixGen);
-			vecArray[counter]   = spawnPos;
+			vecArray[counter]   = fixNode->getBaseGenGlobalPosition(fixGen);
 			floatArray[counter] = 400.0f;
 
 			if (vsColor == Blue && counter == 0) {
@@ -1214,8 +791,7 @@ void RandEnemyUnit::setSlotEnemyTypeB(int vsColor)
 			fixNode = mMapScore->getFixObjNode(i);
 			fixGen  = mMapScore->getFixObjGen(i);
 			if (fixNode) {
-				Vector3f spawnPos = fixNode->getBaseGenGlobalPosition(fixGen);
-				vecArray[counter] = spawnPos;
+				vecArray[counter] = fixNode->getBaseGenGlobalPosition(fixGen);
 				counter++;
 			}
 		}
@@ -1273,7 +849,7 @@ void RandEnemyUnit::setSlotEnemyTypeB(int vsColor)
 		return;
 	}
 
-	int randScoreThreshold = (f32)scoreTally * randFloat();
+	int randScoreThreshold = randInt(scoreTally);
 	int scoreCounter       = 0;
 	for (int i = 0; i < spawnCounter; i++) {
 		scoreCounter += scoreList[i];
@@ -1328,7 +904,7 @@ void RandEnemyUnit::setUnitRandEnemyTypeB()
 		return;
 	}
 
-	int randWeightThreshold = (f32)weightTally * randFloat();
+	int randWeightThreshold = randInt(weightTally);
 	int ctr                 = 0;
 	for (int i = 0; i < counter; i++) {
 		ctr += weightList[i];
@@ -1403,7 +979,7 @@ void RandEnemyUnit::setVersusEasyEnemy()
 		}
 
 		f32 tieBreaker = 0.0f;
-		if (enemyCounts[i][0] % 2 != 0) { // dumbasses don't realize that it's always an even number in-game
+		if (enemyCounts[i][0] % 2 != 0) { // this is... always even in-game
 			tieBreaker = randWeightFloat(2.0f);
 		}
 
@@ -1692,17 +1268,19 @@ void RandEnemyUnit::setVersusEnemyTypeA()
 					if (count <= mTypeCount[TEKITYPE_A]) {
 						continue;
 					}
-					int max = 0;
-					int min = 0;
+					int max    = 0;
+					int min    = 0;
+					int offset = 0;
 					setSlotEnemyTypeA(max, min, vsColor);
 
-					max = (max < count - mTypeCount[TEKITYPE_A]) ? max : count - mTypeCount[TEKITYPE_A];
+					max = minVal(max, count - mTypeCount[TEKITYPE_A]);
 
 					int enemiesToMake;
 					if (max <= min) {
 						enemiesToMake = max;
 					} else {
-						enemiesToMake = min + randInt(max - min + 1);
+						offset += randInt(max - min + 1);
+						enemiesToMake = min + offset;
 					}
 
 					if (mMapTile && mSpawn && enemiesToMake) {
@@ -1714,146 +1292,6 @@ void RandEnemyUnit::setVersusEnemyTypeA()
 			}
 		}
 	}
-	/*
-	stwu     r1, -0x50(r1)
-	mflr     r0
-	stw      r0, 0x54(r1)
-	stmw     r24, 0x30(r1)
-	mr       r26, r3
-	li       r31, 0
-	lwz      r3, 0(r3)
-	lwz      r3, 0x14(r3)
-	lwz      r30, 0x10(r3)
-	b        lbl_8024AD90
-
-lbl_8024AC00:
-	lwz      r3, 0x18(r30)
-	lwz      r4, 0(r3)
-	cmplwi   r4, 0
-	beq      lbl_8024AD8C
-	lwz      r0, 0x20(r4)
-	cmpwi    r0, 0
-	bne      lbl_8024AD8C
-	lis      r3, 0x66666667@ha
-	lwz      r0, 0x1c(r4)
-	addi     r3, r3, 0x66666667@l
-	lwz      r4, 0x10(r26)
-	mulhw    r0, r3, r0
-	srawi    r0, r0, 2
-	srwi     r3, r0, 0x1f
-	add      r0, r0, r3
-	add      r31, r31, r0
-	cmpw     r31, r4
-	ble      lbl_8024AD8C
-	subf     r29, r4, r31
-	bl       rand
-	xoris    r3, r3, 0x8000
-	lis      r0, 0x4330
-	stw      r3, 0x14(r1)
-	li       r27, 0
-	lfd      f3, lbl_8051A790@sda21(r2)
-	stw      r0, 0x10(r1)
-	lfs      f1, lbl_8051A788@sda21(r2)
-	lfd      f2, 0x10(r1)
-	lfs      f0, lbl_8051A798@sda21(r2)
-	fsubs    f2, f2, f3
-	fdivs    f1, f2, f1
-	fmuls    f0, f0, f1
-	fctiwz   f0, f0
-	stfd     f0, 0x18(r1)
-	lwz      r28, 0x1c(r1)
-	b        lbl_8024AD84
-
-lbl_8024AC90:
-	lwz      r0, 0x10(r26)
-	cmpw     r31, r0
-	ble      lbl_8024AD7C
-	li       r0, 0
-	mr       r3, r26
-	stw      r0, 0xc(r1)
-	mr       r6, r28
-	addi     r4, r1, 0xc
-	addi     r5, r1, 8
-	stw      r0, 8(r1)
-	bl       setSlotEnemyTypeA__Q34Game4Cave13RandEnemyUnitFRiRii
-	lwz      r0, 0x10(r26)
-	lwz      r3, 0xc(r1)
-	subf     r25, r0, r31
-	cmpw     r3, r25
-	bge      lbl_8024ACD4
-	mr       r25, r3
-
-lbl_8024ACD4:
-	lwz      r24, 8(r1)
-	stw      r25, 0xc(r1)
-	cmpw     r25, r24
-	bgt      lbl_8024ACEC
-	mr       r7, r25
-	b        lbl_8024AD48
-
-lbl_8024ACEC:
-	bl       rand
-	lis      r4, 0x4330
-	xoris    r0, r3, 0x8000
-	stw      r0, 0x1c(r1)
-	subf     r3, r24, r25
-	addi     r0, r3, 1
-	lfd      f2, lbl_8051A790@sda21(r2)
-	stw      r4, 0x18(r1)
-	xoris    r0, r0, 0x8000
-	lfs      f0, lbl_8051A788@sda21(r2)
-	lfd      f1, 0x18(r1)
-	stw      r0, 0x14(r1)
-	fsubs    f1, f1, f2
-	lwz      r0, 8(r1)
-	stw      r4, 0x10(r1)
-	fdivs    f1, f1, f0
-	lfd      f0, 0x10(r1)
-	fsubs    f0, f0, f2
-	fmuls    f0, f0, f1
-	fctiwz   f0, f0
-	stfd     f0, 0x20(r1)
-	lwz      r3, 0x24(r1)
-	add      r7, r0, r3
-
-lbl_8024AD48:
-	lwz      r4, 0x30(r26)
-	cmplwi   r4, 0
-	beq      lbl_8024AD98
-	lwz      r5, 0x34(r26)
-	cmplwi   r5, 0
-	beq      lbl_8024AD98
-	cmpwi    r7, 0
-	beq      lbl_8024AD98
-	lwz      r6, 0x18(r30)
-	mr       r3, r26
-	bl
-makeSetEnemyTypeA__Q34Game4Cave13RandEnemyUnitFPQ34Game4Cave7MapNodePQ34Game4Cave7BaseGenPQ34Game4Cave9EnemyUniti
-	b        lbl_8024AD7C
-	b        lbl_8024AD98
-
-lbl_8024AD7C:
-	xori     r28, r28, 1
-	addi     r27, r27, 1
-
-lbl_8024AD84:
-	cmpw     r27, r29
-	blt      lbl_8024AC90
-
-lbl_8024AD8C:
-	lwz      r30, 4(r30)
-
-lbl_8024AD90:
-	cmplwi   r30, 0
-	bne      lbl_8024AC00
-
-lbl_8024AD98:
-	lmw      r24, 0x30(r1)
-	lwz      r0, 0x54(r1)
-	mtlr     r0
-	addi     r1, r1, 0x50
-	blr
-	*/
 }
 
 /**
@@ -1862,6 +1300,7 @@ lbl_8024AD98:
  */
 void RandEnemyUnit::setSlotEnemyTypeA(int& max, int& min, int vsColor)
 {
+	MapNode* placedNodes = mGenerator->getPlacedNodes();
 	MapNode* nodeList[128];
 	BaseGen* spawnList[128];
 	int scoreList[128];
@@ -1876,7 +1315,6 @@ void RandEnemyUnit::setSlotEnemyTypeA(int& max, int& min, int vsColor)
 
 	MapNode* fixNode;
 	BaseGen* fixGen;
-	MapNode* placedNodes = mGenerator->getPlacedNodes();
 	if (mGenerator->mIsVersusMode) {
 		for (int i = FIXNODE_VsStart; i <= FIXNODE_VsEnd; i++) {
 			fixNode = mMapScore->getFixObjNode(i);
@@ -1885,8 +1323,7 @@ void RandEnemyUnit::setSlotEnemyTypeA(int& max, int& min, int vsColor)
 				continue;
 			}
 
-			Vector3f spawnPos = fixNode->getBaseGenGlobalPosition(fixGen);
-			vecArray[counter] = spawnPos;
+			vecArray[counter] = fixNode->getBaseGenGlobalPosition(fixGen);
 
 			if (vsColor == Blue && counter == 0) {
 				vsScore = fixNode->getVersusScore();
@@ -1901,8 +1338,7 @@ void RandEnemyUnit::setSlotEnemyTypeA(int& max, int& min, int vsColor)
 		fixNode = mMapScore->getFixObjNode(FIXNODE_Pod);
 		fixGen  = mMapScore->getFixObjGen(FIXNODE_Pod);
 		if (fixNode) {
-			Vector3f spawnPos   = fixNode->getBaseGenGlobalPosition(fixGen);
-			vecArray[counter]   = spawnPos;
+			vecArray[counter]   = fixNode->getBaseGenGlobalPosition(fixGen);
 			floatArray[counter] = 300.0f;
 			counter++;
 		}
@@ -1960,7 +1396,7 @@ void RandEnemyUnit::setSlotEnemyTypeA(int& max, int& min, int vsColor)
 		return;
 	}
 
-	int randScoreThreshold = (f32)scoreTally * randFloat();
+	int randScoreThreshold = randInt(scoreTally);
 	int scoreCounter       = 0;
 	for (int i = 0; i < spawnCounter; i++) {
 		scoreCounter += scoreList[i];
@@ -1986,9 +1422,10 @@ void RandEnemyUnit::setUnitRandEnemyTypeA(int& count, int max, int min)
 
 	int counter     = 0;
 	int weightTally = 0;
+	int weightCounter = 0;
 
 	EnemyUnit* enemy;
-	int weightCounter = 0;
+	
 	EnemyNode* node;
 
 	for (node = static_cast<EnemyNode*>(mGenerator->mMainEnemies->mChild); node; node = static_cast<EnemyNode*>(node->mNext)) {
@@ -2029,7 +1466,7 @@ void RandEnemyUnit::setUnitRandEnemyTypeA(int& count, int max, int min)
 		return;
 	}
 
-	int randWeightThreshold = (f32)weightTally * randFloat();
+	int randWeightThreshold = randInt(weightTally);
 	int ctr                 = 0;
 	for (int i = 0; i < counter; i++) {
 		ctr += weightList[i];

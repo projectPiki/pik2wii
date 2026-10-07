@@ -44,9 +44,8 @@ void Kogane::Obj::onInit(Game::CreatureInitArg* arg)
 	disableEvent(0, EB_LeaveCarcass);
 	disableEvent(0, EB_DeathEffectEnabled);
 	setEmotionNone();
-	mScaleModifier = 0.0001f;
-	mScale         = 0.0001f;
-	mCollTree->mPart->setScale(mScaleModifier);
+	setScale(0.0001f);
+	setCollScale(0.0001f);
 	mHitCount = 0;
 	resetAppearTimer();
 	resetMoveTimer(0.0f, 0.0f);
@@ -441,7 +440,9 @@ void Kogane::Obj::createPellet(int type, int num)
 	Vector3f pos = mtx->getColumn(3);
 
 	for (int i = 0; i < num; i++) {
-		PelletNumberInitArg arg(type, hasColors[randInt(colors)]);
+		int colorIdx = colors;
+		colorIdx *= randFloat();
+		PelletNumberInitArg arg(type, hasColors[colorIdx]);
 		Pellet* pelt = pelletMgr->birth(&arg);
 		if (pelt) {
 			pelt->init(&arg);

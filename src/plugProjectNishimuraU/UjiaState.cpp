@@ -801,11 +801,7 @@ void StateGoHome::exec(EnemyBase* enemy)
 	EnemyFunc::walkToTarget(uji, homePos, CG_GENERALPARMS(uji).mMoveSpeed.mValue, CG_GENERALPARMS(uji).mTurnSpeed.mValue,
 	                        CG_GENERALPARMS(uji).mMaxTurnAngle.mValue);
 
-	Vector3f homePos2 = uji->mHomePosition;
-	Vector3f position = uji->getPosition();
-	Vector3f diff     = Vector3f(position.y - homePos2.y, position.z - homePos2.z, position.x - homePos2.x);
-
-	if (_length2(diff) < CG_GENERALPARMS(uji).mHomeRadius.mValue) {
+	if (uji->distanceFromHome() < CG_GENERALPARMS(uji).mHomeRadius()) {
 		uji->finishMotion();
 	}
 

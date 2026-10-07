@@ -7,11 +7,11 @@
 #include "JSystem/J3D/J3DModel.h"
 #include "JSystem/JKernel/JKRArchive.h"
 #include "JSystem/JKernel/JKRFileLoader.h"
-#include "PSM/ObjMgr.h"
 #include "ObjectMgr.h"
+#include "PSM/ObjMgr.h"
+#include "Vector3.h"
 #include "stream.h"
 #include "types.h"
-#include "Vector3.h"
 
 struct CollPartFactory;
 struct PlatAttacher;
@@ -28,8 +28,7 @@ struct BaseItem;
 struct WayPoint;
 struct ItemMgr;
 
-struct _BaseItemMgrParent2 {
-};
+struct _BaseItemMgrParent2 { };
 
 struct BaseItemMgr : public GenericObjectMgr, virtual public _BaseItemMgrParent2 {
 	BaseItemMgr(int);
@@ -92,23 +91,20 @@ struct NodeItemMgr : public BaseItemMgr, public Container<T> {
 
 	T* birth(); // weak
 
-	// vtable 1
 	virtual void initDependency();                                                           // _38
+	virtual void killAll();                                                                  // _3C
 	virtual void kill(T*);                                                                   // _A0 (weak)
+	virtual T* get(void* idx) { return mNodeObjectMgr.get(idx); }                            // _A4 (weak)
+	virtual void* getNext(void* idx) { return mNodeObjectMgr.getNext(idx); }                 // _A8 (weak)
+	virtual void* getStart() { return mNodeObjectMgr.getStart(); }                           // _AC (weak)
+	virtual void* getEnd() { return mNodeObjectMgr.getEnd(); }                               // _B0 (weak)
 	virtual void doAnimation() { mNodeObjectMgr.doAnimation(); }                             // _08 (weak)
 	virtual void doEntry() { mNodeObjectMgr.doEntry(); }                                     // _0C (weak)
 	virtual void doSetView(int viewportNumber) { mNodeObjectMgr.doSetView(viewportNumber); } // _10 (weak)
 	virtual void doViewCalc() { mNodeObjectMgr.doViewCalc(); }                               // _14 (weak)
 	virtual void doSimulation(f32 step) { mNodeObjectMgr.doSimulation(step); }               // _18 (weak)
 	virtual void doDirectDraw(Graphics& gfx) { mNodeObjectMgr.doDirectDraw(gfx); }           // _1C (weak)
-
-	// vtable 2
-	virtual T* get(void* idx) { return mNodeObjectMgr.get(idx); }            // _A4 (weak)
-	virtual void* getNext(void* idx) { return mNodeObjectMgr.getNext(idx); } // _A8 (weak)
-	virtual void* getStart() { return mNodeObjectMgr.getStart(); }           // _AC (weak)
-	virtual void* getEnd() { return mNodeObjectMgr.getEnd(); }               // _B0 (weak)
-	virtual void killAll();                                                  // _3C
-	virtual ~NodeItemMgr() { }                                               // _B4 (weak)
+	virtual ~NodeItemMgr() { }                                                               // _B4 (weak)
 
 	void entry(T* item);
 
@@ -193,6 +189,10 @@ struct FixedSizeItemMgr : public BaseItemMgr, public Container<T> {
 	{
 	}
 
+	void createMgr(int, u32);
+
+	void createModelCallback(SysShape::Model* model);
+
 	virtual void onCreateModel(SysShape::Model*) { }                                         // _A0
 	virtual T* birth() { return mMonoObjectMgr.birth(); }                                    // _A4
 	virtual void doAnimation() { mMonoObjectMgr.doAnimation(); }                             // _08 (weak)
@@ -205,9 +205,6 @@ struct FixedSizeItemMgr : public BaseItemMgr, public Container<T> {
 	virtual T* generatorBirth(Vector3f&, Vector3f&, GenItemParm*) = 0;                       // _5C
 	virtual void kill(T* item) { mMonoObjectMgr.kill(item); }                                // _A8 (weak)
 
-	void createMgr(int, u32);
-
-	void createModelCallback(SysShape::Model* model);
 	virtual void killAll() // _3C (weak)
 	{
 		PSM::ObjMgr* inst;
@@ -229,12 +226,15 @@ struct FixedSizeItemMgr : public BaseItemMgr, public Container<T> {
 	virtual void initDependency() // _38 (weak)
 	{
 		Iterator<T> iter(&mMonoObjectMgr);
-		CI_LOOP(iter) { (*iter)->initDependency(); }
+		CI_LOOP(iter)
+		{
+			(*iter)->initDependency();
+		}
 	}
-	virtual T* get(void* idx); // _AC (weak, thunk at _94)
-	virtual void* getNext(void* idx) { return mMonoObjectMgr.getNext(idx); }                 // _B0 (weak, thunk at _88)
-	virtual void* getStart() { return mMonoObjectMgr.getStart(); }                           // _B4 (weak, thunk at _8C)
-	virtual void* getEnd();    // _B8 (weak, thunk at _90)
+	virtual T* get(void* idx);                                               // _AC (weak, thunk at _94)
+	virtual void* getNext(void* idx) { return mMonoObjectMgr.getNext(idx); } // _B0 (weak, thunk at _88)
+	virtual void* getStart() { return mMonoObjectMgr.getStart(); }           // _B4 (weak, thunk at _8C)
+	virtual void* getEnd();                                                  // _B8 (weak, thunk at _90)
 	SysShape::Model* createModel(T*);
 
 	void alloc(int count) { mMonoObjectMgr.alloc(count); }
@@ -296,7 +296,10 @@ template <typename T>
 void NodeItemMgr<T>::initDependency()
 {
 	Iterator<T> iter(&mNodeObjectMgr);
-	CI_LOOP(iter) { (*iter)->initDependency(); }
+	CI_LOOP(iter)
+	{
+		(*iter)->initDependency();
+	}
 }
 
 template <typename T>

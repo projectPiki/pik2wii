@@ -6,6 +6,12 @@
 #include "Game/generalEnemyMgr.h"
 #include "RevoSDK/rand.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "246-KumaKochappy";
+}
+
 namespace Game {
 
 /**
@@ -98,7 +104,7 @@ void KumaKochappy::Obj::getShadowParam(ShadowParam& shadowParam)
 	Matrixf* worldMat       = mModel->getJoint("ago")->getWorldMatrix();
 	shadowParam.mPosition   = Vector3f(worldMat->mMatrix.mtxView[0][3], worldMat->mMatrix.mtxView[1][3], worldMat->mMatrix.mtxView[2][3]);
 	shadowParam.mPosition.y = mPosition.y + 5.0f;
-	shadowParam.mBoundingSphere.mPosition = Vector3f(0.0f, 1.0f, 0.0f);
+	shadowParam.mBoundingSphere.mPosition.set(0.0f, 1.0f, 0.0f);
 
 	if (isEvent(1, EB2_Earthquake)) {
 		shadowParam.mBoundingSphere.mRadius = 50.0f;
@@ -207,7 +213,7 @@ KumaChappy::Obj* KumaKochappy::Obj::setNearestParent()
 			if (currBear->isAlive()) {
 				if (FABS(getAngDist(currBear)) <= searchAngle) {
 					Vector3f bearPos = currBear->getPosition();
-					f32 bearDist     = sqrDistanceXZ(mPosition, bearPos);
+					f32 bearDist     = mPosition.sqrDistance2D(bearPos);
 					if (bearDist < dist) {
 						parent = currBear;
 						dist   = bearDist;

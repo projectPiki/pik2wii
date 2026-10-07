@@ -35,15 +35,6 @@ void J3DMtxCalcJ3DSysInitMaya::init(const Vec& scale, const Mtx& mtx)
     JMAMTXApplyScale(mtx, J3DSys::mCurrentMtx, scale.x, scale.y, scale.z);
 }
 
-inline s32 checkScaleOne(const Vec& vec)
-{
-	if (vec.x == 1.0f && vec.y == 1.0f && vec.z == 1.0f) {
-		return true;
-	} else {
-		return false;
-	}
-}
-
 /**
  * @note Address: 0x8006B330
  * @note Size: 0x118
@@ -176,15 +167,6 @@ J3DMtxCalcAnmBase* J3DNewMtxCalcAnm(u32 type, J3DAnmTransform* p2)
 }
 
 /**
- * @note Address: 0x8006B82C
- * @note Size: 0x5C
- * __dt__17J3DMtxCalcAnmBaseFv
- */
-J3DMtxCalcAnmBase::~J3DMtxCalcAnmBase()
-{
-}
-
-/**
  * @note Address: 0x8006B888
  * @note Size: 0x34
  */
@@ -220,8 +202,7 @@ J3DJoint::J3DJoint()
 	mJointIdx         = 0;
 	mKind             = 1;
 	mScaleCompensate  = false;
-	// "This line is probably a fake match but the normal = works nothing like this." - TP
-	*(copyhelper*)&mTransformInfo = *(copyhelper*)&j3dDefaultTransformInfo;
+	FAST_COPY(&mTransformInfo, &j3dDefaultTransformInfo, sizeof(J3DTransformInfo));
 	mBoundingSphereRadius         = 0.0f;
 	mMtxCalc                      = nullptr;
 	mMaterial                     = nullptr;

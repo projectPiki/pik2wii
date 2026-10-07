@@ -234,10 +234,6 @@ void PlatInstanceAttacher::addToMgr(Creature* obj, ID32& id, PlatAttacher* attac
 			platCellMgr->calcExtent(sphere, val, rect);
 
 			platCellMgr->entry(instance, sphere);
-
-			if (instance->mItem) {
-				static_cast<Creature*>(instance->mItem)->getCreatureName();
-			}
 		}
 	}
 }
@@ -373,10 +369,6 @@ PlatInstance* PlatMgr::addInstance(PlatAddInstanceArg& arg)
 		Recti rect;
 		Game::platCellMgr->calcExtent(sphere, layerIndex, rect);
 		Game::platCellMgr->entry(instance, sphere);
-
-		if (instance->mItem) {
-			static_cast<Creature*>(instance->mItem)->getCreatureName();
-		}
 	}
 	return instance;
 }
@@ -459,11 +451,12 @@ void PlatMgr::getCurrTri(CurrTriInfo& info)
  */
 bool PlatMgr::findRayIntersection(Sys::RayIntersectInfo& info)
 {
-	// unused (but annoying).
-	Vector3f edgeVec(info.mIntersectEdge.mStartPos.y - info.mIntersectEdge.mEndPos.y,
-	                 info.mIntersectEdge.mStartPos.z - info.mIntersectEdge.mEndPos.z,
-	                 info.mIntersectEdge.mStartPos.x - info.mIntersectEdge.mEndPos.x);
-	_length2(edgeVec);
+	// completely unused calc lol
+	Vector3f edgeVec;
+	edgeVec.x = info.mIntersectEdge.mStartPos.x - info.mIntersectEdge.mEndPos.x;
+	edgeVec.y = info.mIntersectEdge.mStartPos.y - info.mIntersectEdge.mEndPos.y;
+	edgeVec.z = info.mIntersectEdge.mStartPos.z - info.mIntersectEdge.mEndPos.z;
+	edgeVec.length();
 
 	Iterator<PlatInstance> iter(this);
 

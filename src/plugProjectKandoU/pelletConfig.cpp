@@ -3,7 +3,11 @@
 #include "string.h"
 #include "TagParm.h"
 
-const char* className = "pelletConfig";
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "pelletConfig";
+}
 
 namespace Game {
 
@@ -40,48 +44,6 @@ PelletConfig::PelletConfig()
 	mParams.mCode.mData        = 0;
 	mParams.mDictionary.mData  = 0;
 	mParams.mIndirectState     = Indirect_No;
-}
-
-/**
- * @note Address: 0x801B4050
- * @note Size: 0x374
- */
-PelletConfig::TParms::TParms()
-    : TagParameters("PelletConfig")
-    , mName(this, "name")
-    , mArchive(this, "archive")
-    , mTxtArchive(this, "txt_archive")
-    , mBmd(this, "bmd")
-    , mAnimMgr(this, "animmgr")
-    , mColltree(this, "colltree")
-    , mRadius(this, "radius")
-    , mPRadius(this, "p_radius")
-    , mHeight(this, "height")
-    , mInertiaScaling(this, "inertiascaling")
-    , mParticleType(this, "particletype")
-    , mNumParticles(this, "numparticles")
-    , mParticleSize(this, "particlesize")
-    , mFriction(this, "friction")
-    , mMin(this, "min")
-    , mMax(this, "max")
-    , mPikiCountMax(this, "pikicountmax")
-    , mPikiCountMin(this, "pikicountmin")
-    , mDynamics(this, "dynamics")
-    , mMoney(this, "money")
-    , mUnique(this, "unique")
-    , mIndirect(this, "indirect")
-    , mNumPMotions(this, "num_pmotions")
-    , mDepth(this, "depth")
-    , mDepthMax(this, "depth_max")
-    , mDepthA(this, "depth_a")
-    , mDepthB(this, "depth_b")
-    , mDepthC(this, "depth_c")
-    , mDepthD(this, "depth_d")
-    , mOffset(this, "offset")
-    , mMessage(this, "message")
-    , mCode(this, "code")
-    , mDictionary(this, "dictionary")
-{
 }
 
 /**

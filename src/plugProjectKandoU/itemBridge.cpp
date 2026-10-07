@@ -3,7 +3,7 @@
 #include "Game/MapMgr.h"
 #include "efx/TBridge.h"
 #include "JSystem/JKernel/JKRDvdRipper.h"
-#include "PSM/WorkItem.h"
+#include "PSSystem/PSMainSide_ObjSound.h"
 #include "PSSystem/PSSystemIF.h"
 #include "PlatAttacher.h"
 #include "trig.h"
@@ -11,10 +11,14 @@
 static f32 bridgeFirstPos[4] = { 42.5f, 12.5f, 42.5f, 12.5f };
 static f32 bridgeGrad[4]     = { 0.0f, 8.0f, 0.0f, 0.0f };
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "itemBridge";
+}
+
 namespace Game {
 namespace ItemBridge {
-
-static const char bridgeName[] = "itemBridge";
 
 Mgr* mgr;
 
@@ -468,7 +472,6 @@ f32 Item::getStageWidth()
 Vector3f Item::getBridgeZVec()
 {
 	return getDirection(mFaceDir);
-	FORCE_DONT_INLINE;
 }
 
 /**

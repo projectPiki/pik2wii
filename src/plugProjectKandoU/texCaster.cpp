@@ -44,7 +44,8 @@ Caster::~Caster()
  */
 void Caster::show()
 {
-	// UNUSED FUNCTION
+	mColor  = 1.0f;
+	mStatus = CS_Finished;
 }
 
 /**
@@ -73,9 +74,12 @@ void Caster::fadein(f32 duration)
  * @note Address: N/A
  * @note Size: 0x7C
  */
-void Caster::fadeout(f32)
+void Caster::fadeout(f32 duration)
 {
-	// UNUSED FUNCTION
+	P2ASSERTLINE(70, duration > 0.0f); // line number is a guess
+	mChangeRate = 1.0f / duration;
+	mColor      = 1.0f;
+	mStatus     = CS_Decreasing;
 }
 
 /**
@@ -84,37 +88,33 @@ void Caster::fadeout(f32)
  */
 void Caster::makeDL()
 {
+	u8* displayList;
+	int index;
+	u8* out;
+	u8* displayListEnd;
+	int i;
+
 	mDisplayListSize = OSRoundDown32B(mTriangleCount * 12 + 34);
 	mDisplayList     = new (0x20) u8[mDisplayListSize];
 
-	int index       = 0;
-	mDisplayList[0] = 0x90;
-	mDisplayList[1] = (mTriangleCount * 3) >> 8;
-	mDisplayList[2] = mTriangleCount * 3;
-
-	u8* displayList = mDisplayList + 3;
-	for (int i = 0; i < mTriangleCount; ++i) {
-		int index1      = index + 1;
-		int index2      = index + 2;
-		displayList[0]  = index >> 8;
-		displayList[1]  = index;
-		displayList[2]  = index >> 8;
-		displayList[3]  = index;
-		displayList[4]  = index1 >> 8;
-		displayList[5]  = index1;
-		displayList[6]  = index1 >> 8;
-		displayList[7]  = index1;
-		displayList[8]  = index2 >> 8;
-		displayList[9]  = index2;
-		displayList[10] = index2 >> 8;
-		displayList[11] = index2;
-		displayList += 12;
-		index += 3;
+	displayList    = mDisplayList;
+	displayListEnd = displayList + mDisplayListSize;
+	displayList[0] = 0x90;
+	displayList[1] = (mTriangleCount * 3) >> 8;
+	displayList[2] = mTriangleCount * 3;
+	out            = displayList + 3;
+	for (i = 0, index = 0; i < mTriangleCount; i++) {
+		for (int j = 0; j < 3; j++) {
+			*out++ = (u16)index >> 8;
+			*out++ = index;
+			*out++ = (u16)index >> 8;
+			*out++ = index;
+			index++;
+		}
 	}
 
-	u8* displayListEnd = mDisplayList + mDisplayListSize;
-	while (displayList < displayListEnd) {
-		*displayList++ = 0;
+	while (out < displayListEnd) {
+		*out++ = 0;
 	}
 
 	DCFlushRange(mDisplayList, mDisplayListSize);
@@ -161,7 +161,7 @@ void Caster::draw(Graphics& gfx)
 	color.r = v;
 	GXSetTevColor(GX_TEVREG0, color);
 
-	Mgr::sInstance->getTexture(0);
+	Mgr::sInstance->getTexture(0)->load(GX_TEXMAP0);
 	GXSetArray(GX_VA_POS, mVertices, sizeof(Vector3f));
 	GXSetArray(GX_VA_TEX0, mTexturePositions, 8);
 	GXCallDisplayList((void*)mDisplayList, mDisplayListSize);
@@ -251,10 +251,9 @@ Caster* Mgr::create(Sys::Sphere& sphere, f32 rotationAngle)
 		triArg.mVertices = new Vector3f[6];
 
 		Vector3f spherePos = sphere.mPosition;
-		f32 sphereRad      = sphere.mRadius;
 
-		Vector3f axisX(sphereRad, 0.0f, 0.0f);
-		Vector3f axisZ(0.0f, 0.0f, sphereRad);
+		Vector3f axisX(sphere.mRadius, 0.0f, 0.0f);
+		Vector3f axisZ(0.0f, 0.0f, sphere.mRadius);
 		triArg.mVertices[0] = spherePos - axisX - axisZ;
 		triArg.mVertices[1] = spherePos - axisX + axisZ;
 		triArg.mVertices[2] = spherePos + axisX + axisZ;
@@ -274,22 +273,26 @@ Caster* Mgr::create(Sys::Sphere& sphere, f32 rotationAngle)
 	caster->mTexturePositions = new f32[caster->mTriangleCount * 6];
 
 	for (int triangleIndex = 0; triangleIndex < caster->mTriangleCount; triangleIndex++) {
+		f32 scaleFactor = (30.0f / sphere.mRadius) * 0.03125f;
+		Vector3f center = sphere.mPosition;
 		for (int vertexIndex = 0; vertexIndex < 3; vertexIndex++) {
-			// Calculate the texture position for each vertex
-			Vector3f currentVertex = caster->mVertices[triangleIndex * 3 + vertexIndex];
-			f32 deltaZ             = currentVertex.z - sphere.mPosition.z;
-			f32 deltaX             = currentVertex.x - sphere.mPosition.x;
-			f32 scaleFactor        = (30.0f / sphere.mRadius) * 0.03125f;
+			int index              = triangleIndex * 3 + vertexIndex;
+			Vector3f currentVertex = caster->mVertices[index];
+			f32 sin1, cos1, cos2, sin2;
+			f32 deltaX = currentVertex.x - center.x;
+			f32 deltaZ = currentVertex.z - center.z;
 
-			f32 sin1                                    = sin(rotationAngle);
-			f32 cos1                                    = cos(rotationAngle);
-			f32 cos2                                    = cos(rotationAngle);
-			f32 sin2                                    = sin(rotationAngle);
-			int textureIndex                            = (triangleIndex * 3 + vertexIndex) * 2;
-			Vector3f texturePosition(deltaZ * sin2 + deltaX * cos2, 0.0f, deltaZ * cos1 - deltaX * sin1);
-			texturePosition *= scaleFactor;
-			caster->mTexturePositions[textureIndex] = 0.5f + texturePosition.x;
-			caster->mTexturePositions[textureIndex + 1] = 0.5f + texturePosition.z;
+			sin1         = dolsinf(rotationAngle);
+			cos1         = dolcosf(rotationAngle);
+			cos2         = dolcosf(rotationAngle);
+			sin2         = dolsinf(rotationAngle);
+			f32 rotatedX = deltaZ * sin2 + deltaX * cos2;
+			deltaZ       = deltaZ * cos1 - deltaX * sin1;
+			deltaX       = rotatedX;
+			deltaX *= scaleFactor;
+			deltaZ *= scaleFactor;
+			caster->mTexturePositions[index * 2]     = 0.5f + deltaX;
+			caster->mTexturePositions[index * 2 + 1] = 0.5f + deltaZ;
 		}
 	}
 
@@ -666,10 +669,11 @@ lbl_8023D104:
  * @note Address: N/A
  * @note Size: 0x7C
  */
-void Mgr::getTexture(int idx)
+JUTTexture* Mgr::getTexture(int idx)
 {
-	P2ASSERTLINE(410, mTextureCount > 0);
-	mTextures[idx]->load(GX_TEXMAP0);
+	bool check = 0 <= idx && idx < mTextureCount;
+	P2ASSERTLINE(410, check);
+	return mTextures[idx];
 }
 
 /**

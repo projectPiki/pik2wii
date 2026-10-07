@@ -7,7 +7,6 @@
 #include "Game/SingleGameSection.h"
 #include "Game/Stickers.h"
 #include "Game/generalEnemyMgr.h"
-#include "PSM/EnemyBoss.h"
 #include "PSSystem/PSMainSide_ObjSound.h"
 #include "RevoSDK/rand.h"
 #include "nans.h"

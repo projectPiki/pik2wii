@@ -79,8 +79,8 @@ void TDayEndCount::doCreate(JKRArchive* arc)
 	mScreenObj->set("count.blo", 0x20000, arc);
 	mTextPane = static_cast<J2DPicture*>(mScreenObj->search('gath'));
 	P2ASSERTLINE(90, mTextPane);
-	mTextPanePos.x = mTextPane->mOffset.x;
-	mTextPanePos.y = mTextPane->mOffset.y;
+	mTextPanePos.x = mTextPane->mTranslateX;
+	mTextPanePos.y = mTextPane->mTranslateY;
 
 	mNumberPaneList = new J2DPane*[COUNTDOWN_NUMBERS];
 	for (int i = 0; i < COUNTDOWN_NUMBERS; i++) {
@@ -92,8 +92,8 @@ void TDayEndCount::doCreate(JKRArchive* arc)
 	J2DPicture* pane = static_cast<J2DPicture*>(mScreenObj->search('cd10'));
 	P2ASSERTLINE(105, pane);
 	pane->setBasePosition(J2DPOS_Center);
-	mNumberPanePos.x = pane->mOffset.x;
-	mNumberPanePos.y = pane->mOffset.y + 25.0f;
+	mNumberPanePos.x = pane->mTranslateX;
+	mNumberPanePos.y = pane->mTranslateY + 25.0f;
 
 	for (u8 i = 0; i < ARRAY_SIZE(mTexCoords1); i++) {
 		mTexCoords1[i] = mTexCoords2[i] = *pane->getTexCoord(i);
@@ -158,9 +158,9 @@ bool TDayEndCount::doUpdate()
 
 	int alpha    = mAlphaMax;
 	f32 scale    = mStopScale;
-	f32 scaleMax = mScaleMax;
 	f32 fraction = calc2 - id;
 	f32 calc3    = 1.0f - fraction;
+	f32 scaleMax = mScaleMax;
 	f32 start    = 0.5f * (1.0f - mWaitTime);
 	f32 end      = 0.5f * (1.0f + mWaitTime);
 	if (calc3 < start) {
@@ -172,25 +172,24 @@ bool TDayEndCount::doUpdate()
 		}
 
 		f32 newScale     = calc3 * (scale / start);
-		f32 currentScale = mCurrNumberPane->mScale.x;
+		f32 currentScale = mCurrNumberPane->mScaleX;
 		scale            = currentScale;
 		if (newScale > currentScale) {
 			scale = newScale;
 		}
 
 		if (mMode) {
-			f32 xOffset = mNumberPanePos.x - mCurrNumberPane->mOffset.x;
-			f32 yOffset = mNumberPanePos.y - mCurrNumberPane->mOffset.y;
+			f32 xOffset = mNumberPanePos.x - mCurrNumberPane->mTranslateX;
+			f32 yOffset = mNumberPanePos.y - mCurrNumberPane->mTranslateY;
 			mCurrNumberPane->add(xOffset * scale, yOffset * scale + mOffsetY);
 		} else {
 			mCurrNumberPane->setOffset(mNumberPanePos.x, mNumberPanePos.y + mOffsetY);
 		}
 	} else if (calc3 > end) {
 		// f32 duration   = 1.0f - end;
-		f32 scaleSlope = (scale - scaleMax) / (end - 1.0f);
 		f32 alphaSlope = (f32)(u8)alpha / (1.0f - end);
-		scale          = scaleSlope * calc3 + (scaleMax - scaleSlope);
 		alpha          = -alphaSlope * calc3 + alphaSlope;
+		scale          = calcLineValue(calc3, end, scale, scaleMax);
 		mCurrNumberPane->setOffset(mNumberPanePos.x, mNumberPanePos.y + mOffsetY);
 	} else {
 		mCurrNumberPane->setOffset(mNumberPanePos.x, mNumberPanePos.y + mOffsetY);
@@ -241,12 +240,10 @@ bool TDayEndCount::doUpdate()
 	f32 angle           = TAU * 2.0f * (u8)alpha / mAlphaMax;
 	f32 xoffs           = sinf(angle);
 	f32 yoffs           = cosf(angle);
-	xoffs *= 5.0f;
-	yoffs *= 5.0f;
-	mTexCoords1[0].set(mTexCoords2[0].x - xoffs, mTexCoords2[0].y - yoffs);
-	mTexCoords1[1].set(mTexCoords2[1].x + xoffs, mTexCoords2[1].y - yoffs);
-	mTexCoords1[2].set(mTexCoords2[2].x + xoffs, mTexCoords2[2].y + yoffs);
-	mTexCoords1[3].set(mTexCoords2[3].x - xoffs, mTexCoords2[3].y + yoffs);
+	mTexCoords1[0].set((int)(mTexCoords2[0].x - xoffs * 5.0f), (int)(mTexCoords2[0].y - yoffs * 5.0f));
+	mTexCoords1[1].set((int)(mTexCoords2[1].x + xoffs * 5.0f), (int)(mTexCoords2[1].y - yoffs * 5.0f));
+	mTexCoords1[2].set((int)(mTexCoords2[2].x + xoffs * 5.0f), (int)(mTexCoords2[2].y + yoffs * 5.0f));
+	mTexCoords1[3].set((int)(mTexCoords2[3].x - xoffs * 5.0f), (int)(mTexCoords2[3].y + yoffs * 5.0f));
 	numPane->setTexCoord(mTexCoords1);
 
 	if (mMode) {

@@ -1,10 +1,11 @@
 #ifndef _MENU_
 #define _MENU_
 
+#include "Controller.h"
 #include "IDelegate.h"
 #include "JSystem/JSupport/JSUList.h"
 #include "JSystem/JUtility/JUTFont.h"
-#include "Controller.h"
+#include "Vector2.h"
 #include "types.h"
 
 struct Menu {
@@ -141,6 +142,12 @@ struct Menu {
 	{
 		mPositionX = x;
 		mPositionY = y;
+	}
+
+	inline void setPosition(Vector2i pos)
+	{
+		mPositionX = pos.x;
+		mPositionY = pos.y;
 	}
 
 	// unused/inlined:

@@ -758,7 +758,7 @@ bool Obj::moveBridgeTop()
 
 	f32 val = turnToTarget(stagePos, C_GENERALPARMS.mTurnSpeed(), C_GENERALPARMS.mMaxTurnAngle());
 
-	f32 dist = sqrDistanceXZ(mPosition, stagePos);
+	f32 dist = mPosition.sqrDistance2D(stagePos);
 
 	if (dist < 50.0f) {
 		mTargetVelocity.set(0.0f, 0.0f, 0.0f);

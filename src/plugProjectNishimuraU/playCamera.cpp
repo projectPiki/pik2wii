@@ -637,7 +637,19 @@ void PlayCamera::updateParms(int flag)
 
 	CameraParms* parms = mCameraParms;
 
-	f32 targetAngle = _normaliseAngle(mCameraAngleCurrent, mCameraAngleTarget); // this needs fixing
+	f32 targetAngle = mCameraAngleTarget;
+	f32 delta;
+	if (targetAngle >= mCameraAngleCurrent) {
+		delta = targetAngle - mCameraAngleCurrent;
+		if (TAU - delta < delta) {
+			targetAngle -= TAU;
+		}
+	} else {
+		delta = mCameraAngleCurrent - targetAngle;
+		if (TAU - delta < delta) {
+			targetAngle += TAU;
+		}
+	}
 
 	mCameraAngleCurrent += parms->mRotSpeed.mValue * (targetAngle - mCameraAngleCurrent);
 
@@ -851,17 +863,7 @@ void PlayCamera::setCollisionCameraTargetPhi(int flag)
 			break;
 		}
 
-		f32 vertAngle;
-		f32 interpSpeed = mCameraParms->mCollInterpSpeed();
-		if (absVal(mGoalVerticalAngle - phi) < interpSpeed) {
-			vertAngle = phi;
-		} else if (mGoalVerticalAngle < phi) {
-			vertAngle = mGoalVerticalAngle + interpSpeed;
-		} else {
-			vertAngle = mGoalVerticalAngle - interpSpeed;
-		}
-
-		mGoalVerticalAngle = vertAngle;
+		mGoalVerticalAngle = approach(mGoalVerticalAngle, phi, mCameraParms->mCollInterpSpeed());
 		return;
 	}
 
@@ -997,20 +999,23 @@ lbl_80240DCC:
  */
 f32 PlayCamera::getCollisionCameraTargetPhi(f32 angle, f32 dist)
 {
-	dist /= 15.0f; // f19
-	angle = MTXDegToRad(angle);
+	dist /= 15.0f;
+	angle *= PI / 180.0f;
 
-	f32 cosTheta = cosf(mCameraAngleTarget); // f22
-	f32 sinTheta = sinf(mCameraAngleTarget); // f26
-	f32 sinPhi   = sinf(angle);              // f24
-	f32 cosPhi   = cosf(angle);              // f23
+	f32 sinPhi, cosPhi;
+	// this feels very fake-matchy, but it's the closest I've been able to find
+	// the casts are load-bearing, and I hate the mix of the cosf and cosfc inlines :(
+	// please someone find something better later -HP
+	f32 cosTheta = (f32)cosfc(mCameraAngleTarget);
+	f32 sinTheta = sinf(mCameraAngleTarget);
+	sinPhi       = (f32)sinf(angle);
+	cosPhi       = (f32)cosf(angle);
 
 	for (int i = 1; i <= 15; i++) {
 		f32 rad       = dist * (f32)i;
-		f32 scaledSin = rad * cosPhi;                             // f6
-		f32 scaledCos = rad * sinPhi;                             // f1
-		f32 val       = (f32)i * mCameraParms->mCollCorrHeight(); // f20
-		f32 y;
+		f32 scaledSin = rad * cosPhi;
+		f32 scaledCos = rad * sinPhi;
+		f32 val       = (f32)i * mCameraParms->mCollCorrHeight();
 		Vector3f pos(sinTheta * scaledSin + mGoalPosition.x, mGoalPosition.y + scaledCos, cosTheta * scaledSin + mGoalPosition.z);
 		CurrTriInfo info;
 		info.mPosition        = pos;

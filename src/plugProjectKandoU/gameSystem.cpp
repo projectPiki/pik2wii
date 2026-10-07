@@ -107,6 +107,7 @@ void GameSystem::startFrame()
 	cellMgr->initFrame();
 	collisionUpdateMgr->update();
 
+	// Don't update the time of day unless the game is not paused, a cutscene is not playing, and it is not day 1
 	if (!paused() && !mIsFrozen && !isFlag(GAMESYS_DisablePause) && !paused_soft()
 	    && (!moviePlayer || moviePlayer->mDemoState == DEMOSTATE_Inactive) && (int)gameSystem->mTimeMgr->mDayCount != 0) {
 		mTimeMgr->update();
@@ -427,7 +428,10 @@ void GameSystem::detachObjectMgr(GenericObjectMgr* mgr)
  */
 void GameSystem::detachAllMgr()
 {
-	// UNUSED FUNCTION
+	FOREACH_NODE(TObjectNode<GenericObjectMgr>, mNode.mChild, node)
+	{
+		detachObjectMgr(node->mContents);
+	}
 }
 
 /**

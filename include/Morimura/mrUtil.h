@@ -187,6 +187,9 @@ struct TMovePane {
 		mCounter = 0;
 	}
 
+	inline int getID() { return _48; }
+	inline int getState() { return mState; }
+
 	J2DPane* mPane;                    // _00
 	J2DPane* mStickPane;               // _04
 	JGeometry::TVec2f mOffset;         // _08
@@ -203,10 +206,10 @@ struct TMovePane {
 };
 
 struct THuWhitePaneSet : public J2DPictureEx {
-	THuWhitePaneSet(J2DPane* pane)
-	    : J2DPictureEx('test', JGeometry::TBox2f(0.0f, 0.0f, pane->getWidth(), pane->getHeight()), "sunh_w.bti", 0x1100000)
+	THuWhitePaneSet(J2DPane* pane, const char* name)
+	    : J2DPictureEx('test', JGeometry::TBox2f(0.0f, 0.0f, pane->getWidth(), pane->getHeight()), name, 0x1100000)
 	{
-		_1A8 = Vector2f(0.0f);
+		_1A8.set(0.0f, 0.0f);
 	}
 
 	virtual ~THuWhitePaneSet() { }         // _08 (weak)
@@ -219,7 +222,6 @@ struct THuWhitePaneSet : public J2DPictureEx {
 	Vector2f _1A8;   // _1A8
 	Matrixf mMatrix; // _1B0
 	u8 mAlpha;       // _1E0
-	u8 _1E1[0x7];    // _1E1, unknown
 };
 
 struct TIndPane : public CNode {

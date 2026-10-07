@@ -169,10 +169,6 @@ struct JASTrack : public JSUList<JASChannel> {
 
 	struct MoveParam_ {
 		MoveParam_()
-		    : mCurrentValue(0.0f)
-		    , mTargetValue(0.0f)
-		    , mMoveTime(0.0f)
-		    , mMoveAmount(0.0f)
 		{
 		}
 
@@ -252,7 +248,7 @@ struct JASTrack : public JSUList<JASChannel> {
 	void overwriteOsc(JASChannel*);
 	bool noteOff(u8, u16);
 	int gateOn(u8, s32, s32, s32);
-	bool checkNoteStop(s32);
+	u8 checkNoteStop(s32);
 	void oscSetupFull(u8, u32, u32);
 	void oscSetupSimpleEnv(u8, u32);
 	void oscSetupSimple(u8);
@@ -348,6 +344,8 @@ struct JASTrack : public JSUList<JASChannel> {
 
 	inline JASSeqCtrl* getSeq() { return &mSeqCtrl; }
 	inline JASOuterParam* getExtBuffer() const { return mExtBuffer; }
+
+	inline JASChannel* getChannel(int i) { return mChannels[i]; }
 
 	inline void initOscillators()
 	{

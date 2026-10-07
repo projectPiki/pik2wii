@@ -8,11 +8,14 @@
 #include "nans.h"
 #include "trig.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "ebiP2TitleChappy";
+}
+
 namespace ebi {
 namespace title {
-
-static const int unusedTitleChappyArray[] = { 0, 0, 0 };
-static const char ebiP2TitleChappyName[]  = "ebiP2TitleChappy";
 
 /**
  * @note Address: 0x803E85D8
@@ -242,7 +245,7 @@ void Chappy::TUnit::startAIState_(enumAIState state)
 
 	case CHAPPYAI_EscapeScreen: {
 		Vector2f negPos(-mPosition.x, -mPosition.y);
-		f32 len = _sqrtf(negPos.x * negPos.x + negPos.y * negPos.y);
+		f32 len = sqrtfClamped(negPos.x * negPos.x + negPos.y * negPos.y);
 		if (len != 0.0f) {
 			f32 norm = 1.0f / len;
 			negPos.x *= norm;

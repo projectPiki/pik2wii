@@ -1,9 +1,10 @@
 #ifndef _PSGAME_PSSE_H
 #define _PSGAME_PSSE_H
 
-#include "types.h"
-#include "JSystem/JKernel/JKRDisposer.h"
 #include "JSystem/JAudio/JAI/JAInter/Object.h"
+#include "JSystem/JKernel/JKRDisposer.h"
+#include "P2Macros.h"
+#include "types.h"
 
 struct JASTrack;
 

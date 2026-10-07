@@ -6,10 +6,14 @@
 #include "RevoSDK/rand.h"
 #include "types.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "246-ElecBugState";
+}
+
 namespace Game {
 namespace ElecBug {
-
-static const char unusedElecBugName[] = "246-ElecBugState";
 
 /**
  * @note Address: 0x80278E90
@@ -167,7 +171,7 @@ void StateMove::exec(EnemyBase* enemy)
 	Vector3f targetPos = Vector3f(bug->mTargetPosition);
 
 	Vector3f currentPos = bug->getPosition();
-	if (sqrDistanceXZ(currentPos, targetPos) > 525.0f) {
+	if (outsideRadius2D(25.0f, currentPos, targetPos)) {
 		EnemyFunc::walkToTarget(bug, targetPos, CG_GENERALPARMS(bug).mMoveSpeed(), CG_GENERALPARMS(bug).mTurnSpeed(),
 		                        CG_GENERALPARMS(bug).mMaxTurnAngle());
 

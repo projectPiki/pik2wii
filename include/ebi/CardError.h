@@ -542,7 +542,7 @@ struct TMgr {
 	inline StateType* getCurrState() { return mCurrentState; }
 
 	TMgr();
-	~TMgr();
+	~TMgr(){}
 
 	Screen::TMemoryCard mScreen;   // _000
 	u32 mCounter;                  // _298

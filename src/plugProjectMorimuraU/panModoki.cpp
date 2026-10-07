@@ -46,10 +46,9 @@ namespace PanModokiBase {
 void Obj::setParameters()
 {
 	EnemyBase::setParameters();
-	Nest::Obj* nest = mNest;
 	if (mNest) {
-		nest->setScale(C_PROPERPARMS.mNestScale());
-		nest->setCollScale(C_PROPERPARMS.mNestScale());
+		mNest->setScale(C_PROPERPARMS.mNestScale());
+		mNest->setCollScale(C_PROPERPARMS.mNestScale());
 	}
 }
 
@@ -74,8 +73,8 @@ void Obj::birth(Vector3f& position, f32 faceDirection)
 			mNest->setHouseType(getEnemyTypeID());
 			nest      = mNest;
 			f32 scale = C_PROPERPARMS.mNestScale();
-			nest->setScale(scale);
-			nest->setCollScale(scale);
+			mNest->setScale(scale);
+			mNest->setCollScale(scale);
 		}
 	}
 }
@@ -476,13 +475,8 @@ bool Obj::pressCallBack(Creature* creature, f32 damage, CollPart* part)
 			case PANMODOKI_Walk:
 			case PANMODOKI_Wait:
 			case PANMODOKI_Stick:
-				// these have to be zero'd by component to stop this inlining in OoPanModoki::Obj::pressCallBack lol.
-				mCurrentVelocity.x = 0.0f;
-				mCurrentVelocity.y = 0.0f;
-				mCurrentVelocity.z = 0.0f;
-				mTargetVelocity.x  = 0.0f;
-				mTargetVelocity.y  = 0.0f;
-				mTargetVelocity.z  = 0.0f;
+				mCurrentVelocity.set(0.0f, 0.0f, 0.0f);
+				mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 				mCanReactToPress   = 0;
 				if (C_PARMS->mCanPressType) {
 					EnemyBase::finishMotion();
@@ -494,13 +488,8 @@ bool Obj::pressCallBack(Creature* creature, f32 damage, CollPart* part)
 
 			case PANMODOKI_Back:
 			case PANMODOKI_Pulled:
-				// these have to be zero'd by component to stop this inlining in OoPanModoki::Obj::pressCallBack lol.
-				mCurrentVelocity.x = 0.0f;
-				mCurrentVelocity.y = 0.0f;
-				mCurrentVelocity.z = 0.0f;
-				mTargetVelocity.x  = 0.0f;
-				mTargetVelocity.y  = 0.0f;
-				mTargetVelocity.z  = 0.0f;
+				mCurrentVelocity.set(0.0f, 0.0f, 0.0f);
+				mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 				mCanReactToPress   = 0;
 				if (C_PARMS->mCanPressType) {
 					EnemyBase::finishMotion();
@@ -635,7 +624,7 @@ void Obj::getShadowParam(ShadowParam& shadowParam)
 {
 	mBodyJoint->getWorldMatrix()->getTranslation(shadowParam.mPosition);
 	shadowParam.mPosition.y               = 2.0f + mPosition.y;
-	shadowParam.mBoundingSphere.mPosition = Vector3f(0.0f, 1.0f, 0.0f);
+	shadowParam.mBoundingSphere.mPosition.set(0.0f, 1.0f, 0.0f);
 	shadowParam.mBoundingSphere.mRadius   = 50.0f;
 	shadowParam.mSize                     = mShadowSize;
 }
@@ -864,7 +853,7 @@ bool Obj::isCarryToGoal()
 	homeRadius *= homeRadius;
 
 	Vector3f pos = mPosition;
-	if (sqrDistanceXZ(pos, mHomePosition) < homeRadius) {
+	if (pos.sqrDistance2D(mHomePosition) < homeRadius) {
 		releasePathFinder();
 		return true;
 	}
@@ -992,7 +981,6 @@ void Obj::walkFunc()
  */
 bool Obj::isReachToGoal(f32 radius)
 {
-	f32 rad = radius;
 	if (isDead()) {
 		return false;
 	}
@@ -1000,16 +988,14 @@ bool Obj::isReachToGoal(f32 radius)
 	Creature* creature = mTargetCreature;
 	if (creature) {
 		P2ASSERTLINE(1202, creature);
-		rad += static_cast<Pellet*>(creature)->mConfig->mParams.mRadius.mData;
+		radius += static_cast<Pellet*>(creature)->mConfig->mParams.mRadius.mData;
 	} else {
-		rad *= 2.0f;
+		radius *= 2.0f;
 	}
 
-	rad *= rad;
-	if (sqrDistanceXZ(mPosition, mNextWayPointPosition) < rad) {
+	if (insideRadius2D(radius, mPosition, mNextWayPointPosition)) {
 		if (getStateID() == PANMODOKI_Walk && mTargetCreature) {
-			Vector3f targetPos(mTargetCreature->getPosition().x, 0.0f, mTargetCreature->getPosition().z);
-			if (sqrDistanceXZ(mPosition, targetPos) < rad) {
+			if (isCreatureIn2DRadius(radius, mPosition)) {
 				mFsm->transit(this, PANMODOKI_Stick, nullptr);
 			}
 		}
@@ -1185,7 +1171,7 @@ Pellet* Obj::findNearestPellet()
 					}
 				}
 				Vector3f pelPos2 = pelt->getPosition();
-				f32 dist         = sqrDistanceXZ(mPosition, pelPos2);
+				f32 dist         = mPosition.sqrDistance2D(pelPos2);
 				if (dist < minDist) {
 					resPellet = pelt;
 					minDist   = dist;
@@ -1306,7 +1292,7 @@ bool Obj::carryTarget(f32 param)
 		}
 	}
 	Vector3f wpPos = mNextWayPointPosition;
-	if (sqrDistanceXZ(mPosition, mNextWayPointPosition) < 10000.0f) {
+	if (mPosition.sqrDistance2D(mNextWayPointPosition) < 10000.0f) {
 		turnSpeed    = CG_PROPERPARMS(this).mFastTurnSpeed.mValue;
 		maxTurnAngle = CG_PROPERPARMS(this).mMaxFastTurnAngle.mValue;
 	}
@@ -1330,7 +1316,7 @@ bool Obj::carryTarget(f32 param)
 			if (!mIsCarryStuck) {
 				mMoveToWpTimer++;
 				if (mMoveToWpTimer > 0x5A) {
-					if (sqrDistanceXZ(mPosition, mPrevCheckPosition) < 100.0f) {
+					if (mPosition.sqrDistance2D(mPrevCheckPosition) < 100.0f) {
 						mIsCarryStuck = 1;
 					} else {
 						mMoveToWpTimer = 0;
@@ -1553,7 +1539,7 @@ bool Obj::setPathFinder(bool cond)
 		Vector3f wp1Pos = wp1->mPosition;
 		Vector3f wp2Pos = wp2->mPosition;
 
-		if (sqrDistanceXZ(wp1Pos, mHomePosition) > sqrDistanceXZ(wp2Pos, mHomePosition)) {
+		if (wp1Pos.sqrDistance2D(mHomePosition) > wp2Pos.sqrDistance2D(mHomePosition)) {
 			farIdx  = idx1;
 			nearIdx = idx2;
 		}

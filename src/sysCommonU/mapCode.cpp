@@ -108,17 +108,3 @@ void MapCode::Mgr::CodeArray::writeObject(Stream& output, MapCode::Code& object)
  * @note Size: 0x34
  */
 void MapCode::Mgr::CodeArray::readObject(Stream& input, MapCode::Code& object) { object.read(input); }
-
-/* --UNUSED--
- * Fake function required to generate weak functions in correct order.
- * (Likely due to inlined/unused functions that have not been re-created)
- *
- * @note Address: 0x--------
- * @note Size: 0x
- */
-void fakeFunction(ArrayContainer<MapCode::Code>* container, MapCode::Code* code)
-{
-	container->get(nullptr);
-	container->setArray(0, 0);
-	container->addOne(*code);
-}

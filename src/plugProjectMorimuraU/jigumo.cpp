@@ -635,28 +635,28 @@ f32 Obj::getGoalDist()
  */
 void Obj::walkFunc()
 {
-	// UpI date position to use for effects
+	// Update position to use for effects
 	mEffectPosition = mPosition;
 	if (mWaterBox) {
 		mEffectPosition.y = *mWaterBox->getSeaHeightPtr();
 	}
 
 	f32 turningFactor, territoryRadius;
-	f32 walkSpeed    = getWalkSpeed();                    // f29
-	territoryRadius  = C_GENERALPARMS.mTerritoryRadius(); // f30
-	turningFactor    = C_PARMS->mTurnWeight;              // f31, 20.0f by default
-	f32 turningSpeed = C_GENERALPARMS.mTurnSpeed();       // f28
-	f32 maxTurnAngle = C_GENERALPARMS.mMaxTurnAngle();    // f27
+	f32 walkSpeed    = getWalkSpeed();
+	territoryRadius  = C_GENERALPARMS.mTerritoryRadius();
+	turningFactor    = C_PARMS->mTurnWeight; // 20.0f by default
+	f32 turningSpeed = C_GENERALPARMS.mTurnSpeed();
+	f32 maxTurnAngle = C_GENERALPARMS.mMaxTurnAngle();
 
 	int stateID = getStateID();
 
 	// if we're carrying and not attacking (assuming a flag is not set, which is the default)
 	if (stateID == JIGUMO_Carry || (!C_PARMS->_8FC && (stateID == JIGUMO_Return || stateID == JIGUMO_Miss))) {
-		Vector3f seperation = mGoalPosition;
-		seperation -= mPosition;
+		f32 x = mGoalPosition.x - mPosition.x;
+		f32 y = mGoalPosition.y - mPosition.y;
+		f32 z = mGoalPosition.z - mPosition.z;
 
-		f32 distance = _sqrtf2(SQUARE(seperation.x) + SQUARE(seperation.y) + SQUARE(seperation.z));
-		// f32 dist = mGoalPosition.distance(mPosition);
+		f32 distance = sqrtfClamped(SQUARE(x) + SQUARE(y) + SQUARE(z));
 		if (distance < 0.0f) {
 			distance = 0.0f;
 		}
@@ -664,14 +664,14 @@ void Obj::walkFunc()
 		// Calculate the pre-turn angle based on the distance and territory radius
 		// mTurnModifier is 0.05f by default (5% every frame)
 		f32 preTurnAngle = (C_PARMS->mTurnModifier * (distance * (360.0f * (1.0f / territoryRadius))));
-		f32 degreeAngle  = turningFactor * (f32)sin(180.0f + preTurnAngle); // f2
+		f32 degreeAngle  = turningFactor * (f32)sin(180.0f + preTurnAngle);
 
 		if (!C_PARMS->mIsGradualTurnActive) { // does not run by default, but forces angle to 0
 			degreeAngle = 0.0f;
 		}
 
 		degreeAngle *= mCarryAngleSpeed;        // angle goes from 0 to whatever the degAngle factor is over time
-		f32 turnAngle = TORADIANS(degreeAngle); // f30
+		f32 turnAngle = TORADIANS(degreeAngle);
 
 		mCarryAngleSpeed += 0.1f;
 
@@ -757,7 +757,7 @@ void Obj::walkFunc()
 		f32 prevFaceDir = mFaceDir;
 
 		// adjust target velocity
-		f32 theta     = prevFaceDir + turnAngle;
+		f32 theta = prevFaceDir + turnAngle;
 		Vector3f velocity;
 		velocity.x = walkSpeed * sinf(theta);
 		velocity.y = getTargetVelocity().y;
@@ -778,7 +778,7 @@ void Obj::walkFunc()
 
 		// Update the face direction and target velocity
 		mFaceDir += roundAng(PI * flipFaceDir + turnAngle);
-		mRotation.y     = mFaceDir;
+		mRotation.y = mFaceDir;
 		setTargetVelocity(velocity);
 
 		// mPauseSpeedModifier is 0.15f by default, so this doesn't run

@@ -97,7 +97,8 @@ void Obj::doAnimationStick()
 
 		mClimbDirection += sep;
 
-		crossVec       = mClimbRotation.cross(mClimbDirection);
+		Vector3f cv    = mClimbRotation.cross(mClimbDirection);
+		crossVec       = cv;
 		mClimbRotation = mClimbDirection.cross(crossVec);
 	}
 
@@ -114,8 +115,8 @@ void Obj::doAnimationStick()
 		if (mIsStickDiffRunning) {
 			bool check = false;
 
-			f32 xDiff = pos.x - mClimbingXPos;
-			f32 zDiff = pos.z - mClimbingZPos;
+			f32 xDiff = mPosition.x - mClimbingXPos;
+			f32 zDiff = mPosition.z - mClimbingZPos;
 
 			f32 absX = absVal(xDiff);
 			f32 absZ = absVal(zDiff);
@@ -739,7 +740,7 @@ Creature* Obj::getRandFruitsPlant()
 		ItemPlant::Plant* plant = static_cast<ItemPlant::Plant*>(item);
 		if (plant->isAlive() && plant->hasFruits()) {
 			Vector3f plantPos = plant->getPosition();
-			if (sqrDistanceXZ(mHomePosition, plantPos) < rad) {
+			if (mHomePosition.sqrDistance2D(plantPos) < rad) {
 				plantList[counter] = plant;
 				counter++;
 			}
@@ -884,7 +885,7 @@ void Obj::setZukanTargetPosition()
  */
 bool Obj::isInZukanTargetArea()
 {
-	return (sqrDistanceXZ(mPosition, mZukanTargetPosition) < 500.0f);
+	return (mPosition.sqrDistance2D(mZukanTargetPosition) < 500.0f);
 }
 
 /**

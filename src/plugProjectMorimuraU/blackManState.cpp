@@ -4,7 +4,6 @@
 #include "Game/Entities/BlackMan.h"
 #include "Game/MapMgr.h"
 #include "Game/rumble.h"
-#include "PSM/EnemyBoss.h"
 #include "PSSystem/PSMainSide_ObjSound.h"
 #include "nans.h"
 

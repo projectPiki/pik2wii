@@ -26,8 +26,8 @@ enum CreatureType {
 struct TObjBase {
 	inline TObjBase()
 	{
-		mPosition = Vector2f(0.0f);
-		mAngle    = Vector2f(0.0f, -1.0f);
+		mPosition.set(0.0f, 0.0f);
+		mAngle.set(0.0f, -1.0f);
 		mParms[0] = 0.0f;
 		mParms[1] = 1.0f;
 		mParms[2] = 0.0f;
@@ -45,6 +45,11 @@ struct TObjBase {
 	void pushOut_(Vector2f&);
 
 	inline Vector2f getPosition() { return mPosition; }
+	inline void setPosition(const Vector2f& position)
+	{
+		mPosition.x = position.x;
+		mPosition.y = position.y;
+	}
 
 	// _00 = VTBL
 	Vector2f mPosition; // _04

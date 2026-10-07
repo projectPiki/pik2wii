@@ -3,8 +3,11 @@
 #include "ebi/title/TTitle.h"
 #include "nans.h"
 
-static const u32 padding[]    = { 0, 0, 0 };
-static const char className[] = "ebiP2TitleUnit";
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "ebiP2TitleUnit";
+}
 
 namespace ebi {
 namespace title {
@@ -13,25 +16,23 @@ namespace title {
  * @note Address: N/A
  * @note Size: 0xA8
  */
-void E3DModel_set2DCoordToBaseTRMatrix_(J3DModel* model, Vector2f& pos, Vector2f& angle, f32 scale)
+void E3DModel_set2DCoordToBaseTRMatrix(J3DModel* model, Vector2f& pos, Vector2f& angle, f32 scale)
 {
 	Mtx& mtx = model->mPosMtx;
 	f32 y    = -angle.y;
 	f32 x    = angle.x;
-	f32 zero = 0.0f;
-	f32 one  = 1.0f;
 
-	model->mPosMtx[0][0] = one * y - zero;
+	model->mPosMtx[0][0] = 1.0f * y - 0.0f;
 	model->mPosMtx[0][1] = 0.0f;
 	model->mPosMtx[0][2] = x;
 	model->mPosMtx[0][3] = pos.x;
 
-	model->mPosMtx[1][0] = (zero * x) - (zero * y);
+	model->mPosMtx[1][0] = (0.0f * x) - (0.0f * y);
 	model->mPosMtx[1][1] = 1.0f;
 	model->mPosMtx[1][2] = 0.0f;
 	model->mPosMtx[1][3] = 0.0f;
 
-	model->mPosMtx[2][0] = -(one * x - zero);
+	model->mPosMtx[2][0] = -(1.0f * x - 0.0f);
 	model->mPosMtx[2][1] = 0.0f;
 	model->mPosMtx[2][2] = y;
 	model->mPosMtx[2][3] = -pos.y;
@@ -63,7 +64,7 @@ bool TParamBase::loadSettingFile(JKRArchive* arc, char* path)
  */
 void TObjBase::calcModelBaseMtx_()
 {
-	E3DModel_set2DCoordToBaseTRMatrix_(mModel, mPosition, mAngle, mParms[1]);
+	E3DModel_set2DCoordToBaseTRMatrix(mModel, mPosition, mAngle, mParms[1]);
 }
 
 /**
@@ -96,15 +97,15 @@ void TObjBase::pushOut(TObjBase* otherObj)
 void TMapBase::setArchive(JKRArchive* arc)
 {
 	void* file = arc->getResource("opening.bmd");
-	P2ASSERTLINE(96, file);
+	P2ASSERTLINE(102, file);
 	mMainModelData = J3DModelLoaderDataBase::load(file, J3DMLF_Material_PE_FogOff | J3DMLF_21);
 
 	file = arc->getResource("opening_wait.bck");
-	P2ASSERTLINE(106, file);
+	P2ASSERTLINE(112, file);
 	mAnimWait = static_cast<J3DAnmTransform*>(J3DAnmLoaderDataBase::load(file));
 
 	file = arc->getResource("opening_kaze.bck");
-	P2ASSERTLINE(111, file);
+	P2ASSERTLINE(117, file);
 	mAnimWind = static_cast<J3DAnmTransform*>(J3DAnmLoaderDataBase::load(file));
 
 	mMainModelData->newSharedDisplayList(0x40000);
@@ -193,11 +194,11 @@ void TMapBase::update()
 void TBGEnemyBase::setArchive(JKRArchive* arc)
 {
 	void* file = arc->getResource("enemy.bmd");
-	P2ASSERTLINE(199, file);
+	P2ASSERTLINE(216, file);
 	mMainModelData = J3DModelLoaderDataBase::load(file, J3DMLF_Material_PE_FogOff | J3DMLF_21);
 
 	file = arc->getResource("enemy.bck");
-	P2ASSERTLINE(209, file);
+	P2ASSERTLINE(226, file);
 	mAnim = static_cast<J3DAnmTransform*>(J3DAnmLoaderDataBase::load(file));
 
 	mMainModelData->newSharedDisplayList(0x40000);
@@ -245,15 +246,15 @@ void TBGEnemyBase::update()
 void TBlackPlane::setArchive(JKRArchive* arc)
 {
 	void* file = arc->getResource("cam.bmd");
-	P2ASSERTLINE(258, file);
+	P2ASSERTLINE(275, file);
 	mMainModelData = J3DModelLoaderDataBase::load(file, J3DMLF_Material_PE_Full | J3DMLF_21);
 
 	file = arc->getResource("cam.bck");
-	P2ASSERTLINE(268, file);
+	P2ASSERTLINE(285, file);
 	mAnim = static_cast<J3DAnmTransform*>(J3DAnmLoaderDataBase::load(file));
 
 	file = arc->getResource("cam.brk");
-	P2ASSERTLINE(273, file);
+	P2ASSERTLINE(290, file);
 	mAnimColor = static_cast<J3DAnmTevRegKey*>(J3DAnmLoaderDataBase::load(file));
 
 	mAnimMtxCalc = J3DNewMtxCalcAnm(mMainModelData->mJointTree.mFlags & J3DMLF_MtxTypeMask, mAnim);

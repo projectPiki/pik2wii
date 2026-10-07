@@ -5,7 +5,6 @@
 #include "Game/Navi.h"
 #include "Game/SingleGameSection.h"
 #include "PS.h"
-#include "PSM/EnemyBoss.h"
 #include "PSSystem/PSMainSide_ObjSound.h"
 #include "RevoSDK/rand.h"
 #include "efx/TEnemyDownSmoke.h"
@@ -334,13 +333,13 @@ void Obj::setTargetPattern()
  */
 void Obj::getTargetPosition()
 {
-	if (sqrDistanceXZ(mPosition, mHomePosition) < SQUARE(C_GENERALPARMS.mTerritoryRadius())) {
+	if (mPosition.sqrDistance2D(mHomePosition) < SQUARE(C_GENERALPARMS.mTerritoryRadius())) {
 		ConditionNotStickClient condition(this);
 		Piki* piki
 		    = EnemyFunc::getNearestPikmin(this, C_GENERALPARMS.mViewAngle.mValue, C_GENERALPARMS.mSightRadius.mValue, nullptr, &condition);
 		if (piki) {
 			mTargetPosition = piki->getPosition();
-		} else if (sqrDistanceXZ(mPosition, mTargetPosition) < 625.0f) {
+		} else if (mPosition.sqrDistance2D(mTargetPosition) < 625.0f) {
 			f32 range    = (C_GENERALPARMS.mTerritoryRadius.mValue - C_GENERALPARMS.mHomeRadius.mValue);
 			f32 randDist = C_GENERALPARMS.mHomeRadius.mValue + randWeightFloat(range);
 			f32 ang2     = JMAAtan2Radian(mPosition.x - mHomePosition.x, mPosition.z - mHomePosition.z);
@@ -386,7 +385,11 @@ void Obj::setShotGunTargetPosition()
 		f32 randAngle      = randWeightFloat(TAU);
 		f32 randDist       = randWeightFloat(C_GENERALPARMS.mSearchDistance.mValue);
 
-		mShotGunTargetPosition.set(randDist * cosf(randAngle) + mPosition.x, mPosition.y, randDist * sinf(randAngle) + mPosition.z);
+		f32 x = randDist * cosf(randAngle) + mPosition.x;
+		f32 y = mPosition.y;
+		f32 z = randDist * sinf(randAngle) + mPosition.z;
+
+		mShotGunTargetPosition.set(x, y, z);
 	}
 
 	setShotGunTarget(mShotGunTargetPosition);

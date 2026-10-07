@@ -76,9 +76,10 @@ void CallBack_CounterDay::setValue()
 		mDayPic->show();
 		picture->hide();
 
-		JGeometry::TVec2f scale(picture->mScale);
+		f32 scaleX = picture->mScaleX;
+		f32 scaleY = picture->mScaleY;
 		mDayPic->setBasePosition(J2DPOS_Center);
-		mDayPic->updateScale(scale.x, scale.y);
+		mDayPic->updateScale(scaleX, scaleY);
 	}
 }
 

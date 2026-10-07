@@ -57,7 +57,7 @@ enum CurrSelReturn {
 
 struct SceneSMenuBase : public ::Screen::SceneBase {
 	inline SceneSMenuBase()
-	    : mFinishState(1)
+	    : mFinishState(og::Screen::MENUFINISH_GetFromSubMember)
 	{
 	}
 
@@ -371,9 +371,9 @@ struct ObjSMenuItem : public ObjSMenuBase {
 			mItemColorBlack.b = 100;
 			mItemColorBlack.a = 255;
 
-			mBitterSprayOffset = Vector2f(-27.0f);
-			mSpicySprayOffset  = Vector2f(-27.0f);
-			mItemMenuScale     = Vector2f(0.95f, 0.9f);
+			mBitterSprayOffset.set(-27.0f, -27.0f);
+			mSpicySprayOffset.set(-27.0f, -27.0f);
+			mItemMenuScale.set(0.95f, 0.9f);
 		}
 
 		JUtility::TColor mItemColorWhite; // _00
@@ -467,28 +467,40 @@ struct ObjSMenuMap : public ObjSMenuBase {
 
 	static struct StaticValues {
 		inline StaticValues()
-		    : _08(255)
-		    , _09(255)
-		    , _0A(255)
-		    , mMapTexColorWhite(210, 220, 255, 255)
-		    , mMapTexColorBlack(0, 0, 50, 0)
-		    , mItemPelletWhiteColor(255, 132, 0, 255)
-		    , mItemPelletBlackColor(255, 0, 0, 0)
-		    , mMapMoveRate(5.5f)
-		    , mMapMoveRate2(2.0f)
-		    , mMapMoveInputReduction(1.8f)
 		{
-			_1B                   = 220;
-			mMinZoom              = 0.5f;
-			mMaxZoom              = 8.0f;
-			mMapIconScaleBase     = 0.7f;
-			mMapNaviArrowScaleMod = 1.5f;
-			mGroundZoom           = 1.8f;
-			mCaveZoom             = 1.8f;
-			mMapTexOffset.x       = 22.0f;
-			mMapTexOffset.y       = 12.0f;
-			mMapScreenScale.x     = 1.0f;
-			mMapScreenScale.y     = 0.92f;
+			_08                     = 255;
+			_09                     = 255;
+			_0A                     = 255;
+			mMapTexColorWhite.r     = 210;
+			mMapTexColorWhite.g     = 220;
+			mMapTexColorWhite.b     = 255;
+			mMapTexColorWhite.a     = 255;
+			mMapTexColorBlack.r     = 0;
+			mMapTexColorBlack.g     = 0;
+			mMapTexColorBlack.b     = 50;
+			mMapTexColorBlack.a     = 0;
+			mItemPelletWhiteColor.r = 255;
+			mItemPelletWhiteColor.g = 132;
+			mItemPelletWhiteColor.b = 0;
+			mItemPelletWhiteColor.a = 255;
+			mItemPelletBlackColor.r = 255;
+			mItemPelletBlackColor.g = 0;
+			mItemPelletBlackColor.b = 0;
+			mItemPelletBlackColor.a = 0;
+			mMapMoveRate            = 5.5f;
+			mMapMoveRate2           = 2.0f;
+			mMapMoveInputReduction  = 1.8f;
+			_1B                     = 220;
+			mMinZoom                = 0.5f;
+			mMaxZoom                = 8.0f;
+			mMapIconScaleBase       = 0.7f;
+			mMapNaviArrowScaleMod   = 1.5f;
+			mGroundZoom             = 1.8f;
+			mCaveZoom               = 1.8f;
+			mMapTexOffset.x         = 22.0f;
+			mMapTexOffset.y         = 12.0f;
+			mMapScreenScale.x       = 1.0f;
+			mMapScreenScale.y       = 0.92f;
 			mTempPikiColorWhite.r = 0;
 			mTempPikiColorWhite.g = 128;
 			mTempPikiColorWhite.b = 255;
@@ -504,10 +516,10 @@ struct ObjSMenuMap : public ObjSMenuBase {
 		u8 _08;                                 // _08
 		u8 _09;                                 // _09
 		u8 _0A;                                 // _0A
-		JUtility::TColor mMapTexColorWhite;     // _0B
-		JUtility::TColor mMapTexColorBlack;     // _0F
-		JUtility::TColor mItemPelletWhiteColor; // _13
-		JUtility::TColor mItemPelletBlackColor; // _17
+		GXColor mMapTexColorWhite;              // _0B
+		GXColor mMapTexColorBlack;              // _0F
+		GXColor mItemPelletWhiteColor;          // _13
+		GXColor mItemPelletBlackColor;          // _17
 		u8 _1B;                                 // _1B
 		f32 mMapMoveRate;                       // _1C
 		f32 mMapMoveRate2;                      // _20
@@ -549,7 +561,7 @@ struct ObjSMenuPause : public ObjSMenuBase {
 			mGreyedOutBgWhite.set(76, 74, 0, 255);   // khaki
 			mGreyedOutBgBlack.set(255, 255, 255, 0); // white
 
-			mPauseScreenScale = Vector2f(1.0f);
+			mPauseScreenScale.set(1.0f, 1.0f);
 		}
 
 		static void getMenuColor(JUtility::TColor*, JUtility::TColor*, JUtility::TColor*, JUtility::TColor*, JUtility::TColor*,

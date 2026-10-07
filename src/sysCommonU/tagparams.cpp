@@ -14,19 +14,28 @@ static void __Print(const char** fmt, ...)
  * @note Address: N/A
  * @note Size: 0x2C
  */
-void TagParm::read(Stream& input) { doRead(input); }
+void TagParm::read(Stream& input)
+{
+	doRead(input);
+}
 
 /**
  * @note Address: N/A
  * @note Size: 0x84
  */
-void TagParm::write(Stream& output) { doWrite(output); }
+void TagParm::write(Stream& output)
+{
+	doWrite(output);
+}
 
 /**
  * @note Address: N/A
  * @note Size: 0x2C
  */
-void TagParm::dump() { doDump(); }
+void TagParm::dump()
+{
+	doDump();
+}
 
 /**
  * @note Address: 0x8041BD38
@@ -194,25 +203,35 @@ StringTagParm::StringTagParm(TagParameters* params, char* name)
  * @note Address: 0x8041BFD8
  * @note Size: 0x4
  */
-void StringTagParm::flushValue() { }
+void StringTagParm::flushValue()
+{
+}
 
 /**
  * @note Address: 0x8041BFDC
  * @note Size: 0x3C
  */
-void StringTagParm::doRead(Stream& stream) { mData = stream.readString(nullptr, 0); }
+void StringTagParm::doRead(Stream& stream)
+{
+	mData = stream.readString(nullptr, 0);
+}
 
 /**
  * @note Address: 0x8041C018
  * @note Size: 0x2C
  */
-void StringTagParm::doWrite(Stream& stream) { stream.writeString(mData); }
+void StringTagParm::doWrite(Stream& stream)
+{
+	stream.writeString(mData);
+}
 
 /**
  * @note Address: 0x8041C044
  * @note Size: 0x4
  */
-void StringTagParm::doDump() { }
+void StringTagParm::doDump()
+{
+}
 
 /**
  * @note Address: 0x8041C048
@@ -229,9 +248,11 @@ TagParameters::TagParameters(char* name)
  * @note Address: N/A
  * @note Size: 0x48
  */
-// bool TagParameters::isEndToken(char* token) {
-
-// }
+bool TagParameters::isEndToken(char* token)
+{
+	int strLen = strlen("end");
+	return (strncmp("end", token, strLen)) == 0;
+}
 
 /**
  * @note Address: N/A
@@ -260,16 +281,15 @@ TagParm::TagParm(TagParameters* container, char* name)
 }
 
 /**
- * TODO: This probably uses isEndToken, but IDK how.
  * @note Address: 0x8041C0D4
  * @note Size: 0xD4
  */
 void TagParameters::read(Stream& stream)
 {
 	while (true) {
-		char* str  = stream.readString(nullptr, 0);
-		int strLen = strlen("end");
-		bool isEnd = IS_SAME_STRING_N("end", str, strLen);
+		char* str = stream.readString(nullptr, 0);
+		int strLen;
+		bool isEnd = isEndToken(str);
 
 		if (isEnd) {
 			break;

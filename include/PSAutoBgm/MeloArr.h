@@ -63,8 +63,6 @@ struct MeloArrMgr : public JADHioNode {
 	{
 	}
 
-	virtual ~MeloArrMgr() { } // _08 (weak)
-
 	bool isToAvoid(MeloArrArg&);
 
 	// _00 = VTABLE
@@ -77,8 +75,8 @@ struct MeloArrMgr : public JADHioNode {
  * @size = 0x20
  */
 struct MeloArr_RandomAvoid : public MeloArrBase {
-	MeloArr_RandomAvoid(char* name)
-	    : MeloArrBase(name)
+	MeloArr_RandomAvoid()
+	    : MeloArrBase("乱数位置Avoid") // 'random position Avoid'
 	{
 		mChance = 0.6f;
 	}

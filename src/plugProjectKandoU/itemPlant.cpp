@@ -6,7 +6,7 @@
 #include "efx/TTsuyuGrow.h"
 
 #include "PSM/EventBase.h"
-#include "PSM/Tsuyukusa.h"
+#include "PSSystem/PSMainSide_ObjSound.h"
 
 #include "JSystem/J3D/J3DAnmLoader.h"
 
@@ -473,8 +473,8 @@ void Item::constructor()
  * @note Address:	........
  * @note Size: 0xD0 (should be 0xD4 but inlines correctly).
  */
-Item::Item(int objType)
-    : FSMItem(objType)
+Item::Item()
+    : FSMItem(OBJTYPE_Plant)
 {
 	mGrowTimer = 0.0f;
 	mDamage    = 0.0f;
@@ -634,7 +634,7 @@ void Item::doAI()
  */
 bool Item::interactAttack(InteractAttack& attack)
 {
-	mCurrentState->onDamage(this, attack.mDamage);
+	getCurrState()->onDamage(this, attack.mDamage);
 	return true;
 }
 
@@ -650,7 +650,7 @@ bool Item::interactAttack(InteractAttack& attack)
  */
 bool Item::interactFarmKarero(InteractFarmKarero& karero)
 {
-	mCurrentState->eventKarero(this);
+	getCurrState()->eventKarero(this);
 	return true;
 }
 
@@ -666,7 +666,7 @@ bool Item::interactFarmKarero(InteractFarmKarero& karero)
  */
 bool Item::interactFarmHaero(InteractFarmHaero& haero)
 {
-	mCurrentState->eventHaero(this);
+	getCurrState()->eventHaero(this);
 	return true;
 }
 
@@ -780,7 +780,8 @@ void ProcAnimator::create(int count)
  */
 void ProcAnimator::setMatrix(int idx, Matrixf* mtx)
 {
-	P2ASSERTLINE(667, mMaxCount > idx);
+	bool check = 0 <= idx && idx < mMaxCount;
+	P2ASSERTLINE(667, check);
 	mMatrices[idx] = mtx;
 }
 
@@ -798,7 +799,8 @@ void ProcAnimator::setMatrix(int idx, Matrixf* mtx)
  */
 void ProcAnimator::setAngle(int idx, f32 angle)
 {
-	P2ASSERTLINE(670, mMaxCount > idx); // line number is a guess
+	bool check = 0 <= idx && idx < mMaxCount; // line number is a guess
+	P2ASSERTLINE(674, check);
 	mAngle[idx] = angle;
 }
 
@@ -817,7 +819,8 @@ void ProcAnimator::setAngle(int idx, f32 angle)
  */
 f32 ProcAnimator::getAngle(int idx)
 {
-	P2ASSERTLINE(680, mMaxCount > idx);
+	bool check = 0 <= idx && idx < mMaxCount;
+	P2ASSERTLINE(680, check);
 	return mAngle[idx];
 }
 
@@ -930,12 +933,13 @@ void ProcAnimator::force(f32)
  */
 void ProcAnimator::update(f32 faceDir, f32 p2)
 {
-	f32 idk       = 80.0f;
-	f32 temp      = 1.0f; // this has gotta be part of an inline to actually multiply by 1.0f
-	f32 p3        = p2 * idk;
-	f32 frameRate = sys->getDeltaTime();
-	f32 idk2      = -((f32)temp * idk);
-	_28 += ((idk2 * _24 - _28 * 1.6f) + p3) * frameRate;
+	f32 stiffness   = 80.0f;
+	f32 springScale = 1.0f;
+	f32 drive       = p2 * stiffness;
+	f32 frameRate   = sys->getDeltaTime();
+	springScale *= stiffness;
+	f32 spring = -springScale;
+	_28 += ((spring * _24 - _28 * 1.6f) + drive) * frameRate;
 	_24 += frameRate * _28;
 
 	if (_24 > TORADIANS(40.0f)) {
@@ -949,7 +953,7 @@ void ProcAnimator::update(f32 faceDir, f32 p2)
 	originMat.makeTR(Vector3f::zero, rot1);
 
 	calcAngles();
-	calcDists(); // regswaps here
+	calcDists();
 
 	Vector3f pos = mPosition; // 0x74
 
@@ -963,21 +967,22 @@ void ProcAnimator::update(f32 faceDir, f32 p2)
 		} else {
 			angleFactor = 1.0f;
 		}
-		f32 angleOffset = _24 * angleFactor;
+		f32 ydist;
+		f32 angleOffset = angleFactor * _24;
 
-		Matrixf mat;                         // 0x8C
-		f32 theta = mAngle[i] + angleOffset; // f29
+		Matrixf mat;
+		Vector3f newPos;
+		f32 theta = mAngle[i] + angleOffset;
+		Vector3f rot;
+		f32 angle = mXRot[i] + angleOffset;
+		ydist     = mYDist[i];
 
-		Vector3f newPos; // 0x68
 		newPos.x = 0.0f;
-		newPos.y = mYDist[i];
+		newPos.y = ydist;
 		newPos.z = 0.0f;
-
-		Vector3f rot; // 0x5C
-		rot.x = mXRot[i] + angleOffset;
-		rot.y = faceDir;
-		rot.z = 0.0f;
-
+		rot.x    = angle;
+		rot.y    = faceDir;
+		rot.z    = 0.0f;
 		mat.makeTR(pos, rot); // 0x8C, 0x74, 0x5C
 
 		newPos = mat.mtxMult(newPos); // 0x8C, 0x68, (0x2C) -> 0x68
@@ -986,7 +991,7 @@ void ProcAnimator::update(f32 faceDir, f32 p2)
 		currMat->setTranslation(newPos); // 0x68 -> 0x74
 
 		Vector3f posX = currMat->getColumn(0);
-		f32 scale     = posX.length(); // f2
+		f32 scale     = getBasisScale(posX);
 
 		Vector3f xVec = Vector3f(0.0f, scale * cosf(theta), scale * sinf(theta));  // 0x50
 		Vector3f yVec = Vector3f(0.0f, scale * -sinf(theta), scale * cosf(theta)); // 0x44
@@ -1379,7 +1384,7 @@ void ProcAnimator::draw(Graphics& gfx)
  * @note Size: 0x10C
  */
 Plant::Plant()
-    : Item(OBJTYPE_Plant)
+    : Item()
 {
 	mMass = 0.0f;
 }
@@ -1884,7 +1889,7 @@ void Mgr::onLoadResources()
 {
 	loadArchive("arc.szs");
 	loadBmd("model.bmd", 0, J3DMODEL_Unk30 | J3DMODEL_CreateNewDL);
-	mAnmColor = static_cast<J3DAnmColor*>(J3DAnmLoaderDataBase ::load(JKRFileLoader::getGlbResource("model.bpk", nullptr)));
+	mAnmColor = static_cast<J3DAnmColor*>(J3DAnmLoaderDataBase::load(JKRFileLoader::getGlbResource("model.bpk", nullptr)));
 
 	JKRArchive* textArc = openTextArc("texts.szs");
 	P2ASSERTLINE(1333, textArc);

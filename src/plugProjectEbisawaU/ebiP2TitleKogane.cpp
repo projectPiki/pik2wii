@@ -6,12 +6,15 @@
 #include "nans.h"
 #include "trig.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "ebiP2TitleKogane";
+}
+
 namespace ebi {
 namespace title {
 namespace Kogane {
-
-static const int padding[]    = { 0, 0, 0 };
-static const char className[] = "ebiP2TitleKogane";
 
 /**
  * @note Address: 0x803E7358
@@ -213,7 +216,7 @@ void TUnit::startState(enumState state)
 
 	case KSTATE_ZigZagWalk:
 		Vector2f negPos(-mPosition.x, -mPosition.y);
-		f32 len = _sqrtf(negPos.x * negPos.x + negPos.y * negPos.y);
+		f32 len = sqrtfClamped(negPos.x * negPos.x + negPos.y * negPos.y);
 		if (len != 0.0f) {
 			f32 norm = 1.0f / len;
 			negPos.x *= norm;
@@ -296,7 +299,7 @@ void TUnit::update()
 		mAngle.normalise();
 
 		Vector2f diff = mAngle - mTargetAngle;
-		f32 len       = _lenVec2D(diff);
+		f32 len       = diff.length();
 
 		if (len < 0.1f) {
 			startState(KSTATE_Walk);

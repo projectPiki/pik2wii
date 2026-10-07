@@ -303,10 +303,7 @@ struct J3DAlphaComp {
 };
 
 struct J3DBlendInfo {
-	J3DBlendInfo& operator=(const J3DBlendInfo& other)
-	{
-		__memcpy(this, &other, sizeof(J3DBlendInfo));
-	}
+	J3DBlendInfo& operator=(const J3DBlendInfo& other) { __memcpy(this, &other, sizeof(J3DBlendInfo)); }
 
 	u8 mBlendMode; // _00
 	u8 mSrcFactor; // _01
@@ -535,10 +532,7 @@ struct J3DLightObj {
 };
 
 struct J3DTevOrderInfo {
-	inline J3DTevOrderInfo& operator=(const J3DTevOrderInfo& other)
-	{
-		*(u32*) this = *(u32*)&other;
-	}
+	inline J3DTevOrderInfo& operator=(const J3DTevOrderInfo& other) { *(u32*)this = *(u32*)&other; }
 
 	u8 mTexCoordID; // _00
 	u8 mTexMapID;   // _01
@@ -605,7 +599,7 @@ struct J3DTevStageInfo {
 	u8 mColorOp;      // _05
 	u8 mColorBias;    // _06
 	u8 mColorScale;   // _07
-	bool mColorClamp; // _08
+	u8 mColorClamp;   // _08
 	u8 mColorRegID;   // _09
 	u8 mAlphaInA;     // _0A
 	u8 mAlphaInB;     // _0B
@@ -614,7 +608,7 @@ struct J3DTevStageInfo {
 	u8 mAlphaOp;      // _0E
 	u8 mAlphaBias;    // _0F
 	u8 mAlphaScale;   // _10
-	bool mAlphaClamp; // _11
+	u8 mAlphaClamp;   // _11
 	u8 mAlphaRegID;   // _12
 	u8 _13;           // _13 - unknown
 };
@@ -756,15 +750,12 @@ struct J3DTexCoord : public J3DTexCoordInfo {
 
 	void setTexCoordInfo(J3DTexCoordInfo* info) { *(J3DTexCoordInfo*)this = *info; }
 
-	void operator=(const J3DTexCoord& other)
-	{
-		*(u32*) this = *(u32*)&other;
-	}
+	void operator=(const J3DTexCoord& other) { *(u32*)this = *(u32*)&other; }
 
 	u8 getTexGenType() { return mTexGenType; }
 	u8 getTexGenSrc() { return mTexGenSrc; }
 	u8 getTexGenMtx() { return mTexGenMtx; }
-	u16 getTexMtxReg() { return mTexMtxReg & 0xFF; }
+	u32 getTexMtxReg() const { return mTexMtxReg & 0xFF; }
 
 	void resetTexMtxReg() { mTexMtxReg = mTexGenMtx; }
 
@@ -786,31 +777,32 @@ struct J3DTextureSRTInfo {
 struct J3DTransformInfo {
 	/*inline J3DTransformInfo& operator=(const J3DTransformInfo& b)
 	{
-		mScale       = b.mScale;
-		mRotation    = b.mRotation;
-		mTranslation = b.mTranslation;
-		return *this;
+	    mScale       = b.mScale;
+	    mRotation    = b.mRotation;
+	    mTranslation = b.mTranslation;
+	    return *this;
 	}*/
-	
+
 #ifdef __MWERKS__
-    inline J3DTransformInfo& operator=(const register J3DTransformInfo& b) {
-        register const J3DTransformInfo& var_r31 = b;
-        register J3DTransformInfo& var_r30 = *this;
-        register f32 var_f31;
-        asm {
+	inline J3DTransformInfo& operator=(const register J3DTransformInfo& b)
+	{
+		register const J3DTransformInfo& var_r31 = b;
+		register J3DTransformInfo& var_r30       = *this;
+		register f32 var_f31;
+		asm {
             psq_l var_f31, J3DTransformInfo.mScale(var_r31), 0, 0
             psq_st var_f31, J3DTransformInfo.mScale(var_r30), 0, 0
-        }
-        mScale.z = b.mScale.z;
-        *(u32*)&mRotation = *(u32*)&b.mRotation;
-        mRotation.z = b.mRotation.z;
-        asm {
+		}
+		mScale.z          = b.mScale.z;
+		*(u32*)&mRotation = *(u32*)&b.mRotation;
+		mRotation.z       = b.mRotation.z;
+		asm {
             psq_l var_f31, J3DTransformInfo.mTranslation(var_r31), 0, 0
             psq_st var_f31, J3DTransformInfo.mTranslation(var_r30), 0, 0
-        }
-        mTranslation.z = b.mTranslation.z;
-        return *this;
-    }
+		}
+		mTranslation.z = b.mTranslation.z;
+		return *this;
+	}
 #endif
 
 	Vec mScale;       // _00
@@ -833,20 +825,22 @@ struct J3DNBTScaleInfo {
 
 extern const J3DNBTScaleInfo j3dDefaultNBTScaleInfo;
 
-struct J3DNBTScale : public J3DNBTScaleInfo {	
-	J3DNBTScale() {
-        mHasScale = j3dDefaultNBTScaleInfo.mHasScale;
-        mScale.x = j3dDefaultNBTScaleInfo.mScale.x;
-        mScale.y = j3dDefaultNBTScaleInfo.mScale.y;
-        mScale.z = j3dDefaultNBTScaleInfo.mScale.z;
-    }
+struct J3DNBTScale : public J3DNBTScaleInfo {
+	J3DNBTScale()
+	{
+		mHasScale = j3dDefaultNBTScaleInfo.mHasScale;
+		mScale.x  = j3dDefaultNBTScaleInfo.mScale.x;
+		mScale.y  = j3dDefaultNBTScaleInfo.mScale.y;
+		mScale.z  = j3dDefaultNBTScaleInfo.mScale.z;
+	}
 
-    J3DNBTScale(const J3DNBTScaleInfo& info) {
-        mHasScale = info.mHasScale;
-        mScale.x = info.mScale.x;
-        mScale.y = info.mScale.y;
-        mScale.z = info.mScale.z;
-    }
+	J3DNBTScale(const J3DNBTScaleInfo& info)
+	{
+		mHasScale = info.mHasScale;
+		mScale.x  = info.mScale.x;
+		mScale.y  = info.mScale.y;
+		mScale.z  = info.mScale.z;
+	}
 
 	Vec* getScale() { return &mScale; }
 };

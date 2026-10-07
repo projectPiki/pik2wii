@@ -1,24 +1,26 @@
 #ifndef _PSM_SCENE_H
 #define _PSM_SCENE_H
 
-#include "PSGame/SceneInfo.h"
-#include "PSSystem/PSSystemIF.h"
-#include "types.h"
-#include "PSGame/PikScene.h"
+#include "JSystem/JSupport/JSUList.h"
 #include "PSGame/CameraMgr.h"
+#include "PSGame/PikScene.h"
+#include "PSM/DirectorMgr.h"
 #include "PSM/ObjBase.h"
-#include "PSM/EnemyBoss.h"
-#include "PSM/BossBgmFader.h"
 #include "PSM/PikiHumming.h"
 #include "PSM/Se.h"
 #include "PSM/WorldMapRocket.h"
-#include "JSystem/JSupport/JSUList.h"
 #include "PSSystem/PSGame.h"
+#include "PSSystem/PSMainSide_ObjSound.h"
+#include "PSSystem/PSSystemIF.h"
+#include "types.h"
 
 namespace PSM {
 struct Scene_Game;
 struct ObjMgr;
 
+namespace BossBgmFader {
+struct Mgr;
+} // namespace BossBgmFader
 /**
  * @size{0x28}
  */
@@ -88,6 +90,24 @@ struct Scene_Global : public SceneBase {
 	// _00-_28  = SceneBase
 };
 
+//////////// DEMO SCENE
+
+/**
+ * @size{0x2C}
+ */
+struct Scene_Demo : public SceneBase {
+	Scene_Demo(u8, PSGame::SceneInfo*);
+
+	// virtual ~Scene_Demo();                      // _0C (weak)
+	virtual f32 getCamDistVol(u8);              // _28
+	virtual bool isDemoScene() { return true; } // _34 (weak)
+	virtual bool getSeSceneGate(ObjBase*, u32); // _38
+
+	// _00      = VTBL
+	// _00-_28  = SceneBase
+	bool mGate; // _28
+};
+
 //////////// SCENES WITH OBJECTS
 
 /**
@@ -110,24 +130,8 @@ struct Scene_Objects : public SceneBase {
 	// _00-_28  = SceneBase
 	PSGame::CameraMgr* mCameraMgr; // _28
 	ObjMgr* mObjMgr;               // _2C
-	bool _30;                        // _30
+	bool _30;                      // _30
 	int mTimer;                    // _34
-};
-
-/**
- * @size{0x38}
- */
-struct Scene_Zukan : public Scene_Objects {
-	Scene_Zukan(u8 wscene, PSGame::SceneInfo* info)
-	    : Scene_Objects(wscene, info)
-	{
-	}
-	virtual ~Scene_Zukan() { }                  // _0C (weak)
-	virtual f32 getCamDistVol(u8);              // _28
-	virtual bool getSeSceneGate(ObjBase*, u32); // _38
-
-	// _00      = VTBL
-	// _00-_38  = Scene_Objects
 };
 
 /**
@@ -189,14 +193,14 @@ struct Scene_Game : public Scene_Objects {
  */
 struct Scene_Ground : public Scene_Game {
 
-	static int cEvenning_fadeOuTime;
-	static int cEvenning_fadeInTime;
+	static const int cEvenning_fadeOuTime;
+	static const int cEvenning_fadeInTime;
 
 	enum Time { GroundTime_On, GroundTime_Off };
 
 	Scene_Ground(u8, PSGame::SceneInfo*);
 
-	virtual ~Scene_Ground() { }                                     // _0C (weak)
+	// virtual ~Scene_Ground() { }                                     // _0C (weak)
 	virtual void exec();                                            // _18
 	virtual bool isPollutUp() { return (mPollutUpTimer != -1); }    // _6C (weak)
 	virtual s32 getPollutUpTimer() const { return mPollutUpTimer; } // _70 (weak)
@@ -218,7 +222,6 @@ struct Scene_Cave : public Scene_Game {
 	Scene_Cave(u8, PSGame::SceneInfo*);
 
 	virtual void init();                                            // _08
-	virtual ~Scene_Cave() { }                                       // _0C (weak)
 	virtual void exec();                                            // _18
 	virtual void startMainSeq();                                    // _1C
 	virtual f32 getSceneFx();                                       // _30
@@ -246,13 +249,28 @@ struct Scene_Cave : public Scene_Game {
 struct Scene_Challenge : public Scene_Cave {
 	Scene_Challenge(u8, PSGame::SceneInfo*);
 
-	virtual void init();           // _08
-	virtual ~Scene_Challenge() { } // _0C (weak)
-	virtual void startMainSeq();   // _1C
-	virtual bool akubiOK();        // _68
+	virtual void init();         // _08
+	virtual void startMainSeq(); // _1C
+	virtual bool akubiOK();      // _68
 
 	// _00      = VTBL
 	// _00-_68  = Scene_Cave
+};
+
+/**
+ * @size{0x38}
+ */
+struct Scene_Zukan : public Scene_Objects {
+	Scene_Zukan(u8 wscene, PSGame::SceneInfo* info)
+	    : Scene_Objects(wscene, info)
+	{
+	}
+
+	virtual f32 getCamDistVol(u8);              // _28
+	virtual bool getSeSceneGate(ObjBase*, u32); // _38
+
+	// _00      = VTBL
+	// _00-_38  = Scene_Objects
 };
 
 //////////// SCENES WITHOUT OBJECTS
@@ -266,7 +284,6 @@ struct Scene_NoObjects : public SceneBase {
 	{
 	}
 
-	virtual ~Scene_NoObjects() { } // _0C (weak)
 	virtual f32 getCamDistVol(u8); // _28
 
 	// _00      = VTBL
@@ -279,29 +296,9 @@ struct Scene_NoObjects : public SceneBase {
 struct Scene_WorldMap : public Scene_NoObjects {
 	Scene_WorldMap(u8, PSGame::SceneInfo*);
 
-	virtual ~Scene_WorldMap() { } // _0C (weak)
-
 	// _00      = VTBL
 	// _00-_28  = SceneBase
 	WorldMapRocket* mRocket; // _28
-};
-
-//////////// DEMO SCENE
-
-/**
- * @size{0x2C}
- */
-struct Scene_Demo : public SceneBase {
-	Scene_Demo(u8, PSGame::SceneInfo*);
-
-	virtual ~Scene_Demo() { }                   // _0C (weak)
-	virtual f32 getCamDistVol(u8);              // _28
-	virtual bool isDemoScene() { return true; } // _34 (weak)
-	virtual bool getSeSceneGate(ObjBase*, u32); // _38
-
-	// _00      = VTBL
-	// _00-_28  = SceneBase
-	bool mGate; // _28
 };
 
 } // namespace PSM

@@ -5190,6 +5190,8 @@ plugProjectNishimuraU/FixKabuto.cpp:
 
 plugProjectNishimuraU/RandCapEnemyUnit.cpp:
 	.text       start:0x8037B954 end:0x8037BCF0
+	.rodata     start:0x80550820 end:0x80550838
+	.sdata2     start:0x80672F38 end:0x80672F48
 
 plugProjectNishimuraU/NormMiniHoudaiMgr.cpp:
 	.text       start:0x8037BCF0 end:0x8037C050

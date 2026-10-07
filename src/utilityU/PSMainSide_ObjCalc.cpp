@@ -53,7 +53,10 @@ u8 ObjCalc_2PGame::getPlayerNo(Vec& pos)
 			dists[i] = PSMath::calcSquareDistance(pos, npos);
 			i++;
 		}
-		return !(dists[0] < dists[1]);
+		if (dists[0] < dists[1]) {
+			return 0;
+		}
+		return 1;
 	default:
 		P2ASSERTLINE(77, false);
 		return 0;

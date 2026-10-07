@@ -258,6 +258,28 @@ void Pikmin::TMgr::update()
 }
 
 /**
+ * @note Address: 0x803E4668
+ * @note Size: 0x164
+ */
+void Pikmin::TMgr::setStartPos(Vector2f* pos)
+{
+	for (int i = 0; i < TITLE_PIKI_TOTAL; i++) {
+		mUnits[i].setPosition(pos[i]);
+	}
+}
+
+/**
+ * @note Address: 0x803E47CC
+ * @note Size: 0x164
+ */
+void Pikmin::TMgr::setDestPos(Vector2f* pos)
+{
+	for (int i = 0; i < TITLE_PIKI_TOTAL; i++) {
+		mUnits[i].setDestPos(pos[i]);
+	}
+}
+
+/**
  * @note Address: 0x803E4930
  * @note Size: 0xC0
  */
@@ -407,13 +429,13 @@ void Pikmin::TMgr::updateCalcBoid_()
 	// non-matching
 	static int boidCalcTimer = 0;
 	if (++boidCalcTimer >= 10) {
-		boidCalcTimer     = 0;
-		mGroupAvgPosition = Vector2f(0.0f);
+		boidCalcTimer = 0;
+		mGroupAvgPosition.set(0.0f, 0.0f);
 
 		int counter = 0;
 		for (int i = 0; i < TITLE_PIKI_TOTAL; i++) {
 			if (mUnits[i].isCalc()) {
-				mGroupAvgPosition = mGroupAvgPosition + Vector2f(mUnits[i].mPosition.x, mUnits[i].mPosition.y);
+				mGroupAvgPosition = mGroupAvgPosition + mUnits[i].getPosition();
 				counter++;
 			}
 		}
@@ -424,16 +446,21 @@ void Pikmin::TMgr::updateCalcBoid_()
 		}
 	}
 
-	int max   = (boidCalcTimer * TITLE_PIKI_TOTAL) / 10;
-	int limit = (boidCalcTimer == 9) ? TITLE_PIKI_TOTAL : (((boidCalcTimer + 1) * TITLE_PIKI_TOTAL) / 10);
+	int start = (boidCalcTimer * TITLE_PIKI_TOTAL) / 10;
+	int end;
+	if (boidCalcTimer == 9) {
+		end = TITLE_PIKI_TOTAL;
+	} else {
+		end = ((boidCalcTimer + 1) * TITLE_PIKI_TOTAL) / 10;
+	}
 
-	for (int i = max; i < limit; i++) {
+	for (int i = start; i < end; i++) {
 		TUnit* unit = &mUnits[i];
 		if (!unit->isWalk()) {
 			continue;
 		}
 
-		f32 factor1 = mBoidParamMgr.mCurrGroupCenter;
+		f32 factor1 = mBoidParamMgr.getGroupCenter();
 		f32 factor2 = 1.0f - factor1;
 
 		Vector2f goalPos = mGroupAvgPosition * factor1 + unit->mDestPos * factor2; // f31, f30
@@ -443,9 +470,11 @@ void Pikmin::TMgr::updateCalcBoid_()
 		for (int j = 0; j < TITLE_PIKI_TOTAL; j++) {
 			TUnit* curUnit = &mUnits[j];
 			if (curUnit->isCalc()) {
-				Vector2f sep = unit->mPosition - curUnit->mPosition;
-				f32 dist     = sep.length();
-				if (dist < mBoidParamMgr.mCurrBoidNeighbor) {
+				Vector2f sep;
+				sep.x    = unit->mPosition.x - curUnit->mPosition.x;
+				sep.y    = unit->mPosition.y - curUnit->mPosition.y;
+				f32 dist = sep.length();
+				if (dist < mBoidParamMgr.getBoidNeighbor()) {
 					vec2 += curUnit->mAngle * curUnit->mParms[0];
 					if (dist < 1.0f) {
 						dist = 1.0f;
@@ -462,11 +491,11 @@ void Pikmin::TMgr::updateCalcBoid_()
 		Vector2f vec4;
 		Vector2f vec5;
 		if (counter == 0) {
-			vec4 = Vector2f(0.0f);
-			vec5 = Vector2f(0.0f);
+			vec4.set(0.0f, 0.0f);
+			vec5.set(0.0f, 0.0f);
 		} else {
-			vec4 = vec2 * (1.0f / (f32)counter);
 			vec5 = vec3 * (1.0f / (f32)counter);
+			vec4 = vec2 * (1.0f / (f32)counter);
 		}
 		unit->mTargetPos          = goalPos;
 		unit->mVelocity           = vec4;
@@ -540,7 +569,7 @@ void Pikmin::TUnit::init(ebi::title::Pikmin::TMgr* mgr, s32 color)
 void Pikmin::TUnit::goDestination()
 {
 	Vector2f Diff(mDestPos.x - mPosition.x, mDestPos.y - mPosition.y);
-	f32 comp = _lenVec2D(Diff);
+	f32 comp = Diff.length();
 	if (comp < mManager->mParams.mStopDist.mValue) {
 		startState(STATE_Unk1);
 		return;
@@ -672,9 +701,9 @@ void Pikmin::TUnit::update()
 		startState(STATE_Hidden);
 	}
 
-	f32 val1        = mManager->mBoidParamMgr.mCurrBoidCenter;     // f7
-	f32 val2        = mManager->mBoidParamMgr.mCurrBoidSpeedMatch; // f9
-	f32 chaseFactor = mManager->mBoidParamMgr.mCurrBoidColl;       // f31
+	f32 val1        = mManager->mBoidParamMgr.getBoidCenter();     // f7
+	f32 val2        = mManager->mBoidParamMgr.getBoidSpeedMatch(); // f9
+	f32 chaseFactor = mManager->mBoidParamMgr.getBoidColl();       // f31
 
 	switch (mCurrentState) {
 	case STATE_Unk3: {
@@ -724,7 +753,7 @@ void Pikmin::TUnit::update()
 					sep.normalise();
 
 					Vector2f vel = mAngle * mParms[0] + sep * mManager->mParams.mKogane();
-					vel += mGroupPosDifference * chaseFactor;
+					vel          = vel + mGroupPosDifference * chaseFactor;
 					updateSmoothWalk_(vel);
 				} break;
 
@@ -733,7 +762,7 @@ void Pikmin::TUnit::update()
 					sep.normalise();
 
 					Vector2f vel = mAngle * mParms[0] + sep * mManager->mParams.mChappyRun();
-					vel += mGroupPosDifference * chaseFactor;
+					vel          = vel + mGroupPosDifference * chaseFactor;
 					updateSmoothWalk_(vel);
 				} break;
 
@@ -752,7 +781,7 @@ void Pikmin::TUnit::update()
 
 	case STATE_Unk4: {
 		Vector2f sep = mTargetPos - mPosition;
-		Vector2f vel = sep * val1 + mVelocity * val2 + mGroupPosDifference * chaseFactor + mAngle * mParms[0];
+		Vector2f vel = mAngle * mParms[0] + (sep * val1 + mVelocity * val2 + mGroupPosDifference * chaseFactor);
 		updateSmoothWalk_(vel);
 	} break;
 	}
@@ -768,30 +797,30 @@ void Pikmin::TUnit::update()
 		mFrameControlB.update();
 		mFrameControlA.update();
 		f32 factor1 = 1.0f - ((mCounter2 != 0) ? (f32)mCounter / (f32)mCounter2 : 0.0f);
-		f32 factor2 = 1.0f; // f27
-		if (factor1 <= 0.2f) {
-			factor2 = factor1 / 0.2f;
-		} else if (factor1 <= 0.5f) {
-			factor2 = 1.0f;
-		} else {
-			factor2 = -2.0f * factor1 + -(-2.0f);
-		}
+		f32 slope   = -2.0f;
+		f32 factor2 = (factor1 <= 0.2f) ? factor1 / 0.2f : (factor1 <= 0.5f) ? 1.0f : slope * factor1 + -slope;
 		mManager->mAnimator->setAnmWave(mModel, factor2, mFrameControlA.mFrame, mFrameControlB.mFrame);
 
 		break;
 
-	case STATE_Unk1:
+	case STATE_Unk1: {
 		mFrameControlA.update();
-		mManager->mAnimator->setAnmWait(mModel, mFrameControlA.mFrame);
-		break;
+		TAnimator* animator = mManager->mAnimator;
+		animator->setAnmWait(mModel, mFrameControlA.mFrame);
+	} break;
 
 	case STATE_Unk2:
 	case STATE_Unk4:
 	case STATE_Unk5:
-		mFrameControlA.mRate = (mRandAnimSpeeds.y * (mParms[0] * mManager->mParams.mAnimSpeedWalk())) * ((sys->getDeltaTime() * 60.0f) * 0.5f);
+		f32 speed            = mRandAnimSpeeds.y * (mParms[0] * mManager->mParams.mAnimSpeedWalk());
+		mFrameControlA.mRate = speed * ((sys->getDeltaTime() * 60.0f) * 0.5f);
 		mFrameControlA.update();
-		mManager->mAnimator->setAnmWait(mModel, mFrameControlA.mFrame);
+		TAnimator* animator = mManager->mAnimator;
+		animator->setAnmWait(mModel, mFrameControlA.mFrame);
 
+		break;
+
+	case STATE_Hidden:
 		break;
 	}
 
@@ -1839,32 +1868,6 @@ blr
 	*/
 }
 
-/**
- * @note Address: 0x803E4668
- * @note Size: 0x164
- */
-void Pikmin::TMgr::setStartPos(Vector2f* pos)
-{
-	for (int i = 0; i < TITLE_PIKI_TOTAL; i++) {
-		TUnit* unit       = getUnit(i);
-		unit->mPosition.x = pos[i].x;
-		unit->mPosition.y = pos[i].y;
-	}
-}
-
-/**
- * @note Address: 0x803E47CC
- * @note Size: 0x164
- */
-void Pikmin::TMgr::setDestPos(Vector2f* pos)
-{
-	for (int i = 0; i < TITLE_PIKI_TOTAL; i++) {
-		TUnit* unit      = getUnit(i);
-		unit->mDestPos.x = pos[i].x;
-		unit->mDestPos.y = pos[i].y;
-	}
-}
-
 } // namespace title
 } // namespace ebi
 
@@ -1877,9 +1880,9 @@ namespace title {
 void Pikmin::TUnit::updateSmoothWalk_(Vector2f& arg)
 {
 	// Still needs to be matched
-	f32 _964  = mManager->mBoidParamMgr.mCurrMaxTurnSpeed;
-	f32 _968  = mManager->mBoidParamMgr.mCurrTurnMag;
-	f32 _960  = mManager->mBoidParamMgr.mCurrWalkSpeed;
+	f32 _964  = mManager->mBoidParamMgr.getMaxTurnSpeed();
+	f32 _968  = mManager->mBoidParamMgr.getTurnMag();
+	f32 _960  = mManager->mBoidParamMgr.getWalkSpeed();
 	f32 param = arg.length();
 	if (param > _960) {
 		param = _960;
@@ -1889,15 +1892,16 @@ void Pikmin::TUnit::updateSmoothWalk_(Vector2f& arg)
 	mParms[0] = param;
 	Vector2f pos(arg);
 	pos.normalise();
-	pos     = pos * _964;
+	pos = pos * _964;
+	Vector2f newpos(pos);
 	f32 len = pos.length();
-	Vector2f newpos;
 	if (len > _968) {
-		pos.normalise();
-		newpos = pos * _968;
+		newpos.normalise();
+		newpos *= _968;
+		pos = newpos;
 	}
 
-	mAngle = mAngle + newpos;
+	mAngle = mAngle + pos;
 	mAngle.normalise();
 	mPosition = mPosition + mAngle * mParms[0];
 }

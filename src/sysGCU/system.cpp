@@ -533,79 +533,14 @@ void System::loadSoundResource()
 	JKRSolidHeap* newheap = makeSolidHeap(old->getFreeSize(), old, true);
 	newheap->becomeCurrentHeap();
 
-	// something in these inlines is doing bad regalloc things. or not enough bad regalloc things. not sure.
-	PSSystem::Scene* scene = PSMGetPikSceneMgrCheck()->mScenes;
+	PSGame::PikSceneMgr* mgr = static_cast<PSGame::PikSceneMgr*>(PSSystem::getSceneMgr());
+	PSSystem::validateSceneMgr(mgr);
+	PSSystem::Scene* scene = mgr->getScene();
 	P2ASSERTLINE(1753, scene);
 	scene->scene1stLoadSync();
 
 	newheap->adjustSize();
 	old->becomeCurrentHeap();
-	/*
-	    stwu     r1, -0x20(r1)
-	    mflr     r0
-	    lis      r3, gStrSystem_CPP@ha
-	    stw      r0, 0x24(r1)
-	    stw      r31, 0x1c(r1)
-	    addi     r31, r3, gStrSystem_CPP@l
-	    stw      r30, 0x18(r1)
-	    stw      r29, 0x14(r1)
-	    stw      r28, 0x10(r1)
-	    lwz      r28, sCurrentHeap__7JKRHeap@sda21(r13)
-	    mr       r3, r28
-	    bl       getFreeSize__7JKRHeapFv
-	    mr       r4, r28
-	    li       r5, 1
-	    bl       create__12JKRSolidHeapFUlP7JKRHeapb
-	    mr       r30, r3
-	    bl       becomeCurrentHeap__7JKRHeapFv
-	    lwz      r0, spSceneMgr__8PSSystem@sda21(r13)
-	    cmplwi   r0, 0
-	    bne      lbl_80422BE0
-	    addi     r3, r31, 0x1f8
-	    addi     r5, r31, 0x174
-	    li       r4, 0x1d3
-	    crclr    6
-	    bl       panic_f__12JUTExceptionFPCciPCce
-
-	lbl_80422BE0:
-	    lwz      r29, spSceneMgr__8PSSystem@sda21(r13)
-	    cmplwi   r29, 0
-	    bne      lbl_80422C00
-	    addi     r3, r31, 0x1f8
-	    addi     r5, r31, 0x174
-	    li       r4, 0x1dc
-	    crclr    6
-	    bl       panic_f__12JUTExceptionFPCciPCce
-
-	lbl_80422C00:
-	    lwz      r29, 4(r29)
-	    cmplwi   r29, 0
-	    bne      lbl_80422C20
-	    addi     r3, r31, 0
-	    addi     r5, r31, 0x174
-	    li       r4, 0x4dd
-	    crclr    6
-	    bl       panic_f__12JUTExceptionFPCciPCce
-
-	lbl_80422C20:
-	    mr       r3, r29
-	    lwz      r12, 0(r29)
-	    lwz      r12, 0x14(r12)
-	    mtctr    r12
-	    bctrl
-	    mr       r3, r30
-	    bl       adjustSize__12JKRSolidHeapFv
-	    mr       r3, r28
-	    bl       becomeCurrentHeap__7JKRHeapFv
-	    lwz      r0, 0x24(r1)
-	    lwz      r31, 0x1c(r1)
-	    lwz      r30, 0x18(r1)
-	    lwz      r29, 0x14(r1)
-	    lwz      r28, 0x10(r1)
-	    mtlr     r0
-	    addi     r1, r1, 0x20
-	    blr
-	*/
 }
 
 /**

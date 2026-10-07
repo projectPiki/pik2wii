@@ -170,7 +170,7 @@ void StateMove::exec(EnemyBase* enemy)
 
 	Vector3f pos       = hanachirashi->getPosition();
 	Vector3f targetPos = Vector3f(hanachirashi->mTargetPosition);
-	f32 sqrDist        = sqrDistanceXZ(pos, targetPos);
+	f32 sqrDist        = pos.sqrDistance2D(targetPos);
 
 	Creature* target = hanachirashi->getSearchedPikmin();
 	if (target) {
@@ -358,7 +358,7 @@ void StateChase::exec(EnemyBase* enemy)
 
 			hanachirashi->turnToTarget(target, CG_GENERALPARMS(hanachirashi).mTurnSpeed(), CG_GENERALPARMS(hanachirashi).mMaxTurnAngle());
 
-			if (sqrDistanceXZ(hanachirashiPos, targetPos) > 225.0f) {
+			if (hanachirashiPos.sqrDistance2D(targetPos) > 225.0f) {
 				f32 x = CG_GENERALPARMS(hanachirashi).mMoveSpeed() * sinf(angle);
 				f32 y = hanachirashi->getTargetVelocity().y;
 				f32 z = CG_GENERALPARMS(hanachirashi).mMoveSpeed() * cosf(angle);
@@ -368,7 +368,7 @@ void StateChase::exec(EnemyBase* enemy)
 				hanachirashi->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
 			}
 
-			if (sqrDistanceXZ(hanachirashiPos, homePos) > SQUARE(CG_GENERALPARMS(hanachirashi).mTerritoryRadius())) {
+			if (hanachirashiPos.sqrDistance2D(homePos) > SQUARE(CG_GENERALPARMS(hanachirashi).mTerritoryRadius())) {
 				transit(hanachirashi, HANACHIRASHI_ChaseInside, nullptr);
 			} else if (hanachirashi->isTargetLost()) {
 				Piki* piki = hanachirashi->getSearchedPikmin();
@@ -818,7 +818,7 @@ void StateChaseInside::exec(EnemyBase* enemy)
 
 	Vector3f hanachirashiPos = hanachirashi->getPosition();   // f28, f31
 	Vector3f targetPos       = hanachirashi->mTargetPosition; // f30, f29
-	if (sqrDistanceXZ(hanachirashiPos, targetPos) < 10000.0f) {
+	if (hanachirashiPos.sqrDistance2D(targetPos) < 10000.0f) {
 		transit(hanachirashi, HANACHIRASHI_Chase, nullptr);
 	} else {
 		Creature* target = hanachirashi->mTargetCreature;
@@ -869,7 +869,7 @@ void StateAttack::init(EnemyBase* enemy, StateArg* stateArg)
 	hanachirashi->startMotion(HANACHIANIM_Attack, nullptr);
 	hanachirashi->mNextState           = HANACHIRASHI_NULL;
 	hanachirashi->mIsWindAttackActive  = false;
-	hanachirashi->mCurrentAttackRadius = 0.0f;
+	hanachirashi->mWindScaleTimer = 0.0f;
 	hanachirashi->createSuckEffect();
 }
 
@@ -916,7 +916,7 @@ void StateAttack::cleanup(EnemyBase* enemy)
 	hanachirashi->enableEvent(0, EB_Cullable);
 	hanachirashi->setEmotionCaution();
 	hanachirashi->mIsWindAttackActive  = false;
-	hanachirashi->mCurrentAttackRadius = 0.0f;
+	hanachirashi->mWindScaleTimer = 0.0f;
 	hanachirashi->finishWindEffect();
 }
 

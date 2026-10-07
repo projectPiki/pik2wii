@@ -3,7 +3,11 @@
 #include "Game/MemoryCard/Mgr.h"
 #include "MemoryCardMgr.h"
 
-static const char name[] = "ebiFileSelectMgr";
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "ebiFileSelectMgr";
+}
 
 namespace ebi {
 namespace FileSelect {
@@ -101,40 +105,40 @@ void FSMState_CardRequest::do_exec(TMgr* mgr)
 		break;
 	case 2:
 		switch (mCardStatus) {
-		case Game::MemoryCard::Mgr::MCS_IOError:
+		case MemoryCardMgr::MCS_Ready:
 			do_transitCardReady(mgr);
 			break;
-		case Game::MemoryCard::Mgr::MCS_Ready:
+		case MemoryCardMgr::MCS_NoCard:
 			do_transitCardNoCard(mgr);
 			break;
-		case Game::MemoryCard::Mgr::MCS_Broken:
+		case MemoryCardMgr::MCS_IOError:
 			do_transitCardIOError(mgr);
 			break;
-		case Game::MemoryCard::Mgr::MCS_Encoding:
+		case MemoryCardMgr::MCS_WrongDevice:
 			do_transitCardWrongDevice(mgr);
 			break;
-		case Game::MemoryCard::Mgr::MCS_NoFileSpace:
+		case MemoryCardMgr::MCS_WrongSector:
 			do_transitCardWrongSector(mgr);
 			break;
-		case Game::MemoryCard::Mgr::MCS_WrongDevice:
+		case MemoryCardMgr::MCS_Broken:
 			do_transitCardBroken(mgr);
 			break;
-		case Game::MemoryCard::Mgr::MCS_WrongSector:
+		case MemoryCardMgr::MCS_Encoding:
 			do_transitCardEncoding(mgr);
 			break;
-		case Game::MemoryCard::Mgr::MCS_NoFileEntry:
+		case MemoryCardMgr::MCS_NoFileSpace:
 			do_transitCardNoFileSpace(mgr);
 			break;
-		case Game::MemoryCard::Mgr::MCS_FileOpenError:
+		case MemoryCardMgr::MCS_NoFileEntry:
 			do_transitCardNoFileEntry(mgr);
 			break;
-		case Game::MemoryCard::Mgr::MCS_NoCard:
+		case MemoryCardMgr::MCS_FileOpenError:
 			do_transitCardFileOpenError(mgr);
 			break;
-		case Game::MemoryCard::Mgr::MCS_PlayerDataBroken:
+		case MemoryCardMgr::MCS_SerialNoError:
 			do_transitCardSerialNoError(mgr);
 			break;
-		case Game::MemoryCard::Mgr::MCS_13:
+		case MemoryCardMgr::MCS_PlayerDataBroken:
 			do_transitCardPlayerDataBroken(mgr);
 			break;
 		default:
@@ -375,14 +379,11 @@ TMgr::TMgr()
 	mInError = false;
 }
 
-#pragma push
-#pragma dont_inline on
 /**
  * @note Address: 0x803E1ED8
  * @note Size: 0x84
  */
 TMgr::~TMgr() { msInstance = nullptr; }
-#pragma pop
 
 /**
  * @note Address: 0x803E1F5C

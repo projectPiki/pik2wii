@@ -176,7 +176,7 @@ void Section::init()
 	JUTFont* font = JFWSystem::systemFont;
 	int x         = 300;
 	int y         = sys->getRenderModeObj()->efbHeight - (sects * font->getHeight() + 60);
-	mMenu->setPosition(x, y);
+	mMenu->setPosition(Vector2i(x, y));
 
 	sys->heapStatusEnd("TitleSection::init");
 

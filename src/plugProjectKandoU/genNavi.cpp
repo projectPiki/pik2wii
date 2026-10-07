@@ -4,6 +4,12 @@
 #include "SysShape/AnimInfo.h"
 #include "BaseParm.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "genNavi";
+}
+
 /**
  * --LOCAL--
  * @note Address: 0x801ACA08

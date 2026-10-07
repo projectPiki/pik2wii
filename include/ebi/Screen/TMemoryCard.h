@@ -1,8 +1,8 @@
 #ifndef _EBI_SCREEN_TMEMORYCARD_H
 #define _EBI_SCREEN_TMEMORYCARD_H
 
-#include "JSystem/JKernel/JKRHeap.h"
 #include "JSystem/JKernel/JKRArchive.h"
+#include "JSystem/JKernel/JKRHeap.h"
 #include "ebi/E2DCallBack.h"
 #include "ebi/TYesNoCursor.h"
 
@@ -65,9 +65,21 @@ struct TMemoryCard {
 		OPEN_SaveFail
 	};
 
-	TMemoryCard();
+	TMemoryCard()
+	    : mState(0)
+	    , mInputDelay(0)
+	    , mInputDelayMax(0)
+	    , mMsgAlpha(0)
+	    , mAlphaMod(0)
+	    , mCanExit(1)
+	    , mPaneMsg1(nullptr)
+	    , mPaneMsg2(nullptr)
+	    , mPaneMsg3(nullptr)
+	    , mPaneMsg4(nullptr)
+	{
+	}
 
-	~TMemoryCard();
+	~TMemoryCard(){}
 
 	void loadResource(JKRHeap*);
 	void setArchive(JKRArchive*);

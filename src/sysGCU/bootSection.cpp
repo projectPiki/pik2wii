@@ -20,15 +20,15 @@
 #include "ebi/Screen/TScreenBase.h"
 #include "og/ogLib2D.h"
 #include "trig.h"
-
-u32 unused[4] = { 1, 2, 3, 0 }; // has to be generated before nans
 #include "Game/Piki.h"
 #include "nans.h"
 
-static const u32 padding[]        = { 0, 0, 0 };
+u32 unused[4] = { 1, 2, 3, 0 };
+
 u32 TinyPikminMgr::sTinyPikminNum = 10;
-J2DPicture* TinyPikminMgr::sPikminTex[6];
+J2DPicture* TinyPikminMgr::sPikminTex[5];
 BootSection* sBootSection;
+static TinyPikminMgr* sTinyPikminMgr;
 
 /**
  * @note Address: 0x804473BC
@@ -155,7 +155,7 @@ void TinyPikmin::update()
 
 					if (piki != this) {
 						Vector2f vec(piki->mOffsetX - mOffsetX, piki->mOffsetY - mOffsetY);
-						f32 dist = _lenVec2D(vec);
+						f32 dist = vec.length();
 						if (dist < 300.0f) {
 							f32 x = (1.0f - dist / 300.0f) * 20.0f;
 							x *= (piki->mOffsetX < mOffsetX) ? -1.0f : 1.0f;
@@ -233,13 +233,13 @@ void TinyPikmin::draw()
 		f32 xScale;
 		f32 yScale;
 		if (mPositionY < 0.0f) {
-			yScale = absF(mPositionY / 10.0f);
-			if (yScale > 1.0f) {
-				yScale = 1.0f;
+			f32 t = absF(mPositionY / 10.0f);
+			if (t > 1.0f) {
+				t = 1.0f;
 			}
 
-			xScale = (1.0f - yScale) * 0.2f + 0.8f;
-			yScale = yScale * 0.2f + 1.0f;
+			xScale = (1.0f - t) * 0.2f + 0.8f;
+			yScale = t * 0.2f + 1.0f;
 		} else {
 			yScale = xScale = 1.0f;
 		}
@@ -271,7 +271,7 @@ void TinyPikmin::drawPikmin(f32 xScale, f32 yScale, f32 xPosition, f32 yPosition
  */
 TinyPikminMgr::TinyPikminMgr()
 {
-	P2ASSERTLINE(731, !sTinyPikminMgr);
+	P2ASSERTLINE(746, !sTinyPikminMgr);
 	sTinyPikminMgr = this;
 
 	int pikis;
@@ -306,14 +306,15 @@ void TinyPikminMgr::loadResource(JKRArchive* arc)
 {
 	char* pikipaths[5]
 	    = { "title_red_5a3.bti", "title_yellow_5a3.bti", "title_blue_5a3.bti", "title_white_5a3.bti", "title_violet_5a3.bti" };
+	ResTIMG* file;
 	for (int i = 0; i < 5; i++) {
 		char buf[PATH_MAX];
 		sprintf(buf, "timg/%s", pikipaths[i]);
-		ResTIMG* file = static_cast<ResTIMG*>(arc->getResource(buf));
-		JUT_ASSERTLINE(786, file, buf); // 1031 in demo 1?
-		JUTTexture* tex              = new JUTTexture(file);
-		TinyPikminMgr::sPikminTex[i] = new J2DPicture(tex);
-		TinyPikminMgr::sPikminTex[i]->setBasePosition(J2DPOS_BottomCenter);
+		file = static_cast<ResTIMG*>(arc->getResource(buf));
+		JUT_ASSERTLINE(801, file, buf);
+		JUTTexture* tex = new JUTTexture(file);
+		sPikminTex[i]   = new J2DPicture(tex);
+		sPikminTex[i]->setBasePosition(J2DPOS_BottomCenter);
 	}
 }
 
@@ -500,7 +501,6 @@ void BootSection::loadBootResource()
 	P2ASSERTLINE(1034, file);
 	mDolbyMarkTexture = new JUTTexture(file);
 
-	// the iterator in here is causing a regswap
 	sTinyPikminMgr->loadResource(arc);
 }
 
@@ -809,7 +809,7 @@ bool BootSection::doUpdate()
 			setMode(SID_NintendoLogo);
 			mPikiMgr->appear();
 
-			PSM::Scene_Global* scene = static_cast<PSM::Scene_Global*>(PSMGetSceneMgrCheck()->mScenes);
+			PSM::Scene_Global* scene = static_cast<PSM::Scene_Global*>(PSMGetPikSceneMgrCheck()->mScenes);
 			P2ASSERTLINE(1638, scene);
 			scene->startGlobalStream(P2_STREAM_SOUND_ID(PSSTR_PIKMIN_GREET));
 		}

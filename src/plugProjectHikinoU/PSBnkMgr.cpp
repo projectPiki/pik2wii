@@ -1,11 +1,12 @@
-#include "PSSystem/BankMgr.h"
-#include "PSSystem/WaveScene.h"
+// clang-format off
 #include "JSystem/JAudio/JAI/JAInter/BankWave.h"
 #include "JSystem/JAudio/JAI/JAInter/InitData.h"
 #include "JSystem/JAudio/JAS/JASBank.h"
-#include "JSystem/JAudio/JAS/JASWave.h"
 #include "JSystem/JAudio/JAS/JASDvd.h"
-
+#include "JSystem/JAudio/JAS/JASWave.h"
+#include "PSSystem/WaveScene.h"
+#include "PSSystem/BankMgr.h"
+// clang-format on
 namespace PSSystem {
 
 BankMgr* BankMgr::sBankMgr;
@@ -20,6 +21,14 @@ BankMgr* BankMgr::createInstance()
 	BankMgr* bankMgr = new BankMgr;
 	sBankMgr         = bankMgr;
 	return bankMgr;
+}
+
+void BankMgr::deleteInstance()
+{
+	if (sBankMgr) {
+		delete sBankMgr;
+		sBankMgr = nullptr;
+	}
 }
 
 /**
@@ -42,7 +51,7 @@ BankMgr::BankMgr()
  */
 void BankMgr::setBankData(u32* data)
 {
-	u32* aafPtr = (u32*)JAInter::InitData::aafPointer;
+	u32* aafPtr = JAInter::InitData::aafPointer;
 	P2ASSERTLINE(56, aafPtr);
 	P2ASSERTLINE(57, !mBankData);
 
@@ -56,17 +65,17 @@ void BankMgr::setBankData(u32* data)
 	u8* wsdata = new (JASDram, 0x20) u8[count];
 	if (wsdata) {
 		for (u32 i = 0; i < count; i++) {
-			(wsdata)[i] = (aafData)[i];
+			const u32& byte = aafData[i];
+			wsdata[i]       = byte;
 		}
 	}
 	mBankData = (PSInstData*)wsdata;
 
 	u8 banks = 0;
-	for (; *(u32*)aafData;) {
-		aafData += 12;
-		dataStart += 3;
+	while (aafPtr[dataStart] != 0) {
 		mBankData[banks]._00 = (int)aafPtr + mBankData[banks]._00;
 		banks++;
+		dataStart += 3;
 	}
 	mInstBankNum = banks;
 	*data        = dataStart + 1;
@@ -78,7 +87,7 @@ void BankMgr::setBankData(u32* data)
  */
 void BankMgr::setWsData(u32* data)
 {
-	u32* aafPtr = (u32*)JAInter::InitData::aafPointer;
+	u32* aafPtr = JAInter::InitData::aafPointer;
 	P2ASSERTLINE(89, aafPtr);
 	P2ASSERTLINE(90, !mWsData);
 
@@ -92,17 +101,17 @@ void BankMgr::setWsData(u32* data)
 	u8* wsdata = new (JASDram, 0x20) u8[count];
 	if (wsdata) {
 		for (u32 i = 0; i < count; i++) {
-			(wsdata)[i] = (aafData)[i];
+			const u32& byte = aafData[i];
+			wsdata[i]       = byte;
 		}
 	}
 	mWsData = (PSInstData*)wsdata;
 
 	u8 banks = 0;
-	for (; *(u32*)aafData;) {
-		aafData += 12;
-		dataStart += 3;
+	while (aafPtr[dataStart] != 0) {
 		mWsData[banks]._00 = (int)aafPtr + mWsData[banks]._00;
 		banks++;
+		dataStart += 3;
 	}
 	mWaveBankNum = banks;
 	*data        = dataStart + 1;
@@ -139,7 +148,7 @@ void BankMgr::init()
 	}
 
 	P2ASSERTLINE(134, check);
-	JASWaveArcLoader::setCurrentDir("/AudioRes/Banks");
+	JASWaveArcLoader::setCurrentDir("AudioRes/Banks");
 	JASWaveBankMgr::init(mWaveBankNum);
 	JASWaveArcLoader::init(nullptr);
 

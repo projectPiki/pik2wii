@@ -395,25 +395,28 @@ void Obj::effectDrawOff()
  */
 void Obj::checkInteract(Obj* partner)
 {
-	Vector3f currentPos = getPosition();          // f19, f20, f22
-	Vector3f partnerPos = partner->getPosition(); // f2, f1, f0
+	Vector3f currentPos = getPosition();
+	Vector3f partnerPos = partner->getPosition();
 
-	Vector3f separationVec = partnerPos - currentPos; // f30, f29, f31
+	Vector3f separationVec = partnerPos - currentPos;
 	separationVec.normalise();
 
 	Vector3f yAxis(0.0f, 1.0f, 0.0f);
 
-	Vector3f crossVec = yAxis.cross(separationVec); // f28, f27, f26
+	Vector3f crossVec = yAxis;
+	crossVec.CP(separationVec);
 	crossVec.normalise();
 
-	Vector3f perpVec = separationVec.cross(crossVec);
-	perpVec.normalise(); // f23, f24, f25
+	Vector3f perpVec = separationVec;
+	perpVec.CP(crossVec);
+	perpVec.normalise();
 
-	f32 distance = currentPos.distance(partnerPos); // f21
+	f32 distance = currentPos.distance(partnerPos);
 
 	Vector3f searchDirection(crossVec);
-	searchDirection.scale(C_GENERALPARMS.mSearchDistance());
 	searchDirection.y = C_GENERALPARMS.mSearchHeight();
+	searchDirection.z *= C_GENERALPARMS.mSearchDistance();
+	searchDirection.x *= C_GENERALPARMS.mSearchDistance();
 
 	Vector3f middle;
 	middle.setMiddle(currentPos, partnerPos);
@@ -452,9 +455,9 @@ void Obj::checkInteract(Obj* partner)
 			if (absVal(dotPerp) < 15.0f) {
 				// Calculate the direction for interaction
 				Vector3f interactionDir = searchDirection;
-				f32 interactionScale = dotCross / abs;
-				interactionDir.x = interactionScale * interactionDir.x;
-				interactionDir.z = interactionScale * interactionDir.z;
+				f32 interactionScale    = dotCross / abs;
+				interactionDir.x        = interactionScale * interactionDir.x;
+				interactionDir.z        = interactionScale * interactionDir.z;
 
 				// Perform the interaction with the calculated attack damage
 				f32 attackDamage = C_GENERALPARMS.mAttackDamage.mValue;

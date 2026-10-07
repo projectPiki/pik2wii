@@ -5,6 +5,12 @@
 #include "RevoSDK/rand.h"
 #include "nans.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "genPiki";
+}
+
 /**
  * @note Address: 0x801AC3C0
  * @note Size: 0x128
@@ -76,8 +82,6 @@ Creature* GenObjectPiki::generate(Generator* gen)
 
 	return nullptr;
 }
-
-static const char unusedGenPikiArray[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 /**
  * @note Address: 0x801AC830

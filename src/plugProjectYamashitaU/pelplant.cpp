@@ -16,7 +16,7 @@ static f32 sLODRadius[4] = { 45.0f, 60.0f, 103.0f, 133.0f }; // one, five, ten, 
 } // namespace Pelplant
 } // namespace Game
 
-const char* unused[] = { __FILE__, "/enemy/data/pelplant", "/enemy/parm/pelplant" };
+const char* unused[] = { __FILE__, "enemy/data/pelplant", "enemy/parm/pelplant" };
 
 static f32 negSin(f32 x)
 {
@@ -248,7 +248,7 @@ void Obj::getShadowParam(ShadowParam& param)
 		param.mBoundingSphere.mPosition.y = plane->mNormal.y;
 		param.mBoundingSphere.mPosition.z = plane->mNormal.z;
 	} else {
-		param.mBoundingSphere.mPosition = Vector3f(0.0f, 1.0f, 0.0f);
+		param.mBoundingSphere.mPosition.set(0.0f, 1.0f, 0.0f);
 	}
 	param.mBoundingSphere.mRadius = 50.0f;
 
@@ -260,7 +260,11 @@ void Obj::getShadowParam(ShadowParam& param)
 	sum *= newVec.x;
 	sum += newVec.y;
 	sum += newVec.z;
-	__sqrtf(sum, &sum);
+	if (sum > 0.0f) {
+		sqrtfInPlace(sum);
+	} else {
+		sum = 0.0f;
+	}
 
 	param.mSize = 8.0f * sum;
 }

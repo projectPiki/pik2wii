@@ -297,7 +297,7 @@ void GameLightEventNode::updateCommon(GameLightMgr* lightMgr, bool check)
 			if (camera) {
 				Vector3f cameraPos = camera->getPosition();
 
-				val = 1.0f - (pikmin2_sqrtf(sqrDistance(*mPosition, cameraPos)) / mRange);
+				val = 1.0f - (pikmin2_sqrtf(mPosition->sqrDistance(cameraPos)) / mRange);
 				if (val < 0.0f) {
 					val = 0.0f;
 				}

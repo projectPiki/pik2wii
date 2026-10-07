@@ -27,12 +27,10 @@
 // Audio
 #include "PS.h"
 #include "PSGame/Global.h"
+#include "PSSystem/PSMainSide_ObjSound.h"
 #include "PSM/BgmTrackMap.h"
 #include "PSM/BossBgmFader.h"
-#include "PSM/CreatureAnime.h"
 #include "PSM/CreaturePrm.h"
-#include "PSM/EnemyBase.h"
-#include "PSM/EnemyBoss.h"
 #include "PSM/ObjCalc.h"
 #include "PSM/ObjMgr.h"
 #include "PSSystem/PSCommon.h"
@@ -721,7 +719,7 @@ void StoneState::init(EnemyBase* enemy, StateArg* arg)
  */
 void StoneState::cleanup(EnemyBase* enemy)
 {
-	P2ASSERTLINE(1024, enemy->isEvent(0, EB_Bittered));
+	P2ASSERTLINE(1031, enemy->isEvent(0, EB_Bittered));
 
 	enemy->restoreEvents();
 
@@ -1737,7 +1735,8 @@ void EnemyBase::doAnimationCullingOff()
 		doAnimationStick();
 
 	} else {
-		Vector3f rot = mRotation + mDamageAnimRotation + mStunAnimRotation;
+		Vector3f rot;
+		rot = mRotation + mDamageAnimRotation + mStunAnimRotation;
 		mBaseTrMatrix.makeSRT(mScale, rot, mPosition);
 	}
 
@@ -1758,7 +1757,8 @@ void EnemyBase::doAnimationCullingOff()
  */
 void EnemyBase::doAnimationStick()
 {
-	Vector3f rot = mRotation + mDamageAnimRotation + mStunAnimRotation;
+	Vector3f rot;
+	rot = mRotation + mDamageAnimRotation + mStunAnimRotation;
 	mBaseTrMatrix.makeSRT(mScale, rot, mPosition);
 }
 

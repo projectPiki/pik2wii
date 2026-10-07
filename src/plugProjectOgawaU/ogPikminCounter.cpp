@@ -50,8 +50,8 @@ void PikminCounter::setCallBackCommon(JKRArchive* arc, bool flag)
 	if (flag){
 		mPaneSublevel = search('Ndayicon');
 		if (mPaneSublevel) {
-			mStandardPos.x = mPaneSublevel->mOffset.x;
-			mStandardPos.y = mPaneSublevel->mOffset.y;
+			mStandardPos.x = mPaneSublevel->mTranslateX;
+			mStandardPos.y = mPaneSublevel->mTranslateY;
 			mCurrPos       = mStandardPos;
 			mPaneSublevel->setOffset(mCurrPos.x, mCurrPos.y);
 			mScaleMgr = new ScaleMgr;

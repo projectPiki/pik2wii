@@ -1,9 +1,15 @@
-#include "Game/CurrTriInfo.h"
 #include "Sys/OBB.h"
 #include "Sys/OBBTree.h"
-#include "Sys/RayIntersectInfo.h"
 #include "Sys/geometry.h"
+#include "Sys/RayIntersectInfo.h"
+#include "Game/CurrTriInfo.h"
 #include "types.h"
+
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "geomOBBTree";
+}
 
 namespace Sys {
 
@@ -142,40 +148,97 @@ void OBB::create2(Sys::VertexTable& vertTable, Sys::TriangleTable& triTable, Mat
 	mAxes[2] = col3;
 
 	// get coordinates of "max" corner and "min" corner of box
-	Vector3f maxVec = mPosition + mAxes[0] * mMaxXYZ[0] + mAxes[1] * mMaxXYZ[1] + mAxes[2] * mMaxXYZ[2];
-	Vector3f minVec = mPosition + mAxes[0] * mMinXYZ[0] + mAxes[1] * mMinXYZ[1] + mAxes[2] * mMinXYZ[2];
+	Vector3f maxVec;
+	Vector3f minVec;
+	maxVec = Vector3f::add2(mPosition, mAxes[0] * mMaxXYZ[0]) + mAxes[1] * mMaxXYZ[1] + mAxes[2] * mMaxXYZ[2];
+	minVec = Vector3f::add2(mPosition, mAxes[0] * mMinXYZ[0]) + mAxes[1] * mMinXYZ[1] + mAxes[2] * mMinXYZ[2];
 
 	// set bounding sphere center to midpoint between diagonal corners
 	mSphere.mPosition = (maxVec + minVec) * 0.5f;
 
-	Vector3f maxSep = maxVec - mSphere.mPosition;
-	f32 maxDist     = lenVec(maxSep);
+	Vector3f maxSep;
+	maxSep      = maxVec - mSphere.mPosition;
+	f32 maxDist = maxSep.qLength();
 
-	Vector3f minSep = minVec - mSphere.mPosition;
+	Vector3f minSep;
+	minSep = minVec - mSphere.mPosition;
 
 	f32 maxRadius = maxDist;
-	if (maxDist < lenVec(minSep)) {
-		maxRadius = lenVec(minSep);
+	if (maxDist < minSep.qLength()) {
+		maxRadius = minSep.qLength();
 	}
 
 	mSphere.mRadius = maxRadius;
 
-	// for (int i = 0; i < 3; i++) {
-	//     m_sidePlanes[i].a = m_axes[i].x;
-	//     m_sidePlanes[i].b = m_axes[i].y;
-	//     m_sidePlanes[i].c = m_axes[i].z;
-	//     m_sidePlanes[i].d = m_sidePlanes[i].a * (m_position.x + (m_axes[i].x * m_maxXYZ[i])) + m_sidePlanes[i].b * (m_position.y +
-	//     (m_axes[i].y * m_maxXYZ[i])) + m_sidePlanes[i].c * (m_position.z + (m_axes[i].z * m_maxXYZ[i]));
-	// }
-
+	// fun fact! these seem to have to be in separate blocks/scopes to make registers work
+	// how fun is that! so fun! ha ha!
+	// this sure looks like an inline! or a loop! but guess what!
+	// the last block has flipped registers as if it uses operator+ instead of element-wise addition
+	// this is all just pain.
 	Vec tempVec;
-	setMaxPlane(&tempVec, 0);
-	setMaxPlane(&tempVec, 1);
-	setMaxPlane(&tempVec, 2);
-
-	setMinPlane(&tempVec, 0);
-	setMinPlane(&tempVec, 1);
-	setMinPlane(&tempVec, 2);
+	{
+		tempVec.x          = mAxes[0].x;
+		tempVec.y          = mAxes[0].y;
+		tempVec.z          = mAxes[0].z;
+		Vector3f scaledVec = Vector3f(tempVec) * mMaxXYZ[0];
+		Vector3f point;
+		point.x = mPosition.x + scaledVec.x;
+		point.y = mPosition.y + scaledVec.y;
+		point.z = mPosition.z + scaledVec.z;
+		setMaxPlane(&tempVec, 0, point);
+	}
+	{
+		tempVec.x          = mAxes[1].x;
+		tempVec.y          = mAxes[1].y;
+		tempVec.z          = mAxes[1].z;
+		Vector3f scaledVec = Vector3f(tempVec) * mMaxXYZ[1];
+		Vector3f point;
+		point.x = mPosition.x + scaledVec.x;
+		point.y = mPosition.y + scaledVec.y;
+		point.z = mPosition.z + scaledVec.z;
+		setMaxPlane(&tempVec, 1, point);
+	}
+	{
+		tempVec.x          = mAxes[2].x;
+		tempVec.y          = mAxes[2].y;
+		tempVec.z          = mAxes[2].z;
+		Vector3f scaledVec = Vector3f(tempVec) * mMaxXYZ[2];
+		Vector3f point;
+		point.x = mPosition.x + scaledVec.x;
+		point.y = mPosition.y + scaledVec.y;
+		point.z = mPosition.z + scaledVec.z;
+		setMaxPlane(&tempVec, 2, point);
+	}
+	{
+		tempVec.x          = mAxes[0].x;
+		tempVec.y          = mAxes[0].y;
+		tempVec.z          = mAxes[0].z;
+		Vector3f scaledVec = Vector3f(tempVec) * mMinXYZ[0];
+		Vector3f point;
+		point.x = mPosition.x + scaledVec.x;
+		point.y = mPosition.y + scaledVec.y;
+		point.z = mPosition.z + scaledVec.z;
+		setMinPlane(&tempVec, 0, point);
+	}
+	{
+		tempVec.x          = mAxes[1].x;
+		tempVec.y          = mAxes[1].y;
+		tempVec.z          = mAxes[1].z;
+		Vector3f scaledVec = Vector3f(tempVec) * mMinXYZ[1];
+		Vector3f point;
+		point.x = mPosition.x + scaledVec.x;
+		point.y = mPosition.y + scaledVec.y;
+		point.z = mPosition.z + scaledVec.z;
+		setMinPlane(&tempVec, 1, point);
+	}
+	{
+		tempVec.x          = mAxes[2].x;
+		tempVec.y          = mAxes[2].y;
+		tempVec.z          = mAxes[2].z;
+		Vector3f scaledVec = Vector3f(tempVec) * mMinXYZ[2];
+		Vector3f point     = mPosition + scaledVec;
+		setMinPlane(&tempVec, 2, point);
+	}
 	/*
 	.loc_0x0:
 	  stwu      r1, -0x150(r1)
@@ -643,8 +706,7 @@ void OBB::constructOBB2(Sys::VertexTable& vertTable, Sys::TriangleTable& triTabl
 	Matrix3f P;
 	Matrix3f D;
 
-	TriIndexList* triList = &mTriIndexList;
-	triList->makeCovarianceMatrix(vertTable, triTable, covar, pos);
+	mTriIndexList.makeCovarianceMatrix(vertTable, triTable, covar, pos);
 	P.makeIdentity();
 	covar.calcEigenMatrix(D, P);
 	create2(vertTable, triTable, D, P, pos);
@@ -670,30 +732,34 @@ void OBB::autoDivide(Sys::VertexTable& vertTable, Sys::TriangleTable& triTable, 
 	}
 }
 
-
 /**
  * @note Address: N/A
  * @note Size: 0x128
  */
-void OBB::countDivResult(Sys::VertexTable& vertTable, Sys::TriangleTable& triTable, int count, int& numAbove, int& numBelow)
+void OBB::countDivResult(Sys::VertexTable& vertTable, Sys::TriangleTable& triTable, int axis, int& aboveCount, int& belowCount)
 {
-	mHalfA->mTriIndexList.alloc(numAbove);
-	mHalfB->mTriIndexList.alloc(numBelow);
+	Plane plane;
+	int numAbove = 0;
+	int numBelow = 0;
 
-	for (int i = 0; i < mTriIndexList.getNum(); i++) {
-		int currIndex     = mTriIndexList.mObjects[i];
-		Triangle* currTri = triTable.getTriangle(currIndex);
-		f32 triDist       = currTri->calcDist(mDivPlane, vertTable);
-		if (triDist > 0.0f) {
-			mHalfA->mTriIndexList.addOne(currIndex);
-		} else if (triDist < 0.0f) {
-			mHalfB->mTriIndexList.addOne(currIndex);
-		} else {
-			mHalfA->mTriIndexList.addOne(currIndex);
-			mHalfB->mTriIndexList.addOne(currIndex);
+	plane.updatePlane(mPosition, mAxes[axis]);
+
+	// loop through all triangles
+	for (int j = 0; j < mTriIndexList.mCount; j++) {
+		Triangle* currTri = &triTable.mObjects[mTriIndexList.mObjects[j]];
+		f32 triDist       = currTri->calcDist(plane, vertTable);
+		if (triDist > 0.0f) { // triangle above plane
+			numAbove += 1;
+		} else if (triDist < 0.0f) { // triangle below plane
+			numBelow += 1;
+		} else { // triangle 'in' plane
+			numAbove += 1;
+			numBelow += 1;
 		}
 	}
-	// UNUSED FUNCTION
+
+	aboveCount = numAbove;
+	belowCount = numBelow;
 }
 
 /**
@@ -702,30 +768,14 @@ void OBB::countDivResult(Sys::VertexTable& vertTable, Sys::TriangleTable& triTab
  */
 void OBB::determineDivPlane(Sys::VertexTable& vertTable, Sys::TriangleTable& triTable)
 {
-	int min    = 100000000; // 100 million
 	int axisID = 0;
+	int min    = 100000000; // 100 million
 
 	// loop through axes of box
 	for (int i = 0; i < 3; i++) {
-		Plane currPlane = Plane();
-		int numAbove    = 0;
-		int numBelow    = 0;
-
-		currPlane.updatePlane(mPosition, mAxes[i]);
-
-		// loop through all triangles
-		for (int j = 0; j < mTriIndexList.mCount; j++) {
-			Triangle* currTri = &triTable.mObjects[mTriIndexList.mObjects[j]];
-			f32 triDist       = currTri->calcDist(currPlane, vertTable);
-			if (triDist > 0.0f) { // triangle above plane
-				numAbove += 1;
-			} else if (triDist < 0.0f) { // triangle below plane
-				numBelow += 1;
-			} else { // triangle 'in' plane
-				numAbove += 1;
-				numBelow += 1;
-			}
-		}
+		int numAbove;
+		int numBelow;
+		countDivResult(vertTable, triTable, i, numAbove, numBelow);
 
 		int numCuts = numAbove + numBelow;
 		if (numAbove == mTriIndexList.mCount) {
@@ -740,11 +790,10 @@ void OBB::determineDivPlane(Sys::VertexTable& vertTable, Sys::TriangleTable& tri
 		}
 	}
 
-	Vector3f correctAxis = mAxes[axisID];
 	// divPlane has normal = axis with min cuts, and goes through center/position of box
-	f32 d             = correctAxis.dot(mPosition);
-	mDivPlane.mNormal = correctAxis;
-	mDivPlane.mOffset = d;
+	Plane plane;
+	plane.updatePlane(mPosition, mAxes[axisID]);
+	mDivPlane = plane;
 	/*
 	stwu     r1, -0x80(r1)
 	mflr     r0
@@ -887,12 +936,13 @@ lbl_8041DB4C:
 bool OBB::divide(Sys::VertexTable& vertTable, Sys::TriangleTable& triTable)
 {
 	determineDivPlane(vertTable, triTable);
+	int i;
 	bool checkAbove = true;
 	bool checkBelow = true;
 	int numAbove    = 0;
 	int numBelow    = 0;
 
-	for (int i = 0; i < mTriIndexList.mCount; i++) {
+	for (i = 0; i < mTriIndexList.mCount; i++) {
 		Triangle* currTri = &triTable.mObjects[mTriIndexList.mObjects[i]];
 		f32 triDist       = currTri->calcDist(mDivPlane, vertTable);
 		if (triDist > 0.0f) {
@@ -924,342 +974,27 @@ bool OBB::divide(Sys::VertexTable& vertTable, Sys::TriangleTable& triTable)
 	mHalfB = new OBB;
 	add(mHalfB);
 
-	countDivResult(vertTable, triTable, 0, numAbove, numBelow);
+	mHalfA->mTriIndexList.alloc(numAbove);
+	mHalfB->mTriIndexList.alloc(numBelow);
+
+	for (i = 0; i < mTriIndexList.getNum(); i++) {
+		int currIndex     = mTriIndexList.mObjects[i];
+		Triangle* currTri = triTable.getTriangle(currIndex);
+		f32 triDist       = currTri->calcDist(mDivPlane, vertTable);
+		if (triDist > 0.0f) {
+			mHalfA->mTriIndexList.addOne(currIndex);
+		} else if (triDist < 0.0f) {
+			mHalfB->mTriIndexList.addOne(currIndex);
+		} else {
+			mHalfA->mTriIndexList.addOne(currIndex);
+			mHalfB->mTriIndexList.addOne(currIndex);
+		}
+	}
 
 	mHalfA->constructOBB2(vertTable, triTable);
 	mHalfB->constructOBB2(vertTable, triTable);
 
 	return true;
-	/*
-	stwu     r1, -0x140(r1)
-	mflr     r0
-	stw      r0, 0x144(r1)
-	stfd     f31, 0x130(r1)
-	psq_st   f31, 312(r1), 0, qr0
-	stmw     r23, 0x10c(r1)
-	mr       r26, r3
-	mr       r27, r4
-	mr       r28, r5
-	bl determineDivPlane__Q23Sys3OBBFRQ23Sys11VertexTableRQ23Sys13TriangleTable
-	lfs      f31, lbl_805203C0@sda21(r2)
-	li       r31, 1
-	li       r23, 1
-	li       r30, 0
-	li       r29, 0
-	li       r25, 0
-	li       r24, 0
-	b        lbl_8041DC68
-
-lbl_8041DC1C:
-	lwz      r3, 0xfc(r26)
-	mr       r5, r27
-	lwz      r6, 0x24(r28)
-	addi     r4, r26, 0xc8
-	lwzx     r0, r3, r24
-	mulli    r0, r0, 0x60
-	add      r3, r6, r0
-	bl       calcDist__Q23Sys8TriangleFR5PlaneRQ23Sys11VertexTable
-	fcmpo    cr0, f1, f31
-	ble      lbl_8041DC4C
-	addi     r30, r30, 1
-	b        lbl_8041DC60
-
-lbl_8041DC4C:
-	bge      lbl_8041DC58
-	addi     r29, r29, 1
-	b        lbl_8041DC60
-
-lbl_8041DC58:
-	addi     r30, r30, 1
-	addi     r29, r29, 1
-
-lbl_8041DC60:
-	addi     r24, r24, 4
-	addi     r25, r25, 1
-
-lbl_8041DC68:
-	lwz      r0, 0xf4(r26)
-	cmpw     r25, r0
-	blt      lbl_8041DC1C
-	cmpwi    r30, 0
-	beq      lbl_8041DC84
-	cmpwi    r29, 0
-	bne      lbl_8041DC8C
-
-lbl_8041DC84:
-	li       r3, 0
-	b        lbl_8041E038
-
-lbl_8041DC8C:
-	cmpw     r30, r0
-	bne      lbl_8041DC98
-	li       r31, 0
-
-lbl_8041DC98:
-	cmpw     r29, r0
-	bne      lbl_8041DCA4
-	li       r23, 0
-
-lbl_8041DCA4:
-	clrlwi.  r0, r31, 0x18
-	bne      lbl_8041DCBC
-	clrlwi.  r0, r23, 0x18
-	bne      lbl_8041DCBC
-	li       r3, 0
-	b        lbl_8041E038
-
-lbl_8041DCBC:
-	li       r3, 0x110
-	bl       __nw__FUl
-	or.      r31, r3, r3
-	beq      lbl_8041DDA0
-	bl       __ct__5CNodeFv
-	lis      r3, __vt__Q23Sys3OBB@ha
-	lis      r4, __ct__5PlaneFv@ha
-	addi     r0, r3, __vt__Q23Sys3OBB@l
-	li       r5, 0
-	stw      r0, 0(r31)
-	addi     r3, r31, 0x18
-	addi     r4, r4, __ct__5PlaneFv@l
-	li       r6, 0x10
-	li       r7, 6
-	bl       __construct_array
-	lis      r4, "__ct__10Vector3<f>Fv"@ha
-	addi     r3, r31, 0x84
-	addi     r4, r4, "__ct__10Vector3<f>Fv"@l
-	li       r5, 0
-	li       r6, 0xc
-	li       r7, 3
-	bl       __construct_array
-	lfs      f1, lbl_805203C0@sda21(r2)
-	addi     r25, r31, 0xd8
-	lfs      f0, lbl_805203C4@sda21(r2)
-	mr       r3, r25
-	stfs     f1, 0xc8(r31)
-	stfs     f0, 0xcc(r31)
-	stfs     f1, 0xd0(r31)
-	stfs     f1, 0xd4(r31)
-	bl       __ct__5CNodeFv
-	lis      r4, __vt__16GenericContainer@ha
-	lis      r3, "__vt__12Container<i>"@ha
-	addi     r0, r4, __vt__16GenericContainer@l
-	lis      r5, "__vt__17ArrayContainer<i>"@ha
-	stw      r0, 0(r25)
-	addi     r0, r3, "__vt__12Container<i>"@l
-	lis      r4, __vt__Q23Sys9IndexList@ha
-	lis      r3, __vt__Q23Sys12TriIndexList@ha
-	stw      r0, 0(r25)
-	li       r7, 0
-	addi     r6, r5, "__vt__17ArrayContainer<i>"@l
-	li       r5, 1
-	stb      r7, 0x18(r25)
-	addi     r4, r4, __vt__Q23Sys9IndexList@l
-	addi     r3, r3, __vt__Q23Sys12TriIndexList@l
-	addi     r0, r2, lbl_805203C8@sda21
-	stw      r6, 0(r25)
-	stb      r5, 0x18(r25)
-	stw      r7, 0x20(r25)
-	stw      r7, 0x1c(r25)
-	stw      r7, 0x24(r25)
-	stw      r4, 0(r25)
-	stw      r3, 0(r25)
-	stw      r0, 0x14(r31)
-	stw      r7, 0xc4(r31)
-	stw      r7, 0xc0(r31)
-
-lbl_8041DDA0:
-	stw      r31, 0xc0(r26)
-	mr       r3, r26
-	lwz      r4, 0xc0(r26)
-	bl       add__5CNodeFP5CNode
-	li       r3, 0x110
-	bl       __nw__FUl
-	or.      r31, r3, r3
-	beq      lbl_8041DE98
-	mr       r25, r31
-	bl       __ct__5CNodeFv
-	lis      r3, __vt__Q23Sys3OBB@ha
-	lis      r4, __ct__5PlaneFv@ha
-	addi     r0, r3, __vt__Q23Sys3OBB@l
-	li       r5, 0
-	stw      r0, 0(r25)
-	addi     r3, r25, 0x18
-	addi     r4, r4, __ct__5PlaneFv@l
-	li       r6, 0x10
-	li       r7, 6
-	bl       __construct_array
-	lis      r4, "__ct__10Vector3<f>Fv"@ha
-	addi     r3, r25, 0x84
-	addi     r4, r4, "__ct__10Vector3<f>Fv"@l
-	li       r5, 0
-	li       r6, 0xc
-	li       r7, 3
-	bl       __construct_array
-	lfs      f1, lbl_805203C0@sda21(r2)
-	addi     r24, r25, 0xd8
-	lfs      f0, lbl_805203C4@sda21(r2)
-	mr       r3, r24
-	stfs     f1, 0xc8(r25)
-	stfs     f0, 0xcc(r25)
-	stfs     f1, 0xd0(r25)
-	stfs     f1, 0xd4(r25)
-	bl       __ct__5CNodeFv
-	lis      r4, __vt__16GenericContainer@ha
-	lis      r3, "__vt__12Container<i>"@ha
-	addi     r0, r4, __vt__16GenericContainer@l
-	lis      r5, "__vt__17ArrayContainer<i>"@ha
-	stw      r0, 0(r24)
-	addi     r0, r3, "__vt__12Container<i>"@l
-	lis      r4, __vt__Q23Sys9IndexList@ha
-	lis      r3, __vt__Q23Sys12TriIndexList@ha
-	stw      r0, 0(r24)
-	li       r7, 0
-	addi     r6, r5, "__vt__17ArrayContainer<i>"@l
-	li       r5, 1
-	stb      r7, 0x18(r24)
-	addi     r4, r4, __vt__Q23Sys9IndexList@l
-	addi     r3, r3, __vt__Q23Sys12TriIndexList@l
-	addi     r0, r2, lbl_805203C8@sda21
-	stw      r6, 0(r24)
-	stb      r5, 0x18(r24)
-	stw      r7, 0x20(r24)
-	stw      r7, 0x1c(r24)
-	stw      r7, 0x24(r24)
-	stw      r4, 0(r24)
-	stw      r3, 0(r24)
-	stw      r0, 0x14(r25)
-	stw      r7, 0xc4(r25)
-	stw      r7, 0xc0(r25)
-
-lbl_8041DE98:
-	stw      r31, 0xc4(r26)
-	mr       r3, r26
-	lwz      r4, 0xc4(r26)
-	bl       add__5CNodeFP5CNode
-	lwz      r3, 0xc0(r26)
-	mr       r4, r30
-	lwzu     r12, 0xd8(r3)
-	lwz      r12, 0x3c(r12)
-	mtctr    r12
-	bctrl
-	lwz      r3, 0xc4(r26)
-	mr       r4, r29
-	lwzu     r12, 0xd8(r3)
-	lwz      r12, 0x3c(r12)
-	mtctr    r12
-	bctrl
-	li       r25, 0
-	lfs      f31, lbl_805203C0@sda21(r2)
-	mr       r24, r25
-	b        lbl_8041DF88
-
-lbl_8041DEE8:
-	lwz      r3, 0xfc(r26)
-	mr       r5, r27
-	addi     r4, r26, 0xc8
-	lwzx     r0, r3, r24
-	stw      r0, 8(r1)
-	mulli    r0, r0, 0x60
-	lwz      r3, 0x24(r28)
-	add      r3, r3, r0
-	bl       calcDist__Q23Sys8TriangleFR5PlaneRQ23Sys11VertexTable
-	fcmpo    cr0, f1, f31
-	ble      lbl_8041DF30
-	lwz      r3, 0xc0(r26)
-	addi     r4, r1, 8
-	lwzu     r12, 0xd8(r3)
-	lwz      r12, 0x40(r12)
-	mtctr    r12
-	bctrl
-	b        lbl_8041DF80
-
-lbl_8041DF30:
-	bge      lbl_8041DF50
-	lwz      r3, 0xc4(r26)
-	addi     r4, r1, 8
-	lwzu     r12, 0xd8(r3)
-	lwz      r12, 0x40(r12)
-	mtctr    r12
-	bctrl
-	b        lbl_8041DF80
-
-lbl_8041DF50:
-	lwz      r3, 0xc0(r26)
-	addi     r4, r1, 8
-	lwzu     r12, 0xd8(r3)
-	lwz      r12, 0x40(r12)
-	mtctr    r12
-	bctrl
-	lwz      r3, 0xc4(r26)
-	addi     r4, r1, 8
-	lwzu     r12, 0xd8(r3)
-	lwz      r12, 0x40(r12)
-	mtctr    r12
-	bctrl
-
-lbl_8041DF80:
-	addi     r24, r24, 4
-	addi     r25, r25, 1
-
-lbl_8041DF88:
-	lwz      r0, 0xf4(r26)
-	cmpw     r25, r0
-	blt      lbl_8041DEE8
-	lwz      r24, 0xc0(r26)
-	mr       r4, r27
-	mr       r5, r28
-	addi     r6, r1, 0x90
-	addi     r3, r24, 0xd8
-	addi     r7, r1, 0x18
-	bl
-"makeCovarianceMatrix__Q23Sys12TriIndexListFRQ23Sys11VertexTableRQ23Sys13TriangleTableR8Matrix3fR10Vector3<f>"
-	addi     r3, r1, 0xb4
-	bl       makeIdentity__8Matrix3fFv
-	addi     r3, r1, 0x90
-	addi     r4, r1, 0xd8
-	addi     r5, r1, 0xb4
-	bl       calcEigenMatrix__8Matrix3fFR8Matrix3fR8Matrix3f
-	mr       r3, r24
-	mr       r4, r27
-	mr       r5, r28
-	addi     r6, r1, 0xd8
-	addi     r7, r1, 0xb4
-	addi     r8, r1, 0x18
-	bl
-"create2__Q23Sys3OBBFRQ23Sys11VertexTableRQ23Sys13TriangleTableR8Matrix3fR8Matrix3fR10Vector3<f>"
-	lwz      r24, 0xc4(r26)
-	mr       r4, r27
-	mr       r5, r28
-	addi     r6, r1, 0x24
-	addi     r3, r24, 0xd8
-	addi     r7, r1, 0xc
-	bl
-"makeCovarianceMatrix__Q23Sys12TriIndexListFRQ23Sys11VertexTableRQ23Sys13TriangleTableR8Matrix3fR10Vector3<f>"
-	addi     r3, r1, 0x48
-	bl       makeIdentity__8Matrix3fFv
-	addi     r3, r1, 0x24
-	addi     r4, r1, 0x6c
-	addi     r5, r1, 0x48
-	bl       calcEigenMatrix__8Matrix3fFR8Matrix3fR8Matrix3f
-	mr       r3, r24
-	mr       r4, r27
-	mr       r5, r28
-	addi     r6, r1, 0x6c
-	addi     r7, r1, 0x48
-	addi     r8, r1, 0xc
-	bl
-"create2__Q23Sys3OBBFRQ23Sys11VertexTableRQ23Sys13TriangleTableR8Matrix3fR8Matrix3fR10Vector3<f>"
-	li       r3, 1
-
-lbl_8041E038:
-	psq_l    f31, 312(r1), 0, qr0
-	lfd      f31, 0x130(r1)
-	lmw      r23, 0x10c(r1)
-	lwz      r0, 0x144(r1)
-	mtlr     r0
-	addi     r1, r1, 0x140
-	blr
-	*/
 }
 
 /**
@@ -1430,9 +1165,11 @@ void OBBTree::draw(Graphics&)
  * @note Address: N/A
  * @note Size: 0x6C
  */
-void OBBTree::write(Stream&)
+void OBBTree::write(Stream& output)
 {
-	// UNUSED FUNCTION
+	mVertexTable->write(output);
+	mTriangleTable->write(output);
+	getOBB()->write(output);
 }
 
 /**
@@ -1452,18 +1189,19 @@ void OBBTree::read(Stream& input)
  * @note Address: N/A
  * @note Size: 0x30
  */
-void OBBTree::writeVertsOnly(Stream&)
+void OBBTree::writeVertsOnly(Stream& output)
 {
-	// UNUSED FUNCTION
+	mVertexTable->write(output);
 }
 
 /**
  * @note Address: N/A
  * @note Size: 0x54
  */
-void OBBTree::writeWithoutVerts(Stream&)
+void OBBTree::writeWithoutVerts(Stream& output)
 {
-	// UNUSED FUNCTION
+	mTriangleTable->write(output);
+	getOBB()->write(output);
 }
 
 /**
@@ -1722,25 +1460,26 @@ void OBB::traceMove_original(Game::MoveInfo&, Sys::VertexTable&, Sys::TriangleTa
  */
 bool OBB::findRayIntersection(Sys::RayIntersectInfo& info, Matrixf& transformationMtx, Matrixf& unused)
 {
+	Sphere* sphere = &info.mBoundingSphere;
 	if (isLeaf()) {
 		return findRayIntersectionTriList(info, transformationMtx, unused);
 	}
 
-	f32 rad      = info.mBoundingSphere.mRadius;
-	f32 ballDist = mDivPlane.calcDist(info.mBoundingSphere.mPosition);
+	f32 ballDist = mDivPlane.calcDist(sphere->mPosition);
 
-	if (ballDist > rad) {
+	if (ballDist > sphere->mRadius) {
 		if (mHalfA) {
 			return mHalfA->findRayIntersection(info, transformationMtx, unused);
 		}
 		return findRayIntersectionTriList(info, transformationMtx, unused);
 	}
-	if (ballDist < -rad) {
+	if (ballDist < -sphere->mRadius) {
 		if (mHalfB) {
 			return mHalfB->findRayIntersection(info, transformationMtx, unused);
 		}
 		return findRayIntersectionTriList(info, transformationMtx, unused);
 	}
+
 	bool intersectA = false;
 	if (mHalfA) {
 		intersectA = mHalfA->findRayIntersection(info, transformationMtx, unused);
@@ -1750,495 +1489,6 @@ bool OBB::findRayIntersection(Sys::RayIntersectInfo& info, Matrixf& transformati
 		intersectB = mHalfB->findRayIntersection(info, transformationMtx, unused);
 	}
 	return intersectA || intersectB;
-	/*
-	stwu     r1, -0x20(r1)
-	mflr     r0
-	stw      r0, 0x24(r1)
-	stmw     r26, 8(r1)
-	mr       r27, r3
-	mr       r31, r4
-	mr       r30, r5
-	mr       r29, r6
-	lwz      r26, 0xc0(r3)
-	li       r3, 0
-	cmplwi   r26, 0
-	bne      lbl_8041ECAC
-	lwz      r0, 0xc4(r27)
-	cmplwi   r0, 0
-	bne      lbl_8041ECAC
-	li       r3, 1
-
-lbl_8041ECAC:
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_8041ECCC
-	mr       r3, r27
-	mr       r4, r31
-	mr       r5, r30
-	mr       r6, r29
-	bl
-findRayIntersectionTriList__Q23Sys3OBBFRQ23Sys16RayIntersectInfoR7MatrixfR7Matrixf
-	b        lbl_8041F218
-
-lbl_8041ECCC:
-	lfs      f1, 0x24(r31)
-	lfs      f0, 0xcc(r27)
-	lfs      f2, 0x20(r31)
-	fmuls    f0, f1, f0
-	lfs      f1, 0xc8(r27)
-	lfs      f4, 0x28(r31)
-	lfs      f3, 0xd0(r27)
-	fmadds   f1, f2, f1, f0
-	lfs      f0, 0xd4(r27)
-	lfs      f2, 0x2c(r31)
-	fmadds   f1, f4, f3, f1
-	fsubs    f1, f1, f0
-	fcmpo    cr0, f1, f2
-	ble      lbl_8041EE48
-	cmplwi   r26, 0
-	beq      lbl_8041EE30
-	mr       r3, r26
-	addi     r27, r31, 0x20
-	bl       isLeaf__Q23Sys3OBBFv
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_8041ED38
-	mr       r3, r26
-	mr       r4, r31
-	mr       r5, r30
-	mr       r6, r29
-	bl
-findRayIntersectionTriList__Q23Sys3OBBFRQ23Sys16RayIntersectInfoR7MatrixfR7Matrixf
-	b        lbl_8041F218
-
-lbl_8041ED38:
-	mr       r4, r27
-	addi     r3, r26, 0xc8
-	bl       "calcDist__5PlaneCFRC10Vector3<f>"
-	lfs      f0, 0xc(r27)
-	fcmpo    cr0, f1, f0
-	ble      lbl_8041ED88
-	lwz      r3, 0xc0(r26)
-	cmplwi   r3, 0
-	beq      lbl_8041ED70
-	mr       r4, r31
-	mr       r5, r30
-	mr       r6, r29
-	bl
-findRayIntersection__Q23Sys3OBBFRQ23Sys16RayIntersectInfoR7MatrixfR7Matrixf b
-lbl_8041F218
-
-lbl_8041ED70:
-	mr       r3, r26
-	mr       r4, r31
-	mr       r5, r30
-	mr       r6, r29
-	bl
-findRayIntersectionTriList__Q23Sys3OBBFRQ23Sys16RayIntersectInfoR7MatrixfR7Matrixf
-	b        lbl_8041F218
-
-lbl_8041ED88:
-	fneg     f0, f0
-	fcmpo    cr0, f1, f0
-	bge      lbl_8041EDCC
-	lwz      r3, 0xc4(r26)
-	cmplwi   r3, 0
-	beq      lbl_8041EDB4
-	mr       r4, r31
-	mr       r5, r30
-	mr       r6, r29
-	bl
-findRayIntersection__Q23Sys3OBBFRQ23Sys16RayIntersectInfoR7MatrixfR7Matrixf b
-lbl_8041F218
-
-lbl_8041EDB4:
-	mr       r3, r26
-	mr       r4, r31
-	mr       r5, r30
-	mr       r6, r29
-	bl
-findRayIntersectionTriList__Q23Sys3OBBFRQ23Sys16RayIntersectInfoR7MatrixfR7Matrixf
-	b        lbl_8041F218
-
-lbl_8041EDCC:
-	lwz      r3, 0xc0(r26)
-	li       r27, 0
-	cmplwi   r3, 0
-	beq      lbl_8041EDF0
-	mr       r4, r31
-	mr       r5, r30
-	mr       r6, r29
-	bl
-findRayIntersection__Q23Sys3OBBFRQ23Sys16RayIntersectInfoR7MatrixfR7Matrixf mr
-r27, r3
-
-lbl_8041EDF0:
-	lwz      r3, 0xc4(r26)
-	li       r4, 0
-	cmplwi   r3, 0
-	beq      lbl_8041EE14
-	mr       r4, r31
-	mr       r5, r30
-	mr       r6, r29
-	bl
-findRayIntersection__Q23Sys3OBBFRQ23Sys16RayIntersectInfoR7MatrixfR7Matrixf mr
-r4, r3
-
-lbl_8041EE14:
-	clrlwi.  r0, r27, 0x18
-	li       r3, 0
-	bne      lbl_8041EE28
-	clrlwi.  r0, r4, 0x18
-	beq      lbl_8041F218
-
-lbl_8041EE28:
-	li       r3, 1
-	b        lbl_8041F218
-
-lbl_8041EE30:
-	mr       r3, r27
-	mr       r4, r31
-	mr       r5, r30
-	mr       r6, r29
-	bl
-findRayIntersectionTriList__Q23Sys3OBBFRQ23Sys16RayIntersectInfoR7MatrixfR7Matrixf
-	b        lbl_8041F218
-
-lbl_8041EE48:
-	fneg     f0, f2
-	fcmpo    cr0, f1, f0
-	bge      lbl_8041EF9C
-	lwz      r28, 0xc4(r27)
-	cmplwi   r28, 0
-	beq      lbl_8041EF84
-	mr       r3, r28
-	addi     r26, r31, 0x20
-	bl       isLeaf__Q23Sys3OBBFv
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_8041EE8C
-	mr       r3, r28
-	mr       r4, r31
-	mr       r5, r30
-	mr       r6, r29
-	bl
-findRayIntersectionTriList__Q23Sys3OBBFRQ23Sys16RayIntersectInfoR7MatrixfR7Matrixf
-	b        lbl_8041F218
-
-lbl_8041EE8C:
-	mr       r4, r26
-	addi     r3, r28, 0xc8
-	bl       "calcDist__5PlaneCFRC10Vector3<f>"
-	lfs      f0, 0xc(r26)
-	fcmpo    cr0, f1, f0
-	ble      lbl_8041EEDC
-	lwz      r3, 0xc0(r28)
-	cmplwi   r3, 0
-	beq      lbl_8041EEC4
-	mr       r4, r31
-	mr       r5, r30
-	mr       r6, r29
-	bl
-findRayIntersection__Q23Sys3OBBFRQ23Sys16RayIntersectInfoR7MatrixfR7Matrixf b
-lbl_8041F218
-
-lbl_8041EEC4:
-	mr       r3, r28
-	mr       r4, r31
-	mr       r5, r30
-	mr       r6, r29
-	bl
-findRayIntersectionTriList__Q23Sys3OBBFRQ23Sys16RayIntersectInfoR7MatrixfR7Matrixf
-	b        lbl_8041F218
-
-lbl_8041EEDC:
-	fneg     f0, f0
-	fcmpo    cr0, f1, f0
-	bge      lbl_8041EF20
-	lwz      r3, 0xc4(r28)
-	cmplwi   r3, 0
-	beq      lbl_8041EF08
-	mr       r4, r31
-	mr       r5, r30
-	mr       r6, r29
-	bl
-findRayIntersection__Q23Sys3OBBFRQ23Sys16RayIntersectInfoR7MatrixfR7Matrixf b
-lbl_8041F218
-
-lbl_8041EF08:
-	mr       r3, r28
-	mr       r4, r31
-	mr       r5, r30
-	mr       r6, r29
-	bl
-findRayIntersectionTriList__Q23Sys3OBBFRQ23Sys16RayIntersectInfoR7MatrixfR7Matrixf
-	b        lbl_8041F218
-
-lbl_8041EF20:
-	lwz      r3, 0xc0(r28)
-	li       r26, 0
-	cmplwi   r3, 0
-	beq      lbl_8041EF44
-	mr       r4, r31
-	mr       r5, r30
-	mr       r6, r29
-	bl
-findRayIntersection__Q23Sys3OBBFRQ23Sys16RayIntersectInfoR7MatrixfR7Matrixf mr
-r26, r3
-
-lbl_8041EF44:
-	lwz      r3, 0xc4(r28)
-	li       r4, 0
-	cmplwi   r3, 0
-	beq      lbl_8041EF68
-	mr       r4, r31
-	mr       r5, r30
-	mr       r6, r29
-	bl
-findRayIntersection__Q23Sys3OBBFRQ23Sys16RayIntersectInfoR7MatrixfR7Matrixf mr
-r4, r3
-
-lbl_8041EF68:
-	clrlwi.  r0, r26, 0x18
-	li       r3, 0
-	bne      lbl_8041EF7C
-	clrlwi.  r0, r4, 0x18
-	beq      lbl_8041F218
-
-lbl_8041EF7C:
-	li       r3, 1
-	b        lbl_8041F218
-
-lbl_8041EF84:
-	mr       r3, r27
-	mr       r4, r31
-	mr       r5, r30
-	mr       r6, r29
-	bl
-findRayIntersectionTriList__Q23Sys3OBBFRQ23Sys16RayIntersectInfoR7MatrixfR7Matrixf
-	b        lbl_8041F218
-
-lbl_8041EF9C:
-	cmplwi   r26, 0
-	li       r28, 0
-	beq      lbl_8041F0CC
-	mr       r3, r26
-	addi     r28, r31, 0x20
-	bl       isLeaf__Q23Sys3OBBFv
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_8041EFD4
-	mr       r3, r26
-	mr       r4, r31
-	mr       r5, r30
-	mr       r6, r29
-	bl
-findRayIntersectionTriList__Q23Sys3OBBFRQ23Sys16RayIntersectInfoR7MatrixfR7Matrixf
-	b        lbl_8041F0C8
-
-lbl_8041EFD4:
-	mr       r4, r28
-	addi     r3, r26, 0xc8
-	bl       "calcDist__5PlaneCFRC10Vector3<f>"
-	lfs      f0, 0xc(r28)
-	fcmpo    cr0, f1, f0
-	ble      lbl_8041F024
-	lwz      r3, 0xc0(r26)
-	cmplwi   r3, 0
-	beq      lbl_8041F00C
-	mr       r4, r31
-	mr       r5, r30
-	mr       r6, r29
-	bl
-findRayIntersection__Q23Sys3OBBFRQ23Sys16RayIntersectInfoR7MatrixfR7Matrixf b
-lbl_8041F0C8
-
-lbl_8041F00C:
-	mr       r3, r26
-	mr       r4, r31
-	mr       r5, r30
-	mr       r6, r29
-	bl
-findRayIntersectionTriList__Q23Sys3OBBFRQ23Sys16RayIntersectInfoR7MatrixfR7Matrixf
-	b        lbl_8041F0C8
-
-lbl_8041F024:
-	fneg     f0, f0
-	fcmpo    cr0, f1, f0
-	bge      lbl_8041F068
-	lwz      r3, 0xc4(r26)
-	cmplwi   r3, 0
-	beq      lbl_8041F050
-	mr       r4, r31
-	mr       r5, r30
-	mr       r6, r29
-	bl
-findRayIntersection__Q23Sys3OBBFRQ23Sys16RayIntersectInfoR7MatrixfR7Matrixf b
-lbl_8041F0C8
-
-lbl_8041F050:
-	mr       r3, r26
-	mr       r4, r31
-	mr       r5, r30
-	mr       r6, r29
-	bl
-findRayIntersectionTriList__Q23Sys3OBBFRQ23Sys16RayIntersectInfoR7MatrixfR7Matrixf
-	b        lbl_8041F0C8
-
-lbl_8041F068:
-	lwz      r3, 0xc0(r26)
-	li       r28, 0
-	cmplwi   r3, 0
-	beq      lbl_8041F08C
-	mr       r4, r31
-	mr       r5, r30
-	mr       r6, r29
-	bl
-findRayIntersection__Q23Sys3OBBFRQ23Sys16RayIntersectInfoR7MatrixfR7Matrixf mr
-r28, r3
-
-lbl_8041F08C:
-	lwz      r3, 0xc4(r26)
-	li       r4, 0
-	cmplwi   r3, 0
-	beq      lbl_8041F0B0
-	mr       r4, r31
-	mr       r5, r30
-	mr       r6, r29
-	bl
-findRayIntersection__Q23Sys3OBBFRQ23Sys16RayIntersectInfoR7MatrixfR7Matrixf mr
-r4, r3
-
-lbl_8041F0B0:
-	clrlwi.  r0, r28, 0x18
-	li       r3, 0
-	bne      lbl_8041F0C4
-	clrlwi.  r0, r4, 0x18
-	beq      lbl_8041F0C8
-
-lbl_8041F0C4:
-	li       r3, 1
-
-lbl_8041F0C8:
-	mr       r28, r3
-
-lbl_8041F0CC:
-	lwz      r27, 0xc4(r27)
-	li       r3, 0
-	cmplwi   r27, 0
-	beq      lbl_8041F1FC
-	mr       r3, r27
-	addi     r26, r31, 0x20
-	bl       isLeaf__Q23Sys3OBBFv
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_8041F108
-	mr       r3, r27
-	mr       r4, r31
-	mr       r5, r30
-	mr       r6, r29
-	bl
-findRayIntersectionTriList__Q23Sys3OBBFRQ23Sys16RayIntersectInfoR7MatrixfR7Matrixf
-	b        lbl_8041F1FC
-
-lbl_8041F108:
-	mr       r4, r26
-	addi     r3, r27, 0xc8
-	bl       "calcDist__5PlaneCFRC10Vector3<f>"
-	lfs      f0, 0xc(r26)
-	fcmpo    cr0, f1, f0
-	ble      lbl_8041F158
-	lwz      r3, 0xc0(r27)
-	cmplwi   r3, 0
-	beq      lbl_8041F140
-	mr       r4, r31
-	mr       r5, r30
-	mr       r6, r29
-	bl
-findRayIntersection__Q23Sys3OBBFRQ23Sys16RayIntersectInfoR7MatrixfR7Matrixf b
-lbl_8041F1FC
-
-lbl_8041F140:
-	mr       r3, r27
-	mr       r4, r31
-	mr       r5, r30
-	mr       r6, r29
-	bl
-findRayIntersectionTriList__Q23Sys3OBBFRQ23Sys16RayIntersectInfoR7MatrixfR7Matrixf
-	b        lbl_8041F1FC
-
-lbl_8041F158:
-	fneg     f0, f0
-	fcmpo    cr0, f1, f0
-	bge      lbl_8041F19C
-	lwz      r3, 0xc4(r27)
-	cmplwi   r3, 0
-	beq      lbl_8041F184
-	mr       r4, r31
-	mr       r5, r30
-	mr       r6, r29
-	bl
-findRayIntersection__Q23Sys3OBBFRQ23Sys16RayIntersectInfoR7MatrixfR7Matrixf b
-lbl_8041F1FC
-
-lbl_8041F184:
-	mr       r3, r27
-	mr       r4, r31
-	mr       r5, r30
-	mr       r6, r29
-	bl
-findRayIntersectionTriList__Q23Sys3OBBFRQ23Sys16RayIntersectInfoR7MatrixfR7Matrixf
-	b        lbl_8041F1FC
-
-lbl_8041F19C:
-	lwz      r3, 0xc0(r27)
-	li       r26, 0
-	cmplwi   r3, 0
-	beq      lbl_8041F1C0
-	mr       r4, r31
-	mr       r5, r30
-	mr       r6, r29
-	bl
-findRayIntersection__Q23Sys3OBBFRQ23Sys16RayIntersectInfoR7MatrixfR7Matrixf mr
-r26, r3
-
-lbl_8041F1C0:
-	lwz      r3, 0xc4(r27)
-	li       r4, 0
-	cmplwi   r3, 0
-	beq      lbl_8041F1E4
-	mr       r4, r31
-	mr       r5, r30
-	mr       r6, r29
-	bl
-findRayIntersection__Q23Sys3OBBFRQ23Sys16RayIntersectInfoR7MatrixfR7Matrixf mr
-r4, r3
-
-lbl_8041F1E4:
-	clrlwi.  r0, r26, 0x18
-	li       r3, 0
-	bne      lbl_8041F1F8
-	clrlwi.  r0, r4, 0x18
-	beq      lbl_8041F1FC
-
-lbl_8041F1F8:
-	li       r3, 1
-
-lbl_8041F1FC:
-	clrlwi.  r0, r28, 0x18
-	li       r4, 0
-	bne      lbl_8041F210
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_8041F214
-
-lbl_8041F210:
-	li       r4, 1
-
-lbl_8041F214:
-	mr       r3, r4
-
-lbl_8041F218:
-	lmw      r26, 8(r1)
-	lwz      r0, 0x24(r1)
-	mtlr     r0
-	addi     r1, r1, 0x20
-	blr
-	*/
 }
 
 /**
@@ -2256,7 +1506,7 @@ bool OBB::findRayIntersectionTriList(Sys::RayIntersectInfo& rayInfo, Matrixf& tr
 		if (rayInfo.condition(*currTri) && currTri->intersect(rayInfo.mIntersectEdge, rayInfo.mRadius, intersectVec)) {
 			isIntersect     = true;
 			Vector3f sepVec = intersectVec - rayInfo.mIntersectEdge.mStartPos;
-			f32 sqSep       = sepVec.x * sepVec.x + sepVec.y * sepVec.y + sepVec.z * sepVec.z;
+			f32 sqSep       = sepVec.sqrLength();
 			if (sqSep < rayInfo.mDistance) {
 				rayInfo.mDistance          = sqSep;
 				rayInfo.mIntersectPosition = transformMtx.mtxMult(intersectVec);
@@ -2354,39 +1604,35 @@ f32 OBB::getMinY(Vector3f& pos, Sys::TriangleTable& triTable, f32 inputMin)
 		divDist = mDivPlane.calcDist(pos);
 	} else {
 		Vector3f planeVec(pos);
-		planeVec.y = -(mDivPlane.mNormal.x * planeVec.x - mDivPlane.mOffset);
-		planeVec.y = -(mDivPlane.mNormal.z * planeVec.z - planeVec.y);
-		planeVec.y = planeVec.y / mDivPlane.mNormal.y;
+		planeVec.y = (mDivPlane.mOffset - mDivPlane.mNormal.x * pos.x - mDivPlane.mNormal.z * pos.z) / mDivPlane.mNormal.y;
 		divDist    = mDivPlane.calcDist(planeVec);
 	}
 
 	if (divDist > 0.01f) {
-		// check only side A
 		if (mHalfA) {
 			f32 minY2 = mHalfA->getMinY(pos, triTable, inputMin);
-			minY      = minY2 > inputMin ? minY2 : inputMin;
+			return minY2 > inputMin ? minY2 : inputMin;
 		}
 	} else if (divDist < -0.01f) {
-		// check only side B
 		if (mHalfB) {
 			f32 minY2 = mHalfB->getMinY(pos, triTable, inputMin);
-			minY      = minY2 > inputMin ? minY2 : inputMin;
+			return minY2 > inputMin ? minY2 : inputMin;
 		}
 	} else {
-		// check both sides
 		f32 minY2 = mHalfA->getMinY(pos, triTable, minY);
-		if (minY2 > minY)
+		if (minY2 > minY) {
 			minY = minY2;
+		}
 
 		minY2 = mHalfB->getMinY(pos, triTable, minY);
-		if (minY2 > minY)
+		if (minY2 > minY) {
 			minY = minY2;
+		}
+
+		return minY;
 	}
 
-	if (minY < inputMin)
-		minY = inputMin;
-
-	return minY;
+	return inputMin;
 	/*
 	stwu     r1, -0x70(r1)
 	mflr     r0

@@ -29,15 +29,20 @@ void TubeShadowTransNode::makeShadowSRT(JointShadowParm& parm, Vector3f& origina
 	Vector3f scale(x.y * parm.mRotation.z - x.z * parm.mRotation.y, x.z * parm.mRotation.x - x.x * parm.mRotation.z,
 	               x.x * parm.mRotation.y - x.y * parm.mRotation.x);
 	scale.normalise();
+	scale.x *= parm.mShadowScale;
+	scale.y *= parm.mShadowScale;
+	scale.z *= parm.mShadowScale;
 
 	Vector3f w;
 	w.x = (transformedPos.x + originalPos.x) * 0.5f + parm.mRotation.x * parm.mPositionMultiplier;
 	w.y = (transformedPos.y + originalPos.y) * 0.5f + parm.mRotation.y * parm.mPositionMultiplier;
 	w.z = (transformedPos.z + originalPos.z) * 0.5f + parm.mRotation.z * parm.mPositionMultiplier;
 
-	Vector3f y = parm.mRotation;
-	y *= (100.0f + (w.y - parm.mPosition.y));
-	scale *= parm.mShadowScale;
+	f32 height = 100.0f + (w.y - parm.mPosition.y);
+	Vector3f y;
+	y.x = parm.mRotation.x * height;
+	y.y = parm.mRotation.y * height;
+	y.z = parm.mRotation.z * height;
 
 	mMainMtx->setColumn(0, x);
 	mMainMtx->setColumn(1, y);
@@ -237,15 +242,20 @@ void TubeShadowSetNode::makeShadowSRT(JointShadowParm& parm, Vector3f& pos1, Vec
 	Vector3f newZ(newX.y * parm.mRotation.z - newX.z * parm.mRotation.y, newX.z * parm.mRotation.x - newX.x * parm.mRotation.z,
 	              newX.x * parm.mRotation.y - newX.y * parm.mRotation.x);
 	newZ.normalise();
+	newZ.x *= parm.mShadowScale;
+	newZ.y *= parm.mShadowScale;
+	newZ.z *= parm.mShadowScale;
 
 	Vector3f newPos;
 	newPos.x = (pos2.x + pos1.x) * 0.5f + parm.mRotation.x * parm.mPositionMultiplier;
 	newPos.y = (pos2.y + pos1.y) * 0.5f + parm.mRotation.y * parm.mPositionMultiplier;
 	newPos.z = (pos2.z + pos1.z) * 0.5f + parm.mRotation.z * parm.mPositionMultiplier;
 
-	Vector3f newY = parm.mRotation;
-	newY *= (100.0f + (newPos.y - parm.mPosition.y));
-	newZ *= parm.mShadowScale;
+	f32 height = 100.0f + (newPos.y - parm.mPosition.y);
+	Vector3f newY;
+	newY.x = parm.mRotation.x * height;
+	newY.y = parm.mRotation.y * height;
+	newY.z = parm.mRotation.z * height;
 
 	mMainMtx->setColumn(0, newX);
 	mMainMtx->setColumn(1, newY);
@@ -434,15 +444,20 @@ void TubeShadowPosNode::makeShadowSRT(JointShadowParm& parm, Vector3f& pos1, Vec
 	Vector3f newZ(newX.y * parm.mRotation.z - newX.z * parm.mRotation.y, newX.z * parm.mRotation.x - newX.x * parm.mRotation.z,
 	              newX.x * parm.mRotation.y - newX.y * parm.mRotation.x);
 	newZ.normalise();
+	newZ.x *= parm.mShadowScale;
+	newZ.y *= parm.mShadowScale;
+	newZ.z *= parm.mShadowScale;
 
 	Vector3f newPos;
 	newPos.x = (pos2.x + pos1.x) * 0.5f + parm.mRotation.x * parm.mPositionMultiplier;
 	newPos.y = (pos2.y + pos1.y) * 0.5f + parm.mRotation.y * parm.mPositionMultiplier;
 	newPos.z = (pos2.z + pos1.z) * 0.5f + parm.mRotation.z * parm.mPositionMultiplier;
 
-	Vector3f newY = parm.mRotation;
-	newY *= (100.0f + (newPos.y - parm.mPosition.y));
-	newZ *= parm.mShadowScale;
+	f32 height = 100.0f + (newPos.y - parm.mPosition.y);
+	Vector3f newY;
+	newY.x = parm.mRotation.x * height;
+	newY.y = parm.mRotation.y * height;
+	newY.z = parm.mRotation.z * height;
 
 	mMainMtx->setColumn(0, newX);
 	mMainMtx->setColumn(1, newY);
@@ -576,15 +591,20 @@ void SphereShadowNode::makeShadowSRT(JointShadowParm& parm, Vector3f& pos)
 	Vector3f newZ(newX.y * parm.mRotation.z - newX.z * parm.mRotation.y, newX.z * parm.mRotation.x - newX.x * parm.mRotation.z,
 	              newX.x * parm.mRotation.y - newX.y * parm.mRotation.x);
 	newZ.normalise();
+	newZ.x *= parm.mShadowScale;
+	newZ.y *= parm.mShadowScale;
+	newZ.z *= parm.mShadowScale;
 
 	Vector3f newPos;
 	newPos.x = parm.mRotation.x * parm.mPositionMultiplier + pos.x;
 	newPos.y = parm.mRotation.y * parm.mPositionMultiplier + pos.y;
 	newPos.z = parm.mRotation.z * parm.mPositionMultiplier + pos.z;
 
-	Vector3f newY = parm.mRotation;
-	newY *= (100.0f + (pos.y - parm.mPosition.y));
-	newZ *= parm.mShadowScale;
+	f32 height = 100.0f + (pos.y - parm.mPosition.y);
+	Vector3f newY;
+	newY.x = parm.mRotation.x * height;
+	newY.y = parm.mRotation.y * height;
+	newY.z = parm.mRotation.z * height;
 
 	mMainMtx->setColumn(0, newX);
 	mMainMtx->setColumn(1, newY);

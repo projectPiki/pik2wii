@@ -1,9 +1,9 @@
+#include "efx2d/T2DSprayset.h"
 #include "og/Screen/DopingScreen.h"
-#include "og/Screen/ogScreen.h"
 #include "og/Screen/callbackNodes.h"
+#include "og/Screen/ogScreen.h"
 #include "og/Sound.h"
 #include "og/newScreen/ogUtil.h"
-#include "efx2d/T2DSprayset.h"
 #include "trig.h"
 
 namespace og {
@@ -74,8 +74,8 @@ void DopingScreen::setCallBack(JKRArchive* arc)
 	mPaneSpicySpray->setBasePosition(J2DPOS_Center);
 	mPaneBitterSpray->setBasePosition(J2DPOS_Center);
 	mPaneCenterDpad->setBasePosition(J2DPOS_Center);
-	mRootPosition.x = mPaneAll->mOffset.x;
-	mRootPosition.y = mPaneAll->mOffset.y;
+	mRootPosition.x = mPaneAll->mTranslateX;
+	mRootPosition.y = mPaneAll->mTranslateY;
 }
 
 /**
@@ -125,7 +125,7 @@ void DopingScreen::update()
 	}
 	mDopingCheck->update();
 
-	mPaneAll->setOffset(mRootPosition.x, mOffset.x, mRootPosition.y, mOffset.y);
+	mPaneAll->setOffset(mRootPosition.x, mTranslateX, mRootPosition.y, mTranslateY);
 
 	// when spray 0 is first goten
 	if (mHasGotSpicySpray && mSpicySprayGet < 1.0f) {
@@ -170,8 +170,8 @@ void DopingScreen::update()
  */
 void DopingScreen::adjPos(f32 x, f32 y)
 {
-	mOffset.x = x;
-	mOffset.y = y;
+	mTranslateX = x;
+	mTranslateY = y;
 }
 
 /**
@@ -218,7 +218,10 @@ void DopingScreen::openDopingDown()
  * @note Address: 0x80303CF8
  * @note Size: 0xC
  */
-void DopingScreen::openDopingKey() { mHasGotCenterDpad = true; }
+void DopingScreen::openDopingKey()
+{
+	mHasGotCenterDpad = true;
+}
 
 /**
  * @note Address: 0x80303D04
@@ -350,12 +353,18 @@ void DopingCheck::startGetEff(J2DPane* pane)
  * @note Address: 0x80303FC8
  * @note Size: 0xD0
  */
-void DopingCheck::startGetEff_Up() { startGetEff(mSpicyPane); }
+void DopingCheck::startGetEff_Up()
+{
+	startGetEff(mSpicyPane);
+}
 
 /**
  * @note Address: 0x80304098
  * @note Size: 0xD0
  */
-void DopingCheck::startGetEff_Down() { startGetEff(mBitterPane); }
+void DopingCheck::startGetEff_Down()
+{
+	startGetEff(mBitterPane);
+}
 } // namespace Screen
 } // namespace og

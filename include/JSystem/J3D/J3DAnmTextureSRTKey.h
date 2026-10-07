@@ -28,7 +28,7 @@ struct J3DAnmTextureSRTKey : public J3DAnmBase {
 	u16 getUpdateMaterialID(u16 idx) const { return mUpdateMaterialID[idx]; }
 	u16 getUpdateMaterialNum() const { return mTrackNum / 3; }
 	JUTNameTab* getUpdateMaterialName() { return &mUpdateMaterialName; }
-	u16 getUpdateTexMtxID(u16 idx) const { return mUpdateTexMtxID[idx]; }
+	u32 getUpdateTexMtxID(u16 idx) const { return mUpdateTexMtxID[idx]; }
 
 	u16 getPostUpdateMaterialID(u16 idx) const { return mPostUpdateMaterialID[idx]; }
 	u16 getPostUpdateMaterialNum() const { return mPostTrackNum / 3; }
@@ -36,6 +36,7 @@ struct J3DAnmTextureSRTKey : public J3DAnmBase {
 	u16 getPostUpdateTexMtxID(u16 idx) const { return mPostUpdateTexMtxID[idx]; }
 	
 	bool isValidUpdateMaterialID(u16 idx) const { return mUpdateMaterialID[idx] != 0xffff; }
+	u32 getTexMtxCalcType() { return mTexMtxCalcType; }
 
 	// _00     = VTBL
 	// _00-_0C = J3DAnmBase

@@ -2,10 +2,14 @@
 #include "JSystem/J3D/J3DTransform.h"
 #include "LoadResource.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "enemyNestMgr";
+}
+
 namespace Game {
 namespace Nest {
-
-static const char enemyNestMgrName[] = "enemyNestMgr";
 
 J2DGXColorS10 mMatColor;
 
@@ -53,7 +57,7 @@ J3DModelData* Mgr::loadModelData(JKRArchive* archive)
 		mModelData->makeSharedDL();
 	}
 
-	LoadResource::ArgAramOnly loadArg("/enemy/data/JigumoHouse/model.szs");
+	LoadResource::ArgAramOnly loadArg("enemy/data/JigumoHouse/model.szs");
 	LoadResource::Node* jigumoLoadNode = gLoadResourceMgr->mountArchive(loadArg);
 
 	P2ASSERTLINE(73, jigumoLoadNode);
@@ -174,11 +178,11 @@ void Mgr::initObjects()
 		}
 
 		mCollPartFactory = CollPartFactory::load(gParmArc, "JigumoHouse/enemyColl.txt");
-		P2ASSERTLINE(220, mCollPartFactory);
+		P2ASSERTLINE(221, mCollPartFactory);
 
 		for (int i = 0; i < getMaxObjects(); i++) {
 			Obj* enemy = static_cast<Obj*>(getEnemy(i));
-			P2ASSERTLINE(224, enemy);
+			P2ASSERTLINE(225, enemy);
 			enemy->mCollTree = new CollTree();
 			enemy->mCollTree->createFromFactory(model, mCollPartFactory, nullptr);
 			enemy->mCollTree->attachModel(model);

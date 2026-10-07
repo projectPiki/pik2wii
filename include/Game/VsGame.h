@@ -204,7 +204,7 @@ struct CardMgr {
 	void drawSlot(Graphics&, Vector3f&, SlotMachine&);
 
 	Vector3f getSlotOrigin(int);
-	Vector2f getLampPos(int, int);
+	Vector3f getLampPos(int, int);
 	Vector3f getPlayerCard(int);
 	void clearPlayerCard();
 

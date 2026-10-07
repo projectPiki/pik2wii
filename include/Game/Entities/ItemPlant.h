@@ -1,9 +1,9 @@
 #ifndef _GAME_ENTITIES_ITEMPLANT_H
 #define _GAME_ENTITIES_ITEMPLANT_H
 
-#include "types.h"
 #include "Game/BaseItem.h"
 #include "Game/itemMgr.h"
+#include "types.h"
 
 namespace Game {
 namespace ItemPlant {
@@ -206,6 +206,10 @@ struct ProcAnimator {
 	void force(f32);
 	void draw(Graphics& gfx);
 
+	// these feel fake, but the inline depth is required for itemPlant and idk how else to generate it
+	static inline f32 getBasisLength(const Vector3f& basis) { return basis.length(); }
+	static inline f32 getBasisScale(const Vector3f& basis) { return getBasisLength(basis); }
+
 	Vector3f mPosition;  // _00, translation of mMatrices[0]
 	Matrixf** mMatrices; // _0C, array of mMaxCount Matrixf ptrs
 	Matrixf* _10;        // _10, array of mMaxCount Matrixfs
@@ -218,10 +222,10 @@ struct ProcAnimator {
 };
 
 struct Item : public FSMItem<Item, FSM, State> {
-	Item(int objType);
+	Item();
 
-	virtual void constructor();                                        // _2C
 	virtual void onInit(CreatureInitArg* settings);                    // _30
+	virtual void constructor();                                        // _2C
 	virtual void doDirectDraw(Graphics& gfx);                          // _50
 	virtual void updateTrMatrix();                                     // _78
 	virtual void onStickStart(Creature* stuck);                        // _158

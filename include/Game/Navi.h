@@ -238,6 +238,15 @@ struct Navi : public FakePiki, virtual public PelletView {
 
 	inline int getNaviID() { return mNaviIndex; }
 
+	inline void updateBeaconPosition()
+	{
+		Matrixf* mtx    = mBeaconJoint->getWorldMatrix();
+		mBeaconPosition.set(5.0f, 0.0f, 0.0f);
+		Vec calcpos;
+		PSMTXMultVec(mtx->mMatrix.mtxView, (Vec*)&mBeaconPosition, &calcpos);
+		mBeaconPosition = Vector3f(calcpos);
+	}
+
 	inline bool isDead() { return mHealth < 1.0f; }
 
 	// inline NaviState* getCurrentState() { return mCurrentState; }

@@ -143,10 +143,12 @@ bool ActAttack::applicable()
  */
 void ActAttack::initJump()
 {
+	f32 y = 200.0f;
+	f32 radius = 100.0f;
 	mAttackID    = ATTACK_Jump;
 	Vector3f sep = mAttackSphere.mPosition - mParent->getPosition();
 	sep.normalise();
-	mParent->mVelocity = Vector3f(sep.x * 100.0f, 200.0f, sep.z * 100.0f);
+	mParent->mVelocity.set(radius * sep.x, y, radius * sep.z);
 }
 
 /**

@@ -181,13 +181,7 @@ bool Obj::isAttackStart()
 
 	if (mTargetCreature) {
 		if (FABS(getAngDist(mTargetCreature)) <= contAtkAngle) {
-			Vector3f pos(mPosition.x, 0.0f, mPosition.z);
-
-			Vector3f targetPos = Vector3f(mTargetCreature->getPosition().x, 0.0f, mTargetCreature->getPosition().z);
-			// Vector3f pos       = Vector3f(mPosition.x, 0.0f, mPosition.z);
-			// Vector3f targetPos = Vector3f(mTargetCreature->getPosition().x, 0.0f, mTargetCreature->getPosition().z);
-
-			f32 sqrDist = sqrDistanceXZ(targetPos, pos);
+			f32 sqrDist = sqrDistance2D(mTargetCreature->getPosition().x, mTargetCreature->getPosition().z, mPosition.x, mPosition.z);
 			if (sqrDist < minAtkRange + atkRadius && sqrDist > minAtkRange - atkRadius) {
 				return true;
 			}
@@ -202,11 +196,7 @@ bool Obj::isAttackStart()
 
 		if (piki->isSearchable()) {
 			if (FABS(getAngDist(piki)) <= contAtkAngle) {
-				Vector3f pos(mPosition.x, 0.0f, mPosition.z);
-
-				Vector3f targetPos = Vector3f(piki->getPosition().x, 0.0f, piki->getPosition().z);
-
-				f32 sqrDist = sqrDistanceXZ(targetPos, pos);
+				f32 sqrDist = sqrDistance2D(piki->getPosition().x, piki->getPosition().z, mPosition.x, mPosition.z);
 				if (sqrDist < minAtkRange + atkRadius && sqrDist > minAtkRange - atkRadius) {
 					mTargetCreature = piki;
 					return true;
@@ -614,7 +604,7 @@ bool Obj::isFindTarget()
 				Vector3f pos(mPosition.x, 0.0f, mPosition.z);
 				Vector3f targetPos = Vector3f(piki->getPosition().x, 0.0f, piki->getPosition().z);
 
-				f32 sqrDist = sqrDistanceXZ(targetPos, pos);
+				f32 sqrDist = targetPos.sqrDistance2D(pos);
 				if (sqrDist < searchDist && sqrDist > minDist) {
 					mTargetCreature = piki;
 					searchDist      = sqrDist;
@@ -638,7 +628,7 @@ bool Obj::isFindTarget()
  */
 bool Obj::isOutOfTerritory()
 {
-	return sqrDistanceXZ(mHomePosition, mPosition) > SQUARE(C_GENERALPARMS.mTerritoryRadius.mValue);
+	return mHomePosition.sqrDistance2D(mPosition) > SQUARE(C_GENERALPARMS.mTerritoryRadius.mValue);
 }
 
 /**
@@ -660,7 +650,7 @@ bool Obj::isProhibitedSearch()
 			return false;
 		}
 
-		if (sqrDistanceXZ(mHomePosition, mPosition) > SQUARE(radius)) {
+		if (mHomePosition.sqrDistance2D(mPosition) > SQUARE(radius)) {
 			return true;
 		}
 	}
@@ -727,7 +717,7 @@ void Obj::walkFunc()
 	// check that the mamuta is covering enough distance every 120 frames, if not, make it forget what it was doing
 	mLastPositionCheckTimer++;
 	if (mLastPositionCheckTimer > 120) {
-		if (sqrDistanceXZ(mPosition, mLastPositionCheck) < SQUARE(30.0f)) {
+		if (mPosition.sqrDistance2D(mLastPositionCheck) < SQUARE(30.0f)) {
 			mNoSearchCounter = 120;
 			mTargetCreature  = nullptr;
 			mGoalPosition    = mHomePosition;
@@ -931,7 +921,7 @@ bool Obj::isReachToGoal(f32 distance)
 		distance = C_GENERALPARMS.mHomeRadius.mValue;
 	}
 
-	if (sqrDistanceXZ(mPosition, mGoalPosition) < SQUARE(distance)) {
+	if (mPosition.sqrDistance2D(mGoalPosition) < SQUARE(distance)) {
 		return true;
 	}
 

@@ -115,6 +115,7 @@ struct J3DMaterial {
 	J3DColorBlock* getColorBlock() const { return mColorBlock; }
 	J3DTexGenBlock* getTexGenBlock() const { return mTexGenBlock; }
 	J3DTexCoord* getTexCoord(u32 idx) { return mTexGenBlock->getTexCoord(idx); }
+	J3DTexMtx* getTexMtx(u32 idx) { return mTexGenBlock->getTexMtx(idx); }
 	J3DDisplayListObj* getSharedDisplayListObj() const { return mSharedDLObj; }
 	J3DShape* getShape() { return mShape; }
 	J3DJoint* getJoint() { return mJoint; }
@@ -228,9 +229,33 @@ struct J3DMaterialTable {
 	bool removeTexMtxAnimator(J3DAnmTextureSRTKey*);
 	int createTexMtxForAnimator(J3DAnmTextureSRTKey*);
 
+	void initTexMtxAnms(J3DAnmTextureSRTKey* key, J3DTexMtxAnm** anms, u16 count)
+	{
+		for (u16 i = 0; i < count; i++) {
+			(*anms)[i].setIndex(i);
+			(*anms)[i].setAnm(key);
+		}
+	}
+
 	J3DErrType allocTevRegAnimator(J3DAnmTevRegKey*, J3DTevColorAnm**, J3DTevKColorAnm**);
 	J3DErrType entryTevRegAnimator(J3DAnmTevRegKey*);
 	bool removeTevRegAnimator(J3DAnmTevRegKey*);
+
+	void initTevColorAnms(J3DAnmTevRegKey* key, J3DTevColorAnm** anms, u16 count)
+	{
+		for (u16 i = 0; i < count; i++) {
+			(*anms)[i].setIndex(i);
+			(*anms)[i].setAnm(key);
+		}
+	}
+
+	void initTevKColorAnms(J3DAnmTevRegKey* key, J3DTevKColorAnm** anms, u16 count)
+	{
+		for (u16 i = 0; i < count; i++) {
+			(*anms)[i].setIndex(i);
+			(*anms)[i].setAnm(key);
+		}
+	}
 
 	J3DErrType entryMatColorAnimator(J3DAnmColor*);
 

@@ -16,11 +16,8 @@ struct TagParameters : public CNode {
 	void read(Stream&);
 
 	// Unused/inlined:
-	bool isEndToken(char* token)
-	{
-		int strLen = strlen("end");
-		return (strncmp("end", token, strLen)) == 0;
-	}
+	bool isEndToken(char* token);
+	
 
 	void add(TagParm*);
 	void write(Stream&);
