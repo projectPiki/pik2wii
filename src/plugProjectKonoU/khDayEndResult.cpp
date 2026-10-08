@@ -2379,7 +2379,7 @@ SceneDayEndResultMail::SceneDayEndResultMail()
 void SceneDayEndResultMail::doUserCallBackFunc(Resource::MgrCommand* mgr)
 {
 	MailTableFile* file = nullptr;
-	LoadResource::Arg tableArg("/user/Koono/mail_table.szs");
+	LoadResource::Arg tableArg("user/Koono/mail_table.szs");
 	LoadResource::Node* tableNode = gLoadResourceMgr->mountArchive(tableArg);
 	if (tableNode) {
 		file = static_cast<MailTableFile*>(JKRGetResource("mail_table.bin", tableNode->mArchive));
@@ -2389,7 +2389,7 @@ void SceneDayEndResultMail::doUserCallBackFunc(Resource::MgrCommand* mgr)
 
 	// problem is from here
 	int offset              = 4;
-	MailSaveFlags saveFlags = Game::playData->mMailSaveData.mPastLogs;
+	BitFlag2<u32, 4> saveFlags = Game::playData->mMailSaveData.mPastLogs;
 
 	u32 entries = file->mEntries;
 	mTableData  = new MailTableData*[entries];
@@ -2441,17 +2441,14 @@ void SceneDayEndResultMail::doUserCallBackFunc(Resource::MgrCommand* mgr)
 
 		dispResult.mTodayMailID = mailID;
 
-		if (dispResult.mTodayMailID < 128) {
-			int byte = dispResult.mTodayMailID >> 3;
-			saveFlags.byteView[15 - byte] |= (1 << (dispResult.mTodayMailID - (byte << 3)));
-		}
+		saveFlags.setBit(dispResult.mTodayMailID);
 
 		Game::playData->mMailSaveData.mPastLogs = saveFlags;
 		Game::playData->mMailSaveData.set_history(dispResult.mTodayMailID);
 
 		mMailFlags = Game::playData->mMailSaveData.mHistory;
 
-		LoadResource::Arg iconArg("/user/Koono/mail_icon.szs");
+		LoadResource::Arg iconArg("user/Koono/mail_icon.szs");
 		iconArg.mHeap                = dispResult.mBackupHeap;
 		LoadResource::Node* iconNode = gLoadResourceMgr->mountArchive(iconArg);
 		if (iconNode) {

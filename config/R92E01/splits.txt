@@ -3735,6 +3735,7 @@ plugProjectKandoU/singleGS_FileSelect.cpp:
 
 plugProjectKandoU/gamePlayDataMemCard.cpp:
 	.text       start:0x8029EBC0 end:0x8029FEA4
+	.rodata     start:0x8054BCA8 end:0x8054C0E0
 	.data       start:0x8059FAC0 end:0x8059FAD0
 	.sdata      start:0x8066B368 end:0x8066B370
 	.sbss       start:0x8066CBB0 end:0x8066CBB8
@@ -5195,18 +5196,23 @@ plugProjectNishimuraU/RandCapEnemyUnit.cpp:
 
 plugProjectNishimuraU/NormMiniHoudaiMgr.cpp:
 	.text       start:0x8037BCF0 end:0x8037C050
+	.data       start:0x805B7498 end:0x805B75C0
 
 plugProjectNishimuraU/NormMiniHoudai.cpp:
 	.text       start:0x8037C050 end:0x8037C0E8
+	.data       start:0x805B75C0 end:0x805B78F0
 
 plugProjectNishimuraU/FixMiniHoudaiMgr.cpp:
 	.text       start:0x8037C0E8 end:0x8037C324
+	.data       start:0x805B78F0 end:0x805B79D0
 
 plugProjectNishimuraU/FixMiniHoudai.cpp:
 	.text       start:0x8037C324 end:0x8037C448
+	.data       start:0x805B79D0 end:0x805B7D00
 
 plugProjectNishimuraU/TyreShadow.cpp:
 	.text       start:0x8037C448 end:0x8037C944
+	.data       start:0x805B7D00 end:0x805B7D10
 
 plugProjectOgawaU/ogScreen.cpp:
 	.text       start:0x8037C944 end:0x8037DE10

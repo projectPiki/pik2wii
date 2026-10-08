@@ -23,18 +23,6 @@ struct OnyonSpotArg : public ModelEffectCreateArg {
 	u32 mOnyonType; // _10
 };
 
-struct OnyonSpotData : public ModelEffectData {
-	virtual ~OnyonSpotData() { }                              // _08 (weak)
-	virtual void loadResources();                             // _10
-	virtual u64 getID() { return 'ONY_SPOT'; }                // _14 (weak)
-	virtual ModelEffect* onCreate(ModelEffectCreateArg* arg); // _18
-
-	int mTexAnimCount;                  // _20
-	Sys::MatTexAnimation* mTexAnims;    // _24
-	int mTevAnimCount;                  // _28
-	Sys::MatTevRegAnimation* mTevAnims; // _2C
-};
-
 struct OnyonSpot : public ModelEffect {
 	virtual void changeMaterial();                     // _1C
 	virtual void getLODSphere(Sys::Sphere& lodSphere); // _20
@@ -47,6 +35,18 @@ struct OnyonSpot : public ModelEffect {
 	Sys::MatLoopAnimator mAnim1; // _3C
 	Sys::MatLoopAnimator mAnim2; // _48
 };
+
+struct OnyonSpotData : public ModelEffectData {
+	virtual void loadResources();                             // _10
+	virtual u64 getID() { return 'ONY_SPOT'; }                // _14 (weak)
+	virtual ModelEffect* onCreate(ModelEffectCreateArg* arg); // _18
+
+	int mTexAnimCount;                  // _20
+	Sys::MatTexAnimation* mTexAnims;    // _24
+	int mTevAnimCount;                  // _28
+	Sys::MatTevRegAnimation* mTevAnims; // _2C
+};
+
 } // namespace efx
 
 #endif
