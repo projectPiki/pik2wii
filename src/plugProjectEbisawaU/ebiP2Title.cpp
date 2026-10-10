@@ -24,37 +24,19 @@ TTitleMgr* TTitleMgr::_instance;
  */
 TTitleMgr::TTitleMgr()
     : CNode("TTitleMgr")
-    , mCounterCommon(0)
-    , mCounterCommonMax(0)
-    , mCounter2(0)
-    , mCounter2Max(0)
-    , mCounterControl(0)
-    , mCounterControlMax(0)
-    , mCounterPressStart(0)
-    , mCounterPressStartMax(0)
     , mLightMgr()
 {
 	_F54          = true;
 	mState        = TITLE_Inactive;
 	mLevelSetting = LEVEL_Summer;
 
-	u32 count         = 0.0f / sys->getDeltaTime();
-	mCounterCommon    = count;
-	mCounterCommonMax = count;
-
-	count         = 0.0f / sys->getDeltaTime();
-	mCounter2     = count;
-	mCounter2Max  = count;
+	mCounterCommon.setValue(0.0f);
+	mCounter2.setValue(0.0f);
 	mIsWindActive = 0;
 	mCanInput     = 0;
 
-	count              = 0.0f / sys->getDeltaTime();
-	mCounterControl    = count;
-	mCounterControlMax = count;
-
-	count                 = 0.0f / sys->getDeltaTime();
-	mCounterPressStart    = count;
-	mCounterPressStartMax = count;
+	mCounterControl.setValue(0.0f);
+	mCounterPressStart.setValue(0.0f);
 
 	mController  = nullptr;
 	mDrawBufferA = nullptr;
@@ -210,7 +192,7 @@ void TTitleMgr::setLogo()
  */
 void TTitleMgr::calcBreakupDestination()
 {
-	for (int i = 0; i < 500; i++) {
+	for (int i = 0; i < TITLE_PIKI_TOTAL; i++) {
 		f32 angle = 4.712389f * randEbisawaFloat() + -0.78539819f;
 		f32 max   = mTitleParms.mMaxPikminScatterRadius();
 		f32 min   = mTitleParms.mMinPikminScatterRadius();
@@ -413,7 +395,7 @@ bool TTitleMgr::inViewField(Vector2f& pos, f32 radius)
 void TTitleMgr::inViewField(TObjBase* obj)
 {
 	if (obj->isCalc()) {
-		inViewField(obj->mPosition, obj->mParms[4]);
+		inViewField(obj->mPosition, obj->mCullRadius);
 	}
 }
 
@@ -439,7 +421,7 @@ bool TTitleMgr::isInViewField(Vector2f& pos, f32 radius)
 bool TTitleMgr::isInViewField(TObjBase* obj)
 {
 	if (obj->isCalc()) {
-		return isInViewField(obj->mPosition, obj->mParms[4]);
+		return isInViewField(obj->mPosition, obj->mCullRadius);
 	}
 	return false;
 }
@@ -466,7 +448,7 @@ bool TTitleMgr::isOutViewField(Vector2f& pos, f32 radius)
 bool TTitleMgr::isOutViewField(TObjBase* obj)
 {
 	if (obj->isCalc()) {
-		return isOutViewField(obj->mPosition, obj->mParms[4]);
+		return isOutViewField(obj->mPosition, obj->mCullRadius);
 	}
 	return true;
 }
@@ -501,19 +483,13 @@ void TTitleMgr::start()
 	mBlackPlane.start();
 	updateCameras();
 
-	u32 count     = 10.0f / sys->getDeltaTime();
-	mCounter2     = count;
-	mCounter2Max  = count;
+	mCounter2.setValue(10.0f);
 	mIsWindActive = 0;
 	mCanInput     = 0;
 
-	count              = mTitleParms.mCanOpenMenuDelay.mValue / sys->getDeltaTime();
-	mCounterControl    = count;
-	mCounterControlMax = count;
+	mCounterControl.setValue(mTitleParms.mCanOpenMenuDelay.mValue);
 
-	count                 = mTitleParms.mPressStartDelay.mValue / sys->getDeltaTime();
-	mCounterPressStart    = count;
-	mCounterPressStartMax = count;
+	mCounterPressStart.setValue(mTitleParms.mPressStartDelay.mValue);
 
 	mPikminMgr.startDemo();
 	mBlackPlane.start();
@@ -531,10 +507,9 @@ void TTitleMgr::windBlow()
 	minX = mTitleParms.mBoundsMinX();
 	maxX = mTitleParms.mBoundsMaxX() - minX;
 
-	ratio    = maxX / f32(mCounterCommonMax);
-	f32 calc = mCounterCommonMax ? mCounterCommon / (f32)mCounterCommonMax : 0.0f;
+	ratio = maxX / f32(mCounterCommon.mMaxValue);
 
-	f32 initX = maxX * (1.0f - (mCounterCommonMax ? mCounterCommon / f32(mCounterCommonMax) : 0.0f)) + minX;
+	f32 initX = maxX * (1.0f - mCounterCommon.getRatio()) + minX;
 	EGEBox2f box;
 	JGeometry::TVec2f i(initX, mTitleParms.mBoundsMinY());
 	box.setI(i);
@@ -571,7 +546,6 @@ bool TTitleMgr::startKogane()
 	} else {
 		f32 angle = randEbisawaFloat() * TAU;
 		f32 x     = mTitleParms.mMaxPikminScatterRadius.mValue;
-		// this and startChappy refuse to not inline in update
 		Vector2f pos1(x * cosf(angle), mTitleParms.mMaxPikminScatterRadius.mValue * sinf(angle));
 		Vector2f pos2;
 		pos2.x = 0.0f;
@@ -580,8 +554,6 @@ bool TTitleMgr::startKogane()
 		startState(TITLE_Enemy);
 		return true;
 	}
-
-	FORCE_DONT_INLINE;
 }
 
 /**
@@ -604,8 +576,6 @@ bool TTitleMgr::startChappy()
 		startState(TITLE_Enemy);
 		return true;
 	}
-
-	FORCE_DONT_INLINE;
 }
 
 /**
@@ -639,9 +609,7 @@ bool TTitleMgr::boidToAssemble(s32 coordType)
 void TTitleMgr::boid3ToAssemble()
 {
 	mPikminMgr.startBoid3(mTitleParms.mBoidDurationSwirl.mValue);
-	u32 count         = mTitleParms.mBoidDurationSwirl.mValue / sys->getDeltaTime();
-	mCounterCommon    = count;
-	mCounterCommonMax = count;
+	mCounterCommon.setValue(mTitleParms.mBoidDurationSwirl.mValue);
 	//  UNUSED FUNCTION
 }
 
@@ -651,7 +619,7 @@ void TTitleMgr::boid3ToAssemble()
  */
 bool TTitleMgr::isControllerOK()
 {
-	if (controllerOK()) {
+	if (mCounterControl.isZero()) {
 		return true;
 	}
 	return false;
@@ -663,7 +631,7 @@ bool TTitleMgr::isControllerOK()
  */
 bool TTitleMgr::isPressStart()
 {
-	if (pressStartOK()) {
+	if (mCounterPressStart.isZero()) {
 		return true;
 	}
 	return false;
@@ -689,29 +657,21 @@ void TTitleMgr::startState(enumState state)
 	switch (state) {
 	case TITLE_BoidDisperse:
 		mPikminMgr.startBoid1(mTitleParms.mBoidDurationDisperse);
-		count             = mTitleParms.mBoidDurationDisperse.mValue / sys->getDeltaTime();
-		mCounterCommon    = count;
-		mCounterCommonMax = count;
+		mCounterCommon.setValue(mTitleParms.mBoidDurationDisperse.mValue);
 		break;
 	case TITLE_BoidRegroup:
 		mPikminMgr.startBoid2(mTitleParms.mBoidDurationRegroup);
-		count             = mTitleParms.mBoidDurationRegroup.mValue / sys->getDeltaTime();
-		mCounterCommon    = count;
-		mCounterCommonMax = count;
+		mCounterCommon.setValue(mTitleParms.mBoidDurationRegroup.mValue);
 		break;
 	case TITLE_BoidSwirl:
 		boid3ToAssemble();
 		break;
 	case TITLE_StartWind:
-		count             = mTitleParms.mWindMoveDuration.mValue / sys->getDeltaTime();
-		mCounterCommon    = count;
-		mCounterCommonMax = count;
+		mCounterCommon.setValue(mTitleParms.mWindMoveDuration.mValue);
 		mMapBase.startWind(mTitleParms.mPlantMoveDuration.mValue);
 		break;
 	case TITLE_Enemy:
-		count             = mTitleParms.mEnemyStayDuration.mValue / sys->getDeltaTime();
-		mCounterCommon    = count;
-		mCounterCommonMax = count;
+		mCounterCommon.setValue(mTitleParms.mEnemyStayDuration.mValue);
 		break;
 	}
 }
@@ -723,15 +683,9 @@ void TTitleMgr::startState(enumState state)
 bool TTitleMgr::update()
 {
 	if (mState != TITLE_Inactive) {
-		if (mCounter2) {
-			mCounter2--;
-		}
-		if (mCounterControl) {
-			mCounterControl--;
-		}
-		if (mCounterPressStart) {
-			mCounterPressStart--;
-		}
+		mCounter2.update();
+		mCounterControl.update();
+		mCounterPressStart.update();
 
 		if (isAssemble()) {
 			mCanInput = true;
@@ -753,17 +707,15 @@ bool TTitleMgr::update()
 				startKogane();
 			}
 		}
-		if (!mCounter2) {
+		if (mCounter2.mCurrentValue == 0) {
 			bool flag = false;
 			if (!mIsWindActive) {
 				bool assembleCheck;
 				if (!isAssemble()) {
 					assembleCheck = false;
 				} else {
-					mState            = TITLE_StartWind;
-					u32 count         = mTitleParms.mWindMoveDuration.mValue / sys->getDeltaTime();
-					mCounterCommon    = count;
-					mCounterCommonMax = count;
+					mState = TITLE_StartWind;
+					mCounterCommon.setValue(mTitleParms.mWindMoveDuration.mValue);
 					mMapBase.startWind(mTitleParms.mPlantMoveDuration.mValue);
 					assembleCheck = true;
 				}
@@ -805,10 +757,8 @@ bool TTitleMgr::update()
 					if (!isAssemble()) {
 						assembleCheck = false;
 					} else {
-						mState            = TITLE_StartWind;
-						u32 count         = mTitleParms.mWindMoveDuration.mValue / sys->getDeltaTime();
-						mCounterCommon    = count;
-						mCounterCommonMax = count;
+						mState = TITLE_StartWind;
+						mCounterCommon.setValue(mTitleParms.mWindMoveDuration.mValue);
 						mMapBase.startWind(mTitleParms.mPlantMoveDuration);
 						assembleCheck = true;
 					}
@@ -819,13 +769,9 @@ bool TTitleMgr::update()
 			}
 
 			if (flag) {
-				u32 count    = 10.0f / sys->getDeltaTime();
-				mCounter2    = count;
-				mCounter2Max = count;
+				mCounter2.setValue(10.0f);
 			} else {
-				u32 count    = 3.0f / sys->getDeltaTime();
-				mCounter2    = count;
-				mCounter2Max = count;
+				mCounter2.setValue(3.0f);
 			}
 		}
 	}
@@ -842,49 +788,37 @@ void TTitleMgr::updateState()
 	case TITLE_Inactive:
 		return;
 	case TITLE_BoidDisperse:
-		if (mCounterCommon) {
-			mCounterCommon--;
-		}
-		if (mCounterCommon == 0) {
+		mCounterCommon.update();
+		if (mCounterCommon.isZero()) {
 			startState(TITLE_BoidRegroup);
 		}
 		break;
 	case TITLE_BoidRegroup:
-		if (mCounterCommon) {
-			mCounterCommon--;
-		}
-		if (mCounterCommon == 0) {
+		mCounterCommon.update();
+		if (mCounterCommon.isZero()) {
 			startState(TITLE_BoidSwirl);
 		}
 		break;
 	case TITLE_BoidSwirl:
-		if (mCounterCommon) {
-			mCounterCommon--;
-		}
-		if (mCounterCommon == 0) {
+		mCounterCommon.update();
+		if (mCounterCommon.isZero()) {
 			mPikminMgr.assemble();
 			startState(TITLE_Normal);
 		}
 		break;
 	case TITLE_StartWind:
-		if (mCounterCommon) {
-			mCounterCommon--;
-		}
+		mCounterCommon.update();
 		windBlow();
-		if (mCounterCommon == 0) {
+		if (mCounterCommon.isZero()) {
 			startState(TITLE_Normal);
 		}
 		break;
 	case TITLE_Enemy:
-		if (mCounterCommon) {
-			mCounterCommon--;
-		}
+		mCounterCommon.update();
 		if (mKoganeMgr.mObject->isController() || mChappyMgr.mObject->isController()) {
-			u32 count         = 10.0f / sys->getDeltaTime();
-			mCounterCommon    = count;
-			mCounterCommonMax = count;
+			mCounterCommon.setValue(10.0f);
 		}
-		if (!mCounterCommon) {
+		if (mCounterCommon.isZero()) {
 			mKoganeMgr.mObject->goHome();
 			mChappyMgr.mObject->goHome();
 		}
@@ -922,8 +856,8 @@ void TTitleMgr::checkEncounter_()
 		boidCalcTimer = 0;
 	}
 
-	int start = (boidCalcTimer * 500) / 10;
-	int max   = (boidCalcTimer == 9) ? 500 : (boidCalcTimer + 1) * 500 / 10;
+	int start = (boidCalcTimer * TITLE_PIKI_TOTAL) / 10;
+	int max   = (boidCalcTimer == 9) ? TITLE_PIKI_TOTAL : (boidCalcTimer + 1) * TITLE_PIKI_TOTAL / 10;
 
 	for (int i = start; i < max; i++) {
 		Pikmin::TUnit* piki = mPikminMgr.getUnit(i);

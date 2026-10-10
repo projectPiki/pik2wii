@@ -250,11 +250,9 @@ void E2DCallBack_WindowCursor::do_update()
 {
 	if (mPane) {
 		JGeometry::TBox2f box(0.0f, 0.0f, 0.0f, 0.0f);
-		if (mCounter) {
-			mCounter--;
-		}
+		mCounter.update();
 
-		f32 val = (mCounterMax) ? (f32)mCounter / (f32)mCounterMax : 0.0f;
+		f32 val = mCounter.getRatio();
 
 		box.i.x = (1.0f - val) * (mBounds2.i.x - mBounds1.i.x) + mBounds1.i.x;
 		box.i.y = (1.0f - val) * (mBounds2.i.y - mBounds1.i.y) + mBounds1.i.y;

@@ -190,9 +190,7 @@ void TOption::doOpenScreen(ArgOpen*)
 	mAnimOpenScreen.play(60.0f * sys->getDeltaTime(), J3DAA_UNKNOWN_0, true);
 	setOptionParamToScreen_();
 
-	u32 count       = (E2DFader::kFadeTime / sys->getDeltaTime());
-	mCounterOpen    = count;
-	mCounterOpenMax = count;
+	mCounterOpen.setValue(E2DFader::kFadeTime);
 
 	mState             = 1;
 	mCurrMainSelection = 1;
@@ -200,9 +198,7 @@ void TOption::doOpenScreen(ArgOpen*)
 	mOptionPanes[0]->hide();
 	bounds = *mButtonPaneList[mCurrMainSelection]->getBounds();
 
-	count                     = (0.1f / sys->getDeltaTime());
-	mWindowCursor.mCounter    = count;
-	mWindowCursor.mCounterMax = count;
+	mWindowCursor.mCounter.setValue(0.1f);
 
 	mWindowCursor.mBounds1    = bounds;
 	mWindowCursor.mBounds2    = bounds;
@@ -217,10 +213,8 @@ void TOption::doOpenScreen(ArgOpen*)
  */
 void TOption::doCloseScreen(ArgClose*)
 {
-	u32 v1          = E2DFader::kFadeTime / sys->getDeltaTime();
-	mCounterOpen    = v1;
-	mCounterOpenMax = v1;
-	mState          = 2;
+	mCounterOpen.setValue(E2DFader::kFadeTime);
+	mState = 2;
 }
 
 /**
@@ -238,16 +232,12 @@ void TOption::doInitWaitState()
  */
 bool TOption::doUpdateStateOpen()
 {
-	if (mState != 0 && mCounterOpen != 0) {
-		mCounterOpen--;
+	if (mState != 0) {
+		mCounterOpen.update();
 	}
 	mMainScreen->update();
 
-#if BUILDTARGET == USADEMO1 // demo
-	mOptionPanes[0]->hide();
-#endif
-
-	if (mAnimOpenScreen.isFinish() && isClosed()) {
+	if (mAnimOpenScreen.isFinish() && mCounterOpen.isZero()) {
 		return true;
 	}
 	return false;
@@ -271,10 +261,10 @@ bool TOption::doUpdateStateWait()
 
 			if (mNextSelection != mCurrMainSelection) {
 				JGeometry::TBox2f bounds;
-				bounds                 = *mButtonPaneList[mCurrMainSelection]->getBounds();
-				mWindowCursor.mBounds1 = mWindowCursor.mBounds2;
-				mWindowCursor.mBounds2 = bounds;
-				mWindowCursor.mCounter = mWindowCursor.mCounterMax;
+				bounds                               = *mButtonPaneList[mCurrMainSelection]->getBounds();
+				mWindowCursor.mBounds1               = mWindowCursor.mBounds2;
+				mWindowCursor.mBounds2               = bounds;
+				mWindowCursor.mCounter.mCurrentValue = mWindowCursor.mCounter.mMaxValue;
 				mWindowCursor.mScaleMgr.up(0.1f, 30.0f, 0.6f, 0.0f);
 				mWindowCursor.mWindowPane = mOptionPanes[mCurrMainSelection];
 				PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_CURSOR, 0);
@@ -289,7 +279,8 @@ bool TOption::doUpdateStateWait()
 	}
 	mExitStatus = OptionState_NULL;
 
-	if (mEnabled && !mWindowCursor.mCounter) {
+	if(mEnabled && mWindowCursor.mCounter.isZero())
+	{
 		if (mController->getButtonDown() & Controller::PRESS_B) {
 			mExitStatus = OptionState_Exit;
 			PSSystem::spSysIF->playSystemSe(PSSE_SY_MENU_CANCEL, 0);
@@ -409,14 +400,7 @@ bool TOption::doUpdateStateWait()
 				mOptionPanes[i]->hide();
 			}
 		}
-		f32 calc;
-		if (mWindowCursor.mCounterMax) {
-			calc = (f32)mWindowCursor.mCounter / (f32)mWindowCursor.mCounterMax;
-		} else {
-			calc = 0.0f;
-		}
-		u8 alpha = (1.0f - calc) * 255.0f;
-		mDeflickerScreen->setAlpha(alpha);
+		mDeflickerScreen->setAlpha((1.0f - mWindowCursor.mCounter.getRatio()) * 255.0f);
 	} else if (mNextSelection == 5) {
 
 		for (int i = 0; i < 7; i++) {
@@ -424,14 +408,7 @@ bool TOption::doUpdateStateWait()
 				mOptionPanes[i]->show();
 			}
 		}
-		f32 calc;
-		if (mWindowCursor.mCounterMax) {
-			calc = (f32)mWindowCursor.mCounter / (f32)mWindowCursor.mCounterMax;
-		} else {
-			calc = 0.0f;
-		}
-		u8 alpha = calc * 255.0f;
-		mDeflickerScreen->setAlpha(alpha);
+		mDeflickerScreen->setAlpha(mWindowCursor.mCounter.getRatio() * 255.0f);
 	} else {
 		mDeflickerScreen->setAlpha(0);
 	}
@@ -444,10 +421,6 @@ bool TOption::doUpdateStateWait()
 	mPaneDeflickerYes->updateScale(mButtonPuruAnim[5].mScale);
 	mPaneDeflickerNo->updateScale(mButtonPuruAnim[6].mScale);
 
-#if BUILDTARGET == USADEMO1 // demo
-	mOptionPanes[0]->hide();
-#endif
-
 	return false;
 }
 
@@ -458,11 +431,11 @@ bool TOption::doUpdateStateWait()
 bool TOption::doUpdateStateClose()
 {
 	mMainScreen->update();
-	if (mState != 0 && mCounterOpen != 0) {
-		mCounterOpen--;
+	if (mState != 0) {
+		mCounterOpen.update();
 	}
 
-	if (isClosed()) {
+	if (mCounterOpen.isZero()) {
 		return true;
 	}
 	return false;
@@ -481,26 +454,15 @@ void TOption::doDraw()
 	mMainScreen->draw(*gfx, *graf);
 
 	if (mState) {
-		f32 factor;
 		graf = &sys->mGfx->mPerspGraph;
 		graf->setPort();
 		JUtility::TColor color(mColor);
 		switch (mState) {
 		case 1:
-			if (mCounterOpenMax) {
-				factor = (f32)mCounterOpen / (f32)mCounterOpenMax;
-			} else {
-				factor = 0.0f;
-			}
-			color.a = mAlpha * factor;
+			color.a = mAlpha * mCounterOpen.getRatio();
 			break;
 		case 2:
-			if (mCounterOpenMax) {
-				factor = (f32)mCounterOpen / (f32)mCounterOpenMax;
-			} else {
-				factor = 0.0f;
-			}
-			color.a = mAlpha * (1.0f - factor);
+			color.a = mAlpha * (1.0f - mCounterOpen.getRatio());
 			break;
 		}
 		graf->setColor(color);

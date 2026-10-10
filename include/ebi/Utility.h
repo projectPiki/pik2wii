@@ -2,26 +2,62 @@
 #define _EBI_UTILITY_H
 
 #include "Controller.h"
-#include "JSystem/JUtility/TColor.h"
 #include "Game/MemoryCard/Mgr.h"
+#include "JSystem/JUtility/TColor.h"
 #include "System.h"
 
 namespace ebi {
 
+struct EUTCounter {
+	inline EUTCounter()
+	{
+		mCurrentValue = 0;
+		mMaxValue     = 0;
+	}
+
+	inline void setValue(u32 v)
+	{
+		mCurrentValue = v;
+		mMaxValue     = v;
+	}
+
+	inline void setValue(f32 v)
+	{
+		u32 value     = v / sys->getDeltaTime();
+		mCurrentValue = value;
+		mMaxValue     = value;
+	}
+
+	inline f32 getRatio() { return (mMaxValue != 0) ? ((f32)mCurrentValue / (f32)mMaxValue) : 0.0f; }
+
+	inline void update()
+	{
+		if (mCurrentValue != 0)
+			mCurrentValue--;
+	}
+
+	inline bool isZero()
+	{
+		if (mCurrentValue == 0) {
+			return true;
+		}
+		return false;
+	}
+
+	u32 mCurrentValue; // _00
+	u32 mMaxValue;     // _04
+};
+
 inline static bool isSaveError()
 {
-	if (sys->mCardMgr->isSaveInvalid() && sys->mCardMgr->isCardReady()) {
+	if (sys->mCardMgr->isSaveInvalid() && sys->mCardMgr->getCardStatus() == MemoryCardMgr::MCS_NoCard) {
 		return true;
 	}
 	return false;
 }
 
 struct EUTPadInterface_countNum {
-	EUTPadInterface_countNum()
-	{
-		mCounter    = 0;
-		mCounterMax = 0;
-	}
+	EUTPadInterface_countNum() { }
 
 	enum enumMode {
 		MODE_LEFTRIGHT,
@@ -34,8 +70,7 @@ struct EUTPadInterface_countNum {
 	void update();
 
 	Controller* mController; // _00
-	u32 mCounter;            // _04
-	u32 mCounterMax;         // _08
+	EUTCounter mCounter;     // _04
 	bool mIsChanging;        // _0C
 	u8 mSelectionChanged;    // _0D
 	s32 mMinSel;             // _10

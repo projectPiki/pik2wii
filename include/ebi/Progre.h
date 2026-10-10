@@ -1,10 +1,11 @@
 #ifndef _EBI_PROGRE_H
 #define _EBI_PROGRE_H
 
-#include "types.h"
 #include "P2DScreen.h"
 #include "ebi/E2DCallBack.h"
 #include "ebi/TYesNoCursor.h"
+#include "ebi/Utility.h"
+#include "types.h"
 
 struct JKRArchive;
 struct Controller;
@@ -14,7 +15,16 @@ struct TScreenProgre {
 	enum enumState { Progre_NULL, Progre_Fadein, Progre_Select, Progre_Fadeout };
 	enum screenState { ProgreScreen_Msg00, ProgreScreen_Msg01, ProgreScreen_Msg02 };
 
-	TScreenProgre();
+	TScreenProgre()
+	    : mSelect(1)
+		, mState(Progre_NULL)
+		, mPaneMg00(nullptr)
+		, mPaneMg01(nullptr)
+		, mPaneMg02(nullptr)
+		, mPaneYes(nullptr)
+		, mPaneNo(nullptr)
+	{
+	}
 
 	virtual void setArchive(JKRArchive*); // _08
 
@@ -34,10 +44,8 @@ struct TScreenProgre {
 	Controller* mController;                  // _04
 	u8 mSelect;                               // _08, (currently selected option)
 	bool mSelected;                           // _09, (has picked an option)
-	u32 mCounterFadein;                       // _0C
-	u32 mCounterFadeinMax;                    // _10
-	u32 mCounterFadeout;                      // _14
-	u32 mCounterFadeoutMax;                   // _18
+	EUTCounter mCounterFadein;                // _0C
+	EUTCounter mCounterFadeout;               // _14
 	int mState;                               // _1C
 	int mStateScreen;                         // _20
 	P2DScreen::Mgr_tuning* mScreenObj;        // _24

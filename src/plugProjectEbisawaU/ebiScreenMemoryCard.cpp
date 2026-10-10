@@ -7,10 +7,14 @@
 #include "ebi/Screen/TResourceObserver.h"
 #include "og/newScreen/ogUtil.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "ebiScreenMemoryCard";
+}
+
 namespace ebi {
 namespace Screen {
-
-static const char className[] = "ebiScreenMemoryCard";
 
 /**
  * @note Address: N/A
@@ -132,14 +136,12 @@ void TMemoryCard::open(s32 type)
 {
 	P2ASSERTBOUNDSLINE(162, 0, type, 44);
 	mIsPlaySavingSE = false;
-	mMsgAlpha       = 30;
-	mAlphaMod       = 30;
+	mMsgAlpha.setValue((u32)30);
 
 	switch (type) {
 	case OPEN_None:
 		startState(MEMCARD_Finish);
-		mMsgAlpha = 0;
-		mAlphaMod = 0;
+		mMsgAlpha.setValue((u32)0);
 		break;
 
 	case OPEN_NoCard:
@@ -605,7 +607,7 @@ void TMemoryCard::setSelect_(bool sel)
  */
 bool TMemoryCard::isFinish()
 {
-	if (mMsgAlpha == 0 && mState == MEMCARD_Finish) {
+	if (mMsgAlpha.isZero() && mState == MEMCARD_Finish) {
 		return true;
 	}
 	return false;
@@ -655,8 +657,7 @@ void TMemoryCard::startState(enumState state)
 		}
 		mCursor1.mCursor.create(nullptr);
 		mCursor2.mCursor.create(nullptr);
-		mInputDelay    = 20;
-		mInputDelayMax = 20;
+		mInputDelay.setValue((u32)20);
 		mAnim2.play(sys->getDeltaTime() * 60.0f, J3DAA_UNKNOWN_0, true);
 		mAnim3.play(sys->getDeltaTime() * 60.0f, J3DAA_UNKNOWN_0, true);
 		mAnim4.play(sys->getDeltaTime() * 60.0f, J3DAA_UNKNOWN_0, true);
@@ -672,8 +673,7 @@ void TMemoryCard::startState(enumState state)
 		mPaneMsg2->hide();
 		mPaneMsg3->show();
 		mPaneMsg3->setAlpha(255);
-		mInputDelay    = 20;
-		mInputDelayMax = 20;
+		mInputDelay.setValue((u32)20);
 		mAnim2.play(sys->getDeltaTime() * 60.0f, J3DAA_UNKNOWN_0, true);
 		mAnim3.play(sys->getDeltaTime() * 60.0f, J3DAA_UNKNOWN_0, true);
 		mAnim4.play(sys->getDeltaTime() * 60.0f, J3DAA_UNKNOWN_0, true);
@@ -681,8 +681,7 @@ void TMemoryCard::startState(enumState state)
 		mScreenMain->animation();
 		break;
 	case MEMCARD_Finish:
-		mMsgAlpha = 30;
-		mAlphaMod = 30;
+		mMsgAlpha.setValue((u32)30);
 		break;
 	}
 }
@@ -697,10 +696,8 @@ void TMemoryCard::update()
 	case MEMCARD_Disabled:
 		break;
 	case MEMCARD_Selection:
-		if (mInputDelay) {
-			mInputDelay--;
-		}
-		if (!mInputDelay && mCanExit) {
+		mInputDelay.update();
+		if (mInputDelay.isZero() && mCanExit) {
 			if (mController->isMoveRight()) {
 				if (mSelectionIdx == 1) {
 					mSelectionIdx = 0;
@@ -755,10 +752,8 @@ void TMemoryCard::update()
 		break;
 
 	case MEMCARD_Message:
-		if (mInputDelay) {
-			mInputDelay--;
-		}
-		if (!mInputDelay) {
+		mInputDelay.update();
+		if (mInputDelay.isZero()){
 			bool end  = false;
 			u32 input = mController->getButtonDown();
 			if ((input & Controller::PRESS_A) || (input & Controller::PRESS_B) || (input & Controller::PRESS_X)
@@ -777,15 +772,13 @@ void TMemoryCard::update()
 		break;
 
 	case MEMCARD_Finish:
-		if (mMsgAlpha) {
-			mMsgAlpha--;
-		}
+		mMsgAlpha.update();
 
-		if (calcAlpha() < 0.7f) {
+		if (mMsgAlpha.getRatio() < 0.7f) {
 			mCursor1.mCursor.fade();
 			mCursor2.mCursor.fade();
 
-			u32 alpha = (u8)((calcAlpha() / 0.7f) * 255.0f);
+			u32 alpha = (u8)((mMsgAlpha.getRatio() / 0.7f) * 255.0f);
 			mPaneMsg1->setAlpha(alpha);
 			mPaneMsg2->setAlpha(alpha);
 			mPaneMsg3->setAlpha(alpha);

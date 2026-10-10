@@ -64,7 +64,7 @@ bool TParamBase::loadSettingFile(JKRArchive* arc, char* path)
  */
 void TObjBase::calcModelBaseMtx_()
 {
-	E3DModel_set2DCoordToBaseTRMatrix(mModel, mPosition, mAngle, mParms[1]);
+	E3DModel_set2DCoordToBaseTRMatrix(mModel, mPosition, mAngle, mScale);
 }
 
 /**
@@ -84,7 +84,7 @@ void TObjBase::pushOut(TObjBase* otherObj)
 {
 	if (isCalc() && otherObj->isCalc()) {
 		EGECircle2f bounds;
-		bounds.mRadius = mParms[2] + otherObj->mParms[2];
+		bounds.mRadius = mCollRadius + otherObj->mCollRadius;
 		bounds.mCenter = mPosition;
 		bounds.out(&otherObj->mPosition);
 	}
@@ -115,7 +115,7 @@ void TMapBase::setArchive(JKRArchive* arc)
 	mAnimMtxCalcWind = static_cast<J3DMtxCalcAnmBase*>(J3DUNewMtxCalcAnm(mMainModelData->mJointTree.mFlags & J3DMLF_MtxTypeMask, mAnimWait,
 	                                                                     mAnimWind, nullptr, nullptr, (J3DMtxCalcFlag)0));
 
-	mParms[0] = 0.0f;
+	mMoveSpeed = 0.0f;
 
 	mModel = new J3DModel(mMainModelData, 0x20000, 1);
 
@@ -135,9 +135,7 @@ void TMapBase::setArchive(JKRArchive* arc)
 void TMapBase::startWind(f32 time)
 {
 	mState        = 1;
-	u32 wind      = time / sys->getDeltaTime();
-	mWindTimer    = wind;
-	mWindTimerMax = wind;
+	mWindTimer.setValue(time);
 }
 
 /**
@@ -148,37 +146,27 @@ void TMapBase::update()
 {
 	calcModelBaseMtx_();
 
-	if (!mWindTimer) {
+	if (mWindTimer.isZero()) {
 		mState = 0;
 	}
 
 	switch (mState) {
 	case 0:
 		mFrameCtrlWait.update();
-		mAnimWait->mCurrentFrame                            = mFrameCtrlWait.mFrame;
-		mModel->mModelData->mJointTree.mJoints[0]->mMtxCalc = mAnimMtxCalcWait;
+		mAnimWait->setFrame(mFrameCtrlWait.mFrame);
+		mModel->mModelData->getJointNodePointer(0)->mMtxCalc = mAnimMtxCalcWait;
 		break;
 	case 1:
 		mFrameCtrlWait.update();
 		mFrameCtrlWind.update();
-		mAnimWait->mCurrentFrame = mFrameCtrlWait.mFrame;
-		mAnimWind->mCurrentFrame = mFrameCtrlWind.mFrame;
-		J3DMtxCalcAnmBase* anm   = mAnimMtxCalcWind;
-		if (mWindTimer) {
-			mWindTimer--;
-		}
-		f32 calc;
-		if (mWindTimerMax) {
-			calc = (f32)mWindTimer / (f32)mWindTimerMax;
-		} else {
-			calc = 0.0f;
-		}
-
-		calc      = 1.0f - calc;
-		f32 calc2 = determineAnimRate(calc);
+		mAnimWait->setFrame(mFrameCtrlWait.mFrame);
+		mAnimWind->setFrame(mFrameCtrlWind.mFrame);
+		J3DMtxCalcAnmBase* anm = mAnimMtxCalcWind;
+		mWindTimer.update();
+		f32 calc2 = determineAnimRate(1.0f - mWindTimer.getRatio());
 		anm->setWeight(0, 1.0f - calc2);
 		anm->setWeight(1, calc2);
-		mModel->mModelData->mJointTree.mJoints[0]->mMtxCalc = anm;
+		mModel->mModelData->getJointNodePointer(0)->mMtxCalc = anm;
 		break;
 	}
 
@@ -206,7 +194,7 @@ void TBGEnemyBase::setArchive(JKRArchive* arc)
 
 	mAnimMtxCalc = J3DNewMtxCalcAnm(mMainModelData->mJointTree.mFlags & J3DMLF_MtxTypeMask, mAnim);
 
-	mParms[0] = 0.0f;
+	mMoveSpeed = 0.0f;
 
 	mModel = new J3DModel(mMainModelData, 0x20000, 1);
 }
@@ -231,8 +219,8 @@ void TBGEnemyBase::update()
 	calcModelBaseMtx_();
 
 	mFrameCtrl.update();
-	mAnim->mCurrentFrame                                = mFrameCtrl.mFrame;
-	mModel->mModelData->mJointTree.mJoints[0]->mMtxCalc = mAnimMtxCalc;
+	mAnim->setFrame(mFrameCtrl.mFrame);
+	mModel->mModelData->getJointNodePointer(0)->mMtxCalc = mAnimMtxCalc;
 
 	mModel->calc();
 	mModel->entry();
@@ -259,7 +247,7 @@ void TBlackPlane::setArchive(JKRArchive* arc)
 
 	mAnimMtxCalc = J3DNewMtxCalcAnm(mMainModelData->mJointTree.mFlags & J3DMLF_MtxTypeMask, mAnim);
 
-	mParms[0] = 0.0f;
+	mMoveSpeed = 0.0f;
 
 	mModel = new J3DModel(mMainModelData, 0x20000, 1);
 
@@ -280,11 +268,11 @@ void TBlackPlane::setArchive(JKRArchive* arc)
  */
 void TBlackPlane::start()
 {
-	mFrameCtrl.init(mAnim->mTotalFrameCount - 2);
+	mFrameCtrl.init(mAnim->getTotalFrameCount() - 2);
 	mFrameCtrl.mAttribute = J3DAA_UNKNOWN_0;
 	mFrameCtrl.mRate      = sys->getDeltaTime() * 60.0f * 0.5f;
 
-	mFrameCtrlColor.init(mAnimColor->mTotalFrameCount - 2);
+	mFrameCtrlColor.init(mAnimColor->getTotalFrameCount() - 2);
 	mFrameCtrlColor.mAttribute = J3DAA_UNKNOWN_0;
 	mFrameCtrlColor.mRate      = sys->getDeltaTime() * 60.0f * 0.5f;
 }
@@ -300,9 +288,9 @@ void TBlackPlane::updateBeforeCamera()
 	mFrameCtrl.update();
 	mFrameCtrlColor.update();
 
-	mAnimColor->mCurrentFrame                           = mFrameCtrlColor.mFrame;
-	mAnim->mCurrentFrame                                = mFrameCtrl.mFrame;
-	mModel->mModelData->mJointTree.mJoints[0]->mMtxCalc = mAnimMtxCalc;
+	mAnimColor->setFrame(mFrameCtrlColor.mFrame);
+	mAnim->setFrame(mFrameCtrl.mFrame);
+	mModel->mModelData->getJointNodePointer(0)->mMtxCalc = mAnimMtxCalc;
 
 	mModel->calc();
 }

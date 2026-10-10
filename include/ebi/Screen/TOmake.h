@@ -14,7 +14,7 @@ namespace Screen {
 struct TOmake : public TScreenBase {
 	TOmake();
 
-	~TOmake() { }
+	//~TOmake() { }
 
 	virtual void doSetArchive(JKRArchive*);      // _24
 	virtual void doOpenScreen(ArgOpen*);         // _28
@@ -31,18 +31,6 @@ struct TOmake : public TScreenBase {
 	void hidePanes_();
 	void openFromMovie_();
 	void openFromCardE_();
-
-	// this has to exist like this for doUpdateStateClose to work
-	inline bool isFadeoutFinished()
-	{
-		bool ret;
-		if (mCounter != 0)
-			ret = false;
-		else
-			ret = true;
-
-		return ret;
-	}
 
 	void setMsgColor(J2DTextBox* pane)
 	{
@@ -61,8 +49,7 @@ struct TOmake : public TScreenBase {
 	JUtility::TColor mColorBase;          // _44
 	u8 mAlpha;                            // _48
 	int mState;                           // _4C
-	u32 mCounter;                         // _50
-	u32 mCounterMax;                      // _54
+	EUTCounter mCounter;                  // _50
 	P2DScreen::Mgr_tuning* mScreenMain;   // _58
 	J2DPane* mPaneWindow;                 // _5C
 	J2DPane* mPaneTitle;                  // _60
@@ -85,7 +72,7 @@ struct TOmake : public TScreenBase {
 };
 struct TOmakeCardE : public TScreenBase {
 	TOmakeCardE();
-	~TOmakeCardE() { }
+	//~TOmakeCardE() { }
 
 	enum CardEState { MainMenu, InZoomed, ExitingZoomed, EnteringZoomed };
 
@@ -118,7 +105,7 @@ struct TOmakeCardE : public TScreenBase {
 
 struct TOmakeGame : public TScreenBase {
 	TOmakeGame();
-	~TOmakeGame() { }
+	//~TOmakeGame() { }
 
 	enum MsgDescType { GameDesc = 0, Transferring = 1, TransferFinished = 2, TransferFailed = 3, TransferUnable = 4 };
 	enum GameID { PikminPluck, PikminPart, PikminPath, GameCount };

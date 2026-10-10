@@ -76,9 +76,7 @@ void FSMState_Warning::do_init(TMgr* mgr, Game::StateArg*)
 	mIsClosed = false;
 	mCanClose = false;
 
-	u32 rate         = 0.0f / sys->getDeltaTime();
-	mgr->mCounter    = rate;
-	mgr->mCounterMax = rate;
+	mgr->mCounter.setValue(0.0f);
 
 	mDoCheckCard          = false;
 	mgr->mScreen.mCanExit = true;
@@ -95,7 +93,7 @@ void FSMState_Warning::do_exec(TMgr* mgr)
 		mgr->checkAndTransitNoCard_();
 	}
 
-	if (!mgr->mCounter && mCanClose && !mIsClosed) {
+	if (mgr->mCounter.isZero() && mCanClose && !mIsClosed) {
 		mgr->mScreen.close();
 		mIsClosed = true;
 	}
@@ -144,9 +142,7 @@ void FSMState_CardRequest::do_init(TMgr* mgr, Game::StateArg*)
 	mgr->mScreen.mCanExit = false;
 	mState                = 0;
 
-	u32 rate         = 3.0f / sys->getDeltaTime();
-	mgr->mCounter    = rate;
-	mgr->mCounterMax = rate;
+	mgr->mCounter.setValue(3.0f);
 
 	do_open(mgr);
 }
@@ -192,7 +188,7 @@ void FSMState_CardRequest::do_exec(TMgr* mgr)
 		}
 		break;
 	case 2:
-		if (!mgr->mCounter) {
+		if (mgr->mCounter.isZero()) {
 			mgr->mScreen.close();
 		}
 
@@ -409,8 +405,6 @@ void FSMState_NoCard::do_exec(TMgr* mgr)
  * @note Size: 0x94
  */
 TMgr::TMgr()
-    : mCounter(0)
-    , mCounterMax(0)
 {
 	mStateMachine.init(this);
 	mStateMachine.start(this, CARDERROR_Standby, nullptr);
@@ -550,9 +544,7 @@ void TMgr::update()
 	}
 
 	mScreen.update();
-	if (mCounter) {
-		mCounter--;
-	}
+	mCounter.update();
 }
 
 /**

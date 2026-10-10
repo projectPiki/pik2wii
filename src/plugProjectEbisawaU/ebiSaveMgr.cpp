@@ -422,9 +422,7 @@ void FSMState_NowSave::do_init(TMgr* mgr, Game::StateArg* arg)
 
 	mgr->mSaveMenu.openMsg(Screen::TSaveMenu::MESSAGE_Saving);
 
-	u32 count           = 1.0f / sys->getDeltaTime();
-	mgr->mCounter       = count;
-	mgr->mCounterBackup = count;
+	mgr->mCounter.setValue(1.0f);
 
 	mgr->mMemCardErrorMgr.forceQuitSeq();
 }
@@ -490,11 +488,11 @@ void FSMState_NowSave::do_exec(TMgr* mgr)
 		}
 		break;
 	case 4:
-		if (mgr->mCounter * sys->mDeltaTime < 0.5f && mgr->mController->getButtonDown() & Controller::PRESS_A) {
+		if (mgr->mCounter.mCurrentValue * sys->getDeltaTime() < 0.5f && mgr->mController->getButtonDown() & Controller::PRESS_A) {
 			mgr->mSaveMenu.closeMsg();
 		}
 
-		if (mgr->mCounter == 0) {
+		if (mgr->mCounter.isZero()) {
 			mgr->mSaveMenu.closeMsg();
 		}
 
@@ -528,10 +526,7 @@ void FSMState_NowSave::do_exec(TMgr* mgr)
 void FSMState_AfterSave::do_init(TMgr* mgr, Game::StateArg*)
 {
 	mgr->mSaveMenu.openMsg(Screen::TSaveMenu::MESSAGE_SaveSuccess);
-
-	u32 count           = 1.0f / sys->getDeltaTime();
-	mgr->mCounter       = count;
-	mgr->mCounterBackup = count;
+	mgr->mCounter.setValue(1.0f);
 }
 
 /**
@@ -540,11 +535,11 @@ void FSMState_AfterSave::do_init(TMgr* mgr, Game::StateArg*)
  */
 void FSMState_AfterSave::do_exec(TMgr* mgr)
 {
-	if (mgr->mCounter * sys->getDeltaTime() < 0.5f && mgr->mController->getButtonDown() & Controller::PRESS_A) {
+	if (mgr->mCounter.mCurrentValue * sys->getDeltaTime() < 0.5f && mgr->mController->getButtonDown() & Controller::PRESS_A) {
 		mgr->mSaveMenu.closeMsg();
 	}
 
-	if (mgr->mCounter == 0) {
+	if (mgr->mCounter.isZero()) {
 		mgr->mSaveMenu.closeMsg();
 	}
 
@@ -674,8 +669,6 @@ void TMgr::onDvdErrorRecovered()
  * @note Size: 0xD4
  */
 TMgr::TMgr()
-    : mCounter(0)
-    , mCounterBackup(0)
 {
 	mStateMachine.init(this);
 	mStateMachine.start(this, Standby, nullptr);
@@ -752,9 +745,7 @@ void TMgr::update()
 	sys->mCardMgr->update();
 	mMemCardErrorMgr.update();
 	mSaveMenu.update();
-	if (mCounter) {
-		mCounter--;
-	}
+	mCounter.update();
 }
 
 /**

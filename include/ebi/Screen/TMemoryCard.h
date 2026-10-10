@@ -5,6 +5,7 @@
 #include "JSystem/JKernel/JKRHeap.h"
 #include "ebi/E2DCallBack.h"
 #include "ebi/TYesNoCursor.h"
+#include "ebi/Utility.h"
 
 struct Controller;
 struct J2DPane;
@@ -66,11 +67,7 @@ struct TMemoryCard {
 	};
 
 	TMemoryCard()
-	    : mState(0)
-	    , mInputDelay(0)
-	    , mInputDelayMax(0)
-	    , mMsgAlpha(0)
-	    , mAlphaMod(0)
+	    : mState(MEMCARD_Disabled)
 	    , mCanExit(1)
 	    , mPaneMsg1(nullptr)
 	    , mPaneMsg2(nullptr)
@@ -79,7 +76,7 @@ struct TMemoryCard {
 	{
 	}
 
-	~TMemoryCard(){}
+	~TMemoryCard() { }
 
 	void loadResource(JKRHeap*);
 	void setArchive(JKRArchive*);
@@ -96,14 +93,10 @@ struct TMemoryCard {
 	// unused/inlined:
 	bool isDecide();
 
-	inline f32 calcAlpha() { return mAlphaMod ? (f32)mMsgAlpha / (f32)mAlphaMod : 0.0f; }
-
 	int mState;                             // _00, unknown
 	Controller* mController;                // _04
-	u32 mInputDelay;                        // _08
-	u32 mInputDelayMax;                     // _0C, isnt used
-	u32 mMsgAlpha;                          // _10
-	u32 mAlphaMod;                          // _14
+	EUTCounter mInputDelay;                 // _08
+	EUTCounter mMsgAlpha;                   // _10
 	u8 mSelectionIdx;                       // _18
 	u8 mCanExit;                            // _19
 	P2DScreen::Mgr_tuning* mScreenMain;     // _1C

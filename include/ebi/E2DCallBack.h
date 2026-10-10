@@ -8,6 +8,7 @@
 #include "P2DScreen.h"
 #include "System.h"
 #include "ebi/E2DFullFontColor.h"
+#include "ebi/Utility.h"
 #include "og/Screen/ScaleMgr.h"
 
 namespace ebi {
@@ -216,9 +217,7 @@ struct E2DCallBack_CalcAnimation : public E2DCallBack_Base {
 struct E2DCallBack_WindowCursor : public E2DCallBack_Base {
 
 	E2DCallBack_WindowCursor()
-	    : mCounter(0)
-	    , mCounterMax(0)
-	    , mBounds1(0.0f, 0.0f, 0.0f, 0.0f)
+	    : mBounds1(0.0f, 0.0f, 0.0f, 0.0f)
 	    , mBounds2(0.0f, 0.0f, 0.0f, 0.0f)
 	{
 		mScale      = 1.0f;
@@ -232,8 +231,7 @@ struct E2DCallBack_WindowCursor : public E2DCallBack_Base {
 	// _00-_20 = E2DCallBack_Base
 	JGeometry::TBox2f mBounds1;     // _20
 	JGeometry::TBox2f mBounds2;     // _30
-	u32 mCounter;                   // _40
-	u32 mCounterMax;                // _44
+	EUTCounter mCounter;            // _40
 	og::Screen::ScaleMgr mScaleMgr; // _48
 	f32 mScale;                     // _64
 	J2DPane* mWindowPane;           // _68
