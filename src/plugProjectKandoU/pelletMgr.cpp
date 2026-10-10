@@ -35,8 +35,7 @@
 #include "Radar.h"
 #include "RevoSDK/rand.h"
 #include "VsOtakaraName.h"
-#include "efx/TFruitsDown.h"
-#include "efx/TOtakara.h"
+#include "efx/efxObject.h"
 #include "nans.h"
 
 // TODO: fix this up

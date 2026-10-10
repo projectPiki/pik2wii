@@ -3,7 +3,7 @@
 #include "Game/Entities/Rock.h"
 #include "Game/generalEnemyMgr.h"
 #include "RevoSDK/rand.h"
-#include "efx/TKabutoAttack.h"
+#include "efx/efxEnemy.h"
 
 // TODO: fix this up
 static void __Print(const char** fmt, ...)

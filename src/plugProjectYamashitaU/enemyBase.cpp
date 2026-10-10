@@ -4,12 +4,7 @@
 #include "Game/generalEnemyMgr.h"
 
 // Particle FX
-#include "efx/TEnemyApsmoke.h"
-#include "efx/TEnemyBomb.h"
-#include "efx/TEnemyDead.h"
-#include "efx/TEnemyDownSmoke.h"
-#include "efx/TEnemyDownWat.h"
-#include "efx/TEnemyPoison.h"
+#include "efx/efxEnemyGeneral.h"
 
 // Gameplay
 #include "Game/AIConstants.h"

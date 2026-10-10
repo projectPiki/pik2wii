@@ -27,17 +27,17 @@
 #include "RevoSDK/rand.h"
 #include "Screen/Enums.h"
 #include "Screen/Game2DMgr.h"
-#include "efx/TForestSakura.h"
-#include "efx/TLastMomiji.h"
-#include "efx/TTutorialSnow.h"
+#include "efx/efxObject.h"
 #include "nans.h"
 #include "string.h"
 #include "utilityU.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "SingleGameSection";
+}
 namespace Game {
-
-static const u32 padding[]    = { 0, 0, 0 };
-static const char className[] = "SingleGameSection";
 
 /**
  * @note Address: 0x80152074

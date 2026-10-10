@@ -1,9 +1,9 @@
-#include "types.h"
 #include "Game/EnemyAnimKeyEvent.h"
 #include "Game/Entities/Egg.h"
-#include "efx/TEggdown.h"
-#include "efx/TEnemyBomb.h"
 #include "PSSystem/PSMainSide_ObjSound.h"
+#include "efx/efxEnemy.h"
+#include "efx/efxEnemyGeneral.h"
+#include "types.h"
 
 // TODO: fix this up
 static void __Print(const char** fmt, ...)

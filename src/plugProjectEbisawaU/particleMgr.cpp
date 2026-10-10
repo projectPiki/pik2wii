@@ -1,15 +1,13 @@
 #include "ParticleMgr.h"
 #include "System.h"
 #include "JSystem/JKernel/JKRDvdRipper.h"
-#include "efx/TPk.h"
+#include "efx/efxPikmin.h"
 #include "Camera.h"
 #include "JSystem/JParticle/JPABlock.h"
 #include "Light.h"
 #include "Game/GameLight.h"
 #include "Game/cellPyramid.h"
 #include "nans.h"
-
-static const u32 padding[] = { 0, 0, 0 };
 
 /**
  * @note Address: N/A

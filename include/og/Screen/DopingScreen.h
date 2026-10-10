@@ -4,7 +4,7 @@
 #include "JSystem/J2D/J2DPane.h"
 #include "P2DScreen.h"
 #include "Vector2.h"
-#include "efx2d/T2DExtractUp.h"
+#include "efx2d/efx2dEffect.h"
 #include "og/Screen/Data.h"
 #include "types.h"
 

@@ -1,7 +1,7 @@
 #include "P2JME/Analyzer.h"
 #include "RevoSDK/rand.h"
 #include "System.h"
-#include "efx2d/T2DCvname.h"
+#include "efx2d/efx2dEffect.h"
 #include "og/Screen/ogScreen.h"
 #include "og/Sound.h"
 #include "og/newScreen/TitleMsg.h"

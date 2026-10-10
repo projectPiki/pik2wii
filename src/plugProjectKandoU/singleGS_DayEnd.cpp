@@ -18,7 +18,7 @@
 #include "PikiAI.h"
 #include "RevoSDK/rand.h"
 #include "Screen/Game2DMgr.h"
-#include "efx/TNaviEffect.h"
+#include "efx/efxPikmin.h"
 #include "nans.h"
 #include "utilityU.h"
 

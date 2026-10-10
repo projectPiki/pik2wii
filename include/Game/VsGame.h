@@ -12,8 +12,7 @@
 #include "Game/gameChallenge2D.h"
 #include "Graphics.h"
 #include "Vector3.h"
-#include "efx/TNaviEffect.h"
-#include "efx/TPk.h"
+#include "efx/efxPikmin.h"
 #include "stream.h"
 
 #define CH_SCORE_POKO_MULTIPLIER   10

@@ -1,6 +1,6 @@
 #include "Game/Entities/Hiba.h"
 #include "RevoSDK/rand.h"
-#include "efx/THibaFire.h"
+#include "efx/efxEnemy.h"
 
 namespace Game {
 namespace Hiba {

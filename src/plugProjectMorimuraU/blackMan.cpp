@@ -21,7 +21,7 @@
 #include "RevoSDK/rand.h"
 #include "Sys/MatBaseAnimation.h"
 #include "Sys/MatBaseAnimator.h"
-#include "efx/TKage.h"
+#include "efx/efxEnemyBoss.h"
 #include "nans.h"
 #include "types.h"
 

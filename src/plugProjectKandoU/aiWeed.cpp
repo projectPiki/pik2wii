@@ -1,9 +1,8 @@
 #include "Game/Entities/ItemWeed.h"
 #include "Game/Piki.h"
 #include "PikiAI.h"
-#include "efx/PikiDamage.h"
-#include "efx/TPk.h"
-#include "efx/TWeedPull.h"
+#include "efx/efxPikmin.h"
+#include "efx/efxObject.h"
 #include "nans.h"
 #include "string.h"
 

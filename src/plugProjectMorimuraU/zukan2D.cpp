@@ -8,7 +8,7 @@
 #include "PSSystem/PSSystemIF.h"
 #include "RevoSDK/rand.h"
 #include "Screen/Game2DMgr.h"
-#include "efx2d/T2DChangesmoke.h"
+#include "efx2d/efx2dEffect.h"
 #include "nans.h"
 
 // TODO: fix this up

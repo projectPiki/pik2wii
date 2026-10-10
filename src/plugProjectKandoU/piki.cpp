@@ -18,7 +18,7 @@
 #include "RevoSDK/rand.h"
 #include "SoundID.h"
 #include "System.h"
-#include "efx/TPk.h"
+#include "efx/efxPikmin.h"
 #include "nans.h"
 
 // TODO: fix this up

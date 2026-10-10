@@ -1,7 +1,6 @@
 #include "System.h"
 #include "efx2d/Arg.h"
-#include "efx2d/T2DSensor.h"
-#include "efx2d/T2DSprayset.h"
+#include "efx2d/efx2dEffect.h"
 #include "og/Sound.h"
 #include "og/newScreen/Challenge.h"
 #include "og/newScreen/Vs.h"

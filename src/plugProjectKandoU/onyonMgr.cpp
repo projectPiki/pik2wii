@@ -23,11 +23,7 @@
 #include "SysShape/Animator.h"
 #include "VSOtakaraName.h"
 #include "efx/Arg.h"
-#include "efx/Container.h"
-#include "efx/OnyonSpot.h"
-#include "efx/TOnyon.h"
-#include "efx/TPod.h"
-#include "efx/TUfo.h"
+#include "efx/efxObject.h"
 #include "nans.h"
 
 Game::ItemOnyon::Mgr* Game::ItemOnyon::mgr;

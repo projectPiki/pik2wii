@@ -9,7 +9,7 @@
 #include "Radar.h"
 #include "RevoSDK/rand.h"
 #include "SoundID.h"
-#include "efx/TEnemyDive.h"
+#include "efx/efxEnemyGeneral.h"
 #include "nans.h"
 
 // TODO: fix this up

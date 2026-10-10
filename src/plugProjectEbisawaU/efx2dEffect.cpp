@@ -1,11 +1,8 @@
+#include "efx2d/efx2dEffect.h"
 #include "JSystem/JParticle/JPAMath.h"
 #include "Matrixf.h"
 #include "System.h"
 #include "efx2d/FileSelect.h"
-#include "efx2d/T2DCountKira.h"
-#include "efx2d/T2DCursor.h"
-#include "efx2d/T2DSensor.h"
-#include "efx2d/T2DSprayset.h"
 #include "efx2d/WorldMap.h"
 
 // TODO: fix this up

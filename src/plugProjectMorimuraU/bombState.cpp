@@ -3,7 +3,7 @@
 #include "Game/Entities/Bomb.h"
 #include "Game/Entities/OtakaraBase.h"
 #include "Game/rumble.h"
-#include "efx/TBombrock.h"
+#include "efx/efxEnemy.h"
 #include "nans.h"
 #include "types.h"
 

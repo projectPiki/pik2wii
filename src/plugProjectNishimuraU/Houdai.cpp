@@ -7,9 +7,8 @@
 #include "PS.h"
 #include "PSSystem/PSMainSide_ObjSound.h"
 #include "RevoSDK/rand.h"
-#include "efx/TEnemyDownSmoke.h"
-#include "efx/TEnemyDownWat.h"
-#include "efx/TOoota.h"
+#include "efx/efxEnemyBoss.h"
+#include "efx/efxEnemyGeneral.h"
 #include "nans.h"
 
 // TODO: fix this up

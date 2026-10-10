@@ -21,7 +21,7 @@
 #include "SysShape/Joint.h"
 #include "SysShape/Model.h"
 #include "Vector3.h"
-#include "efx/TNaviEffect.h"
+#include "efx/efxPikmin.h"
 
 struct Controller;
 

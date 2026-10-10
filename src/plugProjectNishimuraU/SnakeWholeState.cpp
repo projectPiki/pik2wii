@@ -8,7 +8,7 @@
 #include "Game/rumble.h"
 #include "Iterator.h"
 #include "RevoSDK/rand.h"
-#include "efx/THebi.h"
+#include "efx/efxEnemyBoss.h"
 #include "nans.h"
 
 // TODO: fix this up

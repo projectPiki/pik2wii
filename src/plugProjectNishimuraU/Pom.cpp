@@ -5,10 +5,9 @@
 #include "Game/gamePlayData.h"
 #include "Iterator.h"
 #include "RevoSDK/rand.h"
-#include "efx/TEnemyDownSmoke.h"
-#include "efx/TEnemyDownWat.h"
-#include "efx/TOnyon.h"
-#include "efx/TPonDead.h"
+#include "efx/efxObject.h"
+#include "efx/efxEnemy.h"
+#include "efx/efxEnemyGeneral.h"
 
 // TODO: fix this up
 static void __Print(const char** fmt, ...)

@@ -10,7 +10,7 @@
 #include "Game/routeMgr.h"
 #include "Game/rumble.h"
 #include "RevoSDK/rand.h"
-#include "efx/TPan.h"
+#include "efx/efxEnemy.h"
 #include "nans.h"
 
 // TODO: fix this up

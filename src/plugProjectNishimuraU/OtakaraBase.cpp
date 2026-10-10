@@ -3,7 +3,7 @@
 #include "Game/EnemyFunc.h"
 #include "Game/Entities/Bomb.h"
 #include "Game/generalEnemyMgr.h"
-#include "efx/TOta.h"
+#include "efx/efxEnemy.h"
 
 // TODO: fix this up
 static void __Print(const char** fmt, ...)

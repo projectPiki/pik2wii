@@ -3,7 +3,7 @@
 #include "Game/Entities/ItemHoney.h"
 #include "Game/GameSystem.h"
 #include "RevoSDK/rand.h"
-#include "efx/TBaby.h"
+#include "efx/efxEnemy.h"
 #include "trig.h"
 
 // TODO: fix this up

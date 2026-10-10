@@ -4,7 +4,7 @@
 #include "Game/Entities/Kurage.h"
 #include "Game/rumble.h"
 #include "PS.h"
-#include "efx/TNewkurage.h"
+#include "efx/efxEnemy.h"
 #include "nans.h"
 
 // TODO: fix this up

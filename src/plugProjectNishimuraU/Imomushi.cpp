@@ -1,7 +1,7 @@
 #include "Game/Entities/Imomushi.h"
 #include "Game/Entities/ItemPlant.h"
 #include "RevoSDK/rand.h"
-#include "efx/TUjinko.h"
+#include "efx/efxEnemy.h"
 
 // TODO: fix this up
 static void __Print(const char** fmt, ...)

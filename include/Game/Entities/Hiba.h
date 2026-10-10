@@ -7,8 +7,8 @@
 #include "Game/EnemyParmsBase.h"
 #include "Game/EnemyStateMachine.h"
 #include "PS.h"
-#include "efx/TEnemyBomb.h"
-#include "efx/THibaFire.h"
+#include "efx/efxEnemyGeneral.h"
+#include "efx/efxEnemy.h"
 
 /**
  * --Header for Fire Geyser (Hiba)--

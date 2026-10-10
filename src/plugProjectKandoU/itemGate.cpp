@@ -9,8 +9,7 @@
 #include "PSSystem/PSSystemIF.h"
 #include "RevoSDK/rand.h"
 #include "Sys/MatBaseAnimator.h"
-#include "efx/TEgate.h"
-#include "efx/TGate.h"
+#include "efx/efxObject.h"
 #include "nans.h"
 
 // TODO: fix this up

@@ -7,7 +7,7 @@
 #include "Game/EnemyParmsBase.h"
 #include "Game/EnemyStateMachine.h"
 #include "Game/gameGenerator.h"
-#include "efx/TRock.h"
+#include "efx/efxEnemy.h"
 
 /**
  * --Header for Boulders (Rock)--

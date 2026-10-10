@@ -3,7 +3,7 @@
 #include "Game/Navi.h"
 #include "PSSystem/PSMainSide_ObjSound.h"
 #include "RevoSDK/rand.h"
-#include "efx/THoneydown.h"
+#include "efx/efxObject.h"
 
 /**
  * @note Address: N/A

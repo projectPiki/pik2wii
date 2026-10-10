@@ -6,7 +6,7 @@
 #include "Game/GameLight.h"
 #include "Game/PlatInstance.h"
 #include "Game/itemMgr.h"
-#include "efx/WarpZone.h"
+#include "efx/efxObject.h"
 #include "types.h"
 
 namespace Game {

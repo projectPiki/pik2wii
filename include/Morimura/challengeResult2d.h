@@ -5,7 +5,7 @@
 #include "Morimura/DayEndCount.h"
 #include "Morimura/mrUtil.h"
 #include "ebi/Save.h"
-#include "efx2d/T2DCavecomp.h"
+#include "efx2d/efx2dEffect.h"
 
 namespace Game {
 struct Challenge2D_ResultInfo;

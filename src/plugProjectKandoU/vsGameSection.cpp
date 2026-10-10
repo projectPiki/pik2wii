@@ -27,7 +27,7 @@
 #include "RevoSDK/rand.h"
 #include "Screen/Game2DMgr.h"
 #include "VsOtakaraName.h"
-#include "efx/TEnemyApsmoke.h"
+#include "efx/efxEnemyGeneral.h"
 #include "nans.h"
 #include "utilityU.h"
 

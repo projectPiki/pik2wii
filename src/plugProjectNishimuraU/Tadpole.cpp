@@ -1,8 +1,7 @@
 #include "Game/Entities/Tadpole.h"
 #include "PS.h"
 #include "RevoSDK/rand.h"
-#include "efx/TEnemyDive.h"
-#include "efx/TPk.h"
+#include "efx/efxEnemyGeneral.h"
 
 // TODO: fix this up
 static void __Print(const char** fmt, ...)

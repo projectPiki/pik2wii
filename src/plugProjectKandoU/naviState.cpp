@@ -22,9 +22,8 @@
 #include "PikiAI.h"
 #include "RevoSDK/rand.h"
 #include "Screen/Game2DMgr.h"
-#include "efx/TDopingSmoke.h"
-#include "efx/TEnemyDownSmoke.h"
-#include "efx/TEnemyDownWat.h"
+#include "efx/efxPikmin.h"
+#include "efx/efxEnemyGeneral.h"
 #include "nans.h"
 #include "utilityU.h"
 

@@ -9,7 +9,7 @@
 #include "PSSystem/PSSystemIF.h"
 #include "RevoSDK/rand.h"
 #include "efx2d/Arg.h"
-#include "efx2d/T2DSprayset.h"
+#include "efx2d/efx2dEffect.h"
 #include "nans.h"
 #include "types.h"
 

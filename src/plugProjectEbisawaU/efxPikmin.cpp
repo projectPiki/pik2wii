@@ -1,19 +1,11 @@
-#include "Game/Piki.h"
-#include "efx/TPk.h"
-#include "efx/TDopingSmoke.h"
-#include "efx/TOrima.h"
-#include "efx/TCursor.h"
-#include "efx/TFueact.h"
-#include "efx/TNaviEffect.h"
-#include "efx/TEnemyDead.h"
-#include "efx/TGate.h"
-#include "efx/TStoneAttack.h"
-#include "efx/TBridge.h"
-#include "game/Piki.h"
-#include "trig.h"
+#include "efx/efxPikmin.h"
 #include "Game/MapMgr.h"
+#include "Game/Piki.h"
 #include "JSystem/JParticle/JPAMath.h"
+#include "efx/efxEnemyGeneral.h"
+#include "efx/efxObject.h"
 #include "float.h"
+#include "trig.h"
 
 static void _Printf(char* format)
 {
@@ -28,9 +20,9 @@ namespace efx {
  */
 void TParticleCallBack_Yodare::init(JPABaseEmitter*, JPABaseParticle*)
 {
-//	_00   = 0.0f;
-//	mName = "ArgType";
-//	_08   = 1.0f;
+	//	_00   = 0.0f;
+	//	mName = "ArgType";
+	//	_08   = 1.0f;
 	// UNUSED FUNCTION
 }
 
@@ -81,7 +73,10 @@ bool TPkNageBlur::create(Arg* arg)
 	return TSync::create(arg);
 }
 
-static void fakeFuncEfxPikmin(TParticleCallBack_Yodare* callback) { callback->_00 = 1.0f; }
+static void fakeFuncEfxPikmin(TParticleCallBack_Yodare* callback)
+{
+	callback->_00 = 1.0f;
+}
 
 /**
  * @note Address: 0x803B67A0
@@ -985,7 +980,10 @@ void TNaviEffect::setNaviType(enumNaviType type)
  * @note Address: 0x803B7EFC
  * @note Size: 0x20
  */
-void TNaviEffect::update() { updateHamon_(); }
+void TNaviEffect::update()
+{
+	updateHamon_();
+}
 
 /**
  * @note Address: 0x803B7F1C
@@ -1029,7 +1027,10 @@ void TNaviEffect::createHamonA_(Vector3f* pos)
  * @note Address: 0x803B8054
  * @note Size: 0x24
  */
-void TNaviEffect::killHamonA_() { mHamonA.kill(); }
+void TNaviEffect::killHamonA_()
+{
+	mHamonA.kill();
+}
 
 /**
  * @note Address: 0x803B8078
@@ -1045,7 +1046,10 @@ void TNaviEffect::createHamonB_(Vector3f* pos)
  * @note Address: 0x803B80D8
  * @note Size: 0x24
  */
-void TNaviEffect::killHamonB_() { mHamonB.kill(); }
+void TNaviEffect::killHamonB_()
+{
+	mHamonB.kill();
+}
 
 /**
  * @note Address: 0x803B80FC
@@ -1062,7 +1066,10 @@ void TNaviEffect::createLight_(Mtx mtx)
  * @note Address: 0x803B8174
  * @note Size: 0x2C
  */
-void TNaviEffect::killLight_() { mLight.fade(); }
+void TNaviEffect::killLight_()
+{
+	mLight.fade();
+}
 
 /**
  * @note Address: 0x803B81A0
@@ -1079,7 +1086,10 @@ void TNaviEffect::createLightAct_(Mtx mtx)
  * @note Address: 0x803B8218
  * @note Size: 0x2C
  */
-void TNaviEffect::killLightAct_() { mLightAct.fade(); }
+void TNaviEffect::killLightAct_()
+{
+	mLightAct.fade();
+}
 
 /**
  * @note Address: 0x803B8244
@@ -1095,7 +1105,10 @@ void TNaviEffect::createCursor_(Vector3f pos, f32 scale)
  * @note Address: 0x803B82A8
  * @note Size: 0x2C
  */
-void TNaviEffect::killCursor_() { mCursor.fade(); }
+void TNaviEffect::killCursor_()
+{
+	mCursor.fade();
+}
 
 /**
  * @note Address: 0x803B82D4
@@ -1129,7 +1142,10 @@ void TNaviEffect::createFueact_(Mtx mtx, Vector3f* pos)
  * @note Address: 0x803B860C
  * @note Size: 0x2C
  */
-void TNaviEffect::killFueact_() { mFueact.fade(); }
+void TNaviEffect::killFueact_()
+{
+	mFueact.fade();
+}
 
 /**
  * @note Address: 0x803B8638
@@ -1232,7 +1248,10 @@ void TPkEffect::createKourin_(Vector3f* pos)
  * @note Address: 0x803B888C
  * @note Size: 0x24
  */
-void TPkEffect::killKourin_() { mOeKourin.kill(); }
+void TPkEffect::killKourin_()
+{
+	mOeKourin.kill();
+}
 
 /**
  * @note Address: 0x803B88B0
@@ -1248,7 +1267,10 @@ void TPkEffect::createDoping_(Vector3f* pos)
  * @note Address: 0x803B8910
  * @note Size: 0x24
  */
-void TPkEffect::killDoping_() { mOeDoping.kill(); }
+void TPkEffect::killDoping_()
+{
+	mOeDoping.kill();
+}
 
 /**
  * @note Address: 0x803B8934
@@ -1311,7 +1333,10 @@ void TPkEffect::createChudoku_(Vector3f* pos)
  * @note Address: 0x803B8B90
  * @note Size: 0x24
  */
-void TPkEffect::killChudoku_() { mOeChudoku.kill(); }
+void TPkEffect::killChudoku_()
+{
+	mOeChudoku.kill();
+}
 
 /**
  * @note Address: 0x803B8BB4
@@ -1327,7 +1352,10 @@ void TPkEffect::createMoeSmoke_(Vector3f* pos)
  * @note Address: 0x803B8C14
  * @note Size: 0x24
  */
-void TPkEffect::killMoeSmoke_() { mOeMoeSmoke.kill(); }
+void TPkEffect::killMoeSmoke_()
+{
+	mOeMoeSmoke.kill();
+}
 
 /**
  * @note Address: 0x803B8C38
@@ -1344,7 +1372,10 @@ void TPkEffect::createBlackDown_(Vector3f* pos)
  * @note Address: 0x803B8CA8
  * @note Size: 0x2C
  */
-void TPkEffect::killBlackDown_() { mBlackDown.fade(); }
+void TPkEffect::killBlackDown_()
+{
+	mBlackDown.fade();
+}
 
 /**
  * @note Address: 0x803B8CD4
@@ -1360,7 +1391,10 @@ void TPkEffect::createWater_(Vector3f* pos)
  * @note Address: 0x803B8D34
  * @note Size: 0x24
  */
-void TPkEffect::killWater_() { mOeWater.kill(); }
+void TPkEffect::killWater_()
+{
+	mOeWater.kill();
+}
 
 /**
  * @note Address: 0x803B8D58
@@ -1376,7 +1410,10 @@ void TPkEffect::createHamonA_(Vector3f* pos)
  * @note Address: 0x803B8DB8
  * @note Size: 0x24
  */
-void TPkEffect::killHamonA_() { mOeHamonA.kill(); }
+void TPkEffect::killHamonA_()
+{
+	mOeHamonA.kill();
+}
 
 /**
  * @note Address: 0x803B8DDC
@@ -1392,7 +1429,10 @@ void TPkEffect::createHamonB_(Vector3f* pos)
  * @note Address: 0x803B8E3C
  * @note Size: 0x24
  */
-void TPkEffect::killHamonB_() { mOeHamonB.kill(); }
+void TPkEffect::killHamonB_()
+{
+	mOeHamonB.kill();
+}
 
 /**
  * @note Address: 0x803B8E60
@@ -1421,7 +1461,10 @@ void TPkEffectTane::createTanekira_(Vector3f* pos)
  * @note Address: 0x803B8EE0
  * @note Size: 0x24
  */
-void TPkEffectTane::killTanekira_() { mOeKira.kill(); }
+void TPkEffectTane::killTanekira_()
+{
+	mOeKira.kill();
+}
 
 /**
  * @note Address: 0x803B8F04
@@ -1437,7 +1480,10 @@ void TPkEffectTane::createKourin_(Vector3f* pos)
  * @note Address: 0x803B8F68
  * @note Size: 0x24
  */
-void TPkEffectTane::killKourin_() { mOeKourin.kill(); }
+void TPkEffectTane::killKourin_()
+{
+	mOeKourin.kill();
+}
 
 /**
  * @note Address: 0x803B8F8C
@@ -1464,7 +1510,9 @@ void TPkEffectTane::killGlow1_()
  * @note Address: 0x803B8FFC
  * @note Size: 0x4
  */
-void TFueactCircle::executeAfter(JPABaseEmitter*) { }
+void TFueactCircle::executeAfter(JPABaseEmitter*)
+{
+}
 
 /**
  * @note Address: 0x803B9000

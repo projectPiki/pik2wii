@@ -1,7 +1,7 @@
 #include "Game/EnemyAnimKeyEvent.h"
 #include "Game/EnemyFunc.h"
 #include "Game/Entities/Kabuto.h"
-#include "efx/THebi.h"
+#include "efx/efxEnemyBoss.h"
 
 // TODO: fix this up
 static void __Print(const char** fmt, ...)

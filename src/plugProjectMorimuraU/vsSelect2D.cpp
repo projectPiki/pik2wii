@@ -4,7 +4,7 @@
 #include "Morimura/VsSelect.h"
 #include "RevoSDK/rand.h"
 #include "Screen/Game2DMgr.h"
-#include "efx2d/T2DBattleDive.h"
+#include "efx2d/efx2dEffect.h"
 #include "og/Screen/ArrowAlphaBlink.h"
 #include "og/newScreen/ogUtil.h"
 

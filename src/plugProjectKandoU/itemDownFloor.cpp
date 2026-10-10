@@ -8,8 +8,7 @@
 #include "PSSystem/PSSystemIF.h"
 #include "Platform.h"
 #include "RevoSDK/rand.h"
-#include "efx/TDownf.h"
-#include "efx/TPbag.h"
+#include "efx/efxObject.h"
 #include "nans.h"
 
 // TODO: fix this up

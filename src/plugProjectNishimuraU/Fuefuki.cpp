@@ -7,7 +7,7 @@
 #include "Game/PikiMgr.h"
 #include "Radar.h"
 #include "RevoSDK/rand.h"
-#include "efx/TFuebugOnpa.h"
+#include "efx/efxEnemy.h"
 
 namespace Game {
 

@@ -12,7 +12,7 @@
 #include "Sys/MatBaseAnimation.h"
 #include "Sys/MatBaseAnimator.h"
 #include "SysShape/Joint.h"
-#include "efx/TQueen.h"
+#include "efx/efxEnemyBoss.h"
 
 /**
  * --Header for Empress Bulblax (Queen)--

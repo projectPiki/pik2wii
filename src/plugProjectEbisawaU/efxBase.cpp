@@ -6,6 +6,8 @@
 #include "efx/TCallBack_StaticClipping.h"
 #include "efx/TChaseMtx.h"
 #include "efx/TChasePos.h"
+#include "efx/TChasePosPos.h"
+#include "efx/TChasePosYRot.h"
 #include "efx/TForever.h"
 #include "efx/TOneEmitter.h"
 #include "efx/TSimpleMtx.h"

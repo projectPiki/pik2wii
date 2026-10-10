@@ -56,6 +56,34 @@ struct T2DMapFlare : public TChasePos {
 	// _00-_18	= TChasePos
 };
 
+/**
+ * @size{0x18}
+ */
+struct T2DShstar1 : public TChasePos {
+	T2DShstar1(Vector2f* pos)
+	    : TChasePos(PID_WMap_ShootingStar1, pos)
+	{
+		mResMgrId = 1;
+	}
+
+	virtual ~T2DShstar1() { } // _34 (weak)
+
+	// _00		= VTBL
+	// _00-_18	= TChasePos
+};
+
+struct T2DShstar2 : public TSimple1 {
+	inline T2DShstar2()
+	    : TSimple1(PID_WMap_ShootingStar)
+	{
+	}
+
+	virtual bool create(Arg*); // _08
+
+	// _00		= VTBL
+	// _00-_10	= TSimple1
+};
+
 struct T2DNewmap : public TSimple2 {
 	inline T2DNewmap()
 	    : TSimple2(PID_WMap_NewMap1, PID_WMap_NewMap2)
@@ -80,7 +108,7 @@ struct T2DOnyonKira : public TChasePosDir {
 	// vtable 1
 	virtual bool create(Arg*); // _08
 	// vtable 2
-	virtual ~T2DOnyonKira() { } // _34 (weak)
+	//virtual ~T2DOnyonKira() { } // _34 (weak)
 
 	void setGlobalParticleScale(f32);
 
@@ -112,7 +140,7 @@ struct T2DRocketB : public TChasePosDir {
 	// vtable 1
 	virtual bool create(Arg*); // _08
 	// vtable 2
-	virtual ~T2DRocketB() { } // _34 (weak)
+	//virtual ~T2DRocketB() { } // _34 (weak)
 
 	void setGlobalParticleScale(f32);
 
@@ -131,40 +159,12 @@ struct T2DRocketGlow : public TChasePosDir {
 		mResMgrId = 1;
 	}
 	// vtable 2
-	virtual ~T2DRocketGlow() { } // _34 (weak)
+	//virtual ~T2DRocketGlow() { } // _34 (weak)
 
 	void setGlobalParticleScale(f32);
 
 	// _00		= VTBL
 	// _00-_1C	= TChasePosDir
-};
-
-/**
- * @size{0x18}
- */
-struct T2DShstar1 : public TChasePos {
-	T2DShstar1(Vector2f* pos)
-	    : TChasePos(PID_WMap_ShootingStar1, pos)
-	{
-		mResMgrId = 1;
-	}
-
-	virtual ~T2DShstar1() { } // _34 (weak)
-
-	// _00		= VTBL
-	// _00-_18	= TChasePos
-};
-
-struct T2DShstar2 : public TSimple1 {
-	inline T2DShstar2()
-	    : TSimple1(PID_WMap_ShootingStar)
-	{
-	}
-
-	virtual bool create(Arg*); // _08
-
-	// _00		= VTBL
-	// _00-_10	= TSimple1
 };
 } // namespace WorldMap
 } // namespace efx2d

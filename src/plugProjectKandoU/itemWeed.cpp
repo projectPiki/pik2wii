@@ -5,7 +5,7 @@
 #include "JSystem/JMath.h"
 #include "P2Macros.h"
 #include "RevoSDK/rand.h"
-#include "efx/TPk.h"
+#include "efx/efxPikmin.h"
 #include "math.h"
 #include "nans.h"
 

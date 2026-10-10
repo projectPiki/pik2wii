@@ -1,11 +1,6 @@
+#include "efx/efxEnemyBoss.h"
 #include "Game/MapMgr.h"
 #include "JSystem/JParticle/JPAMath.h"
-#include "efx/TDango.h"
-#include "efx/THdama.h"
-#include "efx/TKage.h"
-#include "efx/TKch.h"
-#include "efx/TOdama.h"
-#include "efx/TOoota.h"
 
 static void _Printf(char* format)
 {

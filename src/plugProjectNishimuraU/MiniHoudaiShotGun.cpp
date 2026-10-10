@@ -4,7 +4,7 @@
 #include "Game/rumble.h"
 #include "PS.h"
 #include "RevoSDK/rand.h"
-#include "efx/THdama.h"
+#include "efx/efxEnemyBoss.h"
 #include "nans.h"
 
 // TODO: fix this up

@@ -7,7 +7,7 @@
 #include "PSSystem/PSMainSide_ObjSound.h"
 #include "RevoSDK/rand.h"
 #include "VsOtakaraName.h"
-#include "efx/TOtakara.h"
+#include "efx/efxObject.h"
 #include "nans.h"
 
 // Don't be fooled by this files name, it is NOT related to actual treasures, those are pellets/otakara

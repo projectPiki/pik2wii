@@ -13,7 +13,7 @@
 #include "PSSystem/PSSystemIF.h"
 #include "Sys/Sphere.h"
 #include "SysShape/Model.h"
-#include "efx/TBarrel.h"
+#include "efx/efxObject.h"
 #include "nans.h"
 #include "stream.h"
 

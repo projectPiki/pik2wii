@@ -15,8 +15,8 @@
 #include "PSSystem/PSMainSide_Scene.h"
 #include "Radar.h"
 #include "RevoSDK/rand.h"
-#include "efx/TEnemyDownSmoke.h"
-#include "efx/TTsuyuGrow.h"
+#include "efx/efxObject.h"
+#include "efx/efxEnemyGeneral.h"
 #include "nans.h"
 
 // TODO: fix this up

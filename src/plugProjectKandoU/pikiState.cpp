@@ -22,9 +22,8 @@
 #include "PikiAI.h"
 #include "RevoSDK/rand.h"
 #include "System.h"
-#include "efx/TEnemyDive.h"
-#include "efx/TPiku.h"
-#include "efx/TPk.h"
+#include "efx/efxPikmin.h"
+#include "efx/efxEnemyGeneral.h"
 #include "nans.h"
 #include "trig.h"
 

@@ -2,7 +2,7 @@
 #include "Game/EnemyFunc.h"
 #include "Game/Navi.h"
 #include "RevoSDK/rand.h"
-#include "efx/TJgm.h"
+#include "efx/efxEnemy.h"
 
 // TODO: fix this up
 static void __Print(const char** fmt, ...)

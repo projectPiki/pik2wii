@@ -1,3 +1,4 @@
+#include "efx/efxEnemy.h"
 #include "Game/Entities/Bomb.h"
 #include "Game/EnemyAnimKeyEvent.h"
 #include "Game/Entities/BombOtakara.h"
@@ -254,8 +255,8 @@ void Obj::getShadowParam(ShadowParam& param)
 	param.mPosition.y = mPosition.y + 2.0f;
 
 	param.mBoundingSphere.mPosition.set(0.0f, 1.0f, 0.0f);
-	param.mBoundingSphere.mRadius   = 30.0f;
-	param.mSize                     = 10.0f;
+	param.mBoundingSphere.mRadius = 30.0f;
+	param.mSize                   = 10.0f;
 }
 
 /**

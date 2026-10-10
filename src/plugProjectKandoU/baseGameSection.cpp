@@ -30,7 +30,7 @@
 #include "Sys/DrawBuffers.h"
 #include "TParticle2dMgr.h"
 #include "PSM/BossBgmFader.h"
-#include "efx/OnyonSpot.h"
+#include "efx/efxObject.h"
 #include "nans.h"
 #include "og/ogLib2D.h"
 #include "utilityU.h"

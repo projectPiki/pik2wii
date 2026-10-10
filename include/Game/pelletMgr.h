@@ -25,7 +25,7 @@
 #include "System.h"
 #include "TexCaster.h"
 #include "Vector3.h"
-#include "efx/TOrima.h"
+#include "efx/efxPikmin.h"
 
 // pellet carry colors/onion destinations
 // for use with Pellet::mPelletColor

@@ -4,7 +4,7 @@
 #include "PSSystem/PSMainSide_Scene.h"
 #include "RevoSDK/rand.h"
 #include "System.h"
-#include "efx2d/T2DSensor.h"
+#include "efx2d/efx2dEffect.h"
 #include "og/Screen/AngleMgr.h"
 #include "og/Screen/OtakaraSensor.h"
 #include "og/Screen/ScaleMgr.h"
@@ -14,10 +14,14 @@
 #include "og/newScreen/ogUtil.h"
 #include "trig.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "ogOtakaraSensor";
+}
+
 namespace og {
 namespace Screen {
-
-static const char otakaraSensorName[] = "ogOtakaraSensor";
 
 /**
  * @note Address: 0x8032D8E8

@@ -7,7 +7,7 @@
 #include "Morimura/mrUtil.h"
 #include "PSSystem/PSSystemIF.h"
 #include "RevoSDK/rand.h"
-#include "efx2d/T2DChangesmoke.h"
+#include "efx2d/efx2dEffect.h"
 #include "og/newScreen/ogUtil.h"
 #include "trig.h"
 

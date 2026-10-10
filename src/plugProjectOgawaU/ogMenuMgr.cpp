@@ -1,6 +1,6 @@
 #include "System.h"
 #include "Vector3.h"
-#include "efx2d/T2DCursor.h"
+#include "efx2d/efx2dEffect.h"
 #include "og/Screen/MenuMgr.h"
 #include "og/Screen/ScaleMgr.h"
 #include "og/Screen/ogScreen.h"

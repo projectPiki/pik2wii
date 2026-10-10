@@ -9,7 +9,7 @@
 #include "Game/rumble.h"
 #include "PSSystem/PSMainSide_ObjSound.h"
 #include "RevoSDK/rand.h"
-#include "efx/THebi.h"
+#include "efx/efxEnemyBoss.h"
 
 // TODO: fix this up
 static void __Print(const char** fmt, ...)

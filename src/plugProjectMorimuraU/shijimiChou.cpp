@@ -8,7 +8,7 @@
 #include "Game/gamePlayData.h"
 #include "PSM/Cluster.h"
 #include "RevoSDK/rand.h"
-#include "efx/TChou.h"
+#include "efx/efxEnemy.h"
 
 // TODO: fix this up
 static void __Print(const char** fmt, ...)

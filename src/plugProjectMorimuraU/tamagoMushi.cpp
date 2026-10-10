@@ -5,8 +5,7 @@
 #include "Game/PikiMgr.h"
 #include "Game/PikiState.h"
 #include "RevoSDK/rand.h"
-#include "efx/TTamagoAp.h"
-#include "efx/TUjinko.h"
+#include "efx/efxEnemy.h"
 
 // TODO: fix this up
 static void __Print(const char** fmt, ...)

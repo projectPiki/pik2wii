@@ -5,7 +5,7 @@
 #include "Game/MapMgr.h"
 #include "Game/rumble.h"
 #include "PS.h"
-#include "efx/TKurage.h"
+#include "efx/efxEnemy.h"
 #include "nans.h"
 
 // TODO: fix this up

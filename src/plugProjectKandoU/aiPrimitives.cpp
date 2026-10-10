@@ -11,8 +11,7 @@
 #include "PikiAI.h"
 #include "RevoSDK/rand.h"
 #include "Vector3.h"
-#include "efx/PikiDamage.h"
-#include "efx/TPk.h"
+#include "efx/efxPikmin.h"
 #include "nans.h"
 #include "types.h"
 

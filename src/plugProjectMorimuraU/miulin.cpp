@@ -5,7 +5,7 @@
 #include "Game/PikiMgr.h"
 #include "Game/generalEnemyMgr.h"
 #include "RevoSDK/rand.h"
-#include "efx/TMiuAttack.h"
+#include "efx/efxEnemy.h"
 #include "types.h"
 
 // TODO: fix this up

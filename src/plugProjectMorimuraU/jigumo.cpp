@@ -7,7 +7,7 @@
 #include "Game/Navi.h"
 #include "Game/generalEnemyMgr.h"
 #include "RevoSDK/rand.h"
-#include "efx/TEnemyDive.h"
+#include "efx/efxEnemyGeneral.h"
 
 // TODO: fix this up
 static void __Print(const char** fmt, ...)

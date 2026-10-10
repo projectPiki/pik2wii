@@ -5,8 +5,7 @@
 #include "Morimura/Window.h"
 #include "Morimura/mrUtil.h"
 #include "Screen/Game2DMgr.h"
-#include "efx2d/T2DChalDive.h"
-#include "efx2d/T2DCursor.h"
+#include "efx2d/efx2dEffect.h"
 #include "og/Screen/ogScreen.h"
 
 namespace og {

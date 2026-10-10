@@ -14,6 +14,7 @@
 #include "JSystem/J3D/J3DMtxBuffer.h"
 #include "PSSystem/PSMainSide_ObjSound.h"
 #include "RevoSDK/rand.h"
+#include "efx/efxEnemy.h"
 #include "nans.h"
 
 // TODO: fix this up
