@@ -303,7 +303,7 @@ static void PADReceiveCheckCallback(s32 chan, u32 type)
 BOOL PADReset(u32 mask)
 {
 	BOOL enabled;
-	u32 diableBits;
+	u32 disableBits;
 
 	ASSERTMSG((mask & ~(PAD_CHAN0_BIT | PAD_CHAN1_BIT | PAD_CHAN2_BIT | PAD_CHAN3_BIT)) == 0, "PADReset(): invalid mask");
 
@@ -313,7 +313,7 @@ BOOL PADReset(u32 mask)
 	PendingBits = 0;
 	mask &= ~(WaitingBits | CheckingBits);
 	ResettingBits |= mask;
-	diableBits = ResettingBits & EnabledBits;
+	disableBits = ResettingBits & EnabledBits;
 	EnabledBits &= ~mask;
 	BarrelBits &= ~mask;
 
@@ -321,7 +321,7 @@ BOOL PADReset(u32 mask)
 		RecalibrateBits |= mask;
 	}
 
-	SIDisablePolling(diableBits);
+	SIDisablePolling(disableBits);
 
 	if (ResettingChan == 32) {
 		DoReset();

@@ -322,9 +322,9 @@ void Uja::update(BoidParms& parms)
 	updateBuffer();
 	sys->mTimers->_stop("AI PIKI");
 
-	Vector3f seperationVec; // 0x2B4
-	seperationVec = mFlockMgr->mFlockCentre - *this;
-	seperationVec.normalise();
+	Vector3f separationVec; // 0x2B4
+	separationVec = mFlockMgr->mFlockCentre - *this;
+	separationVec.normalise();
 
 	// To avoid collisions, we have an arbitrary size (representing the Uja) to keep away from other Uja
 	// While calculating the alignment vector.
@@ -336,13 +336,13 @@ void Uja::update(BoidParms& parms)
 	Vector3f alignmentVec; // f22, f21, f20
 	if (!mUpdateContext.updatable()) {
 		alignmentVec  = mPreviousAlignmentDir;
-		seperationVec = mPreviousMoveDir;
+		separationVec = mPreviousMoveDir;
 	} else {
 		alignmentThreshold = scale + scale; // f28
 
 		int visibleUjaCount = 0; // r28
 		alignmentVec.set(0.0f, 0.0f, 0.0f);
-		seperationVec.set(0.0f, 0.0f, 0.0f);
+		separationVec.set(0.0f, 0.0f, 0.0f);
 
 		f32 distanceThreshold = scale + parms.mDistance(); // f14
 
@@ -371,7 +371,7 @@ void Uja::update(BoidParms& parms)
 					}
 
 					// We can see the other Uja, so we add it to the alignment vector to not collide with it
-					seperationVec += *i;
+					separationVec += *i;
 
 					Vector3f newVec = i->mVelocity;
 					newVec.normalise();
@@ -394,11 +394,11 @@ void Uja::update(BoidParms& parms)
 			alignmentVec *= norm;
 			mPreviousAlignmentDir = alignmentVec;
 
-			seperationVec *= norm;
-			seperationVec = seperationVec - *this;
-			seperationVec.normalise();
+			separationVec *= norm;
+			separationVec = separationVec - *this;
+			separationVec.normalise();
 
-			mPreviousMoveDir = seperationVec;
+			mPreviousMoveDir = separationVec;
 		}
 	}
 
@@ -504,7 +504,7 @@ void Uja::update(BoidParms& parms)
 
 	Vector3f randomDirection(randSin, 0.0f, randCos);
 	if (mState != 2) {
-		moveDir = seperationVec * (speed * parms.mCohesion()) + alignmentVec * parms.mAlignment()
+		moveDir = separationVec * (speed * parms.mCohesion()) + alignmentVec * parms.mAlignment()
 		        + closestUjaDirection * (speed * parms.mSeparation()) + result * (speed * parms.mBounds())
 		        + pikiResult * (speed * parms.mPiki()) + center * (speed * parms.mGoHome()) + naviResult * (speed * parms.mNavi())
 		        + randomDirection * (speed * parms.mRandom()) + directionTo_44 * (speed * parms.mTarget());

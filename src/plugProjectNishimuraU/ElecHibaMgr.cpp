@@ -1,9 +1,13 @@
 #include "Game/Entities/ElecHiba.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "246-ElecHibaMgr";
+}
+
 namespace Game {
 namespace ElecHiba {
-
-static const char elecHibaMgrName[] = "246-ElecHibaMgr";
 
 /**
  * @note Address: 0x8026EA08
@@ -19,7 +23,10 @@ Generator::Generator()
  * @note Address: 0x8026EA94
  * @note Size: 0xC
  */
-u32 Generator::getLatestVersion() { return '0000'; }
+u32 Generator::getLatestVersion()
+{
+	return '0000';
+}
 
 /**
  * @note Address: 0x8026EAA0
@@ -50,13 +57,18 @@ void Generator::doWrite(Stream& stream)
  * @note Address: 0x8026EB74
  * @note Size: 0x34
  */
-void Generator::doReadLatestVersion(Stream& stream) { mDistance = stream.readFloat(); }
+void Generator::doReadLatestVersion(Stream& stream)
+{
+	mDistance = stream.readFloat();
+}
 
 /**
  * @note Address: 0x8026EBA8
  * @note Size: 0x4
  */
-void Generator::doReadOldVersion(Stream&) { }
+void Generator::doReadOldVersion(Stream&)
+{
+}
 
 /**
  * @note Address: 0x8026EBAC
@@ -72,19 +84,28 @@ Mgr::Mgr(int objLimit, u8 modelType)
  * @note Address: 0x8026EC10
  * @note Size: 0x48
  */
-void Mgr::doAlloc() { init(new Parms); }
+void Mgr::doAlloc()
+{
+	init(new Parms);
+}
 
 /**
  * @note Address: 0x8026EE24
  * @note Size: 0x60
  */
-void Mgr::createObj(int count) { mObj = new Obj[count]; }
+void Mgr::createObj(int count)
+{
+	mObj = new Obj[count];
+}
 
 /**
  * @note Address: 0x8026EF64
  * @note Size: 0x10
  */
-EnemyBase* Mgr::getEnemy(int index) { return &mObj[index]; }
+EnemyBase* Mgr::getEnemy(int index)
+{
+	return &mObj[index];
+}
 
 /**
  * @note Address: 0x8026EF74
@@ -94,7 +115,7 @@ EnemyBase* Mgr::birth(EnemyBirthArg& birthArg)
 {
 	TeamList* teamList;
 	InitialParam param;
-	param.mSeperation = 100.0f;
+	param.mSeparation = 100.0f;
 	Obj* elecHiba     = static_cast<Obj*>(EnemyMgrBase::birth(birthArg));
 	if (elecHiba) {
 		elecHiba->mBirthPosition = birthArg.mPosition;
