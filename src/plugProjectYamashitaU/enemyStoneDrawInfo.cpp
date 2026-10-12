@@ -2,7 +2,6 @@
 #include "Game/EnemyStone.h"
 #include "PSSystem/PSGame.h"
 #include "System.h"
-#include "efx/TSekika.h"
 #include "types.h"
 
 namespace Game {
@@ -594,5 +593,3 @@ void DrawInfo::dead(EnemyBase* enemy)
 }
 } // namespace EnemyStone
 } // namespace Game
-
-PSGame::SeMgr* PSSystem::SingletonBase<PSGame::SeMgr>::sInstance;

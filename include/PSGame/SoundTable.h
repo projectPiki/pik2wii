@@ -45,8 +45,6 @@ struct CategoryMgr : PSSystem::SingletonBase<CategoryMgr> {
 
 	CategoryMgr();
 
-	virtual ~CategoryMgr() { } // _08 (weak)
-
 	void initiate(u8);
 
 	// _00 = VTBL

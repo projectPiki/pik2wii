@@ -3,8 +3,11 @@
 #include "ebi/title/TTitle.h"
 #include "nans.h"
 
-static const u32 padding[]    = { 0, 0, 0 };
-static const char className[] = "ebiP2TitleUnit";
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "ebiP2TitleUnit";
+}
 
 namespace ebi {
 namespace title {
@@ -13,25 +16,23 @@ namespace title {
  * @note Address: N/A
  * @note Size: 0xA8
  */
-void E3DModel_set2DCoordToBaseTRMatrix_(J3DModel* model, Vector2f& pos, Vector2f& angle, f32 scale)
+void E3DModel_set2DCoordToBaseTRMatrix(J3DModel* model, Vector2f& pos, Vector2f& angle, f32 scale)
 {
 	Mtx& mtx = model->mPosMtx;
 	f32 y    = -angle.y;
 	f32 x    = angle.x;
-	f32 zero = 0.0f;
-	f32 one  = 1.0f;
 
-	model->mPosMtx[0][0] = one * y - zero;
+	model->mPosMtx[0][0] = 1.0f * y - 0.0f;
 	model->mPosMtx[0][1] = 0.0f;
 	model->mPosMtx[0][2] = x;
 	model->mPosMtx[0][3] = pos.x;
 
-	model->mPosMtx[1][0] = (zero * x) - (zero * y);
+	model->mPosMtx[1][0] = (0.0f * x) - (0.0f * y);
 	model->mPosMtx[1][1] = 1.0f;
 	model->mPosMtx[1][2] = 0.0f;
 	model->mPosMtx[1][3] = 0.0f;
 
-	model->mPosMtx[2][0] = -(one * x - zero);
+	model->mPosMtx[2][0] = -(1.0f * x - 0.0f);
 	model->mPosMtx[2][1] = 0.0f;
 	model->mPosMtx[2][2] = y;
 	model->mPosMtx[2][3] = -pos.y;
@@ -63,7 +64,7 @@ bool TParamBase::loadSettingFile(JKRArchive* arc, char* path)
  */
 void TObjBase::calcModelBaseMtx_()
 {
-	E3DModel_set2DCoordToBaseTRMatrix_(mModel, mPosition, mAngle, mParms[1]);
+	E3DModel_set2DCoordToBaseTRMatrix(mModel, mPosition, mAngle, mScale);
 }
 
 /**
@@ -83,7 +84,7 @@ void TObjBase::pushOut(TObjBase* otherObj)
 {
 	if (isCalc() && otherObj->isCalc()) {
 		EGECircle2f bounds;
-		bounds.mRadius = mParms[2] + otherObj->mParms[2];
+		bounds.mRadius = mCollRadius + otherObj->mCollRadius;
 		bounds.mCenter = mPosition;
 		bounds.out(&otherObj->mPosition);
 	}
@@ -96,15 +97,15 @@ void TObjBase::pushOut(TObjBase* otherObj)
 void TMapBase::setArchive(JKRArchive* arc)
 {
 	void* file = arc->getResource("opening.bmd");
-	P2ASSERTLINE(96, file);
+	P2ASSERTLINE(102, file);
 	mMainModelData = J3DModelLoaderDataBase::load(file, J3DMLF_Material_PE_FogOff | J3DMLF_21);
 
 	file = arc->getResource("opening_wait.bck");
-	P2ASSERTLINE(106, file);
+	P2ASSERTLINE(112, file);
 	mAnimWait = static_cast<J3DAnmTransform*>(J3DAnmLoaderDataBase::load(file));
 
 	file = arc->getResource("opening_kaze.bck");
-	P2ASSERTLINE(111, file);
+	P2ASSERTLINE(117, file);
 	mAnimWind = static_cast<J3DAnmTransform*>(J3DAnmLoaderDataBase::load(file));
 
 	mMainModelData->newSharedDisplayList(0x40000);
@@ -114,7 +115,7 @@ void TMapBase::setArchive(JKRArchive* arc)
 	mAnimMtxCalcWind = static_cast<J3DMtxCalcAnmBase*>(J3DUNewMtxCalcAnm(mMainModelData->mJointTree.mFlags & J3DMLF_MtxTypeMask, mAnimWait,
 	                                                                     mAnimWind, nullptr, nullptr, (J3DMtxCalcFlag)0));
 
-	mParms[0] = 0.0f;
+	mMoveSpeed = 0.0f;
 
 	mModel = new J3DModel(mMainModelData, 0x20000, 1);
 
@@ -134,9 +135,7 @@ void TMapBase::setArchive(JKRArchive* arc)
 void TMapBase::startWind(f32 time)
 {
 	mState        = 1;
-	u32 wind      = time / sys->getDeltaTime();
-	mWindTimer    = wind;
-	mWindTimerMax = wind;
+	mWindTimer.setValue(time);
 }
 
 /**
@@ -147,37 +146,27 @@ void TMapBase::update()
 {
 	calcModelBaseMtx_();
 
-	if (!mWindTimer) {
+	if (mWindTimer.isZero()) {
 		mState = 0;
 	}
 
 	switch (mState) {
 	case 0:
 		mFrameCtrlWait.update();
-		mAnimWait->mCurrentFrame                            = mFrameCtrlWait.mFrame;
-		mModel->mModelData->mJointTree.mJoints[0]->mMtxCalc = mAnimMtxCalcWait;
+		mAnimWait->setFrame(mFrameCtrlWait.mFrame);
+		mModel->mModelData->getJointNodePointer(0)->mMtxCalc = mAnimMtxCalcWait;
 		break;
 	case 1:
 		mFrameCtrlWait.update();
 		mFrameCtrlWind.update();
-		mAnimWait->mCurrentFrame = mFrameCtrlWait.mFrame;
-		mAnimWind->mCurrentFrame = mFrameCtrlWind.mFrame;
-		J3DMtxCalcAnmBase* anm   = mAnimMtxCalcWind;
-		if (mWindTimer) {
-			mWindTimer--;
-		}
-		f32 calc;
-		if (mWindTimerMax) {
-			calc = (f32)mWindTimer / (f32)mWindTimerMax;
-		} else {
-			calc = 0.0f;
-		}
-
-		calc      = 1.0f - calc;
-		f32 calc2 = determineAnimRate(calc);
+		mAnimWait->setFrame(mFrameCtrlWait.mFrame);
+		mAnimWind->setFrame(mFrameCtrlWind.mFrame);
+		J3DMtxCalcAnmBase* anm = mAnimMtxCalcWind;
+		mWindTimer.update();
+		f32 calc2 = determineAnimRate(1.0f - mWindTimer.getRatio());
 		anm->setWeight(0, 1.0f - calc2);
 		anm->setWeight(1, calc2);
-		mModel->mModelData->mJointTree.mJoints[0]->mMtxCalc = anm;
+		mModel->mModelData->getJointNodePointer(0)->mMtxCalc = anm;
 		break;
 	}
 
@@ -193,11 +182,11 @@ void TMapBase::update()
 void TBGEnemyBase::setArchive(JKRArchive* arc)
 {
 	void* file = arc->getResource("enemy.bmd");
-	P2ASSERTLINE(199, file);
+	P2ASSERTLINE(216, file);
 	mMainModelData = J3DModelLoaderDataBase::load(file, J3DMLF_Material_PE_FogOff | J3DMLF_21);
 
 	file = arc->getResource("enemy.bck");
-	P2ASSERTLINE(209, file);
+	P2ASSERTLINE(226, file);
 	mAnim = static_cast<J3DAnmTransform*>(J3DAnmLoaderDataBase::load(file));
 
 	mMainModelData->newSharedDisplayList(0x40000);
@@ -205,7 +194,7 @@ void TBGEnemyBase::setArchive(JKRArchive* arc)
 
 	mAnimMtxCalc = J3DNewMtxCalcAnm(mMainModelData->mJointTree.mFlags & J3DMLF_MtxTypeMask, mAnim);
 
-	mParms[0] = 0.0f;
+	mMoveSpeed = 0.0f;
 
 	mModel = new J3DModel(mMainModelData, 0x20000, 1);
 }
@@ -230,8 +219,8 @@ void TBGEnemyBase::update()
 	calcModelBaseMtx_();
 
 	mFrameCtrl.update();
-	mAnim->mCurrentFrame                                = mFrameCtrl.mFrame;
-	mModel->mModelData->mJointTree.mJoints[0]->mMtxCalc = mAnimMtxCalc;
+	mAnim->setFrame(mFrameCtrl.mFrame);
+	mModel->mModelData->getJointNodePointer(0)->mMtxCalc = mAnimMtxCalc;
 
 	mModel->calc();
 	mModel->entry();
@@ -245,20 +234,20 @@ void TBGEnemyBase::update()
 void TBlackPlane::setArchive(JKRArchive* arc)
 {
 	void* file = arc->getResource("cam.bmd");
-	P2ASSERTLINE(258, file);
+	P2ASSERTLINE(275, file);
 	mMainModelData = J3DModelLoaderDataBase::load(file, J3DMLF_Material_PE_Full | J3DMLF_21);
 
 	file = arc->getResource("cam.bck");
-	P2ASSERTLINE(268, file);
+	P2ASSERTLINE(285, file);
 	mAnim = static_cast<J3DAnmTransform*>(J3DAnmLoaderDataBase::load(file));
 
 	file = arc->getResource("cam.brk");
-	P2ASSERTLINE(273, file);
+	P2ASSERTLINE(290, file);
 	mAnimColor = static_cast<J3DAnmTevRegKey*>(J3DAnmLoaderDataBase::load(file));
 
 	mAnimMtxCalc = J3DNewMtxCalcAnm(mMainModelData->mJointTree.mFlags & J3DMLF_MtxTypeMask, mAnim);
 
-	mParms[0] = 0.0f;
+	mMoveSpeed = 0.0f;
 
 	mModel = new J3DModel(mMainModelData, 0x20000, 1);
 
@@ -279,11 +268,11 @@ void TBlackPlane::setArchive(JKRArchive* arc)
  */
 void TBlackPlane::start()
 {
-	mFrameCtrl.init(mAnim->mTotalFrameCount - 2);
+	mFrameCtrl.init(mAnim->getTotalFrameCount() - 2);
 	mFrameCtrl.mAttribute = J3DAA_UNKNOWN_0;
 	mFrameCtrl.mRate      = sys->getDeltaTime() * 60.0f * 0.5f;
 
-	mFrameCtrlColor.init(mAnimColor->mTotalFrameCount - 2);
+	mFrameCtrlColor.init(mAnimColor->getTotalFrameCount() - 2);
 	mFrameCtrlColor.mAttribute = J3DAA_UNKNOWN_0;
 	mFrameCtrlColor.mRate      = sys->getDeltaTime() * 60.0f * 0.5f;
 }
@@ -299,9 +288,9 @@ void TBlackPlane::updateBeforeCamera()
 	mFrameCtrl.update();
 	mFrameCtrlColor.update();
 
-	mAnimColor->mCurrentFrame                           = mFrameCtrlColor.mFrame;
-	mAnim->mCurrentFrame                                = mFrameCtrl.mFrame;
-	mModel->mModelData->mJointTree.mJoints[0]->mMtxCalc = mAnimMtxCalc;
+	mAnimColor->setFrame(mFrameCtrlColor.mFrame);
+	mAnim->setFrame(mFrameCtrl.mFrame);
+	mModel->mModelData->getJointNodePointer(0)->mMtxCalc = mAnimMtxCalc;
 
 	mModel->calc();
 }

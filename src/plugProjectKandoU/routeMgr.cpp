@@ -358,9 +358,11 @@ void WayPoint::directDraw_Simple(Graphics&) { }
  * @note Address: N/A
  * @note Size: 0x10C
  */
-void WayPoint::createOffPlane(Plane&, WayPoint*)
+void WayPoint::createOffPlane(Plane& plane, WayPoint* wp)
 {
-	// UNUSED FUNCTION
+	Vector3f sep = mPosition - wp->mPosition;
+	sep.normalise();
+	plane.updatePlane(wp->mPosition, sep);
 }
 
 /**
@@ -538,8 +540,7 @@ bool RouteMgr::getNearestEdge(WPEdgeSearchArg& searchArg)
 			continue;
 		}
 
-		int wpAIndex = wpA->mIndex;
-		if (searchArg.isLinkedTo(wpAIndex)) {
+		if (searchArg.isLinkedTo(wpA->mIndex)) {
 			continue;
 		}
 
@@ -564,8 +565,6 @@ bool RouteMgr::getNearestEdge(WPEdgeSearchArg& searchArg)
 				continue;
 			}
 
-			// there really are a shitton of branches here from SOMETHING
-			// this is my best guess for now
 			bool isReverseLink = false;
 			for (int j = 0; j < 8; j++) {
 				if (wpB->mFromLinks[i] == wpA->mIndex) {
@@ -577,7 +576,7 @@ bool RouteMgr::getNearestEdge(WPEdgeSearchArg& searchArg)
 				continue;
 			}
 
-			bool isWaypointAClosed = wpA->isFlag(WPF_Closed);
+			int isWaypointAClosed = wpA->isFlag(WPF_Closed);
 			if (isWaypointAClosed && wpB->isFlag(WPF_Closed)) {
 				continue;
 			}
@@ -592,36 +591,24 @@ bool RouteMgr::getNearestEdge(WPEdgeSearchArg& searchArg)
 					b = wpA;
 				}
 
-				Vector3f sep = a->mPosition - b->mPosition;
-				sep.normalise();
 				Plane plane;
-				plane.updatePlane(b->mPosition, sep);
+				a->createOffPlane(plane, b);
 				if (plane.calcDist(a->mPosition) * plane.calcDist(searchArg.mStartPosition) < 0.0f) {
 					continue;
 				}
 			}
 
-			Vector3f wpPos            = wpA->mPosition;
-			Vector3f relativePosition = wpB->mPosition - wpPos;
-			f32 distanceMagnitude     = relativePosition.length();
-			if (distanceMagnitude > 0.0f) {
-				f32 norm = 1.0f / distanceMagnitude;
-				relativePosition.x *= norm;
-				relativePosition.y *= norm;
-				relativePosition.z *= norm;
-			} else {
-				distanceMagnitude = 0.0f;
-			}
-			Vector3f searchSep = searchArg.mStartPosition - wpPos;
-			f32 dotProd        = relativePosition.dot(searchSep) / distanceMagnitude;
+			Vector3f relativePosition = wpB->mPosition - wpA->mPosition;
+			f32 distanceMagnitude     = relativePosition.normalise();
+			Vector3f searchSep        = searchArg.mStartPosition - wpA->mPosition;
+			f32 dotProd               = relativePosition.dot(searchSep) / distanceMagnitude;
 
 			if (distanceMagnitude < 0.1f) {
 				JUT_PANICLINE(768, "wpA(%d) and wpB(%d) cause singularity !\n", wpA->mIndex, wpB->mIndex);
 			}
 
-			Vector3f searchPos = searchArg.mStartPosition;
-			f32 revDistA       = wpA->mPosition.distance(searchPos);
-			f32 revDistB       = wpB->mPosition.distance(searchPos);
+			f32 revDistA = wpA->mPosition.distance(searchArg.mStartPosition);
+			f32 revDistB = wpB->mPosition.distance(searchArg.mStartPosition);
 			f32 newDist;
 			if (dotProd < 0.0f || dotProd > 1.0f) {
 				if (revDistB < revDistA) {
@@ -630,10 +617,11 @@ bool RouteMgr::getNearestEdge(WPEdgeSearchArg& searchArg)
 					newDist = revDistA - wpA->mRadius;
 				}
 			} else {
-				f32 factor       = dotProd * distanceMagnitude;
-				Vector3f edgePos = relativePosition * factor + wpA->mPosition;
-				f32 radius       = (1.0f - dotProd) * wpA->mRadius + dotProd * wpB->mRadius;
-				newDist          = edgePos.distance(searchPos) - radius;
+				Vector3f edgePos;
+				edgePos    = relativePosition * (dotProd * distanceMagnitude) + wpA->mPosition;
+				edgePos    = edgePos - searchArg.mStartPosition;
+				f32 radius = (1.0f - dotProd) * wpA->mRadius + dotProd * wpB->mRadius;
+				newDist    = edgePos.length() - radius;
 			}
 
 			if (newDist < minDist) {
@@ -1454,143 +1442,19 @@ EditorRouteMgr::EditorRouteMgr() { }
  */
 void EditorRouteMgr::read(Stream& input)
 {
-	FOREACH_NODE(WPNode, mNode.mChild, node) { delWayPoint(node->mWayPoint); }
+	FOREACH_NODE(WPNode, mNode.mChild, node)
+	{
+		delWayPoint(node->mWayPoint);
+	}
 
-	u16 count = input.readShort();
-	WayPoint* wp;
-	mCount = 0;
+	int count = input.readU16();
+	mCount    = 0;
 	for (int i = 0; i < count; i++) {
-		wp = new WayPoint();
+		WayPoint* wp = new WayPoint();
 		wp->read(input);
 		addWayPoint(wp);
 	}
 	makeInvertLinks();
-	/*
-	.loc_0x0:
-	  stwu      r1, -0x30(r1)
-	  mflr      r0
-	  stw       r0, 0x34(r1)
-	  stmw      r24, 0x10(r1)
-	  mr        r30, r3
-	  mr        r31, r4
-	  lwz       r25, 0x30(r3)
-	  b         .loc_0x30
-
-	.loc_0x20:
-	  lwz       r4, 0x18(r25)
-	  mr        r3, r30
-	  bl        0x210
-	  lwz       r25, 0x4(r25)
-
-	.loc_0x30:
-	  cmplwi    r25, 0
-	  bne+      .loc_0x20
-	  mr        r3, r31
-	  bl        0x2A008C
-	  li        r0, 0
-	  lis       r4, 0x8051
-	  sth       r0, 0x1C(r30)
-	  rlwinm    r26,r3,0,16,31
-	  addi      r29, r4, 0x41E4
-	  li        r24, 0
-	  b         .loc_0x188
-
-	.loc_0x5C:
-	  li        r3, 0x78
-	  bl        -0x150858
-	  mr.       r28, r3
-	  beq-      .loc_0x11C
-	  mr        r25, r28
-	  bl        -0x157740
-	  lis       r3, 0x804B
-	  addi      r27, r25, 0x18
-	  addi      r0, r3, 0x23FC
-	  stw       r0, 0x0(r25)
-	  mr        r3, r27
-	  bl        0x29CC6C
-	  lis       r4, 0x804B
-	  lis       r3, 0x8051
-	  addi      r0, r4, 0x2410
-	  lfs       f0, -0x5960(r2)
-	  stw       r0, 0x0(r27)
-	  li        r4, -0x1
-	  li        r0, 0
-	  sth       r4, 0x18(r27)
-	  sth       r4, 0x3A(r25)
-	  sth       r4, 0x5E(r25)
-	  sth       r4, 0x3C(r25)
-	  sth       r4, 0x60(r25)
-	  sth       r4, 0x3E(r25)
-	  sth       r4, 0x62(r25)
-	  sth       r4, 0x40(r25)
-	  sth       r4, 0x64(r25)
-	  sth       r4, 0x42(r25)
-	  sth       r4, 0x66(r25)
-	  sth       r4, 0x44(r25)
-	  sth       r4, 0x68(r25)
-	  sth       r4, 0x46(r25)
-	  sth       r4, 0x6A(r25)
-	  sth       r4, 0x48(r25)
-	  sth       r4, 0x6C(r25)
-	  lfs       f1, 0x41E4(r3)
-	  stfs      f1, 0x4C(r25)
-	  lfs       f1, 0x4(r29)
-	  stfs      f1, 0x50(r25)
-	  lfs       f1, 0x8(r29)
-	  stfs      f1, 0x54(r25)
-	  stfs      f0, 0x58(r25)
-	  sth       r4, 0x36(r25)
-	  sth       r0, 0x38(r25)
-	  sth       r0, 0x5C(r25)
-	  stb       r0, 0x6E(r25)
-	  stb       r0, 0x34(r25)
-
-	.loc_0x11C:
-	  mr        r3, r31
-	  bl        0x29FFA8
-	  sth       r3, 0x36(r28)
-	  mr        r3, r31
-	  bl        0x29FF9C
-	  sth       r3, 0x38(r28)
-	  mr        r25, r28
-	  li        r27, 0
-	  b         .loc_0x154
-
-	.loc_0x140:
-	  mr        r3, r31
-	  bl        0x29FF84
-	  sth       r3, 0x3A(r25)
-	  addi      r25, r25, 0x2
-	  addi      r27, r27, 0x1
-
-	.loc_0x154:
-	  lha       r0, 0x38(r28)
-	  cmpw      r27, r0
-	  blt+      .loc_0x140
-	  mr        r4, r31
-	  addi      r3, r28, 0x4C
-	  bl        0x29D18C
-	  mr        r3, r31
-	  bl        0x2A05A0
-	  stfs      f1, 0x58(r28)
-	  mr        r3, r30
-	  mr        r4, r28
-	  bl        .loc_0x1AC
-	  addi      r24, r24, 0x1
-
-	.loc_0x188:
-	  cmpw      r24, r26
-	  blt+      .loc_0x5C
-	  mr        r3, r30
-	  bl        -0x1E4C
-	  lmw       r24, 0x10(r1)
-	  lwz       r0, 0x34(r1)
-	  mtlr      r0
-	  addi      r1, r1, 0x30
-	  blr
-
-	.loc_0x1AC:
-	*/
 }
 
 /**

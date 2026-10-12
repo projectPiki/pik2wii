@@ -2,7 +2,7 @@
 #include "Game/Entities/ItemBridge.h"
 #include "Game/Entities/ItemGate.h"
 #include "RevoSDK/rand.h"
-#include "efx/TGasuHiba.h"
+#include "efx/efxEnemy.h"
 
 // TODO: fix this up
 static void __Print(const char** fmt, ...)

@@ -4,14 +4,14 @@
 #include "PSSystem/PSCommon.h"
 #include "types.h"
 #include "PSM/Director.h"
-#include "PSM/EnemyBoss.h"
+#include "PSSystem/PSMainSide_ObjSound.h"
 #include "JSystem/JSupport/JSUList.h"
 
 namespace PSM {
 namespace BossBgmFader {
 
 /**
- * @size{0x30}
+ * @size{0x38}
  */
 struct TypedProc : public JSUList<EnemyBoss> {
 	enum ProcState {
@@ -48,7 +48,7 @@ struct TypedProc : public JSUList<EnemyBoss> {
 };
 
 /**
- * @size{0x34}
+ * @size{0x38}
  */
 struct TypedProc_MidBoss : public TypedProc {
 	inline TypedProc_MidBoss(f32 maxDist, f32 fadeRange)
@@ -62,13 +62,12 @@ struct TypedProc_MidBoss : public TypedProc {
 	// inlined:
 	~TypedProc_MidBoss() { }
 
-	// _0C      = VTBL
-	// _00-_30  = TypedProc
-	DirectorUpdator* mBossUpdator; // _3C
+	// _0C     = VTBL
+	// _00-_38 = TypedProc
 };
 
 /**
- * @size{0x44}
+ * @size{0x3C}
  */
 struct Mgr : ::PSSystem::SingletonBase<Mgr> {
 	Mgr();
@@ -78,17 +77,30 @@ struct Mgr : ::PSSystem::SingletonBase<Mgr> {
 	void appendTarget(JSULink<EnemyBoss>*);
 	void exec();
 
-	inline bool checkBossActive()
+	static inline bool checkBossActive()
 	{
-		bool ret = false;
-		FOREACH_NODE(JSULink<EnemyBoss>, mTypedProc.getFirst(), link)
+		bool isActive = false;
+		FOREACH_NODE(JSULink<EnemyBoss>, getInstance()->mTypedProc.getFirst(), link)
 		{
 			EnemyBoss* obj = link->getObject();
 			if (obj->_FE) {
-				ret = true;
+				isActive = true;
 			}
 		}
-		return ret;
+		return isActive;
+	}
+
+	static inline bool checkAllBossInactive()
+	{
+		bool isInactive = true;
+		FOREACH_NODE(JSULink<EnemyBoss>, getInstance()->mTypedProc.getFirst(), link)
+		{
+			EnemyBoss* obj = link->getObject();
+			if (obj->_FE) {
+				isInactive = false;
+			}
+		}
+		return isInactive;
 	}
 
 	// _00 VTBL

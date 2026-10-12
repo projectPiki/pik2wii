@@ -2,7 +2,7 @@
 #include "Game/Entities/ItemBridge.h"
 #include "Game/MapMgr.h"
 #include "RevoSDK/rand.h"
-#include "efx/TUjinko.h"
+#include "efx/efxEnemy.h"
 
 // TODO: fix this up
 static void __Print(const char** fmt, ...)
@@ -758,7 +758,7 @@ bool Obj::moveBridgeTop()
 
 	f32 val = turnToTarget(stagePos, C_GENERALPARMS.mTurnSpeed(), C_GENERALPARMS.mMaxTurnAngle());
 
-	f32 dist = sqrDistanceXZ(mPosition, stagePos);
+	f32 dist = mPosition.sqrDistance2D(stagePos);
 
 	if (dist < 50.0f) {
 		mTargetVelocity.set(0.0f, 0.0f, 0.0f);

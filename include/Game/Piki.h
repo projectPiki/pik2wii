@@ -5,7 +5,7 @@
 #include "Game/StateMachine.h"
 #include "JSystem/JAudio/JAI/JAInter/Object.h"
 #include "JSystem/JUtility/TColor.h"
-#include "PSM/Piki.h"
+#include "PSSystem/PSMainSide_ObjSound.h"
 
 #define MAX_PIKI_COUNT (100) // Maximum number of pikmin allowed out of the onyon/in a cave
 

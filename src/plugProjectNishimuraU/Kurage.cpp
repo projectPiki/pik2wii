@@ -4,6 +4,12 @@
 #include "Game/PikiMgr.h"
 #include "RevoSDK/rand.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "246-Kurage";
+}
+
 namespace Game {
 namespace Kurage {
 
@@ -126,7 +132,7 @@ void Obj::getShadowParam(ShadowParam& shadowParam)
 		shadowParam.mPosition.y = 5.0f + minY;
 	}
 
-	shadowParam.mBoundingSphere.mPosition = Vector3f(0.0f, 1.0f, 0.0f);
+	shadowParam.mBoundingSphere.mPosition.set(0.0f, 1.0f, 0.0f);
 
 	if (isFlying()) {
 		shadowParam.mBoundingSphere.mRadius = 50.0f + C_PROPERPARMS.mFlightHeight.mValue;
@@ -421,7 +427,7 @@ Creature* Obj::getSearchedTarget(f32 offset)
 {
 	Creature* target = nullptr;
 
-	if (sqrDistanceXZ(mPosition, mHomePosition) < SQUARE(C_GENERALPARMS.mTerritoryRadius())) {
+	if (mPosition.sqrDistance2D(mHomePosition) < SQUARE(C_GENERALPARMS.mTerritoryRadius())) {
 		f32 currY       = mPosition.y;
 		f32 minY        = currY - offset - 50.0f;
 		f32 fovAng      = PI * (DEG2RAD * C_GENERALPARMS.mViewAngle());
@@ -436,7 +442,7 @@ Creature* Obj::getSearchedTarget(f32 offset)
 			if (currPiki->isAlive() && currPiki->isPikmin() && currPiki->mSticker != this) {
 				Vector3f pikiPos = currPiki->getPosition();
 				if (pikiPos.y > minY && pikiPos.y < currY) {
-					f32 dist = sqrDistanceXZ(mPosition, pikiPos);
+					f32 dist = mPosition.sqrDistance2D(pikiPos);
 					if (dist < attackRange) {
 						return currPiki;
 					}
@@ -470,7 +476,7 @@ bool Obj::isSuck(f32 offset, Creature* target)
 	if (target) {
 		Vector3f targetPos = target->getPosition();
 		if (targetPos.y > minY && targetPos.y < currY) {
-			if (sqrDistanceXZ(mPosition, targetPos) < maxRange) {
+			if (mPosition.sqrDistance2D(targetPos) < maxRange) {
 				return true;
 			}
 		}
@@ -481,7 +487,7 @@ bool Obj::isSuck(f32 offset, Creature* target)
 			Piki* currPiki = *iter;
 			if (currPiki->isAlive() && currPiki->isPikmin() && currPiki->mSticker != this) {
 				Vector3f pikiPos = currPiki->getPosition();
-				if (pikiPos.y > minY && pikiPos.y < currY && sqrDistanceXZ(mPosition, pikiPos) < maxRange) {
+				if (pikiPos.y > minY && pikiPos.y < currY && mPosition.sqrDistance2D(pikiPos) < maxRange) {
 					return true;
 				}
 			}
@@ -511,7 +517,7 @@ bool Obj::suckPikmin(f32 offset)
 		if (currPiki->isAlive() && currPiki->isPikmin() && currPiki->mSticker != this) {
 			if (mSuckedPiki < C_PROPERPARMS.mMaxSuckPiki() && randWeightFloat(1.0f) < C_PROPERPARMS.mSuckChance()) {
 				Vector3f pikiPos = currPiki->getPosition();
-				if (pikiPos.y > minY && pikiPos.y < currY && sqrDistanceXZ(mPosition, pikiPos) < maxRange) {
+				if (pikiPos.y > minY && pikiPos.y < currY && mPosition.sqrDistance2D(pikiPos) < maxRange) {
 					Vector3f suckVec = partPos - pikiPos;
 					InteractSuikomi_Test suck(this, &suckVec, nullptr, part);
 					if (currPiki->stimulate(suck)) {

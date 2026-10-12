@@ -5,6 +5,7 @@
 #include "JSystem/JUtility/TColor.h"
 #include "types.h"
 #include "Vector2.h"
+#include "string.h"
 
 namespace efx2d {
 struct Arg : Vector2f {

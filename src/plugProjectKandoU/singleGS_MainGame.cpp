@@ -58,7 +58,7 @@ void GameState::init(SingleGameSection* game, StateArg* arg)
 	int courseID   = game->mCurrentCourseInfo->mCourseIndex;
 	playData->setCurrentCourse(courseID);
 
-	// Refill each captain life if they arent dead
+	// Refill each captain life if they aren't dead
 	if (!(playData->mDeadNaviID.typeView & 1)) {
 		playData->mNaviLifeMax[NAVIID_Olimar] = naviMgr->mNaviParms->mNaviParms.mMaxHealth;
 		naviMgr->getAt(NAVIID_Olimar)->setLifeMax();
@@ -156,7 +156,7 @@ void GameState::init(SingleGameSection* game, StateArg* arg)
 			}
 		}
 		if (startType == MapEnter_CaveGeyser) {
-			gameSystem->mTimeMgr->setTime(playData->mCaveSaveData.mTime);
+			gameSystem->mTimeMgr->setTime(playData->mCaveSaveData.mDayTime);
 		}
 	} break;
 	default:

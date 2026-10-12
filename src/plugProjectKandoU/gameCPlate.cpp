@@ -4,6 +4,12 @@
 #include "P2Macros.h"
 #include "RevoSDK/os.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "cplate";
+}
+
 namespace Game {
 
 /**
@@ -58,7 +64,11 @@ void CPlate::shrink()
  */
 void CPlate::updateShrink()
 {
-	// UNUSED FUNCTION
+	if (mShrinkTimer == 0) {
+		return;
+	}
+
+	mShrinkTimer--;
 }
 
 /**
@@ -306,8 +316,8 @@ void CPlate::sortByColor(Creature* piki, int happaType)
 		happaSlots[(happaType + 2) % PikiGrowthStageCount] = Flower;
 	}
 
-	for (int i = 0; i < mSlotCount; i++) {     // r25, r26
-		for (int j = 0; j < mSlotCount; j++) { // r24, r27
+	for (int i = 0; i < mSlotCount; i++) {
+		for (int j = 0; j < mSlotCount; j++) {
 			Piki* iPiki = static_cast<Piki*>(mSlots[i].mCreature);
 			Piki* jPiki = static_cast<Piki*>(mSlots[j].mCreature);
 			int iKind   = iPiki->getKind();
@@ -323,7 +333,6 @@ void CPlate::sortByColor(Creature* piki, int happaType)
 				continue;
 			}
 
-			// Remove the additional mr r6, r4 by making this an INLINE!!
 			int iPrio;
 			int jPrio;
 			if (happaType == -1) {
@@ -745,7 +754,7 @@ void CPlate::refresh(int formationSize, f32 moveStrength)
 	f32 effectiveMaxSize = maxPositionSize * (mShrinkTimer ? 0.5f : 1.0f);
 
 	f32 radiusFactor = (f32)formationSize / PI;
-	radiusFactor     = _sqrtf(radiusFactor);
+	radiusFactor     = sqrtfInPlace(radiusFactor);
 
 	mMaxRadius        = ((2.0f + RADIUS_VARIANCE) * effectiveMaxSize) * radiusFactor;
 	f32 smallerRadius = (2.0f - RADIUS_VARIANCE) * effectiveMaxSize;
@@ -780,8 +789,9 @@ void CPlate::refresh(int formationSize, f32 moveStrength)
  */
 void CPlate::refreshSlot(f32 p1)
 {
-	int slotCount = 0;            // r31
-	f32 radius    = -mBaseRadius; // f26
+	int group;
+	int slotCount = 0;
+	f32 radius    = -mBaseRadius;
 
 	Matrixf rotationMtx;
 	Vector3f rotation(0.0f, mAngle, 0.0f);
@@ -790,36 +800,37 @@ void CPlate::refreshSlot(f32 p1)
 
 	f32 maxPositionSize = mParms.mMaxPositionSize;
 
-	// This is probably an INLINE!!!
 	f32 shrinkModifier = mShrinkTimer ? 0.5f : 1.0f;
-	f32 maxSize        = maxPositionSize * shrinkModifier; // f25
+	f32 maxSize        = maxPositionSize * shrinkModifier;
 
 	Vector3f vec(0.0f);
 	mUnused = rotationMtx.mtxMult(vec);
 
-	int direction = 1; // r30
-	int row       = 0; // r26
+	int i;
+	int direction = 1;
+	int row       = 0;
 
 	while (slotCount < mActiveGroupSize) {
-		f32 sqrBase          = mBaseRadius * mBaseRadius;
-		f32 sqrRad           = radius * radius;
-		f32 radiusDifference = sqrBase - sqrRad;
+		f32 radiusDifference;
 
-		if (radiusDifference > 0.0f) {
-			f32 areaDifference = sqrRad * sqrRad - mBaseRadius;
-			radiusDifference   = sqrtf(areaDifference);
+		Vector2f radii(mBaseRadius, radius);
+		f32 radiusSquared = radius * radius;
+		f32 baseSquared   = mBaseRadius * mBaseRadius;
+		if (baseSquared - radiusSquared > 0.0f) {
+			radiusDifference = sqrtf(radii.x * radii.x - radii.y * radii.y);
 		} else {
 			radiusDifference = 0.0f;
 		}
 
 		f32 movestickScaled = mMoveStickRadius * radiusDifference;
-		int val             = static_cast<int>(movestickScaled / sqrRad / (2.0f * maxSize));
+		int val             = static_cast<int>(movestickScaled / mBaseRadius / (2.0f * maxSize));
 		if (val < 0) {
 			val = 0;
 		}
 
 		if (p1 < 0.1f && val == 0) {
-			int group = mActiveGroupSize - slotCount;
+			group = mActiveGroupSize;
+			group -= slotCount;
 
 			if (group > 1) {
 				val = 1;
@@ -827,10 +838,11 @@ void CPlate::refreshSlot(f32 p1)
 		}
 
 		f32 maxSizeScaled = val * maxSize * 2.0f;
-		f32 fCounter      = (f32)direction * maxSizeScaled; // f22
-		f32 stepDistance  = direction * maxSize * 2.0f;     // f23
+		f32 stepDistance, fCounter;
+		fCounter     = (f32)direction * maxSizeScaled;
+		stepDistance = direction * maxSize * 2.0f;
 
-		int i = val * 2 + 1;
+		i = val * 2 + 1;
 		while (i > 0) {
 			if (slotCount < mActiveGroupSize) {
 				mSlots[row].mRelativePosition = Vector3f(fCounter, 0.0f, radius);
@@ -1068,11 +1080,7 @@ lbl_8019652C:
  */
 void CPlate::update()
 {
-	if (mShrinkTimer == 0) {
-		return;
-	}
-
-	mShrinkTimer--;
+	updateShrink();
 }
 
 /**

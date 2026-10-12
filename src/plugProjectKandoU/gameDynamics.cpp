@@ -126,7 +126,7 @@ static f32 getYDegree(Quat& quat, Vector3f& vec)
 	Quat inverseQuat;
 	inverseQuat = quat.inverse();
 
-	intermediateQuat = Quat::multiply(quat, yAxisQuat);
+	intermediateQuat = quat * yAxisQuat;
 
 	intermediateQuat = intermediateQuat * inverseQuat;
 
@@ -340,8 +340,15 @@ void Game::Rigid::integrate(f32 timeStep, int configIdx)
 		f32 sinValue8192 = JMASSin(8192);
 		if (yDeg48 < JMASSin(10912)) {
 			if (yDeg4 < yDeg48) {
-				Vector3f yAxis(0.0f, 1.0f, 0.0);
-				thisConfig->mMomentum        = thisConfig->mMomentum + vec1.cross(yAxis) * 1000.0f;
+				Vector3f yAxis(0.0f, 1.0f, 0.0f);
+				Vector3f crossVec = vec1;
+				crossVec.CP(yAxis);
+				Vector3f torque = crossVec * 1000.0f;
+				f32 x, y, z;
+				z = thisConfig->mMomentum.z + torque.z;
+				y = thisConfig->mMomentum.y + torque.y;
+				x = thisConfig->mMomentum.x + torque.x;
+				thisConfig->mMomentum.set(x, y, z);
 				thisConfig->mRotatedMomentum = thisConfig->mRotatedTransform.mtxMult(thisConfig->mMomentum);
 				if (!(yDeg4 < sinValue8192)) {
 					thisConfig->mPrimaryRotation = primaryRotatedQ;
@@ -803,7 +810,7 @@ bool Game::Rigid::resolveCollision(int configIndex, Vector3f& collisionPoint, Ve
 	Vector3f scratch         = config.mRotatedMomentum;
 	scratch                  = scratch.cross(positionDelta);
 	Vector3f contactVelocity = config.mVelocity + scratch;
-	contactVelocity.negate2();
+	contactVelocity.negate();
 
 	f32 impulseMagnitude = contactVelocity.dot(collisionNormal);
 

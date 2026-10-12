@@ -128,6 +128,21 @@ typedef byte1_t					byte_t;
 
 #define DECOMP_DONT_INLINE __attribute__((noinline))
 
+
+#ifdef __MWERKS__
+#define FAST_COPY(dst, src, size) __memcpy((dst), (src), (size))
+#else
+#define FAST_COPY(dst, src, size) memcpy((dst), (src), (size))
+#endif
+
+// byte-matching hack to force something to hang around longer
+// in MWCC's register allocation steps
+#ifdef __MWERKS__
+#define BUMP_VAR(value) asm { mr value, value }
+#else
+#define BUMP_VAR(value) ((void)0)
+#endif
+
 #ifdef __MWERKS__
 #define WEAKFUNC        __declspec(weak)
 #define DECL_SECT(name) __declspec(section name)

@@ -2,7 +2,7 @@
 #include "Game/Entities/ItemBridge.h"
 #include "Game/MapMgr.h"
 #include "RevoSDK/rand.h"
-#include "efx/TUjinko.h"
+#include "efx/efxEnemy.h"
 
 // TODO: fix this up
 static void __Print(const char** fmt, ...)
@@ -258,10 +258,7 @@ void Obj::randomFlyingTarget()
 	Vector3f vel       = getVelocity();
 	Vector3f zeroVec   = Vector3f(0.0f, 0.0f, 0.0f);
 
-	f32 targetDist = sqrDistanceXZ(targetPos, pos);
-	f32 speed      = sqrDistanceXZ(zeroVec, vel) * 0.5f;
-
-	if (targetDist < speed) {
+	if (targetPos.sqrDistance2D(pos) < zeroVec.sqrDistance2D(vel) / 2.0f) {
 		f32 randAngle = randWeightFloat(TAU);
 		f32 randDist  = randWeightFloat(C_GENERALPARMS.mTerritoryRadius());
 
@@ -518,7 +515,7 @@ void Obj::setNearestBridge()
 		{
 			ItemBridge::Item* bridge = static_cast<ItemBridge::Item*>(*iter);
 			Vector3f startPos        = bridge->getStartPos();
-			f32 newRad               = sqrDistanceXZ(mPosition, startPos);
+			f32 newRad               = mPosition.sqrDistance2D(startPos);
 			if (newRad < radius) {
 				mBridge = bridge;
 				radius  = newRad;
@@ -611,7 +608,7 @@ bool Obj::moveBridgeSide()
 	startPos += xVec;
 	startPos += zVec;
 
-	if (sqrDistanceXZ(mPosition, startPos) < 250.0f) {
+	if (mPosition.sqrDistance2D(startPos) < 250.0f) {
 		setTargetSpeed(0.75f * E_GENERALPARMS.mMoveSpeed());
 
 		return true;
@@ -818,7 +815,7 @@ bool Obj::moveBridgeCentre()
 
 	startPos += xVec;
 
-	if (sqrDistanceXZ(mPosition, startPos) < 250.0f) {
+	if (mPosition.sqrDistance2D(startPos) < 250.0f) {
 		setTargetSpeed(0.75f * E_GENERALPARMS.mMoveSpeed());
 
 		return true;
@@ -854,7 +851,7 @@ bool Obj::moveBridgeTop()
 
 	f32 val = turnToTarget(stagePos, C_GENERALPARMS.mTurnSpeed(), C_GENERALPARMS.mMaxTurnAngle());
 
-	f32 dist = sqrDistanceXZ(mPosition, stagePos);
+	f32 dist = mPosition.sqrDistance2D(stagePos);
 
 	if (dist < 50.0f) {
 		mTargetVelocity.set(0.0f, 0.0f, 0.0f);

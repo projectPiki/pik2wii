@@ -1,11 +1,11 @@
-#include "efx/TDango.h"
-#include "efx/TKage.h"
-#include "efx/TOoota.h"
-#include "efx/TKch.h"
-#include "efx/THdama.h"
-#include "efx/TOdama.h"
-#include "JSystem/JParticle/JPAMath.h"
+#include "efx/efxEnemyBoss.h"
 #include "Game/MapMgr.h"
+#include "JSystem/JParticle/JPAMath.h"
+
+static void _Printf(char* format)
+{
+	OSReport(format, __FILE__);
+}
 
 namespace efx {
 
@@ -22,7 +22,7 @@ bool TDangoCrash::create(Arg* arg)
 	Vector3f ang = argd->mAngle;
 
 	if (TSimple2::create(arg)) {
-		_normalise2(ang);
+		ang.normalise();
 
 		Matrixf mtx;
 		Vector3f vecDir(0.0f, 1.0f, 0.0f);
@@ -175,8 +175,10 @@ bool TOootaFire::create(Arg* arg)
 
 	if (TSyncGroup6::create(sarg)) {
 		f32 scale = sarg->mScale;
+		JGeometry::TVec3f vec;
+		vec.set(scale, scale, scale);
 		for (int i = 0; i < 6; i++) {
-			mItems[i].mEmitter->setScale(scale);
+			mItems[i].mEmitter->setScale(vec);
 		}
 		return true;
 	}
@@ -287,7 +289,9 @@ void TKchDiveSand::setGlobalScale(f32 scale)
 {
 	for (int i = 0; i < 3; i++) {
 		if (mItems[i].mEmitter) {
-			mItems[i].mEmitter->setGlobalScale(scale);
+			JGeometry::TVec3f vec;
+			vec.set(scale, scale, scale);
+			mItems[i].mEmitter->setGlobalScale(vec.x, vec.y);
 		}
 	}
 }
@@ -300,7 +304,9 @@ void TKchDiveWat::setGlobalScale(f32 scale)
 {
 	for (int i = 0; i < 3; i++) {
 		if (mItems[i].mEmitter) {
-			mItems[i].mEmitter->setGlobalScale(scale);
+			JGeometry::TVec3f vec;
+			vec.set(scale, scale, scale);
+			mItems[i].mEmitter->setGlobalScale(vec.x, vec.y);
 		}
 	}
 }
@@ -313,7 +319,9 @@ void TKchCryAB::setGlobalScale(f32 scale)
 {
 	for (int i = 0; i < 2; i++) {
 		if (mItems[i].mEmitter) {
-			mItems[i].mEmitter->setGlobalScale(scale);
+			JGeometry::TVec3f vec;
+			vec.set(scale, scale, scale);
+			mItems[i].mEmitter->setGlobalScale(vec.x, vec.y);
 		}
 	}
 }
@@ -325,7 +333,9 @@ void TKchCryAB::setGlobalScale(f32 scale)
 void TKchCryInd::setGlobalScale(f32 scale)
 {
 	if (mEmitter) {
-		mEmitter->setGlobalScale(scale);
+		JGeometry::TVec3f vec;
+		vec.set(scale, scale, scale);
+		mEmitter->setGlobalScale(vec.x, vec.y);
 	}
 }
 
@@ -341,10 +351,12 @@ bool TKchDamage::create(Arg* arg)
 	ArgScale* argp = static_cast<ArgScale*>(arg);
 
 	f32 scale = argp->mScale;
+	JGeometry::TVec3f vec;
+	vec.set(scale, scale, scale);
 
 	if (TSimpleMtx4::create(arg)) {
 		for (int i = 0; i < 4; i++) {
-			mEmitters[i]->setScale(scale);
+			mEmitters[i]->setScale(vec);
 		}
 		return true;
 	}
@@ -358,7 +370,9 @@ bool TKchDamage::create(Arg* arg)
 void TKchSmokeHana::setGlobalScale(f32 scale)
 {
 	if (mEmitter) {
-		mEmitter->setGlobalScale(scale);
+		JGeometry::TVec3f vec;
+		vec.set(scale, scale, scale);
+		mEmitter->setGlobalScale(vec.x, vec.y);
 	}
 }
 
@@ -373,10 +387,11 @@ bool TKchDownsmoke::create(Arg* arg)
 
 	ArgScale* argp = static_cast<ArgScale*>(arg);
 
-	f32 scale = argp->mScale;
+	JGeometry::TVec3f vec;
+	vec.set(argp->mScale, argp->mScale, argp->mScale);
 
 	if (TSimple1::create(arg)) {
-		mEmitters[0]->setScale(scale);
+		mEmitters[0]->setScale(vec);
 		return true;
 	}
 	return false;
@@ -390,7 +405,9 @@ void TKchDeadHana::setGlobalScale(f32 scale)
 {
 	for (int i = 0; i < 2; i++) {
 		if (mItems[i].mEmitter) {
-			mItems[i].mEmitter->setGlobalScale(scale);
+			JGeometry::TVec3f vec;
+			vec.set(scale, scale, scale);
+			mItems[i].mEmitter->setGlobalScale(vec.x, vec.y);
 		}
 	}
 }
@@ -399,7 +416,9 @@ void TKchDeadHana::setGlobalScale(f32 scale)
  * @note Address: 0x803EC130
  * @note Size: 0x4
  */
-void TParticleCallBack_KchYodare::init(JPABaseEmitter*, JPABaseParticle*) { }
+void TParticleCallBack_KchYodare::init(JPABaseEmitter*, JPABaseParticle*)
+{
+}
 
 /**
  * @note Address: 0x803EC134
@@ -468,7 +487,9 @@ bool TKchYodareBaseChaseMtx::create(Arg* arg)
 void TKchYodareBaseChaseMtx::setGlobalScale(f32 scale)
 {
 	if (mEmitter) {
-		mEmitter->setGlobalScale(scale);
+		JGeometry::TVec3f vec;
+		vec.set(scale, scale, scale);
+		mEmitter->setGlobalScale(vec.x, vec.y);
 	}
 }
 
@@ -483,7 +504,9 @@ void efx::THdamaSight::setPosNrm(Vector3f& pos, Vector3f& angle)
 		Vector3f fixedAngle = angle;
 		fixedAngle.normalise();
 		Vector3f vecDir(1.0f, 0.0f, 0.0f);
-		mtx.setTransformationMtx2(fixedAngle, pos);
+		Vector3f side;
+		side = cross(vecDir, fixedAngle);
+		mtx.setTransformationMtx(fixedAngle, side, pos);
 		mEmitter->setGlobalRTMatrix(mtx.mMatrix.mtxView);
 	}
 	/*
@@ -605,7 +628,9 @@ bool THdamaHit2W::create(efx::Arg* arg)
 
 		Matrixf mtx;
 		Vector3f vecDir(1.0f, 0.0f, 0.0f);
-		mtx.setTransformationMtx2(angle, Vector3f::zero);
+		Vector3f side;
+		side = cross(vecDir, angle);
+		mtx.setTransformationMtx(angle, side, Vector3f::zero);
 
 		for (int i = 0; i < 3; i++) {
 			mEmitters[i]->setGlobalRMatrix(mtx.mMatrix.mtxView);
@@ -806,7 +831,9 @@ bool THdamaDeadHahen2::create(efx::Arg* arg)
 void TOdamaFur1::setGlobalScale(f32 scale)
 {
 	if (mEmitter) {
-		mEmitter->setGlobalScale(scale);
+		JGeometry::TVec3f vec;
+		vec.set(scale, scale, scale);
+		mEmitter->setGlobalScale(vec.x, vec.y);
 	}
 }
 
@@ -817,7 +844,9 @@ void TOdamaFur1::setGlobalScale(f32 scale)
 void TOdamaFur2::setGlobalScale(f32 scale)
 {
 	if (mEmitter) {
-		mEmitter->setGlobalScale(scale);
+		JGeometry::TVec3f vec;
+		vec.set(scale, scale, scale);
+		mEmitter->setGlobalScale(vec.x, vec.y);
 	}
 }
 

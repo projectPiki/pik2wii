@@ -53,9 +53,10 @@ struct StateMachine {
 	virtual void exec(T* obj); // _10
 	void create(int limit);    // must be placed above transit
 	void registerState(FSMState<T>* state);
+	int getCurrID(T*);
 	virtual void transit(T* obj, int stateID, StateArg* settings); // _14
 
-	int getCurrID(T*);
+	
 	inline int getIndexFromID(int stateID) const { return mIdToIndexArray[stateID]; }
 	inline int getIDFromIndex(int index) const { return mIndexToIDArray[index]; }
 	inline FSMState<T>* getState(int index) { return mStates[index]; }
@@ -129,8 +130,8 @@ void StateMachine<T>::registerState(FSMState<T>* state)
 template <typename T>
 void StateMachine<T>::exec(T* obj)
 {
-	if (obj->mCurrentState != nullptr) {
-		obj->mCurrentState->exec(obj);
+	if (obj->getCurrState() != nullptr) {
+		obj->getCurrState()->exec(obj);
 	}
 }
 

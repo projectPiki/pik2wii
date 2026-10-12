@@ -1,3 +1,4 @@
+#include "efx/efxEnemy.h"
 #include "Game/Entities/Bomb.h"
 #include "Game/EnemyAnimKeyEvent.h"
 #include "Game/Entities/BombOtakara.h"
@@ -254,8 +255,8 @@ void Obj::getShadowParam(ShadowParam& param)
 	param.mPosition.y = mPosition.y + 2.0f;
 
 	param.mBoundingSphere.mPosition.set(0.0f, 1.0f, 0.0f);
-	param.mBoundingSphere.mRadius   = 30.0f;
-	param.mSize                     = 10.0f;
+	param.mBoundingSphere.mRadius = 30.0f;
+	param.mSize                   = 10.0f;
 }
 
 /**
@@ -359,7 +360,7 @@ bool Obj::bombCallBack(Creature* creature, Vector3f& direction, f32 damage)
 				Vector3f creaturePos = creature->getPosition();
 				f32 rad              = C_GENERALPARMS.mAttackRadius.mValue;
 				rad *= rad;
-				f32 factor           = (1.0f - (sqrDistanceXZ(creaturePos, mPosition) / rad)) * (f32)C_PROPERPARMS.mTriggerLimit();
+				f32 factor           = (1.0f - (creaturePos.sqrDistance2D(mPosition) / rad)) * (f32)C_PROPERPARMS.mTriggerLimit();
 				mAnimStartDelayTimer = (int)factor + 1;
 			}
 		} else {

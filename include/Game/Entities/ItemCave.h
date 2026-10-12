@@ -1,11 +1,12 @@
 #ifndef _GAME_ENTITIES_ITEMCAVE_H
 #define _GAME_ENTITIES_ITEMCAVE_H
 
+#include "BaseParm.h"
 #include "Game/BaseItem.h"
 #include "Game/GameLight.h"
 #include "Game/PlatInstance.h"
 #include "Game/itemMgr.h"
-#include "efx/WarpZone.h"
+#include "efx/efxObject.h"
 #include "types.h"
 
 namespace Game {
@@ -129,6 +130,7 @@ struct Item : public FSMItem<Item, FSM, State> {
 	virtual void onSetPosition();                      // _21C
 
 	void createLightEvent();
+	void killLightEvent();
 	u32 getCaveOtakaraNum();
 	u32 getCaveOtakaraMax();
 	bool complete();

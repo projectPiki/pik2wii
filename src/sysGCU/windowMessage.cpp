@@ -194,71 +194,71 @@ void TRenderingProcessor::initDrawInfoMgr(u32 count)
  * @note Address: 0x8043F55C
  * @note Size: 0x344
  */
-BOOL TRenderingProcessor::doDrawCommon(f32 a1, f32 a2, Matrixf* mtx1, Matrixf* mtx2)
+BOOL TRenderingProcessor::doDrawCommon(f32 x0, f32 y0, Matrixf* mtx1, Matrixf* mtx2)
 {
 	u8 ret = 255;
 
 	DrawInfo* info = mDrawInfo.searchDrawInfo(mInfoIndex);
-	f32 speed      = mSpeed;
-	if (-speed >= a2) {
-		f32 speed2 = mTextBoxHeight;
-		f32 calc   = 0.0f;
-		f32 calc2;
-		if (speed + speed2 < a2) {
-
-			if (a2 <= 0.0f) {
-				calc2 = calc;
-				if (speed2 < a2) {
-					calc2 = a2;
-					if (a2 > 0.0f) {
-						calc2 = a2 - speed2;
-					}
-					speed2 = 0.0f;
-					speed2 = speed * speed - calc2 * calc2;
-					speed2 = _sqrtf(speed2);
-					speed2 = -speed2;
-					speed  = JMAAtan2Radian(speed2, calc2);
-					calc   = speed + HALF_PI;
-					calc   = ROUND_F32_TO_U8(calc2 / mSpeed * 255.0f);
-					ret    = 255 - (u8)calc;
-					calc2  = speed2 + mSpeed;
-				}
-			}
-			if (!info) {
-				info = (DrawInfo*)mDrawInfo.mInfoList1.mChild;
-				if (info) {
-					info->mIndex = mInfoIndex;
-					info->mTimer = 0.0f;
-					info->del();
-					mDrawInfo.mInfoList1.add(info);
-					doGetDrawInfo(info);
-				}
-				info = (DrawInfo*)info->mChild;
-			}
-
-			Matrixf mtx;
-			if (info) {
-				Vector3f pos(a1, a2, calc2);
-				makeMatrix(&mtx, info, calc, pos);
+	if (y0 >= -mSpeed && y0 < mTextBoxHeight + mSpeed) {
+		f32 y;
+		f32 delta;
+		f32 zPos;
+		f32 angle;
+		if (y0 >= 0.0f && y0 < mTextBoxHeight) {
+			zPos  = 0.0f;
+			angle = 0.0f;
+		} else {
+			if (y0 < 0.0f) {
+				delta = y0;
 			} else {
-				Vector3f pos(a1, a2, calc2);
-				mtx.makeT(pos);
+				delta = y0 - mTextBoxHeight;
 			}
-
-			if (mtx2) {
-				PSMTXCopy(mtx.mMatrix.mtxView, mtx2->mMatrix.mtxView);
-				mtx2->mMatrix.structView.tx += 10.0f;
-				mtx2->mMatrix.structView.ty += 5.0f;
-				PSMTXConcat(mMtx1->mMatrix.mtxView, mtx2->mMatrix.mtxView, mtx2->mMatrix.mtxView);
-				PSMTXConcat(mMtx2->mMatrix.mtxView, mtx2->mMatrix.mtxView, mtx2->mMatrix.mtxView);
-			}
-			PSMTXConcat(mMtx1->mMatrix.mtxView, mtx.mMatrix.mtxView, mtx.mMatrix.mtxView);
-			PSMTXConcat(mMtx2->mMatrix.mtxView, mtx.mMatrix.mtxView, mtx.mMatrix.mtxView);
-			if (mtx1) {
-				PSMTXCopy(mtx.mMatrix.mtxView, mtx1->mMatrix.mtxView);
+			f32 deltaSq = delta;
+			deltaSq *= deltaSq;
+			f32 radicand = mSpeed * mSpeed - deltaSq;
+			if (radicand > 0.0f) {
+				sqrtfInPlace(radicand);
 			} else {
-				GXLoadPosMtxImm(mtx.mMatrix.mtxView, 0);
+				radicand = 0.0f;
 			}
+			y         = -radicand;
+			angle     = HALF_PI + JMAAtan2Radian(y, delta);
+			zPos      = y + mSpeed;
+			f64 ratio = fabs(delta / mSpeed);
+			f32 alpha = 255.0f * (f32)ratio;
+			alpha     = ROUND_F32_TO_U8(alpha);
+			ret       = 255 - (u8)alpha;
+		}
+
+		if (!info) {
+			info = mDrawInfo.getDrawInfo(mInfoIndex);
+			doGetDrawInfo(info);
+		}
+
+		Matrixf mtx;
+		if (info) {
+			Vector3f pos(x0, y0, zPos);
+			makeMatrix(&mtx, info, angle, pos);
+		} else {
+			Vector3f pos(x0, y0, zPos);
+			mtx.makeT(pos);
+		}
+
+		if (mtx2) {
+			PSMTXCopy(mtx.mMatrix.mtxView, mtx2->mMatrix.mtxView);
+			Vector3f translation = mtx2->getTranslation();
+			translation.x += 10.0f;
+			translation.y += 5.0f;
+			mtx2->setTranslation(translation);
+			PSMTXConcat(mMtx1->mMatrix.mtxView, mtx2->mMatrix.mtxView, mtx2->mMatrix.mtxView);
+			PSMTXConcat(mMtx2->mMatrix.mtxView, mtx2->mMatrix.mtxView, mtx2->mMatrix.mtxView);
+		}
+		PSMTXConcat(mMtx1->mMatrix.mtxView, mtx.mMatrix.mtxView, mtx.mMatrix.mtxView);
+		PSMTXConcat(mMtx2->mMatrix.mtxView, mtx.mMatrix.mtxView, mtx.mMatrix.mtxView);
+		if (mtx1) {
+			PSMTXCopy(mtx.mMatrix.mtxView, mtx1->mMatrix.mtxView);
+		} else {
+			GXLoadPosMtxImm(mtx.mMatrix.mtxView, 0);
 		}
 	} else {
 		ret = 0;

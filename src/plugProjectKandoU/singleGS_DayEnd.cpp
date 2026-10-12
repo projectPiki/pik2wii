@@ -18,12 +18,14 @@
 #include "PikiAI.h"
 #include "RevoSDK/rand.h"
 #include "Screen/Game2DMgr.h"
-#include "efx/TNaviEffect.h"
+#include "efx/efxPikmin.h"
 #include "nans.h"
 #include "utilityU.h"
 
-static const u32 padding[]    = { 0, 0, 0 };
-static const char className[] = "singleGS_DayEnd";
+static void _Print(char* format, ...)
+{
+	OSReport(format, "singleGS_DayEnd");
+}
 
 namespace Game {
 namespace SingleGame {

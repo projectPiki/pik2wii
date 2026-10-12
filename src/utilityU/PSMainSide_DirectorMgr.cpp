@@ -272,8 +272,7 @@ PSSystem::DirectorBase* DirectorMgr_Battle::newDirector(u8 flag, PSSystem::Direc
 	u8 trackNum                      = 255;
 	u8 trackID                       = 255;
 
-	PSSystem::SceneMgr* mgr = PSMGetSceneMgrCheck();
-	bool boss               = static_cast<PSGame::PikSceneMgr*>(mgr)->curSceneIsBigBossFloor();
+	bool boss               = PSMGetPikSceneMgrCheck()->curSceneIsBigBossFloor();
 
 	switch (flag) {
 	case DirectorBoss_PikminAttack:
@@ -409,13 +408,4 @@ PSSystem::DirectorBase* DirectorMgr_2PBattle::newDirector(u8 type, PSSystem::Dir
 	P2ASSERTLINE(797, actor);
 	return actor;
 }
-
-// I'm not thrilled with this solution but utility is a hunk of junk. This makes the dtors spawn correctly so w/e. -HP
-static void fuckingHateSymOn(DirectorMgr_2PBattle* battle2P, DirectorMgr_Battle* battle, DirectorMgr_Scene_AutoBgm* autoBGM)
-{
-	delete autoBGM;
-	delete battle;
-	delete battle2P;
-}
-
 } // namespace PSM

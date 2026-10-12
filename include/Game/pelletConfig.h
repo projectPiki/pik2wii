@@ -2,8 +2,8 @@
 #define _GAME_PELLETCONFIG_H
 
 #include "CNode.h"
-#include "Vector3.h"
 #include "TagParm.h"
+#include "Vector3.h"
 #include "types.h"
 
 namespace Game {
@@ -16,8 +16,44 @@ struct PelletConfig : public CNode {
 		Indirect_Yes = 2,
 	};
 	struct TParms : public TagParameters { // _18
-		TParms();
-		virtual ~TParms() { }
+		TParms()
+		    : TagParameters("PelletConfig")
+		    , mName(this, "name")
+		    , mArchive(this, "archive")
+		    , mTxtArchive(this, "txt_archive")
+		    , mBmd(this, "bmd")
+		    , mAnimMgr(this, "animmgr")
+		    , mColltree(this, "colltree")
+		    , mRadius(this, "radius")
+		    , mPRadius(this, "p_radius")
+		    , mHeight(this, "height")
+		    , mInertiaScaling(this, "inertiascaling")
+		    , mParticleType(this, "particletype")
+		    , mNumParticles(this, "numparticles")
+		    , mParticleSize(this, "particlesize")
+		    , mFriction(this, "friction")
+		    , mMin(this, "min")
+		    , mMax(this, "max")
+		    , mPikiCountMax(this, "pikicountmax")
+		    , mPikiCountMin(this, "pikicountmin")
+		    , mDynamics(this, "dynamics")
+		    , mMoney(this, "money")
+		    , mUnique(this, "unique")
+		    , mIndirect(this, "indirect")
+		    , mNumPMotions(this, "num_pmotions")
+		    , mDepth(this, "depth")
+		    , mDepthMax(this, "depth_max")
+		    , mDepthA(this, "depth_a")
+		    , mDepthB(this, "depth_b")
+		    , mDepthC(this, "depth_c")
+		    , mDepthD(this, "depth_d")
+		    , mOffset(this, "offset")
+		    , mMessage(this, "message")
+		    , mCode(this, "code")
+		    , mDictionary(this, "dictionary")
+		{
+		}
+
 		StringTagParm mName;              // _34
 		StringTagParm mArchive;           // _44
 		StringTagParm mTxtArchive;        // _54
@@ -53,10 +89,9 @@ struct PelletConfig : public CNode {
 		PrimTagParm<u16> mDictionary;     // _248
 		s16 mIndex;                       // _25C
 		u8 mIndirectState;                // _25A
-	};                                    // struct TParms
+	}; // struct TParms
 
 	PelletConfig();
-	virtual ~PelletConfig() { }
 
 	inline int getPokoValue() const { return mParams.mMoney.mData; }
 	inline char* getName() const { return mParams.mName.mData; }
@@ -68,7 +103,6 @@ struct PelletConfig : public CNode {
 
 struct PelletConfigList : public CNode {
 	PelletConfigList();
-	virtual ~PelletConfigList() {};
 
 	PelletConfig* getPelletConfig(char* name);
 	PelletConfig* getPelletConfig(int index);

@@ -3,10 +3,14 @@
 #include "System.h"
 #include "ebi/CardError.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "ebiCardMgr";
+}
+
 namespace ebi {
 namespace CardError {
-
-static const char unusedCardMgrName[] = "ebiCardMgr";
 
 /**
  * @note Address: 0x803D1104
@@ -72,9 +76,7 @@ void FSMState_Warning::do_init(TMgr* mgr, Game::StateArg*)
 	mIsClosed = false;
 	mCanClose = false;
 
-	u32 rate         = 0.0f / sys->getDeltaTime();
-	mgr->mCounter    = rate;
-	mgr->mCounterMax = rate;
+	mgr->mCounter.setValue(0.0f);
 
 	mDoCheckCard          = false;
 	mgr->mScreen.mCanExit = true;
@@ -91,7 +93,7 @@ void FSMState_Warning::do_exec(TMgr* mgr)
 		mgr->checkAndTransitNoCard_();
 	}
 
-	if (!mgr->mCounter && mCanClose && !mIsClosed) {
+	if (mgr->mCounter.isZero() && mCanClose && !mIsClosed) {
 		mgr->mScreen.close();
 		mIsClosed = true;
 	}
@@ -140,9 +142,7 @@ void FSMState_CardRequest::do_init(TMgr* mgr, Game::StateArg*)
 	mgr->mScreen.mCanExit = false;
 	mState                = 0;
 
-	u32 rate         = 3.0f / sys->getDeltaTime();
-	mgr->mCounter    = rate;
-	mgr->mCounterMax = rate;
+	mgr->mCounter.setValue(3.0f);
 
 	do_open(mgr);
 }
@@ -180,7 +180,7 @@ void FSMState_CardRequest::do_exec(TMgr* mgr)
 	case 1:
 		if (sys->mCardMgr->isCardInvalid()) {
 			mCardStatus = (int)sys->mCardMgr->getCardStatus();
-			if (mCardStatus != CARDERROR_NoCard) {
+			if (mCardStatus != MemoryCardMgr::MCS_Ready) {
 				sys->mCardMgr->getCardStatus();
 			}
 
@@ -188,7 +188,7 @@ void FSMState_CardRequest::do_exec(TMgr* mgr)
 		}
 		break;
 	case 2:
-		if (!mgr->mCounter) {
+		if (mgr->mCounter.isZero()) {
 			mgr->mScreen.close();
 		}
 
@@ -199,37 +199,37 @@ void FSMState_CardRequest::do_exec(TMgr* mgr)
 		mgr->mScreen.mCanExit = true;
 
 		switch (mCardStatus) {
-		case Game::MemoryCard::Mgr::MCS_IOError:
+		case MemoryCardMgr::MCS_Ready:
 			do_transitCardReady(mgr);
 			break;
-		case Game::MemoryCard::Mgr::MCS_Ready:
+		case MemoryCardMgr::MCS_NoCard:
 			do_transitCardNoCard(mgr);
 			break;
-		case Game::MemoryCard::Mgr::MCS_Broken:
+		case MemoryCardMgr::MCS_IOError:
 			do_transitCardIOError(mgr);
 			break;
-		case Game::MemoryCard::Mgr::MCS_Encoding:
+		case MemoryCardMgr::MCS_WrongDevice:
 			do_transitCardWrongDevice(mgr);
 			break;
-		case Game::MemoryCard::Mgr::MCS_NoFileSpace:
+		case MemoryCardMgr::MCS_WrongSector:
 			do_transitCardWrongSector(mgr);
 			break;
-		case Game::MemoryCard::Mgr::MCS_WrongDevice:
+		case MemoryCardMgr::MCS_Broken:
 			do_transitCardBroken(mgr);
 			break;
-		case Game::MemoryCard::Mgr::MCS_WrongSector:
+		case MemoryCardMgr::MCS_Encoding:
 			do_transitCardEncoding(mgr);
 			break;
-		case Game::MemoryCard::Mgr::MCS_NoFileEntry:
+		case MemoryCardMgr::MCS_NoFileSpace:
 			do_transitCardNoFileSpace(mgr);
 			break;
-		case Game::MemoryCard::Mgr::MCS_FileOpenError:
+		case MemoryCardMgr::MCS_NoFileEntry:
 			do_transitCardNoFileEntry(mgr);
 			break;
-		case Game::MemoryCard::Mgr::MCS_NoCard:
+		case MemoryCardMgr::MCS_FileOpenError:
 			do_transitCardFileOpenError(mgr);
 			break;
-		case Game::MemoryCard::Mgr::MCS_PlayerDataBroken:
+		case MemoryCardMgr::MCS_SerialNoError:
 			do_transitCardSerialNoError(mgr);
 			break;
 		default:
@@ -405,46 +405,10 @@ void FSMState_NoCard::do_exec(TMgr* mgr)
  * @note Size: 0x94
  */
 TMgr::TMgr()
-    : mCounter(0)
-    , mCounterMax(0)
 {
 	mStateMachine.init(this);
 	mStateMachine.start(this, CARDERROR_Standby, nullptr);
 }
-
-} // namespace CardError
-
-namespace Screen {
-
-/**
- * @note Address: 0x803D2718
- * @note Size: 0x460
- */
-TMemoryCard::~TMemoryCard()
-{
-}
-
-/**
- * @note Address: 0x803D2B78
- * @note Size: 0x4C8
- */
-TMemoryCard::TMemoryCard()
-    : mState(0)
-    , mInputDelay(0)
-    , mInputDelayMax(0)
-    , mMsgAlpha(0)
-    , mAlphaMod(0)
-    , mCanExit(1)
-    , mPaneMsg1(nullptr)
-    , mPaneMsg2(nullptr)
-    , mPaneMsg3(nullptr)
-    , mPaneMsg4(nullptr)
-{
-}
-
-} // namespace Screen
-
-namespace CardError {
 
 /**
  * @note Address: 0x803D3040
@@ -580,9 +544,7 @@ void TMgr::update()
 	}
 
 	mScreen.update();
-	if (mCounter) {
-		mCounter--;
-	}
+	mCounter.update();
 }
 
 /**

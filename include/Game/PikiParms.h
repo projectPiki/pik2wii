@@ -57,10 +57,10 @@ struct PikiParms : public FakePikiParms {
 		    , mEnemySearchRange(this, 'p041', "敵のサーチエリア", 60.0f, 1.0f, 1000.0f) // 'enemy search area'
 		    , mPelletSearchRange(this, 'p042', "Pelletのサーチエリア", 30.0f, 1.0f, 1000.0f)     // 'pellet search area'
 		    , mNectarRockSearchRange(this, 'P010', "農耕岩のサーチエリア", 30.0f, 1.0f, 1000.0f) // 'agricultural rock search area' (lmao)
-		    , mNectarRockRangeDuplicate(this, 'P011', "農耕岩のサーチエリア", 40.0f, 1.0f,
-		                                1000.0f)                                           // 'agricultural rock search area' (mistake?)
-		    , mBridgeSearchRange(this, 'P012', "橋のサーチエリア", 100.0f, 1.0f, 1000.0f)  // 'bridge search area'
-		    , mClogSearchRange(this, 'P013', "壊す岩のサーチエリア", 30.0f, 1.0f, 1000.0f) // 'breaking rock search area'
+		    , mGateSearchRange(this, 'P011', "農耕岩のサーチエリア", 40.0f, 1.0f,
+		                       1000.0f) // 'agricultural rock search area' (should refer to gates)
+		    , mBridgeSearchRange(this, 'P012', "橋のサーチエリア", 100.0f, 1.0f, 1000.0f)              // 'bridge search area'
+		    , mClogSearchRange(this, 'P013', "壊す岩のサーチエリア", 30.0f, 1.0f, 1000.0f)             // 'breaking rock search area'
 		    , mBuriedTreasureSearchRange(this, 'P014', "掘り出し物サーチエリア", 30.0f, 1.0f, 1000.0f) // 'bargain search area' (lmao??)
 		    , mSpiderWortSearchRange(this, 'P015', "農耕植物のサーチエリア", 30.0f, 1.0f, 1000.0f)     // 'agricultural plant search area'
 		    , mKnockdownRecoverTimeMax(this, 'p043', "はじかれて起きるまでの最長時間", 0.7f, 0.0f,
@@ -165,7 +165,7 @@ struct PikiParms : public FakePikiParms {
 		Parm<f32> mEnemySearchRange;          // _968, p041, search ranges when idle
 		Parm<f32> mPelletSearchRange;         // _990, p042
 		Parm<f32> mNectarRockSearchRange;     // _9B8, P010,
-		Parm<f32> mNectarRockRangeDuplicate;  // _9E0, P011, duplicate of above?
+		Parm<f32> mGateSearchRange;           // _9E0, P011, duplicate of above?
 		Parm<f32> mBridgeSearchRange;         // _A08, P012
 		Parm<f32> mClogSearchRange;           // _A30, P013
 		Parm<f32> mBuriedTreasureSearchRange; // _A58, P014
@@ -194,14 +194,14 @@ struct PikiParms : public FakePikiParms {
 		Parm<f32> mPlatformLaunchDistance;    // _DF0, p061
 		Parm<int> mMaxDrowningFrames;         // _E18, p062
 		Parm<int> mDrowningFramesRange;       // _E40, p063
-		Parm<f32> mWallPushAbandonTime;       // _E68, p064, leftover from pik1, presummably time to abandon a wall push?
+		Parm<f32> mWallPushAbandonTime;       // _E68, p064, leftover from pik1, presumably time to abandon a wall push?
 		Parm<f32> mBombSearchRange;           // _E90, p066, leftover from pik1, range for pikmin to search for a bomb
 		Parm<f32> mMinBombThrowDistance;      // _EB8, p067, min speed for thrown bombs
 		Parm<f32> mMaxBombThrowDistance;      // _EE0, p068, max speed for thrown bombs
-		Parm<f32> mBombDropTime;              // _F08, p069, leftover from pik1, presummably time for pikmin to drop bombs on their own?
+		Parm<f32> mBombDropTime;              // _F08, p069, leftover from pik1, presumably time for pikmin to drop bombs on their own?
 		Parm<f32> mBombThrowSpeed;            // _F30, p070, pik1 bomb throw speed
-		Parm<f32> mBombAttackRange;           // _F58, p071, related to pik1 bombs, pressumably range to attack with bombs?
-		Parm<f32> mBombTime;                  // _F80, p072, unknown, more pik1 bomb stufff
+		Parm<f32> mBombAttackRange;           // _F58, p071, related to pik1 bombs, presumably range to attack with bombs?
+		Parm<f32> mBombTime;                  // _F80, p072, unknown, more pik1 bomb stuff
 		Parm<f32> mBombDropDistance;          // _FA8, p073, related to pik1 bombs, range to drop bombs?
 		Parm<f32> mNewColorScale;             // _FD0, P000, unknown
 		Parm<f32> mWhiteRunSpeedMultiplier;   // _FF8, P001, multiplier to speed values for white pikmin

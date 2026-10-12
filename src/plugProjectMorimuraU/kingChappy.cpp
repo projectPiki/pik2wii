@@ -12,9 +12,9 @@
 #include "Game/rumble.h"
 #include "Game/seaMgr.h"
 #include "JSystem/J3D/J3DMtxBuffer.h"
-#include "PSM/EnemyBoss.h"
 #include "PSSystem/PSMainSide_ObjSound.h"
 #include "RevoSDK/rand.h"
+#include "efx/efxEnemy.h"
 #include "nans.h"
 
 // TODO: fix this up
@@ -120,7 +120,7 @@ void Obj::onInit(CreatureInitArg* initArg)
 
 	P2ASSERTLINE(121, mModel);
 	J3DJoint* joint;
-	J3DModelData* modelData = mModel->mJ3dModel->mModelData;
+	J3DModelData* modelData = mModel->mJ3dModel->getModelData();
 
 	mLFootJointIndex = mModel->getJointIndex("asiL");
 	joint            = modelData->mJointTree.mJoints[mLFootJointIndex];
@@ -142,8 +142,7 @@ void Obj::onInit(CreatureInitArg* initArg)
 	mEfxDeadYodare->mMtx = mModel->getJoint("kuti")->getWorldMatrix();
 	mEfxDeadHana->setMtxptr(mModel->getJoint("hana")->getWorldMatrix()->mMatrix.mtxView);
 
-	PSM::EnemyBoss* soundObj = static_cast<PSM::EnemyBoss*>(mSoundObj);
-	PSM::assertIsBoss(soundObj);
+	PSM::EnemyBoss* soundObj = static_cast<PSM::EnemyBoss*>(PSM::assertIsBoss(mSoundObj));
 	soundObj->setAppearFlag(false);
 
 	mIsBig = false;
@@ -328,11 +327,9 @@ void Obj::doAnimationCullingOff()
 
 	// this is a really complicated way to adjust the world matrices when eating pikmin
 	for (int i = 0; i < mMouthSlots.mMax; i++) {
-		// this loop has regswaps, but not from the math for once!
-		Matrixf* mat;
 		Creature* stuckCreature = mMouthSlots.getStuckCreature(i);
 		if (stuckCreature) {
-			mat             = (Matrixf*)mModel->mJ3dModel->mMtxBuffer->mWorldMatrices[mMouthJointIndices[i]];
+			Matrixf* mat    = mModel->mJ3dModel->mMtxBuffer->getWorldMatrix(mMouthJointIndices[i]);
 			Vector3f xBasis = mat->getColumn(0);
 			Vector3f yBasis = mat->getColumn(1);
 			Vector3f zBasis = mat->getColumn(2);
@@ -373,10 +370,8 @@ void Obj::doAnimationCullingOff()
 
 	mCollTree->update();
 
-	PSM::EnemyBoss* soundObj = static_cast<PSM::EnemyBoss*>(mSoundObj); // get sound object
-	PSM::assertIsBoss(soundObj);                                        // make sure we have sound object
-	if (soundObj) {                                                     // REALLY MAKE SURE WE HAVE SOUND OBJECT
-		// POINTLESS IF STATEMENT
+	PSM::EnemyBoss* soundObj = static_cast<PSM::EnemyBoss*>(PSM::assertIsBoss(mSoundObj));
+	if (soundObj) {
 		if (mSticked) {
 			soundObj->postPikiAttack(true);
 		} else {
@@ -385,412 +380,6 @@ void Obj::doAnimationCullingOff()
 	}
 
 	curK = nullptr;
-	/*
-	stwu     r1, -0x90(r1)
-	mflr     r0
-	stw      r0, 0x94(r1)
-	stfd     f31, 0x80(r1)
-	psq_st   f31, 136(r1), 0, qr0
-	stmw     r27, 0x6c(r1)
-	mr       r31, r3
-	lwz      r4, 0xc0(r3)
-	lbz      r0, 0xbca(r4)
-	cmplwi   r0, 0
-	beq      lbl_8035E428
-	bl       getStateID__Q24Game9EnemyBaseFv
-	cmpwi    r3, 0
-	beq      lbl_8035E424
-	lfs      f1, lbl_8051E68C@sda21(r2)
-	lfs      f0, 0x320(r31)
-	fcmpu    cr0, f1, f0
-	bne      lbl_8035E424
-	lfs      f0, 0x334(r31)
-	fcmpu    cr0, f1, f0
-	beq      lbl_8035E428
-
-lbl_8035E424:
-	stw      r31, curK__Q24Game10KingChappy@sda21(r13)
-
-lbl_8035E428:
-	lwz      r3, 0xc0(r31)
-	lbz      r0, 0xbc8(r3)
-	cmplwi   r0, 0
-	beq      lbl_8035E460
-	li       r0, 0
-	mr       r4, r31
-	stb      r0, 0xbc8(r3)
-	li       r5, 8
-	li       r6, 0
-	lwz      r3, 0x34c(r31)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x14(r12)
-	mtctr    r12
-	bctrl
-
-lbl_8035E460:
-	lwz      r4, 0x188(r31)
-	li       r0, 0
-	mr       r3, r31
-	stb      r0, 0x24(r4)
-	lwz      r12, 0(r31)
-	lwz      r12, 0x1d8(r12)
-	mtctr    r12
-	bctrl
-	lwz      r3, 0x17c(r31)
-	lwz      r0, 4(r3)
-	cmplwi   r0, 0
-	beq      lbl_8035E508
-	addi     r4, r31, 0x138
-	bl       viewMakeMatrix__Q24Game10PelletViewFR7Matrixf
-	lfs      f1, 0x168(r31)
-	addi     r3, r1, 0x38
-	lfs      f2, 0x16c(r31)
-	lfs      f3, 0x170(r31)
-	bl       PSMTXScale
-	addi     r3, r31, 0x138
-	addi     r4, r1, 0x38
-	mr       r5, r3
-	bl       PSMTXConcat
-	lfs      f0, 0x144(r31)
-	mr       r3, r31
-	addi     r4, r1, 0x2c
-	stfs     f0, 0x2c(r1)
-	lfs      f0, 0x154(r31)
-	stfs     f0, 0x30(r1)
-	lfs      f0, 0x164(r31)
-	stfs     f0, 0x34(r1)
-	lwz      r12, 0(r31)
-	lwz      r12, 0x70(r12)
-	mtctr    r12
-	bctrl
-	mr       r3, r31
-	addi     r4, r1, 0x2c
-	lwz      r12, 0(r31)
-	lwz      r12, 0x74(r12)
-	mtctr    r12
-	bctrl
-	b        lbl_8035E51C
-
-lbl_8035E508:
-	addi     r3, r31, 0x138
-	addi     r4, r31, 0x168
-	addi     r5, r31, 0x1a4
-	addi     r6, r31, 0x18c
-	bl       "makeSRT__7MatrixfFR10Vector3<f>R10Vector3<f>R10Vector3<f>"
-
-lbl_8035E51C:
-	lwz      r4, 0x174(r31)
-	addi     r3, r31, 0x138
-	lwz      r4, 8(r4)
-	addi     r4, r4, 0x24
-	bl       PSMTXCopy
-	lwz      r3, 0x174(r31)
-	lwz      r3, 8(r3)
-	lwz      r12, 0(r3)
-	lwz      r12, 0x10(r12)
-	mtctr    r12
-	bctrl
-	li       r27, 0
-	li       r28, 0
-	b        lbl_8035E854
-
-lbl_8035E554:
-	mr       r4, r27
-	addi     r3, r31, 0x2c8
-	bl       getSlot__10MouthSlotsFi
-	lwz      r29, 0x64(r3)
-	cmplwi   r29, 0
-	beq      lbl_8035E84C
-	lwz      r4, 0x174(r31)
-	lwz      r3, 0x33c(r31)
-	lwz      r4, 8(r4)
-	lhzx     r0, r3, r28
-	lwz      r3, 0x84(r4)
-	mulli    r0, r0, 0x30
-	lfs      f1, lbl_8051E68C@sda21(r2)
-	lwz      r3, 0xc(r3)
-	add      r30, r3, r0
-	lfs      f3, 0x20(r30)
-	lfs      f2, 0x10(r30)
-	lfs      f0, 0(r30)
-	stfs     f0, 0x20(r1)
-	stfs     f2, 0x24(r1)
-	stfs     f3, 0x28(r1)
-	lfs      f2, 0x14(r30)
-	lfs      f3, 4(r30)
-	lfs      f4, 0x24(r30)
-	fmuls    f6, f2, f2
-	fmuls    f0, f3, f3
-	fmuls    f7, f4, f4
-	stfs     f3, 0x14(r1)
-	fadds    f0, f0, f6
-	stfs     f2, 0x18(r1)
-	stfs     f4, 0x1c(r1)
-	fadds    f0, f7, f0
-	lfs      f5, 0x28(r30)
-	lfs      f4, 0x18(r30)
-	lfs      f2, 8(r30)
-	fcmpo    cr0, f0, f1
-	stfs     f2, 8(r1)
-	stfs     f4, 0xc(r1)
-	stfs     f5, 0x10(r1)
-	ble      lbl_8035E610
-	fmadds   f0, f3, f3, f6
-	fadds    f4, f7, f0
-	fcmpo    cr0, f4, f1
-	ble      lbl_8035E614
-	frsqrte  f0, f4
-	fmuls    f4, f0, f4
-	b        lbl_8035E614
-
-lbl_8035E610:
-	fmr      f4, f1
-
-lbl_8035E614:
-	lfs      f0, lbl_8051E68C@sda21(r2)
-	fcmpo    cr0, f4, f0
-	ble      lbl_8035E650
-	lfs      f0, lbl_8051E6B8@sda21(r2)
-	lfs      f2, 0x14(r1)
-	fdivs    f3, f0, f4
-	lfs      f1, 0x18(r1)
-	lfs      f0, 0x1c(r1)
-	fmuls    f2, f2, f3
-	fmuls    f1, f1, f3
-	fmuls    f0, f0, f3
-	stfs     f2, 0x14(r1)
-	stfs     f1, 0x18(r1)
-	stfs     f0, 0x1c(r1)
-	b        lbl_8035E654
-
-lbl_8035E650:
-	fmr      f4, f0
-
-lbl_8035E654:
-	lfs      f0, lbl_8051E6B8@sda21(r2)
-	fmr      f31, f4
-	fcmpo    cr0, f4, f0
-	ble      lbl_8035E668
-	fmr      f31, f0
-
-lbl_8035E668:
-	mr       r3, r29
-	lwz      r12, 0(r29)
-	lwz      r12, 0x7c(r12)
-	mtctr    r12
-	bctrl
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_8035E6B8
-	lbz      r0, 0x338(r31)
-	cmplwi   r0, 0
-	beq      lbl_8035E84C
-	mr       r3, r29
-	lwz      r12, 0(r29)
-	lwz      r12, 0x258(r12)
-	mtctr    r12
-	bctrl
-	cmpwi    r3, 0x24
-	bne      lbl_8035E84C
-	li       r0, 1
-	stb      r0, 0x2bd(r29)
-	b        lbl_8035E84C
-
-lbl_8035E6B8:
-	addi     r3, r1, 0x14
-	addi     r4, r1, 8
-	addi     r5, r1, 0x20
-	bl       PSVECCrossProduct
-	lfs      f2, 0x20(r1)
-	lfs      f1, 0x24(r1)
-	fmuls    f0, f2, f2
-	lfs      f3, 0x28(r1)
-	fmuls    f4, f1, f1
-	lfs      f1, lbl_8051E68C@sda21(r2)
-	fmuls    f3, f3, f3
-	fadds    f0, f0, f4
-	fadds    f0, f3, f0
-	fcmpo    cr0, f0, f1
-	ble      lbl_8035E710
-	fmadds   f0, f2, f2, f4
-	fadds    f3, f3, f0
-	fcmpo    cr0, f3, f1
-	ble      lbl_8035E714
-	frsqrte  f0, f3
-	fmuls    f3, f0, f3
-	b        lbl_8035E714
-
-lbl_8035E710:
-	fmr      f3, f1
-
-lbl_8035E714:
-	lfs      f0, lbl_8051E68C@sda21(r2)
-	fcmpo    cr0, f3, f0
-	ble      lbl_8035E74C
-	lfs      f0, lbl_8051E6B8@sda21(r2)
-	lfs      f2, 0x20(r1)
-	fdivs    f3, f0, f3
-	lfs      f1, 0x24(r1)
-	lfs      f0, 0x28(r1)
-	fmuls    f2, f2, f3
-	fmuls    f1, f1, f3
-	fmuls    f0, f0, f3
-	stfs     f2, 0x20(r1)
-	stfs     f1, 0x24(r1)
-	stfs     f0, 0x28(r1)
-
-lbl_8035E74C:
-	addi     r3, r1, 0x20
-	addi     r4, r1, 0x14
-	addi     r5, r1, 8
-	bl       PSVECCrossProduct
-	lfs      f2, 8(r1)
-	lfs      f1, 0xc(r1)
-	fmuls    f0, f2, f2
-	lfs      f3, 0x10(r1)
-	fmuls    f4, f1, f1
-	lfs      f1, lbl_8051E68C@sda21(r2)
-	fmuls    f3, f3, f3
-	fadds    f0, f0, f4
-	fadds    f0, f3, f0
-	fcmpo    cr0, f0, f1
-	ble      lbl_8035E7A4
-	fmadds   f0, f2, f2, f4
-	fadds    f3, f3, f0
-	fcmpo    cr0, f3, f1
-	ble      lbl_8035E7A8
-	frsqrte  f0, f3
-	fmuls    f3, f0, f3
-	b        lbl_8035E7A8
-
-lbl_8035E7A4:
-	fmr      f3, f1
-
-lbl_8035E7A8:
-	lfs      f0, lbl_8051E68C@sda21(r2)
-	fcmpo    cr0, f3, f0
-	ble      lbl_8035E7E0
-	lfs      f0, lbl_8051E6B8@sda21(r2)
-	lfs      f2, 8(r1)
-	fdivs    f3, f0, f3
-	lfs      f1, 0xc(r1)
-	lfs      f0, 0x10(r1)
-	fmuls    f2, f2, f3
-	fmuls    f1, f1, f3
-	fmuls    f0, f0, f3
-	stfs     f2, 8(r1)
-	stfs     f1, 0xc(r1)
-	stfs     f0, 0x10(r1)
-
-lbl_8035E7E0:
-	lfs      f0, 0x20(r1)
-	fmuls    f0, f0, f31
-	stfs     f0, 0(r30)
-	lfs      f0, 0x24(r1)
-	fmuls    f0, f0, f31
-	stfs     f0, 0x10(r30)
-	lfs      f0, 0x28(r1)
-	fmuls    f0, f0, f31
-	stfs     f0, 0x20(r30)
-	lfs      f0, 0x14(r1)
-	fmuls    f0, f0, f31
-	stfs     f0, 4(r30)
-	lfs      f0, 0x18(r1)
-	fmuls    f0, f0, f31
-	stfs     f0, 0x14(r30)
-	lfs      f0, 0x1c(r1)
-	fmuls    f0, f0, f31
-	stfs     f0, 0x24(r30)
-	lfs      f0, 8(r1)
-	fmuls    f0, f0, f31
-	stfs     f0, 8(r30)
-	lfs      f0, 0xc(r1)
-	fmuls    f0, f0, f31
-	stfs     f0, 0x18(r30)
-	lfs      f0, 0x10(r1)
-	fmuls    f0, f0, f31
-	stfs     f0, 0x28(r30)
-
-lbl_8035E84C:
-	addi     r28, r28, 2
-	addi     r27, r27, 1
-
-lbl_8035E854:
-	lwz      r0, 0x2c8(r31)
-	cmpw     r27, r0
-	blt      lbl_8035E554
-	lwz      r3, 0x114(r31)
-	bl       update__8CollTreeFv
-	lwz      r29, 0x28c(r31)
-	li       r30, 0
-	mr       r3, r29
-	lwz      r12, 0x28(r29)
-	lwz      r12, 0x1c(r12)
-	mtctr    r12
-	bctrl
-	cmpwi    r3, 5
-	beq      lbl_8035E8C4
-	mr       r3, r29
-	lwz      r12, 0x28(r29)
-	lwz      r12, 0x1c(r12)
-	mtctr    r12
-	bctrl
-	cmpwi    r3, 6
-	beq      lbl_8035E8C4
-	mr       r3, r29
-	lwz      r12, 0x28(r29)
-	lwz      r12, 0x1c(r12)
-	mtctr    r12
-	bctrl
-	cmpwi    r3, 7
-	bne      lbl_8035E8C8
-
-lbl_8035E8C4:
-	li       r30, 1
-
-lbl_8035E8C8:
-	clrlwi.  r0, r30, 0x18
-	bne      lbl_8035E8EC
-	lis      r3, lbl_80491604@ha
-	lis      r5, lbl_804915F8@ha
-	addi     r3, r3, lbl_80491604@l
-	li       r4, 0x454
-	addi     r5, r5, lbl_804915F8@l
-	crclr    6
-	bl       panic_f__12JUTExceptionFPCciPCce
-
-lbl_8035E8EC:
-	cmplwi   r29, 0
-	beq      lbl_8035E934
-	lwz      r0, 0xf0(r31)
-	cmplwi   r0, 0
-	beq      lbl_8035E91C
-	mr       r3, r29
-	li       r4, 1
-	lwz      r12, 0x28(r29)
-	lwz      r12, 0xd8(r12)
-	mtctr    r12
-	bctrl
-	b        lbl_8035E934
-
-lbl_8035E91C:
-	mr       r3, r29
-	li       r4, 1
-	lwz      r12, 0x28(r29)
-	lwz      r12, 0xd8(r12)
-	mtctr    r12
-	bctrl
-
-lbl_8035E934:
-	li       r0, 0
-	stw      r0, curK__Q24Game10KingChappy@sda21(r13)
-	psq_l    f31, 136(r1), 0, qr0
-	lfd      f31, 0x80(r1)
-	lmw      r27, 0x6c(r1)
-	lwz      r0, 0x94(r1)
-	mtlr     r0
-	addi     r1, r1, 0x90
-	blr
-	*/
 }
 
 /**
@@ -816,8 +405,8 @@ void Obj::getShadowParam(ShadowParam& param)
 	mBodyJoint->getWorldMatrix()->getTranslation(param.mPosition);
 	param.mPosition.y -= 20.0f;
 	param.mBoundingSphere.mPosition.set(0.0f, 1.0f, 0.0f);
-	param.mBoundingSphere.mRadius   = 100.0f * mScaleModifier;
-	param.mSize                     = 45.0f * mScaleModifier;
+	param.mBoundingSphere.mRadius = 100.0f * mScaleModifier;
+	param.mSize                   = 45.0f * mScaleModifier;
 }
 
 /**
@@ -839,7 +428,7 @@ bool Obj::damageCallBack(Creature* creature, f32 damage, CollPart* collpart)
 	} else if (creature->isAlive()) {
 		Vector3f creaturePos = creature->getPosition();
 		if (creaturePos.y < 5.0f + mPosition.y) {
-			if (sqrDistanceXZ(creaturePos, mPosition) < SQUARE(40.0f)) {
+			if (creaturePos.sqrDistance2D(mPosition) < SQUARE(40.0f)) {
 				addDamage(damage * 0.2f, 1.0f);
 				return true;
 			}
@@ -1106,7 +695,7 @@ void Obj::getTonguePosVel(Vector3f& pos, Vector3f& vel)
 void Obj::setNextGoal()
 {
 	f32 rad = C_GENERALPARMS.mTerritoryRadius();
-	if (sqrDistanceXZ(mPosition, mHomePosition) > SQUARE(rad)) {
+	if (mPosition.sqrDistance2D(mHomePosition) > SQUARE(rad)) {
 		mGoalPosition = mHomePosition;
 		checkTurn(true);
 		return;
@@ -1135,15 +724,8 @@ void Obj::searchTarget()
 {
 	mTargetCreature = nullptr;
 
-	if (mSearchDelayTimer > 0) {
-		return;
-	}
-
-	if (C_PARMS->mDontSearchTarget) {
-		return;
-	}
-
-	if (mHomePosition.x == mGoalPosition.x && mHomePosition.z == mGoalPosition.z && isOutOfTerritory(0.8f)) {
+	if (mSearchDelayTimer > 0 || C_PARMS->mDontSearchTarget
+	    || (mHomePosition.x == mGoalPosition.x && mHomePosition.z == mGoalPosition.z && isOutOfTerritory(0.8f))) {
 		return;
 	}
 
@@ -1154,10 +736,11 @@ void Obj::searchTarget()
 	mTargetCreature
 	    = EnemyFunc::getNearestNavi(this, C_GENERALPARMS.mSearchAngle(), C_GENERALPARMS.mSearchDistance(), &searchDist, nullptr);
 
-	f32 range = SQUARE(C_PROPERPARMS.mInvisibleRange()); // f30
+	f32 range = C_PROPERPARMS.mInvisibleRange();
+	range *= range;
 	f32 maxY, minY;
-	minY = mPosition.y - 50.0f; // f28
-	maxY = 50.0f + mPosition.y; // f29
+	minY = mPosition.y - 50.0f;
+	maxY = 50.0f + mPosition.y;
 
 	Iterator<Piki> iter(pikiMgr);
 	CI_LOOP(iter)
@@ -1172,7 +755,7 @@ void Obj::searchTarget()
 			if (absF(angle) <= searchAngle) {
 				Vector3f pos      = mPosition;
 				Vector3f pikiPos2 = Vector3f(piki->getPosition().x, 0.0f, piki->getPosition().z);
-				f32 dist          = sqrDistanceXZ(pikiPos2, pos);
+				f32 dist          = pikiPos2.sqrDistance2D(pos);
 				if (dist < searchDist && dist > range) {
 					mTargetCreature = piki;
 					searchDist      = dist;
@@ -1540,7 +1123,7 @@ lbl_8035FE94:
 bool Obj::isOutOfTerritory(f32 rangeScale)
 {
 	f32 radius = rangeScale * C_GENERALPARMS.mTerritoryRadius();
-	f32 dist   = sqrDistanceXZ(mHomePosition, mPosition);
+	f32 dist   = mHomePosition.sqrDistance2D(mPosition);
 	return (dist > SQUARE(radius));
 }
 
@@ -1604,7 +1187,7 @@ void Obj::walkFunc()
 	// this certainly explains why its so bad at chasing stuff
 	mWalkingTimer++;
 	if (mWalkingTimer > 120) {
-		if (sqrDistanceXZ(mPosition, mPrevWalkingCheckPosition) < 900.0f) {
+		if (mPosition.sqrDistance2D(mPrevWalkingCheckPosition) < 900.0f) {
 			mSearchDelayTimer = 120;
 			mTargetCreature   = nullptr;
 			mGoalPosition     = mHomePosition;
@@ -1634,124 +1217,7 @@ f32 Obj::turnFunc(f32 scale)
 		turnSpeed = C_PROPERPARMS.mBigRotationSpeedRate();
 	}
 
-	return turnToTarget(targetPos, turnSpeed * scale, maxAngle * scale);
-	/*
-	stwu     r1, -0x90(r1)
-	mflr     r0
-	stw      r0, 0x94(r1)
-	stfd     f31, 0x80(r1)
-	psq_st   f31, 136(r1), 0, qr0
-	stfd     f30, 0x70(r1)
-	psq_st   f30, 120(r1), 0, qr0
-	stfd     f29, 0x60(r1)
-	psq_st   f29, 104(r1), 0, qr0
-	stfd     f28, 0x50(r1)
-	psq_st   f28, 88(r1), 0, qr0
-	stfd     f27, 0x40(r1)
-	psq_st   f27, 72(r1), 0, qr0
-	stw      r31, 0x3c(r1)
-	mr       r31, r3
-	fmr      f27, f1
-	lwz      r4, 0x230(r3)
-	lfs      f30, 0x2bc(r3)
-	cmplwi   r4, 0
-	lfs      f31, 0x2c4(r3)
-	beq      lbl_803601D0
-	lwz      r12, 0(r4)
-	addi     r3, r1, 0x20
-	lwz      r12, 8(r12)
-	mtctr    r12
-	bctrl
-	lfs      f30, 0x20(r1)
-	lfs      f31, 0x28(r1)
-
-lbl_803601D0:
-	lbz      r0, 0x394(r31)
-	lwz      r3, 0xc0(r31)
-	cmplwi   r0, 0
-	lfs      f29, 0x334(r3)
-	lfs      f28, 0x30c(r3)
-	beq      lbl_803601F0
-	lfs      f29, 0xaec(r3)
-	lfs      f28, 0xac4(r3)
-
-lbl_803601F0:
-	mr       r4, r31
-	addi     r3, r1, 0x14
-	lwz      r12, 0(r31)
-	lwz      r12, 8(r12)
-	mtctr    r12
-	bctrl
-	lfs      f4, 0x14(r1)
-	lis      r3, atanTable___5JMath@ha
-	lfs      f0, 0x1c(r1)
-	addi     r3, r3, atanTable___5JMath@l
-	lfs      f3, 0x18(r1)
-	fsubs    f1, f30, f4
-	fsubs    f2, f31, f0
-	stfs     f4, 8(r1)
-	stfs     f3, 0xc(r1)
-	stfs     f0, 0x10(r1)
-	bl       "atan2___Q25JMath18TAtanTable<1024,f>CFff"
-	bl       roundAng__Ff
-	lwz      r12, 0(r31)
-	fmr      f31, f1
-	mr       r3, r31
-	lwz      r12, 0x64(r12)
-	mtctr    r12
-	bctrl
-	fmr      f2, f1
-	fmr      f1, f31
-	bl       angDist__Fff
-	fmuls    f4, f29, f27
-	lfs      f0, lbl_8051E750@sda21(r2)
-	fmuls    f3, f28, f27
-	lfs      f2, lbl_8051E74C@sda21(r2)
-	fmr      f30, f1
-	fmuls    f0, f0, f4
-	fmuls    f31, f30, f3
-	fmuls    f1, f2, f0
-	fabs     f0, f31
-	frsp     f0, f0
-	fcmpo    cr0, f0, f1
-	ble      lbl_803602A4
-	lfs      f0, lbl_8051E68C@sda21(r2)
-	fcmpo    cr0, f31, f0
-	ble      lbl_803602A0
-	fmr      f31, f1
-	b        lbl_803602A4
-
-lbl_803602A0:
-	fneg     f31, f1
-
-lbl_803602A4:
-	mr       r3, r31
-	lwz      r12, 0(r31)
-	lwz      r12, 0x64(r12)
-	mtctr    r12
-	bctrl
-	fadds    f1, f31, f1
-	bl       roundAng__Ff
-	stfs     f1, 0x1fc(r31)
-	fmr      f1, f30
-	lfs      f0, 0x1fc(r31)
-	stfs     f0, 0x1a8(r31)
-	psq_l    f31, 136(r1), 0, qr0
-	lfd      f31, 0x80(r1)
-	psq_l    f30, 120(r1), 0, qr0
-	lfd      f30, 0x70(r1)
-	psq_l    f29, 104(r1), 0, qr0
-	lfd      f29, 0x60(r1)
-	psq_l    f28, 88(r1), 0, qr0
-	lfd      f28, 0x50(r1)
-	psq_l    f27, 72(r1), 0, qr0
-	lfd      f27, 0x40(r1)
-	lwz      r0, 0x94(r1)
-	lwz      r31, 0x3c(r1)
-	mtlr     r0
-	addi     r1, r1, 0x90
-	blr
-	*/
+	return turnToTargetScaled(targetPos, turnSpeed, maxAngle, scale);
 }
 
 /**
@@ -1761,7 +1227,7 @@ lbl_803602A4:
 bool Obj::isReachToGoal(f32 radius)
 {
 	f32 rad  = SQUARE(radius);
-	f32 dist = sqrDistanceXZ(mPosition, mGoalPosition);
+	f32 dist = mPosition.sqrDistance2D(mGoalPosition);
 	return (u8)(dist < rad);
 }
 
@@ -1792,7 +1258,8 @@ void Obj::checkAttack(bool check)
 		}
 	}
 
-	f32 attackRange, attackAngle; // f27, f26
+	f32 attackRange, attackAngle; // f27, f26'
+	Bomb::Obj* bomb;
 	if (mIsBig) {
 		attackRange = C_PROPERPARMS.mBigAttackHitRange();
 		attackAngle = C_PROPERPARMS.mBigAttackAngle();
@@ -1802,19 +1269,16 @@ void Obj::checkAttack(bool check)
 	}
 
 	if (mTargetCreature && mTargetCreature->isAlive()) {
-		Creature* target = mTargetCreature;
-		if (isTargetOutOfRange(target, getAngDist(target), C_GENERALPARMS.mPrivateRadius(), C_GENERALPARMS.mSightRadius(),
-		                       C_GENERALPARMS.mFov(), C_GENERALPARMS.mViewAngle())) {
+		if (isTargetOutOfRange(mTargetCreature, C_GENERALPARMS.mPrivateRadius(), C_GENERALPARMS.mSightRadius(), C_GENERALPARMS.mFov(),
+		                       C_GENERALPARMS.mViewAngle())) {
 			mTargetCreature = nullptr;
 
 		} else {
-			Creature* target = mTargetCreature;
-			f32 angle        = getAngDist(target);
-			if (isTargetAttackable(target, angle, attackRange, attackAngle)) {
+			if (isTargetAttackable(mTargetCreature, attackRange, attackAngle)) {
 				f32 range          = C_PROPERPARMS.mInvisibleRange();
 				Vector3f targetPos = mTargetCreature->getPosition();
 
-				if (sqrDistanceXZ(mPosition, targetPos) > SQUARE(range)) {
+				if (mPosition.sqrDistance2D(targetPos) > SQUARE(range)) {
 					mAllowAnimBlending = check;
 					mFsm->transit(this, KINGCHAPPY_Attack, nullptr);
 					mTargetCreature = nullptr;
@@ -1836,7 +1300,7 @@ void Obj::checkAttack(bool check)
 	}
 
 	for (int i = 0; i < bombMgr->getMaxObjects(); i++) {
-		Bomb::Obj* bomb = static_cast<Bomb::Obj*>(bombMgr->getEnemy(i));
+		bomb = static_cast<Bomb::Obj*>(bombMgr->getEnemy(i));
 		if (!bomb) {
 			continue;
 		}
@@ -1845,12 +1309,11 @@ void Obj::checkAttack(bool check)
 			continue;
 		}
 
-		f32 bombAngle = getAngDist(bomb);
-		if (isTargetAttackable(bomb, bombAngle, attackRange, attackAngle)) {
+		if (isBombAttackable(bomb, attackRange, attackAngle)) {
 			f32 range          = C_PROPERPARMS.mInvisibleRange();
 			Vector3f targetPos = bomb->getPosition();
 
-			if (sqrDistanceXZ(mPosition, targetPos) > SQUARE(range)) {
+			if (mPosition.sqrDistance2D(targetPos) > SQUARE(range)) {
 				mAllowAnimBlending = check;
 				mFsm->transit(this, KINGCHAPPY_Attack, nullptr);
 				mTargetCreature = nullptr;
@@ -2448,7 +1911,7 @@ void Obj::checkFlick(bool check)
 		if (navi->isAlive()) {
 			f32 range    = C_PROPERPARMS.mInvisibleRange();
 			Vector3f sep = navi->getTargetSeparation(this);
-			if (sep.sqrMagnitude() < SQUARE(range)) {
+			if (sep.sqrLength() < SQUARE(range)) {
 				mFlickTimer += 0.1f;
 			}
 		}
@@ -2616,7 +2079,7 @@ void Obj::footMtxCalc(Mtx mtx, Vector3f* pos, f32* p1)
 			return;
 		}
 
-		*pos = Vector3f(mtx[0][3], mtx[1][3], mtx[2][3]);
+		pos->set(mtx[0][3], mtx[1][3], mtx[2][3]);
 		*p1  = 1.0f;
 		return;
 	}
@@ -2750,7 +2213,7 @@ void Obj::createEffect(int effectID)
 
 			mLeftEyePosition   = mModel->getJoint("eye3L")->getWorldMatrix()->getTranslation();
 			mLeftEyePosition.y = *mWaterBox->getSeaHeightPtr();
-			
+
 			efx::ArgEnemyType fxArgEnemy2(mLeftEyePosition, EnemyTypeID::EnemyID_Tadpole, 1.0f);
 
 			mLeftEyeRippleEfx->create(&fxArgEnemy);

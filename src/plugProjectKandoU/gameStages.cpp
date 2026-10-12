@@ -5,7 +5,11 @@
 #include "Game/gameStages.h"
 #include "MapCollision.h"
 
-const char gameStages[] = "gameStages";
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "gameStages";
+}
 
 namespace Game {
 Stages* stageList;
@@ -14,7 +18,7 @@ Stages* stageList;
  * @note Address: N/A
  * @note Size: 0x68
  */
-inline CaveOtakara::CaveOtakara()
+CaveOtakara::CaveOtakara()
 {
 	mOtakaraCount = 0;
 	mId.setID('xxxx');
@@ -106,8 +110,16 @@ inline int CaveOtakaraInfo::getCaveIndex_FromID(ID32& id)
  * @note Address: N/A
  * @note Size: 0x3C
  */
-inline ID32* CaveOtakaraInfo::getCaveID_FromIndex(int)
+inline ID32* CaveOtakaraInfo::getCaveID_FromIndex(int index)
 {
+	CaveOtakara* caveNode;
+	for (int idx = 0; idx < mCount; idx++) {
+		caveNode = (CaveOtakara*)mOwner.getChildAt(idx);
+
+		if (idx == index) {
+			return &caveNode->mId;
+		}
+	}
 	return nullptr;
 	// UNUSED FUNCTION
 }
@@ -164,31 +176,13 @@ CourseInfo::CourseInfo()
 	mModelPath     = 0;
 	mFolder        = 0;
 
-	mStartPosition = 0.0f;
-	mStartAngle    = 0;
+	mStartPosition.set(0.0f, 0.0f, 0.0f);
+	mStartAngle = 0;
 
 	mCourseIndex = 0;
 
 	PSMTXIdentity(mDemoMatrix.mMatrix.mtxView);
 	mGroundOtakaraMax = 0;
-}
-
-/**
- * @note Address: N/A
- * @note Size: 0x6C
- * AUTOGEN
- */
-inline CaveOtakaraInfo::~CaveOtakaraInfo()
-{
-}
-
-/**
- * @note Address: N/A
- * @note Size: 0x6C
- * AUTOGEN
- */
-inline LimitGenInfo::~LimitGenInfo()
-{
 }
 
 /**
@@ -314,7 +308,7 @@ int CourseInfo::getCaveIndex_FromID(ID32& id)
 char* CourseInfo::getCaveinfoFilename_FromID(ID32& id)
 {
 	CaveOtakara* caveNode = mCaveOtakaraInfo.get_id(id);
-	P2ASSERTLINE(282, caveNode);
+	P2ASSERTLINE(283, caveNode);
 	return caveNode->mFilename;
 }
 
@@ -408,7 +402,9 @@ CourseInfo* Stages::getCourseInfo(int courseNum)
  */
 inline void Stages::draw2d()
 {
-	// UNUSED FUNCTION
+	OSReport("Select Course");
+	OSReport("%s : %d caves\n");
+	OSReport("[%s] %d/%d");
 }
 
 /**
@@ -463,17 +459,6 @@ void Stages::createMapMgr(Game::CourseInfo* info, Game::RouteMgr* routeMgr)
 	static_cast<ShapeMapMgr*>(mapMgr)->load(loadarg);
 }
 
-} // namespace Game
-
-/**
- * @note Address: 0x801AE254
- * @note Size: 0x60
- * AUTOGEN
- */
-// MapCollision::~MapCollision() { }
-
-namespace Game {
-
 /**
  * @note Address: N/A
  * @note Size: 0x18
@@ -500,9 +485,5 @@ void Stages::read(Stream& stream)
 		mCourseInfo.add(newInfo);
 	}
 }
-
-const char selectCourse[] = "Select Course";
-const char caveCount[]    = "%s : %d caves\n";
-const char measureThing[] = "[%s] %d/%d";
 
 } // namespace Game

@@ -1,14 +1,14 @@
 #ifndef _MORIMURA_VSSELECT_H
 #define _MORIMURA_VSSELECT_H
 
-#include "Screen/Enums.h"
-#include "og/Screen/ogScreen.h"
-#include "og/Screen/StickAnimMgr.h"
-#include "og/Screen/callbackNodes.h"
+#include "Morimura/ScrollList.h"
 #include "Morimura/Window.h"
 #include "Morimura/mrUtil.h"
-#include "Morimura/ScrollList.h"
 #include "PSSystem/PSSystemIF.h"
+#include "Screen/Enums.h"
+#include "og/Screen/StickAnimMgr.h"
+#include "og/Screen/callbackNodes.h"
+#include "og/Screen/ogScreen.h"
 #include "trig.h"
 
 // This should match the number of stages in the stages.txt
@@ -207,14 +207,7 @@ struct TVsSelectScene : public THIOScene {
 struct TVsSelect : public TScrollList {
 	TVsSelect();
 
-	virtual ~TVsSelect()
-	{
-		if (mDebugHeap) {
-			mDispMember->mDebugExpHeap->freeAll();
-			mDebugHeap->destroy();
-		}
-		mDebugHeap = nullptr;
-	}                                                                                                              // _08 (weak)
+	virtual ~TVsSelect();                                                                                          // _08 (weak)
 	virtual void doCreate(JKRArchive*);                                                                            // _4C
 	virtual void doUpdateFadeinFinish();                                                                           // _54
 	virtual bool doUpdate();                                                                                       // _58

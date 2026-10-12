@@ -2,9 +2,11 @@
 #define _GAME_ENTITIES_ITEMPIKIHEAD_H
 
 #include "types.h"
+#include "IDelegate.h"
+#include "MonoObjectMgr.h"
 #include "Game/BaseItem.h"
 #include "Game/itemMgr.h"
-#include "efx/TPk.h"
+#include "efx/efxPikmin.h"
 
 namespace Game {
 namespace ItemPikihead {
@@ -73,28 +75,11 @@ struct State : public ItemState<Item> {
 	{
 	}
 
-	virtual void onKeyEvent(Item* item, const SysShape::KeyEvent& keyEvent); // _24 (weak)
+	virtual void onKeyEvent(Item* item, const SysShape::KeyEvent& keyEvent){} // _24 (weak)
 
 	// _00     = VTBL
 	// _00-_0C = ItemState
 	char* mName; // _0C, unused but educated guess
-};
-
-struct BuryState : public State {
-	inline BuryState()
-	    : State(PIKIHEAD_Bury)
-	{
-	}
-
-	virtual void init(Item* item, StateArg* settings);                       // _08
-	virtual void exec(Item* item);                                           // _0C
-	virtual void cleanup(Item* item);                                        // _10
-	virtual void onKeyEvent(Item* item, const SysShape::KeyEvent& keyEvent); // _24
-
-	// _00     = VTBL
-	// _00-_10 = State
-	bool mAnimDone; // _10
-	f32 mTimer;     // _14
 };
 
 struct FallState : public State {
@@ -115,9 +100,59 @@ struct FallState : public State {
 	f32 mVerticalDrag;   // _14
 };
 
-struct GrowState : public State {
-	inline GrowState()
-	    : State(PIKIHEAD_Grow)
+struct WaitState : public State {
+	inline WaitState()
+	    : State(PIKIHEAD_Wait)
+	{
+	}
+
+	virtual void init(Item* item, StateArg* settings);                       // _08
+	virtual void exec(Item* item);                                           // _0C
+	virtual void cleanup(Item* item);                                        // _10
+	virtual void onKeyEvent(Item* item, const SysShape::KeyEvent& keyEvent); // _24
+
+	// _00     = VTBL
+	// _00-_0C = State
+	f32 mTimer; // _10
+};
+
+struct BuryState : public State {
+	inline BuryState()
+	    : State(PIKIHEAD_Bury)
+	{
+	}
+
+	virtual void init(Item* item, StateArg* settings);                       // _08
+	virtual void exec(Item* item);                                           // _0C
+	virtual void cleanup(Item* item);                                        // _10
+	virtual void onKeyEvent(Item* item, const SysShape::KeyEvent& keyEvent); // _24
+
+	// _00     = VTBL
+	// _00-_10 = State
+	bool mAnimDone; // _10
+	f32 mTimer;     // _14
+};
+
+struct TaneState : public State {
+	inline TaneState()
+	    : State(PIKIHEAD_Tane)
+	{
+	}
+
+	virtual void init(Item* item, StateArg* settings);                       // _08
+	virtual void exec(Item* item);                                           // _0C
+	virtual void cleanup(Item* item);                                        // _10
+	virtual void onKeyEvent(Item* item, const SysShape::KeyEvent& keyEvent); // _24
+
+	// _00     = VTBL
+	// _00-_10 = State
+	bool mAnimDone; // _10
+	f32 mTimer;     // _14
+};
+
+struct HatugaState : public State {
+	inline HatugaState()
+	    : State(PIKIHEAD_Hatuga)
 	{
 	}
 
@@ -130,9 +165,9 @@ struct GrowState : public State {
 	// _00-_10 = State
 };
 
-struct HatugaState : public State {
-	inline HatugaState()
-	    : State(PIKIHEAD_Hatuga)
+struct GrowState : public State {
+	inline GrowState()
+	    : State(PIKIHEAD_Grow)
 	{
 	}
 
@@ -160,39 +195,6 @@ struct SioreState : public State {
 	// _00-_10 = State
 	f32 mTimer;     // _10
 	bool mAnimDone; // _14
-};
-
-struct TaneState : public State {
-	inline TaneState()
-	    : State(PIKIHEAD_Tane)
-	{
-	}
-
-	virtual void init(Item* item, StateArg* settings);                       // _08
-	virtual void exec(Item* item);                                           // _0C
-	virtual void cleanup(Item* item);                                        // _10
-	virtual void onKeyEvent(Item* item, const SysShape::KeyEvent& keyEvent); // _24
-
-	// _00     = VTBL
-	// _00-_10 = State
-	bool mAnimDone; // _10
-	f32 mTimer;     // _14
-};
-
-struct WaitState : public State {
-	inline WaitState()
-	    : State(PIKIHEAD_Wait)
-	{
-	}
-
-	virtual void init(Item* item, StateArg* settings);                       // _08
-	virtual void exec(Item* item);                                           // _0C
-	virtual void cleanup(Item* item);                                        // _10
-	virtual void onKeyEvent(Item* item, const SysShape::KeyEvent& keyEvent); // _24
-
-	// _00     = VTBL
-	// _00-_0C = State
-	f32 mTimer; // _10
 };
 
 struct Item : public FSMItem<Item, FSM, State> {

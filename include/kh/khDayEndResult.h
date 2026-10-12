@@ -1,14 +1,14 @@
 #ifndef _KH_DAYENDRESULT_H
 #define _KH_DAYENDRESULT_H
 
-#include "kh/khUtil.h"
+#include "Controller.h"
 #include "Game/Result.h"
+#include "P2DScreen.h"
+#include "Screen/screenObj.h"
 #include "ebi/Save.h"
+#include "kh/khUtil.h"
 #include "og/Screen/DispMember.h"
 #include "og/Screen/callbackNodes.h"
-#include "Screen/screenObj.h"
-#include "P2DScreen.h"
-#include "Controller.h"
 
 namespace og {
 namespace Screen {
@@ -23,7 +23,7 @@ namespace Screen {
 // DATA STRUCTS
 
 enum MailCategory {
-	// Acutal checking for these conditions are done in singlleGS_MainResult
+	// Actual checking for these conditions are done in singleGS_MainResult
 	PokoUnder3000  = 0x31,
 	PokoUnder5000  = 0x32,
 	PokoUnder8000  = 0x33,
@@ -33,33 +33,21 @@ enum MailCategory {
 	AllTreasures   = 0x37,
 };
 
-union MailSaveFlags {
-	inline u8 getReverseByte(int i) { return byteView[15 - i]; }
-
-	u32 typeView[4];
-	u8 byteView[16];
-};
-
 union MailHistoryFlags {
 	int typeView[4];
 	s8 byteView[20];
 };
 
 struct MailSaveData {
-	MailSaveData()
-	{
-		for (int i = 0; i < 16; i++) {
-			mPastLogs.byteView[i] = 0;
-		}
-	}
+	MailSaveData() { }
 
 	void clear();
 	void read(Stream&);
 	void write(Stream&);
 	void set_history(s8);
 
-	MailSaveFlags mPastLogs;   // _00
-	MailHistoryFlags mHistory; // _10
+	BitFlag2<u32, 4> mPastLogs; // _00
+	MailHistoryFlags mHistory;  // _10
 };
 
 struct IncP {
@@ -629,28 +617,23 @@ struct SceneDayEndResultItem : public ::Screen::SceneBase {
 };
 
 struct MailTableDataEntry {
+	inline u64 getMessageID() const { return mMessageID; }
+	
 	u64 mMessageID;          // _00
 	u8 mFlag[4];             // _08
 	const char mFileName[0]; // _0C
 };
 
 struct MailTableData {
-	MailTableData(MailTableDataEntry* data, MailSaveFlags& flags, int i)
+	MailTableData(MailTableDataEntry* data, BitFlag2<u32, 4>& flags, int i)
 	{
-		u8 bit     = flags.getReverseByte(i >> 3);
-		int shift  = (i - (int(i >> 3) << 3));
-		mMessageID = data->mMessageID;
-		mFlag[0]   = data->mFlag[0];
-		mFlag[1]   = data->mFlag[1];
-		mFlag[2]   = data->mFlag[2];
-		mFileName  = (const char*)&data->mFileName;
-		mSaveFlag  = ((1 << shift) & bit) != 0;
-	}
-
-	inline u32 calcSaveFlag(MailSaveFlags& flags, int i)
-	{
-		u32 cleared = (i >> 3);
-		return (1 << (i - (cleared << 3))) & flags.byteView[15 - (i >> 3)];
+		bool saveFlag = flags.isBitSet(i);
+		mMessageID    = data->getMessageID();
+		mFlag[0]      = data->mFlag[0];
+		mFlag[1]      = data->mFlag[1];
+		mFlag[2]      = data->mFlag[2];
+		mFileName     = (const char*)&data->mFileName;
+		mSaveFlag     = saveFlag;
 	}
 
 	inline const char* getFileName() { return mFileName; }

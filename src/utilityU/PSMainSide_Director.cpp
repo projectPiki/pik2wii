@@ -5,14 +5,14 @@
 #include "PSM/BossSeq.h"
 #include "PSM/CreaturePrm.h"
 #include "PSM/ObjCalc.h"
-#include "PSM/Otakara.h"
+#include "PSSystem/PSMainSide_ObjSound.h"
 #include "PSMath.h"
 #include "PSSystem/SeqTrack.h"
 #include "utilityU.h"
+#include "Game/Entities/ItemOnyon.h"
 
 namespace PSM {
 
-ObjCalcBase* PSSystem::SingletonBase<ObjCalcBase>::sInstance;
 /**
  * @note Address: 0x80456AF8
  * @note Size: 0x80
@@ -343,6 +343,7 @@ f32 ActorDirector_Scaled::getNearestDistance()
 {
 	bool is1P   = PSSystem::SingletonBase<PSM::ObjCalcBase>::getInstance()->is1PGame();
 	f32 minDist = 1000000.0f;
+	JSULink<Game::Creature>* link;
 	if (!is1P) {
 		Game::Navi* olimar = Game::naviMgr->getAt(NAVIID_Olimar);
 		Game::Navi* louie  = Game::naviMgr->getAt(NAVIID_Louie);
@@ -352,11 +353,10 @@ f32 ActorDirector_Scaled::getNearestDistance()
 		Vector3f lPos = louie->getPosition();
 
 		JSUList<Game::Creature>* actors = mActor;
-		FOREACH_NODE(JSULink<Game::Creature>, actors->getFirst(), link)
-		{
+		for (link = actors->getFirst(); link; link = link->getNext()) {
 			Vector3f objpos = link->getObject()->getPosition();
-			f32 p1Dist      = PSMath::calcDistance<const Vector3f&>(oPos, objpos);
-			f32 p2Dist      = PSMath::calcDistance<const Vector3f&>(lPos, objpos);
+			f32 p1Dist      = PSMath::calcDistance(PSMath::toVec(objpos), PSMath::toVec(oPos));
+			f32 p2Dist      = PSMath::calcDistance(PSMath::toVec(objpos), PSMath::toVec(lPos));
 			if (p1Dist <= p2Dist) {
 				if (p1Dist < minDist) {
 					minDist = p1Dist;
@@ -379,10 +379,9 @@ f32 ActorDirector_Scaled::getNearestDistance()
 			naviPos = navi->getPosition();
 		}
 
-		FOREACH_NODE(JSULink<Game::Creature>, mActor->getFirst(), link)
-		{
-			Vector3f objpos = link->getObject()->getPosition();
-			f32 dist        = PSMath::calcDistance<const Vector3f&>(naviPos, objpos);
+		for (link = mActor->getFirst(); link; link = link->getNext()) {
+			const Vector3f objpos = link->getObject()->getPosition();
+			f32 dist              = PSMath::calcDistance(PSMath::toVec(objpos), PSMath::toVec(naviPos));
 			if (dist < minDist) {
 				minDist = dist;
 				onSetMinDistObj(link->getObject());
@@ -888,6 +887,72 @@ f32 ActorDirector_Kehai::getVolMaxDist(Game::EnemyBase* enemy)
 }
 
 /**
+ * @note Address: N/A
+ * @note Size: 0xF4
+ */
+ActorDirector_IchouNBeedama::ActorDirector_IchouNBeedama(const char* name, int trackCount, f32 endDistance, f32 startDistance, s32 fadeIn,
+                                                         s32 fadeOut, u32 fadeDuration)
+    : TrackOnDirector_Scaled(name, trackCount, endDistance, startDistance, fadeIn, fadeOut, fadeDuration)
+{
+}
+
+/**
+ * @note Address: N/A
+ * @note Size: 0x3C
+ */
+void ActorDirector_IchouNBeedama::execInner()
+{
+	if (mActor) {
+		mActor->exec(this);
+	}
+}
+
+/**
+ * @note Address: N/A
+ * @note Size: 0xF8
+ * @note This is me coding out of my ass that this is what it should be - very much a guess.
+ */
+Otakara* ActorDirector_IchouNBeedama::getPSOtakara(Game::Creature* obj)
+{
+	if (!obj) {
+		return nullptr;
+	}
+
+	Otakara* ota = static_cast<Otakara*>(obj->getPSCreature());
+	P2ASSERTLINE(__LINE__, ota);
+
+	P2ASSERTLINE(__LINE__, ota->isTreasure());
+
+	return ota;
+}
+
+/**
+ * @note Address: N/A
+ * @note Size: 0x37C
+ * @note Again, coding out of my ass - this seems pretty reasonable though.
+ */
+f32 ActorDirector_IchouNBeedama::getNearestDistance()
+{
+	f32 minDist = 1000000.0f;
+	for (JSULink<Game::Creature>* link = mActor->getFirst(); link; link = link->getNext()) {
+		Otakara* ota = getPSOtakara(link->getObject());
+		otakaraCheckEvent(ota);
+		if (ota->is2PBattle()) {
+			Game::Creature* onyon = ota->mOnyon;
+			if (onyon) {
+				Vector3f objPos  = link->getObject()->getPosition();
+				Vector3f goalPos = onyon->getPosition();
+				f32 dist         = PSMath::calcDistance(PSMath::toVec(objPos), PSMath::toVec(goalPos));
+				if (dist < minDist) {
+					minDist = dist;
+				}
+			}
+		}
+	}
+	return minDist;
+}
+
+/**
  * @note Address: 0x804583B8
  * @note Size: 0x7C
  */
@@ -1010,10 +1075,7 @@ PSSystem::DirectorBase* PSMGetBattleDirector(u8 directorID)
  */
 bool PSIs2PBattleStage()
 {
-	// is2PBattle needs to spawn as a weak function.
-	// this is absolutely not the code that should be here but i'm lazy. -HP
-	PSM::Otakara ota(nullptr);
-	return ota.is2PBattle();
+	return PSGameGetSceneInfo()->mSceneType == PSGame::SceneInfo::TWO_PLAYER_BATTLE;
 }
 
 /**

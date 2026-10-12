@@ -1,19 +1,25 @@
 #include "types.h"
 
+#include "Game/Data.h"
+#include "Game/GameSystem.h"
 #include "Game/MemoryCard/Player.h"
 #include "Game/MemoryCard/PlayerFileInfo.h"
 #include "Game/MemoryCard/Resource.h"
-#include "Game/Data.h"
 #include "Game/gamePlayData.h"
-#include "Game/GameSystem.h"
 #include "JSystem/JKernel/JKRArchive.h"
 #include "JSystem/JKernel/JKRHeap.h"
 #include "System.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "p2mem";
+}
+
 namespace Game {
 namespace MemoryCard {
 
-char* cFileName = "Pikmin2_SaveData";
+char* cFileName = "pikmin2.dat";
 
 /**
  * @note Address: 0x804428AC
@@ -21,7 +27,7 @@ char* cFileName = "Pikmin2_SaveData";
  */
 Player::Player()
     : mFlag(0)
-    , _04(0)
+    , mSaveCount(0)
     , mDay(0)
     , mRedPikis(0)
     , mBluePikis(0)
@@ -50,7 +56,7 @@ PlayerFileInfo::PlayerFileInfo()
  */
 Player* PlayerFileInfo::getPlayer(int idx)
 {
-	P2ASSERTBOUNDSLINE(396, 0, idx, 3);
+	P2ASSERTBOUNDSLINE(409, 0, idx, 3);
 	return &mPlayers[idx];
 }
 
@@ -70,7 +76,7 @@ bool PlayerFileInfo::isBrokenFile(int idx)
 bool PlayerFileInfo::isNewFile(int idx)
 {
 	Player* curPlayer = getPlayer(idx);
-	return !curPlayer->mFlag && !curPlayer->_04;
+	return !curPlayer->mFlag && !curPlayer->mSaveCount;
 }
 
 /**
@@ -88,11 +94,11 @@ Resource::~Resource()
  */
 Mgr::Mgr()
     : MemoryCardMgr()
-    , mErrorCode(0)
+    , mErrorCode(ERRORCODE_None)
     , mBannerImageFile(0)
     , mIconImageFile(0)
 {
-	OSReport("sizeof(PlayerInfo): %d BLOCKSIZE %d padding:%d \n", 0xC000, 0xC000, 0x3C);
+	OSReport("sizeof(PlayerInfo): %d BLOCKSIZE %d padding:%d \n", sizeof(PlayerInfo), PLAYER_BLOCK_SIZE, 0x3C);
 }
 
 /**
@@ -101,7 +107,7 @@ Mgr::Mgr()
  */
 bool Mgr::isErrorOccured()
 {
-	return getCardStatus() != MCS_IOError;
+	return getCardStatus() != MCS_Ready;
 }
 
 /**
@@ -111,13 +117,13 @@ bool Mgr::isErrorOccured()
 void Mgr::loadResource(JKRHeap* heap)
 {
 	Resource* resource = new (heap, 0) Resource(this);
-	P2ASSERTLINE(533, resource);
-	JKRArchive* memCardHeader = JKRMountArchive("/memoryCard/memoryCardHeader.szs", JKRArchive::EMM_Mem, heap, JKRArchive::EMD_Head);
-	P2ASSERTLINE(540, memCardHeader);
+	P2ASSERTLINE(572, resource);
+	JKRArchive* memCardHeader = JKRMountArchive("memoryCard/memoryCardHeader.szs", JKRArchive::EMM_Mem, heap, JKRArchive::EMD_Head);
+	P2ASSERTLINE(579, memCardHeader);
 	mBannerImageFile = JKRFileLoader::getGlbResource("banner.dat", memCardHeader); // possibly ResTIMG*
 	mIconImageFile   = JKRFileLoader::getGlbResource("icon.dat", memCardHeader);
-	P2ASSERTLINE(543, mBannerImageFile);
-	P2ASSERTLINE(544, mIconImageFile);
+	P2ASSERTLINE(582, mBannerImageFile);
+	P2ASSERTLINE(583, mIconImageFile);
 }
 
 /**
@@ -147,7 +153,7 @@ bool Mgr::format()
 {
 	bool result = false;
 	if (OSTryLockMutex(&mOsMutex)) {
-		result = MemoryCardMgr::cardFormat(CARDSLOT_Unk0);
+		result = MemoryCardMgr::cardFormat(CARDSLOT_SlotA);
 		OSUnlockMutex(&mOsMutex);
 		OSSignalCond(&mCond);
 	}
@@ -181,7 +187,7 @@ bool Mgr::checkBeforeSave()
 	bool isCheck = false;
 	if (checkError() && OSTryLockMutex(&mOsMutex)) {
 		isCheck = true;
-		setCommand(15);
+		setCommand(COMMAND_CheckBeforeSave);
 		OSUnlockMutex(&mOsMutex);
 		OSSignalCond(&mCond);
 	}
@@ -197,7 +203,7 @@ bool Mgr::checkError()
 	bool isError = false;
 	if (resetError() && OSTryLockMutex(&mOsMutex)) {
 		isError = true;
-		setCommand(16);
+		setCommand(COMMAND_CheckError);
 		OSUnlockMutex(&mOsMutex);
 		OSSignalCond(&mCond);
 	}
@@ -213,7 +219,7 @@ bool Mgr::createNewFile()
 	bool result = false;
 	if (resetError() && OSTryLockMutex(&mOsMutex)) {
 		result = true;
-		setCommand(7);
+		setCommand(COMMAND_CreateNewFile);
 		OSUnlockMutex(&mOsMutex);
 		OSSignalCond(&mCond);
 	}
@@ -229,7 +235,7 @@ bool Mgr::saveGameOption()
 	bool result = false;
 	if (checkError() && OSTryLockMutex(&mOsMutex)) {
 		result = true;
-		setCommand(5);
+		setCommand(COMMAND_SaveGameOption);
 		OSUnlockMutex(&mOsMutex);
 		OSSignalCond(&mCond);
 	}
@@ -245,7 +251,7 @@ bool Mgr::loadGameOption(bool loadLanguage)
 	bool result = false;
 	if (checkError() && OSTryLockMutex(&mOsMutex)) {
 		result = true;
-		MgrCommandLoadGameOption command(6, loadLanguage);
+		MgrCommandLoadGameOption command(COMMAND_LoadGameOption, loadLanguage);
 		setCommand(&command);
 		OSUnlockMutex(&mOsMutex);
 		OSSignalCond(&mCond);
@@ -261,7 +267,7 @@ bool Mgr::savePlayerNoCheckSerialNumber(int fileIndex)
 {
 	bool result = false;
 
-	if ((fileIndex < 0 || fileIndex >= 3)) {
+	if (fileIndex < 0 || fileIndex >= 3) {
 		if ((sys->mPlayData->mFileIndex < 0 || (int)sys->mPlayData->mFileIndex >= 3)) {
 			fileIndex = 0;
 		} else {
@@ -271,7 +277,7 @@ bool Mgr::savePlayerNoCheckSerialNumber(int fileIndex)
 
 	if (checkError() && OSTryLockMutex(&mOsMutex)) {
 		result = true;
-		MgrCommandPlayerNo command(9, fileIndex);
+		MgrCommandPlayerNo command(COMMAND_SavePlayerNoSerialNum, fileIndex);
 		setCommand(&command);
 		OSUnlockMutex(&mOsMutex);
 		OSSignalCond(&mCond);
@@ -286,7 +292,7 @@ bool Mgr::savePlayerNoCheckSerialNumber(int fileIndex)
 bool Mgr::savePlayer(int fileIndex)
 {
 	bool result = false;
-	u32 index   = 8;
+	u32 index   = COMMAND_SavePlayer;
 	if (fileIndex < 0 || fileIndex >= 3) {
 		if (sys->mPlayData->mFileIndex < 0 || sys->mPlayData->mFileIndex >= 3) {
 			return false;
@@ -294,7 +300,7 @@ bool Mgr::savePlayer(int fileIndex)
 			fileIndex = sys->mPlayData->mFileIndex;
 		}
 	} else {
-		index = 9;
+		index = COMMAND_SavePlayerNoSerialNum;
 	}
 
 	if (checkError() && OSTryLockMutex(&mOsMutex)) {
@@ -314,10 +320,10 @@ bool Mgr::savePlayer(int fileIndex)
 bool Mgr::loadPlayer(int fileIndex)
 {
 	bool result = false;
-	P2ASSERTBOUNDSLINE(815, 0, fileIndex, 3);
+	P2ASSERTBOUNDSLINE(873, 0, fileIndex, 3);
 	if (checkError() && OSTryLockMutex(&mOsMutex)) {
 		result = true;
-		MgrCommandPlayerNo command(10, fileIndex);
+		MgrCommandPlayerNo command(COMMAND_LoadPlayer, fileIndex);
 		setCommand(&command);
 		OSUnlockMutex(&mOsMutex);
 		OSSignalCond(&mCond);
@@ -332,10 +338,10 @@ bool Mgr::loadPlayer(int fileIndex)
 bool Mgr::deletePlayer(int fileIndex)
 {
 	bool result = false;
-	P2ASSERTBOUNDSLINE(839, 0, fileIndex, 3);
+	P2ASSERTBOUNDSLINE(897, 0, fileIndex, 3);
 	if (checkError() && OSTryLockMutex(&mOsMutex)) {
 		result = true;
-		MgrCommandPlayerNo command(0xB, fileIndex);
+		MgrCommandPlayerNo command(COMMAND_DeletePlayer, fileIndex);
 		setCommand(&command);
 		OSUnlockMutex(&mOsMutex);
 		OSSignalCond(&mCond);
@@ -347,14 +353,14 @@ bool Mgr::deletePlayer(int fileIndex)
  * @note Address: 0x804434D4
  * @note Size: 0x150
  */
-bool Mgr::copyPlayer(int fileIndex1, int fileIndex2)
+bool Mgr::copyPlayer(int fileIndexFrom, int fileIndexTo)
 {
 	bool result = false;
-	P2ASSERTBOUNDSINCLUSIVELINE(862, 0, fileIndex1, 2);
-	P2ASSERTBOUNDSINCLUSIVELINE(863, 0, fileIndex2, 2);
+	P2ASSERTBOUNDSINCLUSIVELINE(920, 0, fileIndexFrom, 2);
+	P2ASSERTBOUNDSINCLUSIVELINE(921, 0, fileIndexTo, 2);
 	if (checkError() && OSTryLockMutex(&mOsMutex)) {
 		result = true;
-		MgrCommandCopyPlayer command(12, fileIndex1, fileIndex2);
+		MgrCommandCopyPlayer command(COMMAND_CopyPlayer, fileIndexFrom, fileIndexTo);
 		setCommand(&command);
 		OSUnlockMutex(&mOsMutex);
 		OSSignalCond(&mCond);
@@ -371,7 +377,7 @@ bool Mgr::getPlayerHeader(PlayerFileInfo* playerInfo)
 	bool result = false;
 	if (checkError() && OSTryLockMutex(&mOsMutex)) {
 		result = true;
-		MgrCommandGetPlayerHeader command(13, playerInfo);
+		MgrCommandGetPlayerHeader command(COMMAND_UpdatePlayerHeader, playerInfo);
 		setCommand(&command);
 		OSUnlockMutex(&mOsMutex);
 		OSSignalCond(&mCond);
@@ -389,73 +395,73 @@ bool Mgr::doCardProc(void*, MemoryCardMgrCommand* command)
 	int heapSize      = JKRHeap::getCurrentHeap()->getTotalFreeSize();
 	JKRHeap* currHeap = JKRHeap::getCurrentHeap();
 
-	mErrorCode = 0;
+	mErrorCode = ERRORCODE_None;
 	switch (command->mFlag) {
-	case 7:
+	case COMMAND_CreateNewFile:
 		setFlag(MCMFLAG_IsWriting);
 		result = commandCreateNewFile();
 		resetFlag(MCMFLAG_IsWriting);
 		break;
 
-	case 5:
+	case COMMAND_SaveGameOption:
 		setFlag(MCMFLAG_IsWriting);
 		result = varifyCardStatus() && commandSaveGameOption(false, false) && commandSaveHeader();
 		resetFlag(MCMFLAG_IsWriting);
 		break;
 
-	case 6:
-		result = commandLoadGameOption(reinterpret_cast<MgrCommandLoadGameOption*>(command)->mLoadLanguage);
+	case COMMAND_LoadGameOption:
+		result =  commandLoadGameOption(reinterpret_cast<MgrCommandLoadGameOption*>(command)->mLoadLanguage);
 		break;
 
-	case 8:
+	case COMMAND_SavePlayer:
 		setFlag(MCMFLAG_IsWriting);
 		result = varifyCardStatus() && commandSavePlayer(command->mData.intView, true) && commandSaveHeader();
 		resetFlag(MCMFLAG_IsWriting);
 		break;
 
-	case 9:
+	case COMMAND_SavePlayerNoSerialNum:
 		setFlag(MCMFLAG_IsWriting);
 		result = varifyCardStatus() && commandSavePlayerNoCheckSerialNo(command->mData.intView, true) && commandSaveHeader();
 		resetFlag(MCMFLAG_IsWriting);
 		break;
 
-	case 10:
+	case COMMAND_LoadPlayer:
 		result = commandLoadPlayer(command->mData.intView);
 		break;
 
-	case 11:
+	case COMMAND_DeletePlayer:
 		setFlag(MCMFLAG_IsWriting);
 		result = varifyCardStatus() && commandDeletePlayer(command->mData.intView) && commandSaveHeader();
 		resetFlag(MCMFLAG_IsWriting);
 		break;
 
-	case 12:
+	case COMMAND_CopyPlayer:
 		setFlag(MCMFLAG_IsWriting);
 		result = varifyCardStatus() && commandCopyPlayer(command->mData.shortView[0], command->mData.shortView[1]) && commandSaveHeader();
 		resetFlag(MCMFLAG_IsWriting);
 		break;
 
-	case 13:
+	case COMMAND_UpdatePlayerHeader:
 		result = commandUpdatePlayerHeader((PlayerFileInfo*)command->mData.dataView);
 		break;
 
-	case 14:
+	case COMMAND_CheckSerialNum:
 		result = commandCheckSerialNo();
 		break;
 
-	case 15:
+	case COMMAND_CheckBeforeSave:
 		result = commandCheckBeforeSave();
 		break;
 
-	case 16:
+	case COMMAND_CheckError:
 		result = commandCheckError();
 		break;
 
 	default:
-		P2ASSERTLINE(995, false);
+		P2ASSERTLINE(1058, false);
 	}
-	P2ASSERTLINE(1008, currHeap == JKRHeap::getCurrentHeap());
-	P2ASSERTLINE(1010, heapSize == (int)JKRHeap::getCurrentHeap()->getTotalFreeSize());
+	P2ASSERTLINE(1071, currHeap == JKRHeap::getCurrentHeap());
+	P2ASSERTLINE(1073, heapSize == (int)JKRHeap::getCurrentHeap()->getTotalFreeSize());
 
 	return result;
 }
@@ -468,7 +474,7 @@ bool Mgr::commandUpdatePlayerHeader(PlayerFileInfo* playerInfo)
 {
 	bool result = false;
 	Player* players;
-	P2ASSERTLINE(1031, playerInfo);
+	P2ASSERTLINE(1094, playerInfo);
 	bool check;
 	do {
 		check = false;
@@ -484,7 +490,7 @@ bool Mgr::commandUpdatePlayerHeader(PlayerFileInfo* playerInfo)
 				player->mFlag        = tagCheck;
 				player->_01          = 0;
 				player->_02          = 0;
-				player->_04          = 0;
+				player->mSaveCount   = 0;
 				player->mDay         = 0;
 				player->mRedPikis    = 0;
 				player->mBluePikis   = 0;
@@ -520,14 +526,14 @@ bool Mgr::commandUpdatePlayerHeader(PlayerFileInfo* playerInfo)
 bool Mgr::commandCheckBeforeSave()
 {
 	CARDFileInfo fileInfo;
-	if (fileOpen(&fileInfo, CARDSLOT_Unk0, cFileName)) {
+	if (fileOpen(&fileInfo, CARDSLOT_SlotA, cFileName)) {
 		CARDClose(&fileInfo);
 		return commandCheckSerialNo();
 
 	} else {
-		checkSpace(CARDSLOT_Unk0);
-		if (mStatusFlag == INSIDESTATUS_Unk2) {
-			setInsideStatusFlag(INSIDESTATUS_Unk3);
+		checkSpace(CARDSLOT_SlotA);
+		if (mStatusFlag == INSIDESTATUS_Mounted) {
+			setInsideStatusFlag(INSIDESTATUS_FileOpenError);
 		}
 		return false;
 	}
@@ -541,11 +547,11 @@ bool Mgr::commandCheckError()
 {
 	CARDFileInfo fileInfo[1];
 	bool result = true;
-	if (fileOpen(fileInfo, CARDSLOT_Unk0, cFileName)) {
+	if (fileOpen(fileInfo, CARDSLOT_SlotA, cFileName)) {
 		CARDClose(fileInfo);
 	} else {
-		if (checkSpace(CARDSLOT_Unk0)) {
-			setInsideStatusFlag(INSIDESTATUS_Unk3);
+		if (checkSpace(CARDSLOT_SlotA)) {
+			setInsideStatusFlag(INSIDESTATUS_FileOpenError);
 		}
 		result = false;
 	}
@@ -561,16 +567,16 @@ bool Mgr::checkSpace(MemoryCardMgr::ECardSlot cardSlot)
 	bool result = false;
 	switch (MemoryCardMgr::checkSpace(cardSlot, 0x36000)) {
 	case 0:
-		setInsideStatusFlag(INSIDESTATUS_Unk2);
+		setInsideStatusFlag(INSIDESTATUS_Mounted);
 		result = true;
 		break;
 
 	case 1:
-		setInsideStatusFlag(INSIDESTATUS_Unk6);
+		setInsideStatusFlag(INSIDESTATUS_NoFileSpace);
 		break;
 
 	case 2:
-		setInsideStatusFlag(INSIDESTATUS_Unk7);
+		setInsideStatusFlag(INSIDESTATUS_NoFileEntry);
 		break;
 
 	default:
@@ -589,19 +595,19 @@ bool Mgr::commandSaveHeader()
 	bool result = false;
 	CARDFileInfo fileInfo;
 	if (!isErrorOccured()) {
-		if (fileOpen(&fileInfo, CARDSLOT_Unk0, cFileName)) {
+		if (fileOpen(&fileInfo, CARDSLOT_SlotA, cFileName)) {
 			CARDClose(&fileInfo);
 			if (!isErrorOccured()) {
-				writeHeader(CARDSLOT_Unk0, cFileName);
+				writeHeader(CARDSLOT_SlotA, cFileName);
 			}
 			if (!isErrorOccured()) {
-				writeCardStatus(CARDSLOT_Unk0, cFileName);
+				writeCardStatus(CARDSLOT_SlotA, cFileName);
 			}
 			if (!isErrorOccured()) {
 				result = true;
 			}
 		} else if (!isErrorOccured()) {
-			setInsideStatusFlag(INSIDESTATUS_Unk3);
+			setInsideStatusFlag(INSIDESTATUS_FileOpenError);
 		}
 	}
 	return result;
@@ -616,30 +622,30 @@ bool Mgr::commandCreateNewFile()
 	CARDFileInfo fileInfo;
 	u64 serial;
 	bool result = false;
-	if (fileOpen(&fileInfo, CARDSLOT_Unk0, cFileName)) {
+	if (fileOpen(&fileInfo, CARDSLOT_SlotA, cFileName)) {
 		CARDClose(&fileInfo);
 		result = true;
 	} else {
-		checkSpace(CARDSLOT_Unk0);
+		checkSpace(CARDSLOT_SlotA);
 
-		if (readCardSerialNo(&serial, CARDSLOT_Unk0)) {
+		if (readCardSerialNo(&serial, CARDSLOT_SlotA)) {
 			sys->mPlayData->setCardSerialNo(serial);
 		}
 
-		if (checkStatus() == INSIDESTATUS_Unk2) {
+		if (checkStatus() == MCS_Ready) {
 			int createResult = CARDCreate(0, cFileName, 0x36000, &fileInfo);
 			CARDClose(&fileInfo);
 			if (!createResult) {
-				dataFormat(CARDSLOT_Unk0);
+				dataFormat(CARDSLOT_SlotA);
 			} else {
-				setInsideStatusFlag(INSIDESTATUS_Unk10);
+				setInsideStatusFlag(INSIDESTATUS_ErrorOccurred);
 			}
 		}
 
 		if (!isErrorOccured()) {
 			result = true;
 		} else {
-			setInsideStatusFlag(INSIDESTATUS_Unk10);
+			setInsideStatusFlag(INSIDESTATUS_ErrorOccurred);
 		}
 	}
 
@@ -678,12 +684,12 @@ bool Mgr::dataFormat(MemoryCardMgr::ECardSlot cardSlot)
  */
 bool Mgr::writeBrokenData(MemoryCardMgr::ECardSlot slot)
 {
-	u8* buffer = new u8[0x2000];
-	memset(buffer, 0xCD, 0x2000);
+	u8* buffer = new u8[HEADER_BLOCK_SIZE];
+	memset(buffer, 0xCD, HEADER_BLOCK_SIZE);
 
 	for (int i = 0; i < 0x1B; i++) {
 		if (!isErrorOccured()) {
-			write(slot, cFileName, buffer, 0x2000, i * 0x2000);
+			write(slot, cFileName, buffer, HEADER_BLOCK_SIZE, GET_HEADER_OFFSET(i));
 		}
 	}
 
@@ -708,15 +714,15 @@ bool Mgr::varifyCardStatus()
 {
 	CARDFileInfo fileInfo;
 	bool result;
-	if (fileOpen(&fileInfo, CARDSLOT_Unk0, cFileName)) {
-		checkCardStat(CARDSLOT_Unk0, &fileInfo);
+	if (fileOpen(&fileInfo, CARDSLOT_SlotA, cFileName)) {
+		checkCardStat(CARDSLOT_SlotA, &fileInfo);
 		CARDClose(&fileInfo);
 	}
 
 	if (_D0) {
 		result = true;
 	} else {
-		result = writeBrokenData(CARDSLOT_Unk0);
+		result = writeBrokenData(CARDSLOT_SlotA);
 	}
 
 	return result;
@@ -731,14 +737,14 @@ bool Mgr::commandSaveGameOption(bool isForceSave, bool skipReadCheck)
 	bool saveSuccessful = false;
 
 	if (isForceSave || checkSerialNo(false)) {
-		u32* optionBuffer = new (mHeap, -32) u32[0x800];
+		u8* optionBuffer = new (mHeap, -32) u8[OPTION_BLOCK_SIZE];
 		P2ASSERTLINE(1500, optionBuffer);
 
 		int selectedSlot    = -1;
 		bool hasWriteFailed = false;
 		if (!skipReadCheck) {
 			for (int i = 0; i < 2; i++) {
-				if (!read(CARDSLOT_Unk0, cFileName, (u8*)optionBuffer, 0x2000, i * 0x2000 + 0x2000)) {
+				if (!read(CARDSLOT_SlotA, cFileName, optionBuffer, 0x2000, i * 0x2000 + 0x2000)) {
 					hasWriteFailed = true;
 					break;
 				}
@@ -757,15 +763,17 @@ bool Mgr::commandSaveGameOption(bool isForceSave, bool skipReadCheck)
 
 		if (!hasWriteFailed) {
 			sys->mPlayData->mSaveSlotIndex++;
-			optionBuffer[0] = 'OpVa';
-			optionBuffer[1] = '0002';
-			optionBuffer[2] = sys->mPlayData->mSaveSlotIndex;
+			OptionInfo* optionInfo     = (OptionInfo*)optionBuffer;
+			optionInfo->mMagic         = 'OpVa';
+			optionInfo->mVersionType   = '0002';
+			optionInfo->mSaveSlotIndex = sys->mPlayData->mSaveSlotIndex;
 
-			RamStream ramStream(&optionBuffer[3], 0x1C00);
+			RamStream ramStream(&optionInfo->mFileBuffer, OPTION_FILE_SIZE);
 			writeGameOption(ramStream);
-			optionBuffer[0x7FF] = calcCheckSumOptionInfo((OptionInfo*)optionBuffer);
-			hasWriteFailed      = write(CARDSLOT_Unk0, cFileName, (u8*)optionBuffer, 0x2000, selectedSlot * 0x2000 + 0x2000);
-			saveSuccessful      = hasWriteFailed;
+			optionInfo->mChecksum = calcCheckSumOptionInfo(optionInfo);
+
+			hasWriteFailed = write(CARDSLOT_SlotA, cFileName, optionBuffer, OPTION_BLOCK_SIZE, GET_OPTION_OFFSET(selectedSlot));
+			saveSuccessful = hasWriteFailed;
 		}
 		delete (optionBuffer);
 	}
@@ -790,19 +798,19 @@ bool Mgr::commandLoadGameOption(bool loadLanguage)
 	}
 
 	u64 serial;
-	if (readCardSerialNo(&serial, CARDSLOT_Unk0)) {
+	if (readCardSerialNo(&serial, CARDSLOT_SlotA)) {
 		int freeSize = JKRHeap::getCurrentHeap()->getTotalFreeSize();
 
-		u32* infoBuffers[2];
-		infoBuffers[0] = new (mHeap, -32) u32[0x800];
+		u8* infoBuffers[2];
+		infoBuffers[0] = new (mHeap, -32) u8[OPTION_BLOCK_SIZE];
 		P2ASSERTLINE(1616, infoBuffers[0]);
-		infoBuffers[1] = new (mHeap, -32) u32[0x800];
+		infoBuffers[1] = new (mHeap, -32) u8[OPTION_BLOCK_SIZE];
 		P2ASSERTLINE(1618, infoBuffers[1]);
 
 		int i;
 		bool readError = false;
 		for (i = 0; i < 2; i++) {
-			if (!read(CARDSLOT_Unk0, cFileName, (u8*)infoBuffers[i], 0x2000, i * 0x2000 + 0x2000)) {
+			if (!read(CARDSLOT_SlotA, cFileName, infoBuffers[i], OPTION_BLOCK_SIZE, GET_OPTION_OFFSET(i))) {
 				result    = false;
 				readError = true;
 			}
@@ -836,14 +844,12 @@ bool Mgr::commandLoadGameOption(bool loadLanguage)
 
 			// if none passed, set default
 			if (!optionResult) {
-				mErrorCode = 1;
+				mErrorCode = ERRORCODE_OptionBroken;
 				sys->mPlayData->setDefault();
-
-				// use buffer info to set playData variable
 			} else {
 				result                         = true;
 				sys->mPlayData->mSaveSlotIndex = optionResult->mSaveSlotIndex;
-				RamStream ramStream(&optionResult->_000C, 0x1c00);
+				RamStream ramStream(&optionResult->mFileBuffer, OPTION_FILE_SIZE);
 				readGameOption(ramStream);
 			}
 
@@ -885,16 +891,16 @@ void Mgr::readGameOption(Stream& stream)
  * @note Address: 0x80444924
  * @note Size: 0x70
  */
-bool Mgr::checkSerialNo(bool param_1)
+bool Mgr::checkSerialNo(bool setError)
 {
 	bool result = false;
 	if (!(sys->mPlayData->mFlags.isSet(CommonSaveData::Mgr::SaveFlag_SerialNoSet))) {
-		if (param_1) {
-			mErrorCode = 3;
+		if (setError) {
+			mErrorCode = ERRORCODE_SerialNoUnset;
 		}
 		result = true;
 	} else {
-		if (verifyCardSerialNo(&sys->mPlayData->mCardSerialNo, CARDSLOT_Unk0)) {
+		if (verifyCardSerialNo(&sys->mPlayData->mCardSerialNo, CARDSLOT_SlotA)) {
 			result = true;
 		}
 	}
@@ -925,73 +931,76 @@ bool Mgr::commandSavePlayerNoCheckSerialNo(s8 fileIndex, bool param_2)
 	bool result  = false;
 	int freeSize = JKRHeap::getCurrentHeap()->getTotalFreeSize();
 	u64 serial;
-	if (readCardSerialNo(&serial, CARDSLOT_Unk0)) {
-		u32* buffer = new (mHeap, -32) u32[0x3000];
-		P2ASSERTLINE(1939, buffer);
-		sys->mPlayData->mSaveCount++;
-		buffer[0]                   = 'PlVa'; // Magic Word
-		buffer[1]                   = '0003'; // Version
-		buffer[4]                   = sys->mPlayData->mSaveCount;
-		((u8*)buffer)[8]            = fileIndex; // File Index
-		((u8*)buffer)[12]           = 0;
-		((u8*)buffer)[13]           = param_2;
-		*(u16*)&(((u8*)buffer)[14]) = sys->mPlayData->_22;
+	if (readCardSerialNo(&serial, CARDSLOT_SlotA)) {
+		u8* buffer = new (mHeap, -32) u8[PLAYER_BLOCK_SIZE];
 
-		int time;
-		int playMinutes;
+		P2ASSERTLINE(1968, buffer);
+
+		sys->mPlayData->mSaveCount++;
+
+		PlayerInfo* playerInfo         = (PlayerInfo*)buffer;
+		playerInfo->mMagic             = 'PlVa'; // Magic Word
+		playerInfo->mVersionType       = '0003'; // Version
+		playerInfo->mPlayer.mSaveCount = sys->mPlayData->mSaveCount;
+		playerInfo->mSaveSlotIndex     = fileIndex; // File Index
+		playerInfo->mPlayer.mFlag      = 0;
+		playerInfo->mPlayer._01        = param_2;
+		playerInfo->mPlayer._02        = sys->mPlayData->_22;
+
 		if (gameSystem) {
-			buffer[5]                      = gameSystem->mTimeMgr->mDayCount + 1; // Day Count
+			playerInfo->mPlayer.mDay = gameSystem->mTimeMgr->mDayCount + 1; // Day Count
+
 			CommonSaveData::Mgr* localSave = sys->mPlayData;
-			time                           = localSave->mTime + playData->calcPlayMinutes();
-			int pikiCount;
+			int time                       = localSave->mTime + playData->calcPlayMinutes();
 			if (playData->mCaveSaveData.mIsInCave) {
-				buffer[6]  = playData->mCaveSaveData.mCavePikis.getColorSum(Red);
-				buffer[7]  = playData->mCaveSaveData.mCavePikis.getColorSum(Blue);
-				buffer[8]  = playData->mCaveSaveData.mCavePikis.getColorSum(Yellow);
-				buffer[9]  = playData->mCaveSaveData.mCavePikis.getColorSum(White);
-				buffer[10] = playData->mCaveSaveData.mCavePikis.getColorSum(Purple);
+				playerInfo->mPlayer.mRedPikis    = playData->mCaveSaveData.mCavePikis.getColorSum(Red);
+				playerInfo->mPlayer.mBluePikis   = playData->mCaveSaveData.mCavePikis.getColorSum(Blue);
+				playerInfo->mPlayer.mYellowPikis = playData->mCaveSaveData.mCavePikis.getColorSum(Yellow);
+				playerInfo->mPlayer.mWhitePikis  = playData->mCaveSaveData.mCavePikis.getColorSum(White);
+				playerInfo->mPlayer.mPurplePikis = playData->mCaveSaveData.mCavePikis.getColorSum(Purple);
 			} else {
-				buffer[6]  = playData->mPikiContainer.getColorSum(Red);
-				buffer[7]  = playData->mPikiContainer.getColorSum(Blue);
-				buffer[8]  = playData->mPikiContainer.getColorSum(Yellow);
-				buffer[9]  = playData->mPikiContainer.getColorSum(White);
-				buffer[10] = playData->mPikiContainer.getColorSum(Purple);
+				playerInfo->mPlayer.mRedPikis    = playData->mPikiContainer.getColorSum(Red);
+				playerInfo->mPlayer.mBluePikis   = playData->mPikiContainer.getColorSum(Blue);
+				playerInfo->mPlayer.mYellowPikis = playData->mPikiContainer.getColorSum(Yellow);
+				playerInfo->mPlayer.mWhitePikis  = playData->mPikiContainer.getColorSum(White);
+				playerInfo->mPlayer.mPurplePikis = playData->mPikiContainer.getColorSum(Purple);
 			}
 
-			buffer[11] = playData->mPokoCount;
+			playerInfo->mPlayer.mPokos = playData->mPokoCount;
 
 			// Register Cave Information
 			if (playData->mCaveSaveData.mIsInCave) {
 				ID32 id;
 				int caveFloor;
 				playData->getCurrentCave(id, caveFloor);
-				buffer[13] = id.getID();
-				buffer[14] = caveFloor + 1;
+				playerInfo->mPlayer.mCaveID    = id.getID();
+				playerInfo->mPlayer.mCaveFloor = caveFloor + 1;
 			} else {
-				buffer[13] = 0;
-				buffer[14] = 123;
+				playerInfo->mPlayer.mCaveID    = 0;
+				playerInfo->mPlayer.mCaveFloor = 123;
 			}
-			buffer[12] = playData->mZukanStat->calcEarnKinds();
-			buffer[15] = time;
+			playerInfo->mPlayer.mTreasures = playData->mZukanStat->calcEarnKinds();
+			playerInfo->mPlayer.mPlayTime  = time;
 		} else {
-			JUT_PANICLINE(2042, "dameck\n");
+			JUT_PANICLINE(2071, "dameck\n");
 
 			// this code never gets reached smh.
-			buffer[5]  = 0;
-			buffer[6]  = 1;
-			buffer[7]  = 2;
-			buffer[8]  = 3;
-			buffer[9]  = 4;
-			buffer[10] = 5;
-			buffer[11] = 12345;
-			buffer[13] = 1;
-			buffer[14] = 99;
-			buffer[12] = 0;
+			playerInfo->mPlayer.mDay         = 0;
+			playerInfo->mPlayer.mRedPikis    = 1;
+			playerInfo->mPlayer.mBluePikis   = 2;
+			playerInfo->mPlayer.mYellowPikis = 3;
+			playerInfo->mPlayer.mWhitePikis  = 4;
+			playerInfo->mPlayer.mPurplePikis = 5;
+			playerInfo->mPlayer.mPokos       = 12345;
+			playerInfo->mPlayer.mCaveID      = 1;
+			playerInfo->mPlayer.mCaveFloor   = 99;
+			playerInfo->mPlayer.mTreasures   = 0;
 		}
 
-		RamStream ramStream(&buffer[16], 0xBF80);
+		RamStream ramStream(&playerInfo->mFileBuffer, PLAYER_FILE_SIZE);
 		writePlayer(ramStream);
-		result = savePlayerProc(fileIndex, (u8*)buffer, true);
+		result = savePlayerProc(fileIndex, buffer, true);
+
 		delete (buffer);
 
 		if (result) {
@@ -999,7 +1008,7 @@ bool Mgr::commandSavePlayerNoCheckSerialNo(s8 fileIndex, bool param_2)
 		}
 	}
 
-	P2ASSERTLINE(2079, freeSize == (int)JKRHeap::getCurrentHeap()->getTotalFreeSize());
+	P2ASSERTLINE(2108, freeSize == (int)JKRHeap::getCurrentHeap()->getTotalFreeSize());
 
 	if (result) {
 		result = commandSaveGameOption(true, false);
@@ -1012,9 +1021,9 @@ bool Mgr::commandSavePlayerNoCheckSerialNo(s8 fileIndex, bool param_2)
  * @note Address: 0x80444DD8
  * @note Size: 0x70
  */
-bool Mgr::getPlayerInfo(s8 fileIndex, PlayerInfoHeader* playerInfo, bool* param_1)
+bool Mgr::getPlayerInfo(s8 fileIndex, PlayerInfoHeader* playerInfo, bool* outCheck)
 {
-	int index = getIndexPlayerInfo(fileIndex, playerInfo, param_1);
+	int index = getIndexPlayerInfo(fileIndex, playerInfo, outCheck);
 	return !isErrorOccured() && (index >= 0 && index < 4);
 }
 
@@ -1022,7 +1031,7 @@ bool Mgr::getPlayerInfo(s8 fileIndex, PlayerInfoHeader* playerInfo, bool* param_
  * @note Address: 0x80444E48
  * @note Size: 0x2B0
  */
-int Mgr::getIndexPlayerInfo(s8 fileIndex, PlayerInfoHeader* infoHeader, bool* param_1)
+int Mgr::getIndexPlayerInfo(s8 fileIndex, PlayerInfoHeader* infoHeader, bool* outCheck)
 {
 	int index = -1;
 	bool doLoop;
@@ -1045,19 +1054,19 @@ int Mgr::getIndexPlayerInfo(s8 fileIndex, PlayerInfoHeader* infoHeader, bool* pa
 					if (infoHeader) {
 						*infoHeader = localHeader;
 					}
-				} else if (modifyPlayerInfo(fileIndex, param_1)) {
+				} else if (modifyPlayerInfo(fileIndex, outCheck)) {
 					index  = -1;
 					doLoop = true;
 					break;
 				} else {
 					index      = -1;
-					mErrorCode = 2;
+					mErrorCode = ERRORCODE_PlayerBroken;
 					break;
 				}
 			} else {
 				if (infoHeader && infoHeader->mMagic != 'PlVa') {
 					bool fileIndexCheck = false;
-					if ((s8)localHeader._08 == fileIndex) {
+					if (localHeader.mSaveSlotIndex == fileIndex) {
 						if (!noPlayerInfoCheck) {
 							fileIndexCheck = true;
 						} else if (infoHeader->mMagic != 'PlIn' && localHeader.mMagic == 'PlIn') {
@@ -1084,22 +1093,25 @@ bool Mgr::commandLoadPlayer(s8 fileIndex)
 	u64 serial;
 	P2ASSERTBOUNDSLINE(2264, 0, fileIndex, 3);
 	commandLoadGameOption(false);
-	if ((s32)mErrorCode == 1)
-		mErrorCode = 0;
+	if ((s32)mErrorCode == ERRORCODE_OptionBroken)
+		mErrorCode = ERRORCODE_None;
 	if (!isErrorOccured()) {
-		if (readCardSerialNo(&serial, CARDSLOT_Unk0)) {
-			u32* buffer = new (mHeap, -32) u32[0x3000];
+		if (readCardSerialNo(&serial, CARDSLOT_SlotA)) {
+			u8* buffer = new (mHeap, -32) u8[PLAYER_BLOCK_SIZE];
 			P2ASSERTLINE(2290, buffer);
 			sys->mPlayData->setCardSerialNo(serial);
-			if (loadPlayerProc(fileIndex, (u8*)buffer)) {
-				RamStream ramStream(&buffer[0x10], 0xBF80);
+			if (loadPlayerProc(fileIndex, buffer)) {
+				PlayerInfo* info = (PlayerInfo*)buffer;
+				RamStream ramStream(&info->mFileBuffer, PLAYER_FILE_SIZE);
 				readPlayer(ramStream);
+
 				CommonSaveData::Mgr* saveMgr = sys->mPlayData;
 				saveMgr->mFileIndex          = fileIndex;
-				saveMgr->mSaveCount          = buffer[4];
-				saveMgr->mTime               = buffer[0xF];
-				saveMgr->_22                 = *(u16*)&((u8*)buffer)[0xE]; // hmm.
+				saveMgr->mSaveCount          = info->mPlayer.mSaveCount;
+				saveMgr->mTime               = info->mPlayer.mPlayTime;
+				saveMgr->_22                 = info->mPlayer._02; // hmm.
 			}
+
 			delete (buffer);
 		}
 	}
@@ -1112,7 +1124,7 @@ bool Mgr::commandLoadPlayer(s8 fileIndex)
  */
 bool Mgr::loadPlayerForNoCard(s8 fileIndex)
 {
-	P2ASSERTBOUNDSLINE(2382, 0, fileIndex, 3);
+	P2ASSERTBOUNDSLINE(2784, 0, fileIndex, 3);
 	sys->mPlayData->mFileIndex = fileIndex;
 	sys->mPlayData->resetPlayer((s8)fileIndex);
 	playData->reset();
@@ -1132,10 +1144,10 @@ bool Mgr::loadPlayerProc(s8 fileIndex, u8* playerDataBuffer)
 	PlayerInfoHeader infoHeader;
 	int playerInfo = getIndexPlayerInfo(fileIndex, &infoHeader, nullptr);
 	if (playerInfo >= 0 && playerInfo < 4) {
-		if ((loadSuccess = read(CARDSLOT_Unk0, cFileName, playerDataBuffer, 0xC000, playerInfo * 0xC000 + 0x6000), loadSuccess)
+		if ((loadSuccess = read(CARDSLOT_SlotA, cFileName, playerDataBuffer, PLAYER_BLOCK_SIZE, GET_PLAYER_OFFSET(playerInfo)), loadSuccess)
 		    && !checkPlayerInfo((PlayerInfo*)playerDataBuffer)) {
 			loadSuccess = false;
-			mErrorCode  = 2;
+			mErrorCode  = ERRORCODE_PlayerBroken;
 		}
 	} else {
 		if (infoHeader.mMagic == 'PlIn') {
@@ -1161,7 +1173,7 @@ bool Mgr::commandDeletePlayer(s8 fileIndex)
 		result = writeInvalidPlayerInfo(playerInfo, (s8)fileIndex);
 	} else {
 		if (!modifyPlayerInfo(fileIndex, nullptr)) {
-			mErrorCode = 2;
+			mErrorCode  = ERRORCODE_PlayerBroken;
 		}
 	}
 	return result;
@@ -1171,22 +1183,25 @@ bool Mgr::commandDeletePlayer(s8 fileIndex)
  * @note Address: 0x8044553C
  * @note Size: 0x19C
  */
-bool Mgr::savePlayerProc(s8 fileIndex, u8* param_2, bool param_3)
+bool Mgr::savePlayerProc(s8 fileIndex, u8* playerDataBuffer, bool check)
 {
 	s8 tempIndex = -1;
 	int idx;
 	bool result = false;
 
-	P2ASSERTBOUNDSLINE(2506, 0, fileIndex, 3);
-	if (getIndexInvalidPlayerInfo(&idx, &tempIndex, fileIndex, ((u32*)param_2)[4], param_3)) {
+	P2ASSERTBOUNDSLINE(2535, 0, fileIndex, 3);
+
+	PlayerInfo* playerInfo = (PlayerInfo*)playerDataBuffer;
+	if (getIndexInvalidPlayerInfo(&idx, &tempIndex, fileIndex, playerInfo->mPlayer.mSaveCount, check)) {
 		if (idx < 0 || idx >= 4) {
-			mErrorCode = 2;
+			mErrorCode = ERRORCODE_PlayerBroken;
 			modifyPlayerInfo(fileIndex, nullptr);
 		} else {
-			((u32*)param_2)[0x2FFF] = calcCheckSumPlayerInfo((PlayerInfo*)param_2);
-			s8 newFileIndex         = fileIndex;
-			result                  = write(CARDSLOT_Unk0, cFileName, param_2, 0xC000, idx * 0xC000 + 0x6000);
-			newFileIndex            = fileIndex;
+			playerInfo->mChecksum = calcCheckSumPlayerInfo((PlayerInfo*)playerDataBuffer);
+
+			s8 newFileIndex = fileIndex;
+			result          = write(CARDSLOT_SlotA, cFileName, playerDataBuffer, PLAYER_BLOCK_SIZE, GET_PLAYER_OFFSET(idx));
+			newFileIndex    = fileIndex;
 			if (tempIndex >= 0 && tempIndex < 3) {
 				newFileIndex = tempIndex;
 			}
@@ -1211,9 +1226,9 @@ bool Mgr::commandCheckSerialNo()
 	bool result = false;
 	if (!(sys->mPlayData->mFlags.isSet(CommonSaveData::Mgr::SaveFlag_SerialNoSet))) {
 		result     = true;
-		mErrorCode = 3;
+		mErrorCode = ERRORCODE_SerialNoUnset;
 	} else {
-		if (verifyCardSerialNo(&sys->mPlayData->mCardSerialNo, CARDSLOT_Unk0)) {
+		if (verifyCardSerialNo(&sys->mPlayData->mCardSerialNo, CARDSLOT_SlotA)) {
 			result = true;
 		}
 	}
@@ -1224,15 +1239,16 @@ bool Mgr::commandCheckSerialNo()
  * @note Address: 0x80445740
  * @note Size: 0x1C8
  */
-bool Mgr::commandCopyPlayer(s8 fileIndex, s8 param_1)
+bool Mgr::commandCopyPlayer(s8 fileIndexFrom, s8 fileIndexTo)
 {
-	u32* buffer = new (mHeap, -0x20) u32[0x3000];
+	u8* buffer = new (mHeap, -0x20) u8[PLAYER_BLOCK_SIZE];
 	P2ASSERTLINE(2650, buffer);
 
-	bool result = loadPlayerProc(fileIndex, (u8*)buffer);
+	bool result = loadPlayerProc(fileIndexFrom, buffer);
 	if (result) {
-		((u8*)buffer)[8] = param_1;
-		result           = savePlayerProc(param_1, (u8*)buffer, false);
+		PlayerInfo* info     = (PlayerInfo*)buffer;
+		info->mSaveSlotIndex = fileIndexTo;
+		result               = savePlayerProc(fileIndexTo, buffer, false);
 	}
 	delete (buffer);
 
@@ -1272,7 +1288,7 @@ bool Mgr::checkOptionInfo(OptionInfo* optionInfo)
  */
 u32 Mgr::calcCheckSumOptionInfo(OptionInfo* optionInfo)
 {
-	return calcCheckSum(optionInfo, 0x1FFC);
+	return calcCheckSum(optionInfo, OPTION_BLOCK_SIZE - 0x4);
 }
 
 /**
@@ -1281,7 +1297,7 @@ u32 Mgr::calcCheckSumOptionInfo(OptionInfo* optionInfo)
  */
 bool Mgr::testCheckSumOptionInfo(OptionInfo* optionInfo)
 {
-	return (calcCheckSum(optionInfo, 0x1FFC) == optionInfo->mChecksum);
+	return (calcCheckSum(optionInfo, OPTION_BLOCK_SIZE - 0x4) == optionInfo->mChecksum);
 }
 
 /**
@@ -1303,7 +1319,7 @@ bool Mgr::checkPlayerInfo(PlayerInfo* playerInfo)
  */
 u32 Mgr::calcCheckSumPlayerInfo(PlayerInfo* playerInfo)
 {
-	return calcCheckSum(playerInfo, 0xBFFC);
+	return calcCheckSum(playerInfo, PLAYER_BLOCK_SIZE - 0x4);
 }
 
 /**
@@ -1312,7 +1328,7 @@ u32 Mgr::calcCheckSumPlayerInfo(PlayerInfo* playerInfo)
  */
 bool Mgr::testCheckSumPlayerInfo(PlayerInfo* playerInfo)
 {
-	return (calcCheckSum(playerInfo, 0xBFFC) == playerInfo->mChecksum);
+	return (calcCheckSum(playerInfo, PLAYER_BLOCK_SIZE - 0x4) == playerInfo->mChecksum);
 }
 
 /**
@@ -1322,22 +1338,22 @@ bool Mgr::testCheckSumPlayerInfo(PlayerInfo* playerInfo)
 u32 Mgr::getCardStatus()
 {
 	u32 result;
-	if (checkStatus() == 2) {
+	if (isErrorNotOccured()) {
 		switch (mErrorCode) {
-		case 0:
-			result = 2;
+		case ERRORCODE_None:
+			result = MCS_Ready;
 			break;
-		case 1:
-			result = 12;
+		case ERRORCODE_OptionBroken:
+			result = MCS_GameOptionsBroken;
 			break;
-		case 2:
-			result = 13;
+		case ERRORCODE_PlayerBroken:
+			result = MCS_PlayerDataBroken;
 			break;
-		case 3:
-			result = 14;
+		case ERRORCODE_SerialNoUnset:
+			result = MCS_SerialNoError;
 			break;
 		default:
-			P2ASSERTLINE(2832, false);
+			P2ASSERTLINE(3268, false);
 		}
 	} else {
 		result = checkStatus();
@@ -1352,14 +1368,14 @@ u32 Mgr::getCardStatus()
 bool Mgr::writeInvalidGameOption()
 {
 	bool result;
-	u32* buffer = new (mHeap, -32) u32[0x800];
+	u8* buffer = new (mHeap, -32) u8[OPTION_BLOCK_SIZE];
 	P2ASSERTLINE(2857, buffer);
 
-	result    = true;
-	buffer[0] = 'OpIn';
+	result                        = true;
+	((OptionInfo*)buffer)->mMagic = 'OpIn';
 
 	for (int i = 0; i < 2; i++) {
-		if (!write(CARDSLOT_Unk0, cFileName, (u8*)buffer, 0x2000, i * 0x2000 + 0x2000)) {
+		if (!write(CARDSLOT_SlotA, cFileName, buffer, OPTION_BLOCK_SIZE, GET_OPTION_OFFSET(i))) {
 			result = false;
 		}
 	}
@@ -1388,15 +1404,17 @@ bool Mgr::writeInvalidPlayerInfoAll()
  * @note Address: 0x80445CEC
  * @note Size: 0x110
  */
-bool Mgr::writeInvalidPlayerInfo(int fileIndex, s8 param_2)
+bool Mgr::writeInvalidPlayerInfo(int playerIndex, s8 fileIndex)
 {
-	P2ASSERTBOUNDSLINE(2922, 0, fileIndex, 4);
-	s8* buffer = new (mHeap, -32) s8[0x2000];
+	P2ASSERTBOUNDSLINE(2922, 0, playerIndex, 4);
+	u8* buffer = new (mHeap, -32) u8[0x2000];
 	P2ASSERTLINE(2925, buffer);
 	memset(buffer, 0xCD, 0x2000);
-	((u32*)buffer)[0] = 'PlIn';
-	buffer[8]         = param_2;
-	bool result       = write(CARDSLOT_Unk0, cFileName, (u8*)buffer, 0x2000, (fileIndex * 0xC000) + 0x6000);
+	PlayerInfo* info     = (PlayerInfo*)buffer;
+	info->mMagic         = 'PlIn';
+	info->mSaveSlotIndex = fileIndex;
+
+	bool result = write(CARDSLOT_SlotA, cFileName, buffer, 0x2000, GET_PLAYER_OFFSET(playerIndex));
 	delete (buffer);
 	return result;
 }
@@ -1405,23 +1423,27 @@ bool Mgr::writeInvalidPlayerInfo(int fileIndex, s8 param_2)
  * @note Address: 0x80445DFC
  * @note Size: 0x1A8
  */
-bool Mgr::checkPlayerNoPlayerInfo(int param_1, s8 param_2, PlayerInfoHeader* infoHeader)
+bool Mgr::checkPlayerNoPlayerInfo(int playerIndex, s8 fileIndex, PlayerInfoHeader* infoHeader)
 {
 	bool result     = false;
 	char* localName = cFileName;
 	CARDFileInfo fileInfo;
-	if (fileOpen(&fileInfo, CARDSLOT_Unk0, cFileName)) {
-		checkCardStat(CARDSLOT_Unk0, &fileInfo);
+	if (fileOpen(&fileInfo, CARDSLOT_SlotA, cFileName)) {
+		checkCardStat(CARDSLOT_SlotA, &fileInfo);
 		CARDClose(&fileInfo);
 	}
 	if (_D0) {
-		u32* buffer = new (mHeap, -32) u32[0x800];
-		P2ASSERTLINE(2975, buffer);
-		if (read(CARDSLOT_Unk0, localName, (u8*)buffer, 0x200, param_1 * 0xC000 + 0x6000)) {
+		u8* buffer = new (mHeap, -32) u8[0x2000];
+
+		P2ASSERTLINE(3004, buffer);
+
+		if (read(CARDSLOT_SlotA, localName, buffer, 0x200, GET_PLAYER_OFFSET(playerIndex))) {
+			PlayerInfo* playerInfo = (PlayerInfo*)buffer;
 			if (infoHeader) {
-				*infoHeader = *(PlayerInfoHeader*)buffer;
+				*infoHeader = *playerInfo;
 			}
-			if ((s8)((PlayerInfoHeader*)buffer)->_08 == (s8)param_2 && buffer[0] == 'PlVa') {
+
+			if (playerInfo->mSaveSlotIndex == fileIndex && playerInfo->mMagic == 'PlVa') {
 				result = true;
 			}
 		}
@@ -1445,38 +1467,42 @@ bool Mgr::checkPlayerNoPlayerInfo(int param_1, s8 param_2, PlayerInfoHeader* inf
  * @note Address: 0x80445FA4
  * @note Size: 0x380
  */
-bool Mgr::getIndexInvalidPlayerInfo(int* playerInfoIndex, s8* playerType, s8 targetType, u32 targetValue, bool checkValue)
+bool Mgr::getIndexInvalidPlayerInfo(int* outPlayerIndex, s8* outFileIndex, s8 targetFileIndex, u32 targetSaveCount, bool checkValue)
 {
-	int playerTypes[4];  // _24
-	int playerValues[4]; // _14
+	int blockRemaps[4];     // _24, remaps card slot blocks to player file index (?)
+	int blockInfoMagics[4]; // _14, player info magic of each block
 
 	for (int i = 0; i < 4; i++) {
-		playerTypes[i]  = -1;
-		playerValues[i] = 0xCDCDCDCD;
+		blockRemaps[i]     = -1;
+		blockInfoMagics[i] = 0xCDCDCDCD;
 	}
 
 	bool isValid   = true;
 	int foundIndex = -1;
 
-	u32* buffer = new (mHeap, -32) u32[0x80];
-	P2ASSERTLINE(3071, buffer);
+	u8* buffer = new (mHeap, -32) u8[0x200];
+
+	P2ASSERTLINE(3100, buffer);
 
 	for (int i = 0; i < 4; i++) {
-		if (read(CARDSLOT_Unk0, cFileName, (u8*)buffer, 0x200, 0x6000 + (i * 0xC000))) {
-			u32 bufVal = buffer[0];
-			s8 bufByte = ((u8*)buffer)[8];
+		if (read(CARDSLOT_SlotA, cFileName, buffer, 0x200, GET_PLAYER_OFFSET(i))) {
+			PlayerInfoHeader* info = (PlayerInfoHeader*)buffer;
+			u32 magic              = info->mMagic;
+			s8 saveIndex           = (u8)info->mSaveSlotIndex;
 
-			playerTypes[i] = bufByte;
+			blockRemaps[i]     = saveIndex;
+			blockInfoMagics[i] = magic;
 
-			playerValues[i] = bufVal;
-			if (foundIndex == -1 && bufByte == targetType && bufVal != 'PlVa') {
-				*playerType = targetType;
-				foundIndex  = i;
+			if (foundIndex == -1 && saveIndex == targetFileIndex && magic != 'PlVa') {
+				*outFileIndex = targetFileIndex;
+				foundIndex    = i;
 			}
-			if (*(s8*)(buffer + 2) == targetType && buffer[0] == 'PlVa' && checkValue && buffer[4] >= targetValue) {
-				JUT_ASSERTLINE(3148, targetValue == 1, "card [%d] memory[%d]\n", buffer[4], targetValue);
+
+			if (info->mSaveSlotIndex == targetFileIndex && info->mMagic == 'PlVa' && checkValue
+			    && info->mPlayer.mSaveCount >= targetSaveCount) {
+				JUT_ASSERTLINE(3177, targetSaveCount == 1, "card [%d] memory[%d]\n", info->mPlayer.mSaveCount, targetSaveCount);
 				isValid    = false;
-				mErrorCode = 3;
+				mErrorCode = ERRORCODE_SerialNoUnset;
 				break;
 			}
 		} else {
@@ -1488,123 +1514,146 @@ bool Mgr::getIndexInvalidPlayerInfo(int* playerInfoIndex, s8* playerType, s8 tar
 	delete (buffer);
 
 	if (isValid && foundIndex == -1) {
-		int array3[3];
-		array3[0] = -1;
-		array3[1] = -1;
-		array3[2] = -1;
+		int fileIndices[3]; // save file indices
+		fileIndices[0] = -1;
+		fileIndices[1] = -1;
+		fileIndices[2] = -1;
+
 		u32 check = foundIndex;
 		for (int i = 0; i < 4; i++) {
-			if (playerTypes[i] >= 0 && playerTypes[i] < 3) {
-				if (array3[playerTypes[i]] == -1) {
-					array3[playerTypes[i]] = i;
+			if (blockRemaps[i] >= 0 && blockRemaps[i] < 3) {
+				if (fileIndices[blockRemaps[i]] == -1) {
+					fileIndices[blockRemaps[i]] = i;
 					continue;
-				} else if (playerValues[i] == 'PlVa' && playerValues[array3[playerTypes[i]]] != 'PlVa') {
-					foundIndex = array3[playerTypes[i]];
-				} else if (playerValues[i] != 'PlVa' && playerValues[array3[playerTypes[i]]] == 'PlVa') {
+				} else if (blockInfoMagics[i] == 'PlVa' && blockInfoMagics[fileIndices[blockRemaps[i]]] != 'PlVa') {
+					foundIndex = fileIndices[blockRemaps[i]];
+				} else if (blockInfoMagics[i] != 'PlVa' && blockInfoMagics[fileIndices[blockRemaps[i]]] == 'PlVa') {
 					foundIndex = i;
-				} else if (playerValues[i] != 'PlVa' && playerValues[array3[playerTypes[i]]] != 'PlVa') {
+				} else if (blockInfoMagics[i] != 'PlVa' && blockInfoMagics[fileIndices[blockRemaps[i]]] != 'PlVa') {
 					foundIndex = i;
 				}
 
 				if (foundIndex != -1) {
-					playerType[0] = targetType;
+					*outFileIndex = targetFileIndex;
 					break;
 				}
 			}
 		}
+
 		if (isValid && foundIndex == -1) {
 			for (int i = 0; i < 4; i++) {
-				if (playerTypes[i] < 0 || playerTypes[i] > 2) {
+				if (blockRemaps[i] < 0 || blockRemaps[i] > 2) {
 					foundIndex = i;
-				} else if (playerValues[i] != 'PlVa' && playerValues[i] != 'PlIn') {
+				} else if (blockInfoMagics[i] != 'PlVa' && blockInfoMagics[i] != 'PlIn') {
 					foundIndex = i;
 				}
 
 				if (foundIndex != -1) {
-					playerType[0] = targetType;
+					*outFileIndex = targetFileIndex;
 					break;
 				}
 			}
 		}
 	}
 
-	*playerInfoIndex = foundIndex;
+	*outPlayerIndex = foundIndex;
 	return isValid;
 }
 
-inline bool Mgr::checkCheckSum(u32* buffer)
+inline bool Mgr::checkCheckSum(PlayerInfo* info)
 {
-	return _D0 && buffer[0x2FFF] == calcCheckSum(buffer, 0xBFFC);
+	return _D0 && info->mChecksum == calcCheckSum(info, PLAYER_BLOCK_SIZE - 0x4);
 }
 
-// this might be a few inlines stacked together? unsure
-inline bool Mgr::checkInfo(u32* buffer)
+inline bool Mgr::checkPlVa(PlayerInfo* info)
 {
-	bool checkPlVa    = false;
-	bool checkVersion = false;
-	if (checkCheckSum(buffer) && buffer[0] == 'PlVa') {
-		checkPlVa = true;
+	bool checkPlVa = false;
+	if (checkCheckSum(info)) {
+		if (info->mMagic == 'PlVa') {
+			checkPlVa = true;
+		}
 	}
-	if (checkPlVa && buffer[1] == '0003') {
+	return checkPlVa;
+}
+
+inline bool Mgr::checkInfoBody(PlayerInfo* info)
+{
+	bool checkVersion = false;
+	if (checkPlVa(info) && info->mVersionType == '0003') {
 		checkVersion = true;
 	}
 
 	return checkVersion;
 }
 
+inline bool Mgr::checkInfo(PlayerInfo* info)
+{
+	return checkInfoBody(info);
+}
+
 /**
  * @note Address: 0x80446324
  * @note Size: 0x4BC
  */
-bool Mgr::modifyPlayerInfo(s8 fileIndex, bool* param_2)
+bool Mgr::modifyPlayerInfo(s8 fileIndex, bool* outCheckWrite)
 {
 	bool result;
-	u32 array1[3]; // 0x1C
-	int array2[3]; // 0x10
-	u8 array4[4];  // 0xC
-	u8 array3[3];  // 0x8
+	u32 fileSaveCounts[3];        // 0x1C, save counts per file index
+	int fileBlockIndices[3];      // 0x10, remaps player file index to card slot blocks (?)
+	bool blockInvalidStatuses[4]; // 0xC, invalid status of each card block (?)
+	bool fileInvalidStatuses[3];  // 0x8, invalid status of each file index
 
-	if (param_2) {
-		*param_2 = false;
+	if (outCheckWrite) {
+		*outCheckWrite = false;
 	}
 
 	for (int i = 0; i < 3; i++) {
-		array1[i] = 0;
-		array3[i] = 0;
-		array2[i] = -1;
+		fileSaveCounts[i]      = 0;
+		fileInvalidStatuses[i] = false;
+		fileBlockIndices[i]    = -1;
 	}
 
 	for (int i = 0; i < 4; i++) {
-		array4[i] = 0;
+		blockInvalidStatuses[i] = false;
 	}
 
 	for (int i = 0; i < 4; i++) {
-		u32* buffer = new (mHeap, -32) u32[0x3000];
-		P2ASSERTLINE(3445, buffer);
-		result = read(CARDSLOT_Unk0, cFileName, (u8*)buffer, 0xC000, 0x6000 + (0xC000 * i));
+		u8* buffer = new (mHeap, -32) u8[PLAYER_BLOCK_SIZE];
+
+		P2ASSERTLINE(3474, buffer);
+
+		result = read(CARDSLOT_SlotA, cFileName, buffer, PLAYER_BLOCK_SIZE, GET_PLAYER_OFFSET(i));
 		if (result) {
-			if (checkInfo(buffer)) {
-				const int bufferPos = ((char*)buffer)[8];
-				if (!array1[bufferPos] || buffer[4] > array1[bufferPos]) {
-					if (array2[bufferPos] != -1) {
-						array4[array2[bufferPos]] = 1;
+			PlayerInfo* info = (PlayerInfo*)buffer;
+			if (checkInfo(info)) {
+				const s8 saveSlotIndex = info->mSaveSlotIndex;
+				if (!fileSaveCounts[saveSlotIndex] || info->mPlayer.mSaveCount > fileSaveCounts[saveSlotIndex]) {
+					if (fileBlockIndices[saveSlotIndex] != -1) {
+						// if a file already has an assigned block, the block is invalid
+						blockInvalidStatuses[fileBlockIndices[saveSlotIndex]] = true;
 					}
-					array2[bufferPos] = i;
-					array1[bufferPos] = buffer[4];
+					// if the file has never been saved to or is newer (has a greater save count),
+					// set the block index and the save counts for this file index
+					fileBlockIndices[saveSlotIndex] = i;
+					fileSaveCounts[saveSlotIndex]   = info->mPlayer.mSaveCount;
 				} else {
-					array4[i] = 1;
+					// if the save file of this block has been saved to, but is older (has a lesser or equal save count),
+					// then the block is invalid
+					blockInvalidStatuses[i] = true;
 				}
-			} else if (buffer[0] == 'PlIn' && ((char*)buffer)[8] >= 0 && ((char*)buffer)[8] < 3) {
-				if (array3[((char*)buffer)[8]]) {
-					array4[i] = 1;
+			} else if (info->mMagic == 'PlIn' && info->mSaveSlotIndex >= 0 && info->mSaveSlotIndex < 3) {
+				if (fileInvalidStatuses[info->mSaveSlotIndex]) {
+					// if the file at this block has already been marked invalid, mark the block invalid too
+					blockInvalidStatuses[i] = true;
 				}
 
-				array3[((char*)buffer)[8]] = 1;
+				fileInvalidStatuses[info->mSaveSlotIndex] = true;
 			} else {
-				array4[i] = 1;
+				blockInvalidStatuses[i] = true;
 			}
 		}
-		memset(buffer, 0xCD, 0xC000);
+
+		memset(buffer, 0xCD, PLAYER_BLOCK_SIZE);
 		delete (buffer);
 
 		if (!result) {
@@ -1614,29 +1663,35 @@ bool Mgr::modifyPlayerInfo(s8 fileIndex, bool* param_2)
 
 	if (result) {
 		for (int i = 0; i < 4; i++) {
-			if (array4[i]) {
-				bool checkWrite;
-				if (!array3[fileIndex] && (int)array2[fileIndex] == -1) {
-					checkWrite = writeInvalidPlayerInfo(i, fileIndex);
-				} else {
-					s8 someChar = fileIndex;
-					for (int j = 0; j < 3; j++) {
-						if (!array3[j] && array2[j] == -1) {
-							someChar = j;
-							break;
-						}
-					}
-					checkWrite = writeInvalidPlayerInfo(i, someChar);
-				}
-				if (checkWrite) {
-					if (!param_2) {
+			if (!blockInvalidStatuses[i]) {
+				// skip valid blocks
+				continue;
+			}
+
+			bool checkWrite;
+			if (!fileInvalidStatuses[fileIndex] && fileBlockIndices[fileIndex] == -1) {
+				// if the file is not marked invalid, but the file has no block index, write invalid info
+				checkWrite = writeInvalidPlayerInfo(i, fileIndex);
+			} else {
+				// the file is invalid, write invalid info
+				s8 someChar = fileIndex;
+				for (int j = 0; j < 3; j++) {
+					if (!fileInvalidStatuses[j] && fileBlockIndices[j] == -1) {
+						someChar = j;
 						break;
 					}
-					*param_2 = true;
+				}
+				checkWrite = writeInvalidPlayerInfo(i, someChar);
+			}
+
+			if (checkWrite) {
+				if (!outCheckWrite) {
 					break;
 				}
-				result = false;
+				*outCheckWrite = true;
+				break;
 			}
+			result = false;
 		}
 	}
 
@@ -2018,7 +2073,7 @@ bool Mgr::verifyCardSerialNo(u64* serial, MemoryCardMgr::ECardSlot cardSlot)
 		if (serialDat == *serial) {
 			result = true;
 		} else {
-			mErrorCode = 3;
+			mErrorCode = ERRORCODE_SerialNoUnset;
 		}
 	}
 	return result;
@@ -2033,7 +2088,7 @@ bool Mgr::resetError()
 	bool result;
 	if (CARDProbe(0)) {
 		result     = cardMount();
-		mErrorCode = 0;
+		mErrorCode = ERRORCODE_None;
 	} else {
 		result = true;
 	}

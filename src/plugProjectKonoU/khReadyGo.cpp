@@ -1,16 +1,19 @@
 #include "kh/khReadyGo.h"
-#include "kh/khFinalFloor.h"
-#include "kh/khUtil.h"
-#include "PSSystem/PSSystemIF.h"
-#include "nans.h"
-#include "SoundID.h"
-#include "utilityU.h"
-#include "efx2d/T2DGo.h"
 #include "Game/GameSystem.h"
 #include "JSystem/J2D/J2DAnmLoader.h"
+#include "PSSystem/PSSystemIF.h"
 #include "Screen/Game2DMgr.h"
+#include "SoundID.h"
+#include "efx2d/efx2dEffect.h"
+#include "kh/khFinalFloor.h"
+#include "kh/khUtil.h"
+#include "nans.h"
+#include "utilityU.h"
 
-static void _Print(char* format, ...) { OSReport(format, __FILE__); }
+static void _Print(char* format, ...)
+{
+	OSReport(format, __FILE__);
+}
 
 namespace kh {
 namespace Screen {
@@ -96,7 +99,10 @@ void ObjReadyGo::doCreate(JKRArchive* arc)
  * @note Address: 0x804014E0
  * @note Size: 0x20
  */
-bool ObjReadyGo::doUpdate() { return updateAnimation(); }
+bool ObjReadyGo::doUpdate()
+{
+	return updateAnimation();
+}
 
 /**
  * @note Address: 0x80401500
@@ -209,7 +215,10 @@ bool ObjReadyGo::updateAnimation()
  * @note Address: 0x80401AEC
  * @note Size: 0x40
  */
-bool SceneReadyGo::doConfirmSetScene(::Screen::SetSceneArg& arg) { return arg.getSceneType() != SCENE_PAUSE_MENU; }
+bool SceneReadyGo::doConfirmSetScene(::Screen::SetSceneArg& arg)
+{
+	return arg.getSceneType() != SCENE_PAUSE_MENU;
+}
 
 ObjReadyGo::StaticValues ObjReadyGo::msVal;
 

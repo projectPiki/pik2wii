@@ -3,7 +3,14 @@
 #include "Game/Entities/Rock.h"
 #include "Game/generalEnemyMgr.h"
 #include "RevoSDK/rand.h"
-#include "efx/TKabutoAttack.h"
+#include "efx/efxEnemy.h"
+
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "246-Kabuto";
+}
+
 
 namespace Game {
 namespace Kabuto {
@@ -100,7 +107,7 @@ void Obj::getShadowParam(ShadowParam& shadowParam)
 {
 	shadowParam.mPosition                 = mModel->getJoint("center")->getWorldMatrix()->getColumn(3);
 	shadowParam.mPosition.y               = mPosition.y + 5.0f;
-	shadowParam.mBoundingSphere.mPosition = Vector3f(0.0f, 1.0f, 0.0f);
+	shadowParam.mBoundingSphere.mPosition.set(0.0f, 1.0f, 0.0f);
 
 	if (isEvent(1, EB2_Earthquake)) {
 		shadowParam.mBoundingSphere.mRadius = 50.0f;

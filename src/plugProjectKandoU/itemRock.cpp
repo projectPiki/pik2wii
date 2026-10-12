@@ -1,7 +1,7 @@
 #include "Game/Entities/ItemRock.h"
 #include "Game/Farm.h"
 #include "JSystem/JKernel/JKRDvdRipper.h"
-#include "PSM/WorkItem.h"
+#include "PSSystem/PSMainSide_ObjSound.h"
 #include "RevoSDK/rand.h"
 
 // TODO: fix this up

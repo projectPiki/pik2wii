@@ -40,10 +40,6 @@ int Mgr::getCount(cKind kind)
  */
 PelletConfig* Mgr::getConfigAndKind(char* config, cKind& kind)
 {
-	// Need to pre-define these variables due to register ordering issues
-	bool isValid;
-	cKind kindCopy;
-
 	for (int i = 0; i < PLK_Size; i++) {
 		kind               = (cKind)i;
 		PelletConfig* list = getConfigList(kind)->getPelletConfig(config);
@@ -122,8 +118,6 @@ void Mgr::loadResource()
 }
 
 /**
- * This relies on a fabricated function (PelletConfigList::getConfigCount) to preserve ordering.
- *
  * @note Address: 0x80228148
  * @note Size: 0x18
  */

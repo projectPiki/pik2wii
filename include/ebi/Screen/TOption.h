@@ -1,11 +1,11 @@
 #ifndef _EBI_SCREEN_TOPTION_H
 #define _EBI_SCREEN_TOPTION_H
 
+#include "Game/StateMachine.h"
+#include "P2DScreen.h"
 #include "ebi/E2DCallBack.h"
 #include "ebi/Screen/TScreenBase.h"
 #include "ebi/Utility.h"
-#include "Game/StateMachine.h"
-#include "P2DScreen.h"
 #include "types.h"
 
 struct Controller;
@@ -49,8 +49,6 @@ struct TOption : public TScreenBase {
 	    , mColor(0, 0, 0, 255)
 	    , mAlpha(255)
 	    , mState(0)
-	    , mCounterOpen(0)
-	    , mCounterOpenMax(0)
 	{
 		mOptionParamA.initParamForTest();
 	}
@@ -71,14 +69,6 @@ struct TOption : public TScreenBase {
 	void setOptionParamToScreen_();
 	void loadResource();
 	void setController(Controller*);
-
-	inline bool isClosed()
-	{
-		if (mCounterOpen == 0) {
-			return true;
-		}
-		return false;
-	}
 
 	// values assigned to mExitStatus, used in ebi::Option::FSMState_ScreenWait::do_exec
 	enum updateStatus {
@@ -108,8 +98,7 @@ struct TOption : public TScreenBase {
 	JUtility::TColor mColor;                   // _0F0
 	u8 mAlpha;                                 // _0F4
 	int mState;                                // _0F8
-	u32 mCounterOpen;                          // _0FC
-	u32 mCounterOpenMax;                       // _100
+	EUTCounter mCounterOpen;                   // _0FC
 	s32 mCurrMainSelection;                    // _104
 	s32 mNextSelection;                        // _108
 	P2DScreen::Mgr_tuning* mMainScreen;        // _10C

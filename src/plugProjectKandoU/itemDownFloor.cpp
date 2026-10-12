@@ -4,12 +4,11 @@
 #include "Game/Navi.h"
 #include "Game/SingleGame.h"
 #include "Game/routeMgr.h"
-#include "PSM/WorkItem.h"
+#include "PSSystem/PSMainSide_ObjSound.h"
 #include "PSSystem/PSSystemIF.h"
 #include "Platform.h"
 #include "RevoSDK/rand.h"
-#include "efx/TDownf.h"
-#include "efx/TPbag.h"
+#include "efx/efxObject.h"
 #include "nans.h"
 
 // TODO: fix this up
@@ -168,8 +167,8 @@ void Item::updateBoundSphere()
  */
 void Item::onKeyEvent(SysShape::KeyEvent const& keyEvent)
 {
-	if (mCurrentState) {
-		mCurrentState->onKeyEvent(this, keyEvent);
+	if (getCurrState()) {
+		getCurrState()->onKeyEvent(this, keyEvent);
 	}
 }
 
@@ -407,7 +406,7 @@ void Item::doAI()
 		mCarryInfoList = nullptr;
 	}
 
-	if (mCurrentState->mId == DOWNFLOOR_Wait) {
+	if (getCurrState()->mId == DOWNFLOOR_Wait) {
 		mCurrentWeight = mWeightBuffer;
 	}
 
@@ -451,9 +450,9 @@ void Item::platCallback(PlatEvent& event)
 			mCarryInfoList = carryInfoMgr->appear(this);
 		}
 
-		if (mCurrentState && mCurrentState->mId == DOWNFLOOR_Wait && mWeightBuffer > mCurrentWeight) {
+		if (getCurrState() && getCurrState()->mId == DOWNFLOOR_Wait && mWeightBuffer > mCurrentWeight) {
 			mCurrentWeight = mWeightBuffer;
-			mCurrentState->onPlat(this);
+			getCurrState()->onPlat(this);
 		}
 	}
 }

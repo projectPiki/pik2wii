@@ -23,11 +23,7 @@
 #include "SysShape/Animator.h"
 #include "VSOtakaraName.h"
 #include "efx/Arg.h"
-#include "efx/Container.h"
-#include "efx/OnyonSpot.h"
-#include "efx/TOnyon.h"
-#include "efx/TPod.h"
-#include "efx/TUfo.h"
+#include "efx/efxObject.h"
 #include "nans.h"
 
 Game::ItemOnyon::Mgr* Game::ItemOnyon::mgr;
@@ -1627,11 +1623,11 @@ bool Onyon::insideAccessArea(Vector3f& navipos)
 {
 	if (mOnyonType == ONYON_TYPE_SHIP) {
 		Vector3f pos = getGoalPos();
-		if (sqrDistanceXZ(navipos, pos) < 900.0f) {
+		if (navipos.sqrDistance2D(pos) < 900.0f) {
 			return true;
 		}
 	} else {
-		if (sqrDistanceXZ(navipos, mPosition) < 900.0f) {
+		if (navipos.sqrDistance2D(mPosition) < 900.0f) {
 			return true;
 		}
 	}

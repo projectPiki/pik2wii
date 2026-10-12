@@ -1,4 +1,3 @@
-#include "math.h"
 #include "JSystem/JAudio/JAI/JAIBasic.h"
 #include "JSystem/JAudio/JAI/JAIConst.h"
 #include "JSystem/JAudio/JAI/JAIGlobalParameter.h"
@@ -39,24 +38,6 @@ JAISequence::JAISequence()
     : JAISound()
     , mSeqParameter()
 {
-}
-
-/**
- * @note Address: N/A
- * @note Size: 0x58
- */
-JAInter::SeqParameter::~SeqParameter()
-{
-	// UNUSED FUNCTION
-}
-
-/**
- * @note Address: N/A
- * @note Size: 0x64
- */
-JAISound::~JAISound()
-{
-	// UNUSED FUNCTION
 }
 
 /**
@@ -234,17 +215,22 @@ f32 JAISound::setDistanceVolumeCommon(f32 p1, u8 p2)
  */
 f32 JAISound::setDistancePanCommon()
 {
+	f32 result;
 	if (JAIGlobalParameter::audioCameraMax == 1) {
-		JAISound_0x34* obj = mSoundObj;
-		f32 absX           = fabsf(obj->mPosition.x);
-		f32 absZ           = fabsf(obj->mPosition.z);
-		if (absX < 1.0f && absZ < 1.0f) {
+		JAISound_0x34* obj   = mSoundObj;
+		const f64 absoluteX  = fabs(obj->mPosition.x);
+		const f32 magnitudeX = absoluteX;
+		const f64 absoluteZ  = fabs(obj->mPosition.z);
+		const f32 magnitudeZ = absoluteZ;
+		f32 absX             = magnitudeX;
+		f32 absZ             = magnitudeZ;
+		if (magnitudeX < 1.0f && magnitudeZ < 1.0f) {
 			return 0.5f;
 		}
-		if (JAIGlobalParameter::panDistanceMax < absX) {
+		if (JAIGlobalParameter::panDistanceMax < magnitudeX) {
 			absX = JAIGlobalParameter::panDistanceMax;
 		}
-		if (JAIGlobalParameter::panDistanceMax < absZ) {
+		if (JAIGlobalParameter::panDistanceMax < magnitudeZ) {
 			absZ = JAIGlobalParameter::panDistanceMax;
 		}
 		f32 pan;
@@ -260,14 +246,13 @@ f32 JAISound::setDistancePanCommon()
 		} else {
 			pan = obj->mPosition.x / (JAIGlobalParameter::panAngleParameter2 * absZ) + 0.5f;
 		}
-		return pan;
+		result = pan;
+	} else if (mCameraIndex != 4) {
+		result = mCameraIndex & 1;
+	} else {
+		result = 0.5f;
 	}
-
-	// audioCameraMax != 1
-	if (mCameraIndex != 4) {
-		return mCameraIndex & 1;
-	}
-	return 0.5f;
+	return result;
 }
 
 /**
@@ -280,20 +265,23 @@ f32 JAISound::setPositionDopplarCommon(u32 p1)
 	f32 soundX              = soundObj->mPosition.x;
 	f32 soundY              = soundObj->mPosition.y;
 	f32 soundZ              = soundObj->mPosition.z;
-	f32 x                   = soundX - soundObj->_0C.x;
-	f32 y                   = soundY - soundObj->_0C.y;
-	f32 z                   = soundZ - soundObj->_0C.z;
-	f32 dist1               = nonsqrtf(SQUARE(soundX) + SQUARE(soundY) + SQUARE(soundZ));
-	f32 x2                  = soundX + x;
-	f32 y2                  = soundY + y;
-	f32 z2                  = soundZ + z;
+	f32 distDiff;
+	f32 x     = soundX - soundObj->_0C.x;
+	f32 y     = soundY - soundObj->_0C.y;
+	f32 z     = soundZ - soundObj->_0C.z;
+	f32 mag1  = SQUARE(soundX) + SQUARE(soundY) + SQUARE(soundZ);
+	f32 dist1 = nonsqrtf(mag1);
+	f32 x2    = soundX + x;
+	f32 y2    = soundY + y;
+	f32 z2    = soundZ + z;
 
-	f32 dist2 = nonsqrtf(SQUARE(x2) + SQUARE(y2) + SQUARE(z2));
+	f32 mag2  = SQUARE(x2) + SQUARE(y2) + SQUARE(z2);
+	f32 dist2 = nonsqrtf(mag2);
 
 	f32 sqVal = SQUARE(p1 >> 8);
 
-	dist1 -= dist2;
-	f32 posDopplar = 1.0f / (1.0f - (dist1 / (JAIGlobalParameter::dopplarParameter / sqVal)));
+	distDiff       = dist1 - dist2;
+	f32 posDopplar = 1.0f / (1.0f - (distDiff / (JAIGlobalParameter::dopplarParameter / sqVal)));
 
 	if (posDopplar < 0.1f) {
 		posDopplar = 0.1f;
@@ -918,8 +906,8 @@ void JAISe::setSeDistancePitch(u8 moveTime)
 {
 	f32 pitch = 1.0f;
 	if (checkSwBit(0x10) != 0) {
-		s32 sample = JAInter::Const::random.nextFloat_0_1() * 16.0f;
-		pitch      = 1.0f - (sample & 0xF) / 192.0f;
+		u8 sample = JAInter::Const::random.nextFloat_0_1() * 16.0f;
+		pitch     = 1.0f - (sample & 0xF) / 192.0f;
 	}
 	if (checkSwBit(0x4000) != 0) {
 		if (checkSwBit(0x2) == 0 && checkSwBit(0x100 | 0x200) == 0) {
@@ -1701,12 +1689,6 @@ JAISound* JAInter::LinkSound::getSound()
 }
 
 /**
- * @note Address: 0x800B57E8
- * @note Size: 0x4
- */
-void JAISound::onGet() { }
-
-/**
  * @note Address: 0x800B57EC
  * @note Size: 0x68
  * @warning This function checks for null, and then calls a virtual function on the arg regardless of it being null.
@@ -1720,12 +1702,6 @@ void JAInter::LinkSound::releaseSound(JAISound* sound)
 	}
 	sound->onRelease();
 }
-
-/**
- * @note Address: 0x800B5854
- * @note Size: 0x4
- */
-void JAISound::onRelease() { }
 
 /**
  * @note Address: N/A
@@ -1793,78 +1769,4 @@ BOOL JAInter::MoveParaSet::move()
 		}
 	}
 	return result;
-}
-
-/**
- * @note Address: 0x800B6864
- * @note Size: 0x130
- * setPortData__5JAISeFUcUs
- */
-void JAISe::setPortData(u8 p1, u16 p2)
-{
-	if (mState == SOUNDSTATE_Stored) {
-		mSeParam._00[p1] = p2;
-		mSeParam._20 |= (1 << p1);
-		return;
-	}
-
-	JAISequence* seq             = JAInter::SeMgr::seHandle;
-	u8 trackNo                   = getTrackNumber();
-	JAInter::SeqUpdateData* data = seq->mSeqParameter.mUpdateData;
-	if (!data) {
-		return;
-	}
-	if (seq->mState >= SOUNDSTATE_Playing) {
-		seq->mSeqParameter.getTrack()->writePortApp(seq->getTrackPortRoute(trackNo, p1), p2);
-	} else {
-		data->mActiveTrackFlag |= JAInter::SOUNDACTIVE_TrackPortData;
-		seq->mSeqParameter.mTrackPortDataFlag |= (1 << trackNo);
-		seq->mSeqParameter._2B4[trackNo] |= (1 << p1);
-	}
-
-	seq->mSeqParameter._274[trackNo][p1] = p2;
-}
-
-/**
- * @note Address: 0x800B6994
- * @note Size: 0xAC
- * getPortData__5JAISeFUc
- */
-u16 JAISe::getPortData(u8 p1)
-{
-	JAISequence* seq;
-	if ((mSoundID & JAISoundID_TypeMask) == JAISoundID_Type_Se) {
-		u8 v1            = _14;
-		seq              = JAInter::SeMgr::seHandle;
-		static u16 _port = -1;
-		if (seq->mState >= SOUNDSTATE_Playing) {
-			seq->mSeqParameter.getTrack()->readPortApp(seq->getTrackPortRoute(v1, p1), &_port);
-		}
-		return _port;
-	}
-
-	return 0;
-}
-
-/**
- * @note Address: 0x800B72A0
- * @note Size: 0x17C
- * setPortData__11JAISequenceFUcUs
- */
-void JAISequence::setPortData(u8 p1, u16 p2)
-{
-	if (mSeqParameter._10[p1].mCurrentValue == 0.0f && mState >= SOUNDSTATE_Ready) {
-		u16 portVal;
-		mSeqParameter.mTrack.readPortApp(p1 << 16, &portVal);
-		mSeqParameter._10[p1].mCurrentValue = portVal;
-	}
-
-	int setResult = mSeqParameter._10[p1].set((f32)p2, 0);
-	if (setResult == JAInter::MOVEPARA_SetTarget) {
-		mSeqParameter._280 |= (1 << p1);
-	}
-
-	if (mSeqParameter.mUpdateData && setResult != JAInter::MOVEPARA_AlreadySet) {
-		mSeqParameter.mUpdateData->mActiveTrackFlag |= JAInter::SOUNDACTIVE_Unk5;
-	}
 }

@@ -8,8 +8,7 @@
 #include "Game/rumble.h"
 #include "SoundID.h"
 #include "System.h"
-#include "efx/TKage.h"
-#include "efx/TKch.h"
+#include "efx/efxEnemyBoss.h"
 #include "nans.h"
 
 // TODO: fix this up

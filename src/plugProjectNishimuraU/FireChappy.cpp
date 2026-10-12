@@ -1,5 +1,5 @@
 #include "Game/Entities/FireChappy.h"
-#include "efx/THanacho.h"
+#include "efx/efxEnemy.h"
 
 // TODO: fix this up
 static void __Print(const char** fmt, ...)

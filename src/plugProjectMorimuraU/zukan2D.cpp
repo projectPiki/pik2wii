@@ -8,7 +8,7 @@
 #include "PSSystem/PSSystemIF.h"
 #include "RevoSDK/rand.h"
 #include "Screen/Game2DMgr.h"
-#include "efx2d/T2DChangesmoke.h"
+#include "efx2d/efx2dEffect.h"
 #include "nans.h"
 
 // TODO: fix this up
@@ -319,8 +319,8 @@ void TZukanBase::doCreate(JKRArchive* archive)
 	mPaneCursorCorners[3] = mListScreen->mScreenObj->search('Psel_rl');
 	P2ASSERTLINE(294, mPaneCursorCorners[3]);
 
-	mSelectIconPos.x = mPaneSelectIcon->mOffset.x;
-	mSelectIconPos.y = mPaneSelectIcon->mOffset.y;
+	mSelectIconPos.x = mPaneSelectIcon->mTranslateX;
+	mSelectIconPos.y = mPaneSelectIcon->mTranslateY;
 
 	J2DPane* list = mMainScreen->mScreenObj->search('Nlist');
 	P2ASSERTLINE(302, list);
@@ -383,7 +383,7 @@ void TZukanBase::doCreate(JKRArchive* archive)
 	mRequestTimer = 0xffffffce;
 	indexPaneInit(screen);
 	J2DPane* idpane = mIndexPaneList[0]->mPane;
-	f32 diff        = mIndexPaneList[1]->mPane->mOffset.y - idpane->mOffset.y;
+	f32 diff        = mIndexPaneList[1]->mPane->mTranslateY - idpane->mTranslateY;
 	idpane->show();
 
 	mIndexGroup                 = new TIndexGroup;
@@ -880,14 +880,7 @@ void TZukanBase::doDraw(Graphics& gfx)
 		JUtility::TColor c;
 		c.set(0, 0, 0, 0);
 		c.a = mMessageBoxBGAlpha;
-		graf->setColor(c);
-		GXSetAlphaUpdate(GX_FALSE);
-		f32 y    = System::getRenderModeObj()->efbHeight;
-		f32 x    = System::getRenderModeObj()->fbWidth;
-		f32 zero = 0.0f;
-		JGeometry::TBox2f box(0.0f, 0.0f, zero + x, zero + y);
-		graf->fillBox(box);
-		GXSetAlphaUpdate(GX_TRUE);
+		drawFillScreen(graf, c);
 		mPaneEnemyName->setAlpha(mMessageBoxBGAlpha);
 		mMessageCallback3->draw(gfx, *graf); // this makes the enemy name appear over the background fade
 	}
@@ -918,25 +911,11 @@ void TZukanBase::doDraw(Graphics& gfx)
 			}
 		}
 		color.a = mMessageBoxBGAlpha;
-		graf->setColor(color);
-		GXSetAlphaUpdate(GX_FALSE);
-		f32 y    = System::getRenderModeObj()->efbHeight;
-		f32 x    = System::getRenderModeObj()->fbWidth;
-		f32 zero = 0.0f;
-		JGeometry::TBox2f box(0.0f, 0.0f, zero + x, zero + y);
-		graf->fillBox(box);
-		GXSetAlphaUpdate(GX_TRUE);
+		drawFillScreen(graf, color);
 	}
 
 	color.a = 255 - mFadeAlpha;
-	graf->setColor(color);
-	GXSetAlphaUpdate(GX_FALSE);
-	f32 y    = System::getRenderModeObj()->efbHeight;
-	f32 x    = System::getRenderModeObj()->fbWidth;
-	f32 zero = 0.0f;
-	JGeometry::TBox2f box(0.0f, 0.0f, zero + x, zero + y);
-	graf->fillBox(box);
-	GXSetAlphaUpdate(GX_TRUE);
+	drawFillScreen(graf, color);
 }
 
 /**
@@ -964,11 +943,11 @@ void TZukanBase::indexPaneInit(J2DScreen* screen)
 
 	J2DPane* pane = screen->search(tags[mCurrMinActiveRow]);
 	P2ASSERTLINE(1083, pane);
-	mMinSelYOffset = pane->mOffset.y;
+	mMinSelYOffset = pane->mTranslateY;
 
 	J2DPane* pane2 = screen->search(tags[mCurrMaxActiveRow]);
 	P2ASSERTLINE(1086, pane2);
-	mMaxSelYOffset = pane2->mOffset.y;
+	mMaxSelYOffset = pane2->mTranslateY;
 
 	// clang-format off
 	u64 panetags[10][4][3] = {
@@ -2119,11 +2098,11 @@ void TEnemyZukan::indexPaneInit(J2DScreen* screen)
 
 	J2DPane* pane = screen->search(tags[mCurrMinActiveRow]);
 	P2ASSERTLINE(2650, pane);
-	mMinSelYOffset = pane->mOffset.y;
+	mMinSelYOffset = pane->mTranslateY;
 
 	J2DPane* pane2 = screen->search(tags[mCurrMaxActiveRow]);
 	P2ASSERTLINE(2653, pane2);
-	mMaxSelYOffset = pane2->mOffset.y;
+	mMaxSelYOffset = pane2->mTranslateY;
 
 	// clang-format off
 	u64 panetags[14][4][3] = {
@@ -3397,7 +3376,7 @@ void TItemZukan::doCreate(JKRArchive* arc)
 			}
 		}
 
-		// if the set is complete, and you havent checked the hoard yet, add it to categories to be unlocked in the cutscene
+		// if the set is complete, and you haven't checked the hoard yet, add it to categories to be unlocked in the cutscene
 		if (setComplete) {
 			if (mIsSection || ((int)(*mDispItem->mPrevSelection) < 0 && mDispItem->getMemberID() == MEMBER_ZUKAN_ITEM)) {
 				mCategoryShowUnlock[i] = true;
@@ -4752,7 +4731,7 @@ void TZukanWindow::update()
 		f32 y = FABS(mScrollPosition);
 		y     = ((15.0f - y) / 15.0f);
 		if (TZukanBase::mIconMove) {
-			mPaneIcon->setOffset(mCharacterIconXOffset + mPaneIcon->mOffset.x,
+			mPaneIcon->setOffset(mCharacterIconXOffset + mPaneIcon->mTranslateX,
 			                     y * sinf(mIconYHeightSin) + (mScrollPosition + mPaneIcon->getOffsetY()));
 		}
 	}

@@ -6,7 +6,6 @@
 #include "Game/PikiMgr.h"
 #include "Game/Stickers.h"
 #include "Game/generalEnemyMgr.h"
-#include "PSM/EnemyBoss.h"
 #include "PSSystem/PSMainSide_ObjSound.h"
 #include "RevoSDK/rand.h"
 #include "types.h"
@@ -397,7 +396,7 @@ void Obj::setRandTarget()
  */
 bool Obj::isReachedTarget()
 {
-	return sqrDistanceXZ(mPosition, mTargetPosition) < 625.0f;
+	return mPosition.sqrDistance2D(mTargetPosition) < 625.0f;
 }
 
 /**

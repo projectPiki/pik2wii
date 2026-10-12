@@ -6,6 +6,12 @@
 #include "string.h"
 #include "types.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "246-RandEnemyUnit";
+}
+
 namespace Game {
 namespace Cave {
 
@@ -76,11 +82,11 @@ void RandCapEnemyUnit::setCapCommonEnemySlot(MapNode* mapTile, int spawnType)
 {
 	EnemyNode* node;
 
-	int tekiWeight  = 0;
 	int tekiCount_1 = 0;
-
-	// NB: can't use the FOREACH_NODE macro here bc of regswap shenanigans
-	for (node = (EnemyNode*)mEnemies[spawnType]->mChild; node; node = (EnemyNode*)node->mNext) {
+	int tekiWeight  = 0;
+	
+	FOREACH_NODE(EnemyNode, mEnemies[spawnType]->mChild, node) 
+	{
 		if (TekiInfo* tekiInfo = node->getTekiInfo()) {
 
 			tekiCount_1 += tekiInfo->mWeight / 10; // max number to place
@@ -108,7 +114,7 @@ void RandCapEnemyUnit::setCapCommonEnemySlot(MapNode* mapTile, int spawnType)
 
 	FOREACH_NODE(EnemyNode, mEnemies[spawnType]->mChild, node)
 	{
-		tekiInfo = node->mEnemyUnit->mTekiInfo;
+		tekiInfo = node->getTekiInfo();
 		if (tekiInfo) {
 			tekiCount_2 += tekiInfo->mWeight % 10; // add up the weightings as we go
 

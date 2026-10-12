@@ -1,19 +1,16 @@
-#include "Game/Piki.h"
-#include "efx/TPk.h"
-#include "efx/TDopingSmoke.h"
-#include "efx/TOrima.h"
-#include "efx/TCursor.h"
-#include "efx/TFueact.h"
-#include "efx/TNaviEffect.h"
-#include "efx/TEnemyDead.h"
-#include "efx/TGate.h"
-#include "efx/TStoneAttack.h"
-#include "efx/TBridge.h"
-#include "game/Piki.h"
-#include "trig.h"
+#include "efx/efxPikmin.h"
 #include "Game/MapMgr.h"
+#include "Game/Piki.h"
 #include "JSystem/JParticle/JPAMath.h"
+#include "efx/efxEnemyGeneral.h"
+#include "efx/efxObject.h"
 #include "float.h"
+#include "trig.h"
+
+static void _Printf(char* format)
+{
+	OSReport(format, __FILE__);
+}
 
 namespace efx {
 
@@ -23,9 +20,9 @@ namespace efx {
  */
 void TParticleCallBack_Yodare::init(JPABaseEmitter*, JPABaseParticle*)
 {
-//	_00   = 0.0f;
-//	mName = "ArgType";
-//	_08   = 1.0f;
+	//	_00   = 0.0f;
+	//	mName = "ArgType";
+	//	_08   = 1.0f;
 	// UNUSED FUNCTION
 }
 
@@ -54,7 +51,7 @@ void TTestYodareGen::create(Arg*)
 bool TPkNageBlur::create(Arg* arg)
 {
 	bool nameCheck = arg->is("ArgType");
-	P2ASSERTLINE(319, nameCheck);
+	P2ASSERTLINE(321, nameCheck);
 	ArgType* targ = static_cast<ArgType*>(arg);
 	switch (targ->mType) {
 	case Game::Blue:
@@ -76,7 +73,10 @@ bool TPkNageBlur::create(Arg* arg)
 	return TSync::create(arg);
 }
 
-static void fakeFuncEfxPikmin(TParticleCallBack_Yodare* callback) { callback->_00 = 1.0f; }
+static void fakeFuncEfxPikmin(TParticleCallBack_Yodare* callback)
+{
+	callback->_00 = 1.0f;
+}
 
 /**
  * @note Address: 0x803B67A0
@@ -85,7 +85,7 @@ static void fakeFuncEfxPikmin(TParticleCallBack_Yodare* callback) { callback->_0
 bool TDopingSmoke::create(Arg* arg)
 {
 	bool nameCheck = arg->is("ArgDopingSmoke");
-	P2ASSERTLINE(349, nameCheck);
+	P2ASSERTLINE(351, nameCheck);
 	ArgDopingSmoke* targ = static_cast<ArgDopingSmoke*>(arg);
 	switch (targ->mDopeType) {
 	case 0:
@@ -194,7 +194,7 @@ bool TCursor::create(Arg* arg)
 	mAngleTimer = 0.0f;
 
 	bool nameCheck = arg->is("ArgCursor");
-	P2ASSERTLINE(459, nameCheck);
+	P2ASSERTLINE(461, nameCheck);
 	ArgCursor* targ = static_cast<ArgCursor*>(arg);
 
 	mPosition = arg->mPosition;
@@ -218,7 +218,7 @@ bool TCursor::create(Arg* arg)
  */
 void TCursor::update(Arg* arg)
 {
-	P2ASSERTLINE(480, arg);
+	P2ASSERTLINE(482, arg);
 	ArgCursor* targ = static_cast<ArgCursor*>(arg);
 
 	f32 scale = targ->mScale;
@@ -279,8 +279,8 @@ bool TFueactCircle::create(Arg* arg)
  */
 void TFueactCircle::execute(JPABaseEmitter* emit)
 {
-	P2ASSERTLINE(530, mMtx);
-	P2ASSERTLINE(531, mPos);
+	P2ASSERTLINE(561, mMtx);
+	P2ASSERTLINE(562, mPos);
 
 	// Vector3f probably doesnt belong in these functions
 	// the JGeometry Util stuff seems to be what was used
@@ -298,8 +298,8 @@ void TFueactCircle::execute(JPABaseEmitter* emit)
  */
 void TFueactCircle::execute(JPABaseEmitter*, JPABaseParticle* prt)
 {
-	P2ASSERTLINE(547, mMtx);
-	P2ASSERTLINE(548, mPos);
+	P2ASSERTLINE(578, mMtx);
+	P2ASSERTLINE(579, mPos);
 
 	JGeometry::TVec3f mtxPos;
 	JGeometry::TVec3f pos;
@@ -314,10 +314,12 @@ void TFueactCircle::execute(JPABaseEmitter*, JPABaseParticle* prt)
 	}
 
 	if (!prt->checkStatus(0x4)) {
+		f32 time    = prt->mTime;
+		f32 invTime = 1.0f - time;
 		JGeometry::TVec3f newScaledVec;
-		newScaledVec.scale(prt->mTime, pos);
+		newScaledVec.scale(time, pos);
 		JGeometry::TVec3f offset;
-		offset.scaleAdd(1.0f - prt->mTime, mtxPos, newScaledVec);
+		offset.scaleAdd(invTime, mtxPos, newScaledVec);
 		prt->setOffsetPosition(offset);
 	}
 	/*
@@ -527,13 +529,13 @@ lbl_803B72D8:
  */
 void TFueactBiriBase::doExecuteEmitterOperation(JPABaseEmitter* emit)
 {
-	P2ASSERTLINE(579, mMtx);
-	P2ASSERTLINE(580, mPos);
+	P2ASSERTLINE(610, mMtx);
+	P2ASSERTLINE(611, mPos);
 
 	Vector3f pos(mPos->x, mPos->y, mPos->z);
 	Vector3f mtxPos = mMtx->getTranslation();
 	Vector3f angle  = pos - mtxPos;
-	f32 scale       = pos.distance(mtxPos);
+	f32 scale       = angle.length();
 	angle.normalise();
 
 	Matrixf mtx;
@@ -693,7 +695,7 @@ lbl_803B7490:
  */
 void createSimpleDead(Vector3f& pos, s32 type)
 {
-	P2ASSERTLINE(618, pkEffectMgr);
+	P2ASSERTLINE(649, pkEffectMgr);
 	switch (type) {
 	case Game::Bulbmin:
 		TEnemyDead_ArgScale efx;
@@ -738,7 +740,7 @@ void createSimpleKanden(Vector3f&)
  */
 void createSimpleChinka(Vector3f& pos)
 {
-	P2ASSERTLINE(656, pkEffectMgr);
+	P2ASSERTLINE(687, pkEffectMgr);
 	pkEffectMgr->createS_Chinka(pos);
 }
 
@@ -748,7 +750,7 @@ void createSimpleChinka(Vector3f& pos)
  */
 void createSimpleGedoku(Vector3f& pos)
 {
-	P2ASSERTLINE(662, pkEffectMgr);
+	P2ASSERTLINE(693, pkEffectMgr);
 	pkEffectMgr->createS_Gedoku(pos);
 }
 
@@ -791,7 +793,7 @@ void createSimplePkAp(Vector3f& pos)
  */
 void createSimpleWaterOff(Vector3f& pos)
 {
-	P2ASSERTLINE(689, pkEffectMgr);
+	P2ASSERTLINE(720, pkEffectMgr);
 	pkEffectMgr->createS_WaterOff(pos);
 }
 
@@ -801,7 +803,7 @@ void createSimpleWaterOff(Vector3f& pos)
  */
 void createSimpleDive(Vector3f& pos)
 {
-	P2ASSERTLINE(695, pkEffectMgr);
+	P2ASSERTLINE(726, pkEffectMgr);
 	pkEffectMgr->createS_Dive(pos);
 }
 
@@ -811,7 +813,7 @@ void createSimpleDive(Vector3f& pos)
  */
 void createSimpleChiru(Vector3f& pos, s32 type)
 {
-	P2ASSERTLINE(701, pkEffectMgr);
+	P2ASSERTLINE(732, pkEffectMgr);
 	switch (type) {
 	case Game::Blue:
 	case Game::Red:
@@ -831,7 +833,7 @@ void createSimpleChiru(Vector3f& pos, s32 type)
  */
 void createSimpleInattack(Vector3f& pos)
 {
-	P2ASSERTLINE(717, pkEffectMgr);
+	P2ASSERTLINE(748, pkEffectMgr);
 	pkEffectMgr->createS_Inattack(pos);
 }
 
@@ -874,7 +876,7 @@ void createSimpleBridgeAttack(Vector3f& pos)
  */
 void createSimpleWalksmoke(Vector3f& pos)
 {
-	P2ASSERTLINE(744, pkEffectMgr);
+	P2ASSERTLINE(775, pkEffectMgr);
 	pkEffectMgr->createS_Walksmoke(pos);
 }
 
@@ -906,7 +908,7 @@ void createSimpleStoneAttack(Vector3f& pos)
  */
 void createSimpleDig(Vector3f& pos)
 {
-	P2ASSERTLINE(764, pkEffectMgr);
+	P2ASSERTLINE(795, pkEffectMgr);
 	pkEffectMgr->createS_Dig(pos);
 }
 
@@ -916,7 +918,7 @@ void createSimpleDig(Vector3f& pos)
  */
 void createSimpleGate3Attack(Vector3f& pos)
 {
-	P2ASSERTLINE(770, pkEffectMgr);
+	P2ASSERTLINE(801, pkEffectMgr);
 	pkEffectMgr->createS_Gate3Attack(pos);
 }
 
@@ -926,7 +928,7 @@ void createSimpleGate3Attack(Vector3f& pos)
  */
 void createSimpleWalkwater(Vector3f& pos)
 {
-	P2ASSERTLINE(776, pkEffectMgr);
+	P2ASSERTLINE(807, pkEffectMgr);
 	pkEffectMgr->createS_Walkwater(pos);
 }
 
@@ -978,7 +980,10 @@ void TNaviEffect::setNaviType(enumNaviType type)
  * @note Address: 0x803B7EFC
  * @note Size: 0x20
  */
-void TNaviEffect::update() { updateHamon_(); }
+void TNaviEffect::update()
+{
+	updateHamon_();
+}
 
 /**
  * @note Address: 0x803B7F1C
@@ -1014,7 +1019,7 @@ void TNaviEffect::updateHamon_()
  */
 void TNaviEffect::createHamonA_(Vector3f* pos)
 {
-	P2ASSERTLINE(863, pos);
+	P2ASSERTLINE(894, pos);
 	mHamonA.create(pos);
 }
 
@@ -1022,7 +1027,10 @@ void TNaviEffect::createHamonA_(Vector3f* pos)
  * @note Address: 0x803B8054
  * @note Size: 0x24
  */
-void TNaviEffect::killHamonA_() { mHamonA.kill(); }
+void TNaviEffect::killHamonA_()
+{
+	mHamonA.kill();
+}
 
 /**
  * @note Address: 0x803B8078
@@ -1030,7 +1038,7 @@ void TNaviEffect::killHamonA_() { mHamonA.kill(); }
  */
 void TNaviEffect::createHamonB_(Vector3f* pos)
 {
-	P2ASSERTLINE(874, pos);
+	P2ASSERTLINE(905, pos);
 	mHamonB.create(pos);
 }
 
@@ -1038,7 +1046,10 @@ void TNaviEffect::createHamonB_(Vector3f* pos)
  * @note Address: 0x803B80D8
  * @note Size: 0x24
  */
-void TNaviEffect::killHamonB_() { mHamonB.kill(); }
+void TNaviEffect::killHamonB_()
+{
+	mHamonB.kill();
+}
 
 /**
  * @note Address: 0x803B80FC
@@ -1046,7 +1057,7 @@ void TNaviEffect::killHamonB_() { mHamonB.kill(); }
  */
 void TNaviEffect::createLight_(Mtx mtx)
 {
-	P2ASSERTLINE(886, mtx);
+	P2ASSERTLINE(917, mtx);
 	mLight.setMtxptr(mtx);
 	mLight.create(nullptr);
 }
@@ -1055,7 +1066,10 @@ void TNaviEffect::createLight_(Mtx mtx)
  * @note Address: 0x803B8174
  * @note Size: 0x2C
  */
-void TNaviEffect::killLight_() { mLight.fade(); }
+void TNaviEffect::killLight_()
+{
+	mLight.fade();
+}
 
 /**
  * @note Address: 0x803B81A0
@@ -1063,7 +1077,7 @@ void TNaviEffect::killLight_() { mLight.fade(); }
  */
 void TNaviEffect::createLightAct_(Mtx mtx)
 {
-	P2ASSERTLINE(899, mtx);
+	P2ASSERTLINE(930, mtx);
 	mLightAct.setMtxptr(mtx);
 	mLightAct.create(nullptr);
 }
@@ -1072,7 +1086,10 @@ void TNaviEffect::createLightAct_(Mtx mtx)
  * @note Address: 0x803B8218
  * @note Size: 0x2C
  */
-void TNaviEffect::killLightAct_() { mLightAct.fade(); }
+void TNaviEffect::killLightAct_()
+{
+	mLightAct.fade();
+}
 
 /**
  * @note Address: 0x803B8244
@@ -1088,7 +1105,10 @@ void TNaviEffect::createCursor_(Vector3f pos, f32 scale)
  * @note Address: 0x803B82A8
  * @note Size: 0x2C
  */
-void TNaviEffect::killCursor_() { mCursor.fade(); }
+void TNaviEffect::killCursor_()
+{
+	mCursor.fade();
+}
 
 /**
  * @note Address: 0x803B82D4
@@ -1106,8 +1126,8 @@ void TNaviEffect::updateCursor_(Vector3f pos, f32 scale)
  */
 void TNaviEffect::createFueact_(Mtx mtx, Vector3f* pos)
 {
-	P2ASSERTLINE(930, mtx);
-	P2ASSERTLINE(931, pos);
+	P2ASSERTLINE(961, mtx);
+	P2ASSERTLINE(962, pos);
 
 	mFueact.mCircle.mMtx = (Matrixf*)mtx;
 	mFueact.mCircle.mPos = pos;
@@ -1122,7 +1142,10 @@ void TNaviEffect::createFueact_(Mtx mtx, Vector3f* pos)
  * @note Address: 0x803B860C
  * @note Size: 0x2C
  */
-void TNaviEffect::killFueact_() { mFueact.fade(); }
+void TNaviEffect::killFueact_()
+{
+	mFueact.fade();
+}
 
 /**
  * @note Address: 0x803B8638
@@ -1130,7 +1153,7 @@ void TNaviEffect::killFueact_() { mFueact.fade(); }
  */
 void TNaviEffect::createOrimadamage_(Mtx mtx)
 {
-	P2ASSERTLINE(945, mtx);
+	P2ASSERTLINE(976, mtx);
 	mDamage.setMtxptr(mtx);
 	mDamage.create(nullptr);
 }
@@ -1192,7 +1215,7 @@ void TPkEffect::updateMoeSmoke_()
 void TPkEffect::updateHamon_()
 {
 	if (mHeight && mHamonPosPtr && isFlag(NAVIFX_Unk6)) {
-		mHamonPosition = Vector3f(mHamonPosPtr->x, *mHeight, mHamonPosPtr->z);
+		mHamonPosition.set(mHamonPosPtr->x, *mHeight, mHamonPosPtr->z);
 	} else {
 		return;
 	}
@@ -1217,7 +1240,7 @@ void TPkEffect::updateHamon_()
  */
 void TPkEffect::createKourin_(Vector3f* pos)
 {
-	P2ASSERTLINE(1019, pos);
+	P2ASSERTLINE(1050, pos);
 	mOeKourin.create(pos, mPikiColor);
 }
 
@@ -1225,7 +1248,10 @@ void TPkEffect::createKourin_(Vector3f* pos)
  * @note Address: 0x803B888C
  * @note Size: 0x24
  */
-void TPkEffect::killKourin_() { mOeKourin.kill(); }
+void TPkEffect::killKourin_()
+{
+	mOeKourin.kill();
+}
 
 /**
  * @note Address: 0x803B88B0
@@ -1233,7 +1259,7 @@ void TPkEffect::killKourin_() { mOeKourin.kill(); }
  */
 void TPkEffect::createDoping_(Vector3f* pos)
 {
-	P2ASSERTLINE(1033, pos);
+	P2ASSERTLINE(1064, pos);
 	mOeDoping.create(pos);
 }
 
@@ -1241,7 +1267,10 @@ void TPkEffect::createDoping_(Vector3f* pos)
  * @note Address: 0x803B8910
  * @note Size: 0x24
  */
-void TPkEffect::killDoping_() { mOeDoping.kill(); }
+void TPkEffect::killDoping_()
+{
+	mOeDoping.kill();
+}
 
 /**
  * @note Address: 0x803B8934
@@ -1249,11 +1278,11 @@ void TPkEffect::killDoping_() { mOeDoping.kill(); }
  */
 void TPkEffect::createNage_(Vector3f* pos, Mtx mtx)
 {
-	P2ASSERTLINE(1046, pos);
+	P2ASSERTLINE(1077, pos);
 	mOeNagekira.create(pos);
-	P2ASSERTLINE(1049, mtx);
+	P2ASSERTLINE(1080, mtx);
 	ArgType arg(mPikiColor);
-	arg.mPosition  = Vector3f::zero;
+	arg.mPosition.set(Vector3f::zero);
 	mNageBlur.mMtx = (Matrixf*)mtx;
 	mNageBlur.create(&arg);
 }
@@ -1274,7 +1303,7 @@ void TPkEffect::killNage_()
  */
 void TPkEffect::createMoe_(Vector3f* pos)
 {
-	P2ASSERTLINE(1066, pos);
+	P2ASSERTLINE(1097, pos);
 	mOeMoeBC.create(pos);
 	mMoeA.mPosition = pos;
 	mMoeA.create(nullptr);
@@ -1296,7 +1325,7 @@ void TPkEffect::killMoe_()
  */
 void TPkEffect::createChudoku_(Vector3f* pos)
 {
-	P2ASSERTLINE(1083, pos);
+	P2ASSERTLINE(1114, pos);
 	mOeChudoku.create(pos);
 }
 
@@ -1304,7 +1333,10 @@ void TPkEffect::createChudoku_(Vector3f* pos)
  * @note Address: 0x803B8B90
  * @note Size: 0x24
  */
-void TPkEffect::killChudoku_() { mOeChudoku.kill(); }
+void TPkEffect::killChudoku_()
+{
+	mOeChudoku.kill();
+}
 
 /**
  * @note Address: 0x803B8BB4
@@ -1312,7 +1344,7 @@ void TPkEffect::killChudoku_() { mOeChudoku.kill(); }
  */
 void TPkEffect::createMoeSmoke_(Vector3f* pos)
 {
-	P2ASSERTLINE(1097, pos);
+	P2ASSERTLINE(1128, pos);
 	mOeMoeSmoke.create(pos);
 }
 
@@ -1320,7 +1352,10 @@ void TPkEffect::createMoeSmoke_(Vector3f* pos)
  * @note Address: 0x803B8C14
  * @note Size: 0x24
  */
-void TPkEffect::killMoeSmoke_() { mOeMoeSmoke.kill(); }
+void TPkEffect::killMoeSmoke_()
+{
+	mOeMoeSmoke.kill();
+}
 
 /**
  * @note Address: 0x803B8C38
@@ -1328,7 +1363,7 @@ void TPkEffect::killMoeSmoke_() { mOeMoeSmoke.kill(); }
  */
 void TPkEffect::createBlackDown_(Vector3f* pos)
 {
-	P2ASSERTLINE(1111, pos);
+	P2ASSERTLINE(1142, pos);
 	mBlackDown.mPosition = pos;
 	mBlackDown.create(nullptr);
 }
@@ -1337,7 +1372,10 @@ void TPkEffect::createBlackDown_(Vector3f* pos)
  * @note Address: 0x803B8CA8
  * @note Size: 0x2C
  */
-void TPkEffect::killBlackDown_() { mBlackDown.fade(); }
+void TPkEffect::killBlackDown_()
+{
+	mBlackDown.fade();
+}
 
 /**
  * @note Address: 0x803B8CD4
@@ -1345,7 +1383,7 @@ void TPkEffect::killBlackDown_() { mBlackDown.fade(); }
  */
 void TPkEffect::createWater_(Vector3f* pos)
 {
-	P2ASSERTLINE(1125, pos);
+	P2ASSERTLINE(1156, pos);
 	mOeWater.create(pos);
 }
 
@@ -1353,7 +1391,10 @@ void TPkEffect::createWater_(Vector3f* pos)
  * @note Address: 0x803B8D34
  * @note Size: 0x24
  */
-void TPkEffect::killWater_() { mOeWater.kill(); }
+void TPkEffect::killWater_()
+{
+	mOeWater.kill();
+}
 
 /**
  * @note Address: 0x803B8D58
@@ -1361,7 +1402,7 @@ void TPkEffect::killWater_() { mOeWater.kill(); }
  */
 void TPkEffect::createHamonA_(Vector3f* pos)
 {
-	P2ASSERTLINE(1137, pos);
+	P2ASSERTLINE(1168, pos);
 	mOeHamonA.create(pos);
 }
 
@@ -1369,7 +1410,10 @@ void TPkEffect::createHamonA_(Vector3f* pos)
  * @note Address: 0x803B8DB8
  * @note Size: 0x24
  */
-void TPkEffect::killHamonA_() { mOeHamonA.kill(); }
+void TPkEffect::killHamonA_()
+{
+	mOeHamonA.kill();
+}
 
 /**
  * @note Address: 0x803B8DDC
@@ -1377,7 +1421,7 @@ void TPkEffect::killHamonA_() { mOeHamonA.kill(); }
  */
 void TPkEffect::createHamonB_(Vector3f* pos)
 {
-	P2ASSERTLINE(1148, pos);
+	P2ASSERTLINE(1179, pos);
 	mOeHamonB.create(pos);
 }
 
@@ -1385,7 +1429,10 @@ void TPkEffect::createHamonB_(Vector3f* pos)
  * @note Address: 0x803B8E3C
  * @note Size: 0x24
  */
-void TPkEffect::killHamonB_() { mOeHamonB.kill(); }
+void TPkEffect::killHamonB_()
+{
+	mOeHamonB.kill();
+}
 
 /**
  * @note Address: 0x803B8E60
@@ -1406,7 +1453,7 @@ void TPkEffectTane::init()
  */
 void TPkEffectTane::createTanekira_(Vector3f* pos)
 {
-	P2ASSERTLINE(1174, pos);
+	P2ASSERTLINE(1205, pos);
 	mOeKira.create(pos);
 }
 
@@ -1414,7 +1461,10 @@ void TPkEffectTane::createTanekira_(Vector3f* pos)
  * @note Address: 0x803B8EE0
  * @note Size: 0x24
  */
-void TPkEffectTane::killTanekira_() { mOeKira.kill(); }
+void TPkEffectTane::killTanekira_()
+{
+	mOeKira.kill();
+}
 
 /**
  * @note Address: 0x803B8F04
@@ -1422,7 +1472,7 @@ void TPkEffectTane::killTanekira_() { mOeKira.kill(); }
  */
 void TPkEffectTane::createKourin_(Vector3f* pos)
 {
-	P2ASSERTLINE(1189, pos);
+	P2ASSERTLINE(1220, pos);
 	mOeKourin.create(pos, mPikiColor);
 }
 
@@ -1430,7 +1480,10 @@ void TPkEffectTane::createKourin_(Vector3f* pos)
  * @note Address: 0x803B8F68
  * @note Size: 0x24
  */
-void TPkEffectTane::killKourin_() { mOeKourin.kill(); }
+void TPkEffectTane::killKourin_()
+{
+	mOeKourin.kill();
+}
 
 /**
  * @note Address: 0x803B8F8C
@@ -1438,7 +1491,7 @@ void TPkEffectTane::killKourin_() { mOeKourin.kill(); }
  */
 void TPkEffectTane::createGlow1_(Vector3f* pos)
 {
-	P2ASSERTLINE(1202, pos);
+	P2ASSERTLINE(1233, pos);
 	mGlow.mPosition = pos;
 	mGlow.create(nullptr);
 }
@@ -1457,7 +1510,9 @@ void TPkEffectTane::killGlow1_()
  * @note Address: 0x803B8FFC
  * @note Size: 0x4
  */
-void TFueactCircle::executeAfter(JPABaseEmitter*) { }
+void TFueactCircle::executeAfter(JPABaseEmitter*)
+{
+}
 
 /**
  * @note Address: 0x803B9000

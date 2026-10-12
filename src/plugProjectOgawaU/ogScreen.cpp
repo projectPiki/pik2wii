@@ -1,15 +1,10 @@
-#include "og/Screen/AlphaMgr.h"
 #include "og/Screen/ogScreen.h"
+#include "P2DScreen.h"
+#include "System.h"
+#include "og/Screen/AlphaMgr.h"
 #include "og/Screen/ArrowAlphaBlink.h"
 #include "og/Screen/PictureTreeColor.h"
-#include "P2DScreen.h"
 #include "trig.h"
-#include "System.h"
-
-namespace og {
-namespace Screen {
-
-ResTIMG* PikiIconTextureResTIMG[NUM_PIKI_ICONS];
 
 static void _Print(char* format, ...)
 {
@@ -20,6 +15,11 @@ static void _Print(char* format, ...)
 	sprintf(buffer, format, __FILE__, buffer);
 	vprintf(buffer, args);
 }
+
+namespace og {
+namespace Screen {
+
+ResTIMG* PikiIconTextureResTIMG[NUM_PIKI_ICONS];
 
 /**
  * @note Address: 0x80301EB8
@@ -220,6 +220,7 @@ u64 maskTag(u64 tag, u16 num, u16 mask)
 	return (maskedChar << shift) | (tag & extractChar);
 }
 
+// clang-format off
 const char* PikiIconTextureName[]
     = { "toumei_piki.bti",
 	    "bp_l64.bti",  "bp_b64.bti",  "bp_f64.bti",
@@ -228,6 +229,7 @@ const char* PikiIconTextureName[]
 	    "blp_l64.bti", "blp_b64.bti", "blp_f64.bti",
 	    "wp_l64.bti",  "wp_b64.bti",  "wp_f64.bti",
 	    "cha_l.bti",   "cha_b.bti",   "cha_f.bti" };
+// clang-format on
 
 /**
  * @note Address: 0x803029C0

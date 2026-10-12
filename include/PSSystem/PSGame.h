@@ -2,12 +2,13 @@
 #define _PSSYSTEM_PSGAME_H
 
 #include "P2Macros.h"
-#include "PSSystem/PSCommon.h"
-#include "PSSystem/PSScene.h"
-#include "PSSystem/Seq.h"
+#include "PSGame/PikScene.h"
 #include "PSGame/SeMgr.h"
 #include "PSGame/SoundTable.h"
-#include "PSGame/PikScene.h"
+#include "PSSystem/PSCommon.h"
+#include "PSSystem/PSScene.h"
+#include "PSSystem/PSSeq.h"
+#include "PSSystem/PSSystemIF.h"
 
 namespace PSSystem {
 inline PSSystem::SceneMgr* getSceneMgr()
@@ -17,7 +18,10 @@ inline PSSystem::SceneMgr* getSceneMgr()
 	return spSceneMgr;
 }
 
-inline void validateSceneMgr(SceneMgr* mgr) { P2ASSERTLINE(478, mgr); }
+inline void validateSceneMgr(SceneMgr* mgr)
+{
+	P2ASSERTLINE(478, mgr);
+}
 
 inline Scene* getChildScene(SceneMgr* mgr)
 {
@@ -33,7 +37,16 @@ inline SeqBase* getSeqFromScene(Scene* scene, u32 id)
 	return seq;
 }
 
-inline SeqBase* getSeqData(SceneMgr* mgr, int id) { return getSeqFromScene(getChildScene(mgr), id); }
+inline Scene* getChildSceneCheck(SceneMgr* mgr)
+{
+	mgr->checkScene();
+	return getChildScene(mgr);
+}
+
+inline SeqBase* getSeqData(SceneMgr* mgr, int id)
+{
+	return getSeqFromScene(getChildScene(mgr), id);
+}
 
 inline SeqBase* getSeqDataCheck(SceneMgr* mgr, int id)
 {

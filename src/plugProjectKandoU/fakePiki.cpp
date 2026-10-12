@@ -15,10 +15,13 @@
 
 f32 efx::TCursor::kAngleSpeed = PI / 60.0f;
 
-namespace Game {
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "fakePiki";
+}
 
-static const u32 fakePikiUnusedArray[] = { 0, 0, 0 };
-static const char fakePikiName[]       = "fakePiki";
+namespace Game {
 
 f32 FakePiki::sCurrNeckTheta = 0.0f;
 f32 FakePiki::sCurrNeckPhi   = 0.0f;
@@ -135,8 +138,8 @@ void FakePiki::startMotion(int selfAnimIdx, int boundAnimIdx, SysShape::MotionLi
 	mAnimator.mSelfAnimator.startAnim(selfAnimIdx, selfListener);
 	mAnimator.mBoundAnimator.startAnim(boundAnimIdx, boundListener);
 
-	P2ASSERTLINE(481, mAnimator.mSelfAnimator.assertValid(mModel));
-	P2ASSERTLINE(482, mAnimator.mBoundAnimator.assertValid(mModel));
+	P2ASSERTLINE(495, mAnimator.mSelfAnimator.assertValid(mModel));
+	P2ASSERTLINE(496, mAnimator.mBoundAnimator.assertValid(mModel));
 
 	mBoundAnimIdx = IPikiAnims::NULLANIM;
 
@@ -198,7 +201,7 @@ void FakePiki::clearDoAnimCallback()
 void FakePiki::updateWalkAnimation()
 {
 	Vector3f sep  = Vector3f(mPosition.x - mPreviousPosition.x, 0.0f, mPosition.z - mPreviousPosition.z);
-	f32 animSpeed = sep.length() / sys->getDeltaTime();
+	f32 animSpeed = sys->getDeltaTime() / sep.length();
 
 	int boundIdx = mAnimator.mBoundAnimator.getAnimIndex();
 
@@ -214,7 +217,7 @@ void FakePiki::updateWalkAnimation()
 	}
 
 	int otherIdx;
-	JUT_ASSERTLINE(594, !check, "damedayo!\n"); // 'no good!'
+	JUT_ASSERTLINE(608, !check, "damedayo!\n"); // 'no good!'
 	FakePiki* otherListener = nullptr;
 	f32 faceDir             = FABS(mFaceDir - mFaceDirOffset);
 	FakePikiParms* parms    = static_cast<FakePikiParms*>(mParms);
@@ -231,26 +234,23 @@ void FakePiki::updateWalkAnimation()
 		otherIdx  = IPikiAnims::ASIBUMI;
 
 	} else if (animSpeed < parms->mFakePikiParms.mRunStartSpeed()) {
-		// regswaps here - inline maybe?
-		f32 val = (animSpeed - parms->mFakePikiParms.mWalkStartSpeed())
-		        / (parms->mFakePikiParms.mRunStartSpeed() - parms->mFakePikiParms.mWalkStartSpeed());
+		f32 val       = (animSpeed - parms->mFakePikiParms.mWalkStartSpeed())
+		              / (parms->mFakePikiParms.mRunStartSpeed() - parms->mFakePikiParms.mWalkStartSpeed());
 		otherListener = this;
 		otherIdx      = IPikiAnims::WALK;
-
-		f32 max = parms->mFakePikiParms.mWalkPlaybackFrameCountMax();
-		max -= parms->mFakePikiParms.mWalkPlaybackFrameCountMin();
-		animSpeed = parms->mFakePikiParms.mWalkPlaybackFrameCountMin() + val * (max);
+		// NB: these .mValue and () mixes are load-bearing lol
+		animSpeed = val * (parms->mFakePikiParms.mWalkPlaybackFrameCountMax() - parms->mFakePikiParms.mWalkPlaybackFrameCountMin())
+		          + parms->mFakePikiParms.mWalkPlaybackFrameCountMin.mValue;
 
 	} else if (animSpeed < parms->mFakePikiParms.mEscapeStartSpeed()) {
-		// regswaps here - inline maybe?
-		f32 val = (animSpeed - parms->mFakePikiParms.mRunStartSpeed())
-		        / (parms->mFakePikiParms.mEscapeStartSpeed() - parms->mFakePikiParms.mRunStartSpeed());
+		f32 val       = (animSpeed - parms->mFakePikiParms.mRunStartSpeed())
+		              / (parms->mFakePikiParms.mEscapeStartSpeed() - parms->mFakePikiParms.mRunStartSpeed());
 		otherListener = this;
 		otherIdx      = IPikiAnims::RUN2;
 
-		f32 max = parms->mFakePikiParms.mRunPlaybackFrameCountMax();
-		max -= parms->mFakePikiParms.mRunPlaybackFrameCountMin();
-		animSpeed = val * (max) + parms->mFakePikiParms.mRunPlaybackFrameCountMin();
+		// NB: these .mValue and () mixes are load-bearing lol
+		animSpeed = val * (parms->mFakePikiParms.mRunPlaybackFrameCountMax() - parms->mFakePikiParms.mRunPlaybackFrameCountMin())
+		          + parms->mFakePikiParms.mRunPlaybackFrameCountMin.mValue;
 
 	} else {
 		animSpeed     = parms->mFakePikiParms.mEscapePlaybackFrameCountMin();
@@ -721,6 +721,7 @@ void FakePiki::finishLook()
 void FakePiki::updateLook()
 {
 	f32 horizontalAngle;
+	f32 rotationSpeed = 0.05f;
 	f32 verticalAngle;
 	f32 adjustedHorizontalAngle;
 	if (mLookAtPosition) {
@@ -730,8 +731,11 @@ void FakePiki::updateLook()
 		verticalAngle   = JMAAtan2Radian(sep.y, sep.length2D());
 
 	} else {
-		mNeckTheta = roundAng(0.2f * angDist(0.0f, mNeckTheta) + mNeckTheta);
-		mNeckPhi   = roundAng(0.2f * angDist(0.0f, mNeckPhi) + mNeckPhi);
+		rotationSpeed = 0.2f;
+		f32 thetaDist = angDist(0.0f, mNeckTheta);
+		mNeckTheta    = roundAng(thetaDist * rotationSpeed + mNeckTheta);
+		f32 phiDist   = angDist(0.0f, mNeckPhi);
+		mNeckPhi      = roundAng(phiDist * rotationSpeed + mNeckPhi);
 
 		if (FABS(mNeckTheta) < 0.1f && FABS(mNeckPhi) < 0.1f) {
 			mLookAtPosition = nullptr;
@@ -764,7 +768,7 @@ void FakePiki::updateLook()
 		adjustAngle = 0.0f;
 	}
 
-	adjustAngle *= 0.05f;
+	adjustAngle *= rotationSpeed;
 
 	if (FABS(adjustAngle) > PI / 10.0f) {
 		if (adjustAngle > 0.0f) {
@@ -786,7 +790,7 @@ void FakePiki::updateLook()
 		verticalAdjustAngle = 0.0f;
 	}
 
-	verticalAdjustAngle *= 0.05f;
+	verticalAdjustAngle *= rotationSpeed;
 
 	if (FABS(verticalAdjustAngle) > PI / 10.0f) {
 		if (verticalAdjustAngle > 0.0f) {
@@ -1617,10 +1621,12 @@ void FakePiki::updateStomach()
 		mPosition = stomach->mPosition + sep * rad;
 		mVelocity = mVelocity - sep * (1.1f * mVelocity.dot(sep));
 
-		// this is some leftover debug thing
-		Vector3f sep2 = Vector3f(mPosition.y - mTargetCollObj->mPosition.y, mPosition.z - mTargetCollObj->mPosition.z,
-		                         mPosition.x - mTargetCollObj->mPosition.x);
-		_length2(sep2);
+		// whatever originally used this is stripped/commented out lol
+		Vector3f sep2;
+		sep2.x = mPosition.x - mTargetCollObj->mPosition.x;
+		sep2.y = mPosition.y - mTargetCollObj->mPosition.y;
+		sep2.z = mPosition.z - mTargetCollObj->mPosition.z;
+		sep2.length();
 	}
 }
 

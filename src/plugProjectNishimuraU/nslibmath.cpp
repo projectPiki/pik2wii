@@ -28,71 +28,81 @@ void calcLagrange(const Vector3f* controlPoints, f32 t, Vector3f& output)
 }
 
 /**
- * Calculates the scale based on the given distances.
- *
- * @param distanceTopToTarget The distance from the top to the target.
- * @param distanceTopMiddle The distance from the top to the middle.
- * @param distanceMiddleBottom The distance from the middle to the bottom.
- * @return The calculated scale.
+ * Cross product that permits the result to alias either input.
+ * @note Address: N/A, inlined
  */
-inline f32 calculateScale(f32 distanceTopToTarget, f32 distanceTopMiddle, f32 distanceMiddleBottom)
+inline void calcOuterPro(const Vector3f& a, const Vector3f& b, Vector3f& result)
 {
-	return (0.5f / distanceTopToTarget) * (distanceTopToTarget + (distanceTopMiddle - distanceMiddleBottom));
+	f32 x    = a.y * b.z - a.z * b.y;
+	f32 y    = a.z * b.x - a.x * b.z;
+	result.z = a.x * b.y - a.y * b.x;
+	result.x = x;
+	result.y = y;
 }
 
 /**
- * @note Address: 0x8023D858
- * @note Size: 0x1D8
- */
-/**
- * Calculates the position of the middle joint and bottom joint based on the given parameters.
+ * Calculates the middle joint position from the endpoints, segment lengths and bend direction.
  *
  * @param topPosition The position of the top joint.
  * @param bottomPosition The position of the bottom joint.
  * @param topToMiddleDistance The distance between the top joint and the middle joint.
  * @param middleToBottomDistance The distance between the middle joint and the bottom joint.
- * @param middleJointPos [out] The calculated position of the middle joint.
- * @param bottomJointPosition [out] The calculated position of the bottom joint.
+ * @param middleDirection [in,out] The bend direction, projected perpendicular to the line between the endpoints.
+ * @param middleJointPosition [out] The calculated position of the middle joint.
+ *
+ * @note Address: 0x8023D858
+ * @note Size: 0x1D8
  */
 void calcJointPos(const Vector3f& topPosition, const Vector3f& bottomPosition, f32 topToMiddleDistance, f32 middleToBottomDistance,
-                  Vector3f& middleJointPos, Vector3f& bottomJointPosition)
+                  Vector3f& middleDirection, Vector3f& middleJointPosition)
 {
-	Vector3f topToTargetVector = bottomPosition - topPosition;
+	Vector3f topToTargetVector;
+	topToTargetVector.x = bottomPosition.x - topPosition.x;
+	topToTargetVector.y = bottomPosition.y - topPosition.y;
+	topToTargetVector.z = bottomPosition.z - topPosition.z;
 
-	f32 distanceTopMiddle    = SQUARE(topToMiddleDistance);      // f5
-	f32 distanceMiddleBottom = SQUARE(middleToBottomDistance);   // f4
-	f32 distanceTopToTarget  = topToTargetVector.sqrMagnitude(); // f11
+	topToMiddleDistance *= topToMiddleDistance;
+	middleToBottomDistance *= middleToBottomDistance;
+	f32 distanceTopToTarget = SQUARE(topToTargetVector.x) + SQUARE(topToTargetVector.y) + SQUARE(topToTargetVector.z);
 
 	if (!(distanceTopToTarget < 0.000001f)) {
-		f32 scale = (0.5f / distanceTopToTarget) * (distanceTopToTarget + (distanceTopMiddle - distanceMiddleBottom));
-		Vector3f scaledTopToTarget(scale * topToTargetVector.x + topPosition.x, scale * topToTargetVector.y + topPosition.y,
-		                           scale * topToTargetVector.z + topPosition.z);
-		Vector3f offsetFromTop = scaledTopToTarget - topPosition;
+		f32 scale = (0.5f / distanceTopToTarget) * (distanceTopToTarget + (topToMiddleDistance - middleToBottomDistance));
+		Vector3f scaledTopToTarget;
+		scaledTopToTarget.x = scale * topToTargetVector.x + topPosition.x;
+		scaledTopToTarget.y = scale * topToTargetVector.y + topPosition.y;
+		scaledTopToTarget.z = scale * topToTargetVector.z + topPosition.z;
+		Vector3f offsetFromTop;
+		offsetFromTop.x = scaledTopToTarget.x - topPosition.x;
+		offsetFromTop.y = scaledTopToTarget.y - topPosition.y;
+		offsetFromTop.z = scaledTopToTarget.z - topPosition.z;
 
-		f32 distance = distanceTopMiddle - SQUARE(offsetFromTop.x) - SQUARE(offsetFromTop.y) - SQUARE(offsetFromTop.z); // f30
+		f32 remainingSquared = topToMiddleDistance - SQUARE(offsetFromTop.x);
+		remainingSquared -= SQUARE(offsetFromTop.y);
+		f32 radiusSquared = remainingSquared - SQUARE(offsetFromTop.z);
 
-		if (!(distance <= 0.0f)) {
-			Vector3f translation = middleJointPos;
-			translation          = translation.cross(topToTargetVector);
-			middleJointPos       = topToTargetVector.cross(translation);
+		if (!(radiusSquared <= 0.0f)) {
+			Vector3f planeNormal;
+			calcOuterPro(middleDirection, topToTargetVector, planeNormal);
+			middleDirection.cross(topToTargetVector, planeNormal);
 
-			f32 outSqr = middleJointPos.sqrMagnitude();
+			f32 outSqr = SQUARE(middleDirection.x) + SQUARE(middleDirection.y) + SQUARE(middleDirection.z);
 			if (outSqr != 0.0f) {
-				f32 scale             = _sqrtf2(distance / outSqr);
-				bottomJointPosition.x = scale * middleJointPos.x + scaledTopToTarget.x;
-				bottomJointPosition.y = scale * middleJointPos.y + scaledTopToTarget.y;
-				bottomJointPosition.z = scale * middleJointPos.z + scaledTopToTarget.z;
+				f32 bendScale         = sqrtfClamped(radiusSquared / outSqr);
+				middleJointPosition.x = bendScale * middleDirection.x + scaledTopToTarget.x;
+				middleJointPosition.y = bendScale * middleDirection.y + scaledTopToTarget.y;
+				middleJointPosition.z = bendScale * middleDirection.z + scaledTopToTarget.z;
 				return;
 			}
 		}
 	}
 
-	f32 dtm           = _sqrtf2(distanceTopMiddle);    // f7
-	f32 dmb           = _sqrtf2(distanceMiddleBottom); // f3
-	f32 distanceRatio = dtm / (dtm + dmb);             // f6
+	f32 dtm           = sqrtfClamped(topToMiddleDistance);
+	f32 dmb           = sqrtfClamped(middleToBottomDistance);
+	f32 distanceRatio = dtm / (dtm + dmb);
 
-	bottomJointPosition = Vector3f(distanceRatio * topToTargetVector.x + topPosition.x, distanceRatio * topToTargetVector.y + topPosition.y,
-	                               distanceRatio * topToTargetVector.z + topPosition.z);
+	middleJointPosition.x = distanceRatio * topToTargetVector.x + topPosition.x;
+	middleJointPosition.y = distanceRatio * topToTargetVector.y + topPosition.y;
+	middleJointPosition.z = distanceRatio * topToTargetVector.z + topPosition.z;
 
 	/*
 	.loc_0x0:

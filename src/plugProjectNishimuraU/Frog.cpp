@@ -4,7 +4,7 @@
 #include "Game/EnemyFunc.h"
 #include "Game/rumble.h"
 #include "PS.h"
-#include "efx/TFrog.h"
+#include "efx/efxEnemy.h"
 #include "nans.h"
 
 namespace Game {

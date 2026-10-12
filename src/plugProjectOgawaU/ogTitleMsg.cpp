@@ -1,7 +1,7 @@
 #include "P2JME/Analyzer.h"
 #include "RevoSDK/rand.h"
 #include "System.h"
-#include "efx2d/T2DCvname.h"
+#include "efx2d/efx2dEffect.h"
 #include "og/Screen/ogScreen.h"
 #include "og/Sound.h"
 #include "og/newScreen/TitleMsg.h"
@@ -246,8 +246,8 @@ void TitleMsgDrop::init()
 	for (int i = 0; i < mStringLength; i++) {
 		motion->mRandTime = randFloat() * mod;
 		motion->mYOffset  = yoffs;
-		motion->mPos.x    = mPanes1[i]->mOffset.x;
-		motion->mPos.y    = mPanes1[i]->mOffset.y;
+		motion->mPos.x    = mPanes1[i]->mTranslateX;
+		motion->mPos.y    = mPanes1[i]->mTranslateY;
 		motion->mTimer    = i / (f32)mStringLength;
 		motion++;
 	}

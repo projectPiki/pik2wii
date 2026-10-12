@@ -50,11 +50,11 @@ struct JUTException : public JKRThread {
 
 	/** @fabricated */
 	struct ExCallbackObject {
-		OSErrorHandler mErrorHandler; // _00
-		OSError mError;               // _04
-		OSContext* mContext;          // _08
-		u32 _0C;                      // _0C
-		u32 _10;                      // _10
+		JUTExceptionHandler mErrorHandler; // _00
+		OSError mError;                    // _04
+		OSContext* mContext;               // _08
+		u32 _0C;                           // _0C
+		u32 _10;                           // _10
 	};
 
 	JUTException(JUTDirectPrint*); // unused/inlined
@@ -84,9 +84,7 @@ struct JUTException : public JKRThread {
 	static void errorHandler(u16, OSContext*, u32, u32);
 	static void setFPException(u32);
 
-	static void panic(const char* file, int line, const char* msg) {
-        panic_f(file, line, "%s", msg);
-    }
+	static void panic(const char* file, int line, const char* msg) { panic_f(file, line, "%s", msg); }
 
 	// unused/inlined:
 	static void panic_f_va(const char*, int, const char*, va_list*);

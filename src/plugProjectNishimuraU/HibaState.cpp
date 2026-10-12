@@ -1,7 +1,7 @@
 #include "Game/EnemyAnimKeyEvent.h"
 #include "Game/Entities/Hiba.h"
 #include "PS.h"
-#include "efx/TEnemyBomb.h"
+#include "efx/efxEnemyGeneral.h"
 #include "types.h"
 
 // TODO: fix this up

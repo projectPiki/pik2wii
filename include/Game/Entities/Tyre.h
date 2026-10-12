@@ -256,8 +256,19 @@ struct State : public EnemyFSMState {
 	// _00-_10 	= EnemyFSMState
 };
 
-struct StateDead : public State {
-	StateDead(int stateID);
+struct StateMove : public State {
+	StateMove(int stateID);
+
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
+
+	// _00		= VTBL
+	// _00-_10 	= EnemyFSMState
+};
+
+struct StateLand : public State {
+	StateLand(int stateID);
 
 	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
 	virtual void exec(EnemyBase* enemy);                     // _0C
@@ -277,22 +288,11 @@ struct StateFreeze : public State {
 	u32 mFrozenTimer; // _10
 };
 
-struct StateLand : public State {
-	StateLand(int stateID);
+struct StateDead : public State {
+	StateDead(int stateID);
 
 	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
 	virtual void exec(EnemyBase* enemy);                     // _0C
-
-	// _00		= VTBL
-	// _00-_10 	= EnemyFSMState
-};
-
-struct StateMove : public State {
-	StateMove(int stateID);
-
-	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
-	virtual void exec(EnemyBase* enemy);                     // _0C
-	virtual void cleanup(EnemyBase* enemy);                  // _10
 
 	// _00		= VTBL
 	// _00-_10 	= EnemyFSMState

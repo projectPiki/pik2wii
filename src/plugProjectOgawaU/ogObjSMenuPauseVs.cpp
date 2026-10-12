@@ -7,6 +7,11 @@
 #include "og/newScreen/SMenu.h"
 #include "trig.h"
 
+static void _Print(char* format, ...)
+{
+	OSReport(format, __FILE__);
+}
+
 namespace og {
 namespace newScreen {
 
@@ -50,7 +55,7 @@ void ObjSMenuPauseVS::doCreate(JKRArchive* arc)
 	}
 
 	if (newdisp->isID(OWNER_OGA, MEMBER_START_MENU_ALL)) {
-		if (static_cast<og::Screen::DispMemberSMenuAll*>(newdisp)->mOpenMode == og::Screen::DispMemberSMenuAll::Open_Versus) {
+		if (static_cast<og::Screen::DispMemberSMenuAll*>(newdisp)->mOpenMode == og::Screen::DispMemberSMenuAll::Open_ChallengeMode) {
 			mType = 1;
 		}
 	}
@@ -179,7 +184,7 @@ bool ObjSMenuPauseVS::menu()
  */
 void ObjSMenuPauseVS::out_cancel()
 {
-	mDisp->mState = 2;
+	mDisp->mState = og::Screen::MENUFINISH_ContinueGround;
 	out_L();
 }
 
@@ -189,7 +194,7 @@ void ObjSMenuPauseVS::out_cancel()
  */
 void ObjSMenuPauseVS::out_menu_0()
 {
-	mDisp->mState = 2;
+	mDisp->mState = og::Screen::MENUFINISH_ContinueGround;
 	out_L();
 }
 
@@ -199,7 +204,7 @@ void ObjSMenuPauseVS::out_menu_0()
  */
 void ObjSMenuPauseVS::out_menu_1()
 {
-	mDisp->mState = 7;
+	mDisp->mState = og::Screen::MENUFINISH_QuitChallenge;
 	out_L();
 }
 
@@ -209,7 +214,7 @@ void ObjSMenuPauseVS::out_menu_1()
  */
 void ObjSMenuPauseVS::doUpdateCancelAction()
 {
-	mDisp->mState = 2;
+	mDisp->mState = og::Screen::MENUFINISH_ContinueGround;
 }
 
 /**
@@ -295,10 +300,10 @@ void ObjSMenuPauseVS::doUpdateFadeoutFinish()
 {
 	SceneSMenuBase* scene = static_cast<SceneSMenuBase*>(getOwner());
 	switch (getResult()) {
-	case 2:
+	case og::Screen::MENUFINISH_ContinueGround:
 		startBackupScene();
 		break;
-	case 7:
+	case og::Screen::MENUFINISH_QuitChallenge:
 		scene->endScene(nullptr);
 		break;
 	}

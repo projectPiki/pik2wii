@@ -32,6 +32,21 @@ enum PelplantFlags {
 	PELPLANTFLAG_Full    = 0x2,
 };
 
+/**
+ * @size{0x1C}
+ */
+struct FSM : public EnemyStateMachine {
+	FSM()
+	    : EnemyStateMachine()
+	{
+	}
+
+	virtual void init(EnemyBase* enemy); // _08
+
+	// _00		= VTABLE
+	// _04-_1C	= EnemyStateMachine
+};
+
 /////////////////////////////////////////////////////////////////
 // STATE MACHINE DEFINITIONS
 enum StateID {
@@ -76,6 +91,48 @@ struct StateBlendAnim : public State {
 	int mEndAnimIdx;   // _18
 };
 
+struct StateWither : public StateBlendAnim {
+	StateWither(int, int, int, int);
+
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
+
+	// _00 VTBL
+	// _04 int stateID
+	// _08 EnemyStateMachine* mStateMachine
+	// _0C const char* mName
+};
+
+struct StateWait : public State {
+	StateWait(int stateID, int pelletSize);
+
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
+
+	// _00 VTBL
+	// _04 int stateID
+	// _08 EnemyStateMachine* mStateMachine
+	// _0C const char* mName
+	int mPelSize; // _10
+};
+
+struct StateGrow : public State {
+	StateGrow(int stateID, int animIdx, int nextState);
+
+	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
+	virtual void exec(EnemyBase* enemy);                     // _0C
+	virtual void cleanup(EnemyBase* enemy);                  // _10
+
+	// _00 VTBL
+	// _04 int stateID
+	// _08 EnemyStateMachine* mStateMachine
+	// _0C const char* mName
+	int mAnimIdx;   // _10
+	int mNextState; // _14
+};
+
 struct StateDamage : public State {
 	StateDamage(int stateID, int animIdx);
 
@@ -104,63 +161,7 @@ struct StateDead : public State {
 	int mAnimIdx; // _10
 };
 
-struct StateGrow : public State {
-	StateGrow(int stateID, int animIdx, int nextState);
-
-	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
-	virtual void exec(EnemyBase* enemy);                     // _0C
-	virtual void cleanup(EnemyBase* enemy);                  // _10
-
-	// _00 VTBL
-	// _04 int stateID
-	// _08 EnemyStateMachine* mStateMachine
-	// _0C const char* mName
-	int mAnimIdx;   // _10
-	int mNextState; // _14
-};
-
-struct StateWait : public State {
-	StateWait(int stateID, int pelletSize);
-
-	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
-	virtual void exec(EnemyBase* enemy);                     // _0C
-	virtual void cleanup(EnemyBase* enemy);                  // _10
-
-	// _00 VTBL
-	// _04 int stateID
-	// _08 EnemyStateMachine* mStateMachine
-	// _0C const char* mName
-	int mPelSize; // _10
-};
-
-struct StateWither : public StateBlendAnim {
-	StateWither(int, int, int, int);
-
-	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
-	virtual void exec(EnemyBase* enemy);                     // _0C
-	virtual void cleanup(EnemyBase* enemy);                  // _10
-
-	// _00 VTBL
-	// _04 int stateID
-	// _08 EnemyStateMachine* mStateMachine
-	// _0C const char* mName
-};
 /////////////////////////////////////////////////////////////////
-
-/**
- * @size{0x1C}
- */
-struct FSM : public EnemyStateMachine {
-	FSM()
-	    : EnemyStateMachine()
-	{
-	}
-
-	virtual void init(EnemyBase* enemy); // _08
-
-	// _00		= VTABLE
-	// _04-_1C	= EnemyStateMachine
-};
 
 struct PelplantInitialParam : public EnemyInitialParamBase {
 	u8 mColor;        // _00

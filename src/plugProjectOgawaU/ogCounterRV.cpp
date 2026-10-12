@@ -191,18 +191,18 @@ void CallBack_CounterRV::init(J2DScreen* screen, u64 tag1, u64 tag2, u64 tag3, u
 	mCountPtr            = countPtr;
 	mInitialDisplayValue = *countPtr;
 	mCurrDisplayValue    = mInitialDisplayValue;
-	mPaneScale.x         = mPic1->mScale.x;
-	mPaneScale.y         = mPic1->mScale.y;
-	mPanePosition.x      = mPic1->mOffset.x;
-	mPanePosition.y      = mPic1->mOffset.y;
+	mPaneScale.x         = mPic1->mScaleX;
+	mPaneScale.y         = mPic1->mScaleY;
+	mPanePosition.x      = mPic1->mTranslateX;
+	mPanePosition.y      = mPic1->mTranslateY;
 	mPaneSize.x          = mPic1->getWidth();
 	mPaneSize.y          = mPic1->getHeight();
 	mBasePosition        = mPic1->mBasePosition;
 	mPaneAlpha           = mPic1->mAlpha;
 	bool alphatype       = mPic1->mIsInfluencedAlpha;
 
-	mPane12DistX = absF(mPanePosition.x - mPic2->mOffset.x);
-	mPane13DistX = mPaneSize.x + absF(mPanePosition.x - mPic3->mOffset.x);
+	mPane12DistX = absF(mPanePosition.x - mPic2->mTranslateX);
+	mPane13DistX = mPaneSize.x + absF(mPanePosition.x - mPic3->mTranslateX);
 	mKetaScaleX  = 1.0f;
 	mPic1->hide();
 	mPic2->hide();
@@ -216,24 +216,25 @@ void CallBack_CounterRV::init(J2DScreen* screen, u64 tag1, u64 tag2, u64 tag3, u
 	mPaneBounds.y = box->i.y;
 	if (hasMother) {
 		for (int i = 0; i < mMaxDisplayDigitNum; i++) {
-			J2DPane* newpane = CopyPictureToPane(mPic1, mMotherPane, mPanePosition.x, mPanePosition.y, 'ogPic_0' + i);
+			J2DPane* newpane;
+			newpane = CopyPictureToPane(mPic1, mMotherPane, mPanePosition.x, mPanePosition.y, 'ogPic_0' + i);
 			newpane->setBasePosition((J2DBasePosition)mBasePosition);
 			newpane->setInfluencedAlpha(alphatype, false);
 			mCounterDigits[i] = new CounterKeta(static_cast<J2DPicture*>(newpane));
 		}
 	} else {
-
-		J2DPane* newpane = CopyPictureToPane(mPic1, mMotherPane, mPanePosition.x, mPanePosition.y, 'ogPic_0');
+		J2DPane* newpane;
+		newpane = CopyPictureToPane(mPic1, mMotherPane, mPanePosition.x, mPanePosition.y, 'ogPic_0');
 		newpane->setBasePosition((J2DBasePosition)mBasePosition);
 		newpane->setInfluencedAlpha(alphatype, false);
 		mCounterDigits[0] = new CounterKeta(static_cast<J2DPicture*>(newpane));
 
 		for (int i = 1; i < mMinDisplayDigitNum; i++) {
-			J2DPane* newpane  = screen->search(tag1 + i);
+			newpane           = screen->search(tag1 + i);
 			mCounterDigits[i] = new CounterKeta(static_cast<J2DPicture*>(newpane));
 		}
 		for (int i = mMinDisplayDigitNum; i < mMaxDisplayDigitNum; i++) {
-			J2DPane* newpane = CopyPictureToPane(mPic1, mMotherPane, mPanePosition.x, mPanePosition.y, 'ogPic_0' + i);
+			newpane = CopyPictureToPane(mPic1, mMotherPane, mPanePosition.x, mPanePosition.y, 'ogPic_0' + i);
 			newpane->setBasePosition((J2DBasePosition)mBasePosition);
 			newpane->setInfluencedAlpha(alphatype, false);
 			mCounterDigits[i] = new CounterKeta(static_cast<J2DPicture*>(newpane));
@@ -359,7 +360,7 @@ void CallBack_CounterRV::setValue(bool isUp, bool isDown)
 
 		} else if (mCenteringMode == ECM_UNKNOWN_2) {
 			if (mCurrentDigitNum < mMinDisplayDigitNum) {
-				f32 x        = -(mMinDisplayDigitNum - mCurrentDigitNum);
+			//	f32 x        = -(mMinDisplayDigitNum - mCurrentDigitNum);
 				mPaneOffsetY = (mKetaScaleX * (mPane12DistX * f32(-(mMinDisplayDigitNum - mCurrentDigitNum))));
 			}
 
@@ -382,7 +383,7 @@ void CallBack_CounterRV::setValue(bool isUp, bool isDown)
 				if (mIsPuyoAnim) {
 					pane->setBasePosition(J2DPOS_Center);
 					CounterKeta* keta = mCounterDigits[i];
-					keta->mSize       = Vector2f(mKetaScaleX, mPaneScale.y);
+					keta->mSize.set(mKetaScaleX, mPaneScale.y);
 
 				} else {
 					pane->setBasePosition((J2DBasePosition)mBasePosition);

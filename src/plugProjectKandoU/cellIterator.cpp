@@ -233,20 +233,30 @@ void CellIterator::calcExtent()
 {
 	// Get the cell manager and sphere properties from mArg
 	CellPyramid* cellManager = mArg.mCellMgr;
-	Vector3f spherePosition  = mArg.mSphere.mPosition;
-	f32 sphereRadius         = mArg.mSphere.mRadius;
 
-	// Get the bounds from the cell manager
-	Vector2f bounds(cellManager->mBounds.x, cellManager->mBounds.y);
+	u16 layerSize = cellManager->getLayer(mCurrLayerIdx)->mLayerSize;
+	f32 mult      = (f32)layerSize * cellManager->mScale;
 
-	// Calculate the normalization factor
-	f32 normalizationFactor = 1.0f / (cellManager->mScale * cellManager->getLayer(mCurrLayerIdx)->mLayerSize);
+	f32 xLow = mArg.mSphere.mPosition.x - mArg.mSphere.mRadius;
+	f32 xHi  = mArg.mSphere.mPosition.x + mArg.mSphere.mRadius;
+	f32 yLow = mArg.mSphere.mPosition.z - mArg.mSphere.mRadius;
+	f32 yHi  = mArg.mSphere.mPosition.z + mArg.mSphere.mRadius;
+
+	f32 left  = cellManager->mBounds.x;
+	f32 right = cellManager->mBounds.y;
+
+	f32 xLowDiff = xLow - right;
+	f32 yLowDiff = yLow - left;
+	f32 xHiDiff  = xHi - right;
+	f32 yHiDiff  = yHi - left;
+
+	f32 scale = 1.0f / mult;
 
 	// Calculate the minimum and maximum x and y values
-	mMinX = (spherePosition.x - sphereRadius - bounds.x) * normalizationFactor;
-	mMinY = (spherePosition.z - sphereRadius - bounds.y) * normalizationFactor;
-	mMaxX = (spherePosition.x + sphereRadius - bounds.x) * normalizationFactor;
-	mMaxY = (spherePosition.z + sphereRadius - bounds.y) * normalizationFactor;
+	mMinX = xLowDiff * scale;
+	mMinY = yLowDiff * scale;
+	mMaxX = xHiDiff * scale;
+	mMaxY = yHiDiff * scale;
 
 	if (mMinX > mMaxX) {
 		JUT_PANICLINE(261, "x %f>%f", mMinX, mMaxX);

@@ -1,18 +1,18 @@
-#include "P2Macros.h"
-#include "PSM/ObjCalc.h"
-#include "PSM/Cluster.h"
-#include "PSSystem/ClusterSe.h"
-#include "PSM/WorldMapRocket.h"
-#include "PSM/PikiHumming.h"
-#include "PSSystem/PSSystemIF.h"
-#include "JSystem/JAudio/JALCalc.h"
+#include "Game/CPlate.h"
 #include "Game/EnemyBase.h"
 #include "Game/Navi.h"
 #include "Game/Piki.h"
-#include "Game/CPlate.h"
-#include "PSM/EnemyBase.h"
+#include "JSystem/JAudio/JALCalc.h"
+#include "P2Macros.h"
 #include "PSM/BossSeq.h"
+#include "PSM/Cluster.h"
 #include "PSM/CreaturePrm.h"
+#include "PSM/ObjCalc.h"
+#include "PSM/PikiHumming.h"
+#include "PSM/WorldMapRocket.h"
+#include "PSSystem/ClusterSe.h"
+#include "PSSystem/PSMainSide_ObjSound.h"
+#include "PSSystem/PSSystemIF.h"
 #include "utilityU.h"
 
 namespace PSM {
@@ -49,7 +49,7 @@ PSSystem::ClusterSe::PartInitArg ClusterFactory::partInit(u8 groupType)
 			arg.mSoundID                 = PSSE_EN_BUTTERFLY_S;
 			break;
 		default:
-			P2ASSERTLINE(62, false);
+			P2ASSERTLINE(67, false);
 		}
 		break;
 	}
@@ -73,12 +73,12 @@ PSSystem::ClusterSe::PartInitArg ClusterFactory::partInit(u8 groupType)
 			arg.mMinEnemyCount           = 0;
 			break;
 		default:
-			P2ASSERTLINE(95, false);
+			P2ASSERTLINE(100, false);
 		}
 		break;
 	}
 	default:
-		P2ASSERTLINE(100, false);
+		P2ASSERTLINE(105, false);
 		break;
 	}
 	return arg;
@@ -241,6 +241,32 @@ void PikiHumming::init(HumType type, u32 sound, int a, int b)
 	mCounter  = -1;
 }
 
+void PikiHumming::exec(HumType type, bool doPlay)
+{
+	u8 shouldPlay = true;
+	u8 sameType   = (mHumType == type);
+	if (sameType == false || doPlay == false) {
+		if (mCounter == -1) {
+			_00 = 0;
+		}
+		shouldPlay = false;
+	}
+	mIsActive = false;
+	if (shouldPlay) {
+		if (_00 % mCounterMax == 0) {
+			mIsActive = true;
+			_00       = 0;
+		}
+		_00++;
+	}
+	if (mCounter >= 0) {
+		mCounter++;
+		if (mCounter >= mCounterMax) {
+			mCounter = -1;
+		}
+	}
+}
+
 /**
  * @note Address: 0x8046D8D0
  * @note Size: 0xFC
@@ -255,31 +281,6 @@ PikiHummingMgr::PikiHummingMgr()
 	mHummingArray[0].init(HumType_Shout, PSSE_PK_SHOUT01, 72, 4);
 	mHummingArray[1].init(HumType_AiNoUta, PSSE_PK_AINOUTA_RU, 300, 2);
 	mHummingArray[2].init(HumType_Clear, PSSE_PK_HUMING01, 160, 3);
-}
-
-void PikiHumming::exec(HumType type, bool doPlay)
-{
-	bool test = true;
-	if ((type == mHumType) || !doPlay) {
-		if (mCounter == -1) {
-			_00 = 0;
-		}
-		test = false;
-	}
-	mIsActive = false;
-	if (test) {
-		if (_00 - (_00 / mCounterMax) * mCounterMax == 0) {
-			mIsActive = true;
-			_00       = 0;
-		}
-		_00++;
-	}
-	if (mCounter >= 0) {
-		mCounter++;
-		if (mCounter >= mCounterMax) {
-			mCounter = -1;
-		}
-	}
 }
 
 /**
@@ -313,7 +314,8 @@ void PikiHummingMgr::exec()
 	}
 
 	if (newState != HumType_AiNoUta) {
-		Scene_Game* scene = PSMGetGameScene();
+		SceneBase* base   = static_cast<SceneBase*>(PSMGetPikSceneMgrCheck()->getChildScene());
+		Scene_Game* scene = base->isGameScene() ? static_cast<Scene_Game*>(base) : nullptr;
 		if (scene->isPollutUp() && (u32)scene->getPollutUpTimer() > 60) {
 			newState = HumType_Clear;
 		}
@@ -327,7 +329,7 @@ void PikiHummingMgr::exec()
 
 	mCurrentType = newState;
 	for (u8 i = 0; i < HumType_Count; i++) {
-		u8 doPlay = mDoAiNoUta;
+		bool doPlay = mDoAiNoUta;
 		mHummingArray[i].exec((HumType)mCurrentType, doPlay);
 	}
 	mCurrID = 0;
@@ -812,8 +814,8 @@ void PikiHumming::play(PSM::Piki* piki)
 {
 	u32 id = static_cast<Game::Piki*>(piki->mGameObj)->getFormationSlotID();
 
-	u32 test = mSoundID + (id - (id / _0C) * _0C);
-	piki->startPikiSound(piki, test, 0);
+	u32 soundID = mSoundID + id % _0C;
+	piki->startPikiSound(piki, soundID, 0);
 	mCounter = 0;
 }
 
@@ -829,61 +831,6 @@ void PikiHummingMgr::play(PSM::Piki* piki)
 			mHummingArray[mCurrentType].play(piki);
 		}
 	}
-	/*
-	stwu     r1, -0x10(r1)
-	mflr     r0
-	stw      r0, 0x14(r1)
-	stw      r31, 0xc(r1)
-	mr       r31, r4
-	stw      r30, 8(r1)
-	lbz      r0, 0x10(r3)
-	cmplwi   r0, 0
-	beq      lbl_8046E09C
-	lwz      r4, 0x74(r31)
-	lwz      r0, 0(r3)
-	cmplw    r4, r0
-	blt      lbl_8046E09C
-	lwz      r4, 8(r3)
-	addi     r0, r4, 1
-	stw      r0, 8(r3)
-	lwz      r0, 8(r3)
-	cmpwi    r0, 4
-	bge      lbl_8046E09C
-	lwz      r0, 4(r3)
-	lwz      r3, 0xc(r3)
-	mulli    r0, r0, 0x1c
-	add      r30, r3, r0
-	lbz      r0, 0x18(r30)
-	cmplwi   r0, 0
-	beq      lbl_8046E09C
-	lwz      r3, 0x2c(r31)
-	bl       getFormationSlotID__Q24Game4PikiFv
-	lwz      r5, 0xc(r30)
-	cmplwi   r31, 0
-	lwz      r6, 4(r30)
-	mr       r4, r31
-	divwu    r0, r3, r5
-	mullw    r0, r0, r5
-	subf     r0, r0, r3
-	add      r5, r6, r0
-	beq      lbl_8046E088
-	addi     r4, r31, 0x30
-
-lbl_8046E088:
-	mr       r3, r31
-	li       r6, 0
-	bl       startPikiSound__Q23PSM4PikiFPQ27JAInter6ObjectUlUl
-	li       r0, 0
-	stw      r0, 0x10(r30)
-
-lbl_8046E09C:
-	lwz      r0, 0x14(r1)
-	lwz      r31, 0xc(r1)
-	lwz      r30, 8(r1)
-	mtlr     r0
-	addi     r1, r1, 0x10
-	blr
-	*/
 }
 
 } // namespace PSM
@@ -899,7 +846,7 @@ PSM::SeSound* PSStartSoundVec(u32 soundID, Vec* vec)
 	}
 
 	u8 playerNo = PSM::ObjCalcBase::getInstance()->getPlayerNo(*vec);
-	P2ASSERTLINE(522, vec);
+	P2ASSERTLINE(527, vec);
 
 	JAISound* soundHandle = nullptr;
 	PSSystem::spSysIF->startSoundVecReturnHandleT(&soundHandle, soundID, vec, 0, 0, playerNo);
@@ -992,17 +939,17 @@ JAISound* PSStartEnemyGhostSE(Game::EnemyBase* enemy, f32)
 			pitch  = 1.7f;
 			break;
 
-		case Game::EnemyTypeID::EnemyID_UjiA:
-		case Game::EnemyTypeID::EnemyID_UjiB:
-		case Game::EnemyTypeID::EnemyID_Tobi:
-		case Game::EnemyTypeID::EnemyID_TamagoMushi:
-			volume = 0.6f;
-			pitch  = 1.8f;
-			break;
 		case Game::EnemyTypeID::EnemyID_FireOtakara:
 		case Game::EnemyTypeID::EnemyID_WaterOtakara:
 		case Game::EnemyTypeID::EnemyID_GasOtakara:
 		case Game::EnemyTypeID::EnemyID_ElecOtakara:
+			volume = 0.6f;
+			pitch  = 1.8f;
+			break;
+		case Game::EnemyTypeID::EnemyID_UjiA:
+		case Game::EnemyTypeID::EnemyID_UjiB:
+		case Game::EnemyTypeID::EnemyID_Tobi:
+		case Game::EnemyTypeID::EnemyID_TamagoMushi:
 			volume = 0.5f;
 			pitch  = 2.0f;
 			break;
@@ -1287,8 +1234,8 @@ JAISe* PSStartTresureLaderNoiseSE(u8 state, f32 a1, f32)
 			sLaderNoiseWait  = sLaderNoiseFuefukiTimerCenter + delay;
 		}
 		if (sound) {
-			f32 calc                = JALCalc::getParamByExp(a1, sLaderNoiseFuefukiSensMin, sLaderNoiseFuefukiSensMax, sLaderNoiseVolumeExp,
-			                                                 sLaderNoiseFuefukiVolumeMin, sLaderNoiseFuefukiVolumeMax, JALCalc::CS_POSITIVE_CURVE);
+			f32 calc = JALCalc::getParamByExp(a1, sLaderNoiseFuefukiSensMin, sLaderNoiseFuefukiSensMax, sLaderNoiseVolumeExp,
+			                                  sLaderNoiseFuefukiVolumeMin, sLaderNoiseFuefukiVolumeMax, JALCalc::CS_POSITIVE_CURVE);
 			PSM::MiddleBossSeq* seq = PSMGetMiddleBossSeq();
 			if (seq && *seq->getHandleP()) {
 				f32 vol = (*seq->getHandleP())->getVolume(SOUNDPARAM_Unk0);

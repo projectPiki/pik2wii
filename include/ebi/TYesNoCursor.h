@@ -3,7 +3,7 @@
 
 #include "System.h"
 #include "ebi/E2DGraph.h"
-#include "efx2d/T2DCursor.h"
+#include "efx2d/efx2dEffect.h"
 
 struct J2DPane;
 

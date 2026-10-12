@@ -5,12 +5,11 @@
 #include "Game/gamePlayData.h"
 #include "Game/routeMgr.h"
 #include "PSM/CreatureObj.h"
-#include "PSM/WorkItem.h"
+#include "PSSystem/PSMainSide_ObjSound.h"
 #include "PSSystem/PSSystemIF.h"
 #include "RevoSDK/rand.h"
 #include "Sys/MatBaseAnimator.h"
-#include "efx/TEgate.h"
-#include "efx/TGate.h"
+#include "efx/efxObject.h"
 #include "nans.h"
 
 // TODO: fix this up
@@ -199,10 +198,10 @@ void ItemGate::update()
 void ItemGate::doAI()
 {
 	mMabiki.update(4);
-	mFsm->exec(this);
+	FSMItem::doAI();
 	switch (mSoundEvent.update()) {
 	case TSE_ApplyTransition:
-		P2ASSERTLINE(354, mSoundObj->getCastType() == PSM::CCT_WorkItem);
+		P2ASSERTLINE(367, mSoundObj->getCastType() == PSM::CCT_WorkItem);
 		static_cast<PSM::WorkItem*>(mSoundObj)->eventStop();
 	}
 
@@ -217,8 +216,8 @@ void ItemGate::doAI()
  */
 void ItemGate::onKeyEvent(const SysShape::KeyEvent& keyEvent)
 {
-	if (mCurrentState) {
-		mCurrentState->onKeyEvent(this, keyEvent);
+	if (getCurrState()) {
+		getCurrState()->onKeyEvent(this, keyEvent);
 	}
 }
 
@@ -228,15 +227,15 @@ void ItemGate::onKeyEvent(const SysShape::KeyEvent& keyEvent)
  */
 bool ItemGate::interactAttack(Game::InteractAttack& attack)
 {
-	if (mCurrentState) {
-		mCurrentState->onDamage(this, attack.mDamage);
+	if (getCurrState()) {
+		getCurrState()->onDamage(this, attack.mDamage);
 		switch (mSoundEvent.event()) {
 		case TSE_Active:
-			P2ASSERTLINE(380, mSoundObj->getCastType() == PSM::CCT_WorkItem);
+			P2ASSERTLINE(393, mSoundObj->getCastType() == PSM::CCT_WorkItem);
 			static_cast<PSM::WorkItem*>(mSoundObj)->eventStart();
 			break;
 		case TSE_Apply:
-			P2ASSERTLINE(386, mSoundObj->getCastType() == PSM::CCT_WorkItem);
+			P2ASSERTLINE(399, mSoundObj->getCastType() == PSM::CCT_WorkItem);
 			static_cast<PSM::WorkItem*>(mSoundObj)->eventRestart();
 			break;
 		}
@@ -883,7 +882,7 @@ GenItemParm* ItemGateMgr::generatorNewItemParm()
  */
 void ItemGateMgr::generatorWrite(Stream& stream, Game::GenItemParm* param)
 {
-	P2ASSERTLINE(794, param);
+	P2ASSERTLINE(807, param);
 	GenGateParm* gateParam = static_cast<GenGateParm*>(param);
 	stream.textWriteTab(stream.mTabCount);
 	stream.writeFloat(gateParam->mLife);
@@ -899,7 +898,7 @@ void ItemGateMgr::generatorWrite(Stream& stream, Game::GenItemParm* param)
  */
 void ItemGateMgr::generatorRead(Stream& stream, Game::GenItemParm* param, u32 version)
 {
-	P2ASSERTLINE(808, param);
+	P2ASSERTLINE(821, param);
 	GenGateParm* gateParam = static_cast<GenGateParm*>(param);
 	if (version >= '0001') {
 		gateParam->mLife = stream.readFloat();
@@ -917,7 +916,7 @@ void ItemGateMgr::generatorRead(Stream& stream, Game::GenItemParm* param, u32 ve
  */
 BaseItem* ItemGateMgr::generatorBirth(Vector3f& pos, Vector3f& rot, Game::GenItemParm* param)
 {
-	P2ASSERTLINE(823, param);
+	P2ASSERTLINE(836, param);
 	GenGateParm* gateParam      = static_cast<GenGateParm*>(param);
 	ItemGate* gate              = static_cast<ItemGate*>(birth());
 	gate->mMaxSegmentHealth     = gateParam->mLife;
@@ -999,8 +998,6 @@ void GateWaitState::onKeyEvent(Game::ItemGate*, const SysShape::KeyEvent&)
 void GateDamagedState::init(Game::ItemGate* item, Game::StateArg* arg)
 {
 	item->startDamageMotion();
-	// item->mAnimator.startAnim(item->mSegmentsDown, item);
-	// item->mAnimSpeed = 30.0f;
 	mNotInAnim = false;
 }
 
@@ -1015,7 +1012,7 @@ void GateDamagedState::exec(Game::ItemGate* gate)
 	if (gate->mCurrentSegmentHealth < 0.0f) {
 		transit(gate, GATESTATE_Down, nullptr);
 	} else if (mNotInAnim) {
-		if (gate->mDamage > 0.0f) { // flow swap
+		if (gate->mDamage > 0.0f) {
 			gate->mAnimator.startAnim(gate->mSegmentsDown, gate);
 			gate->mAnimSpeed = 30.0f;
 		} else {
@@ -1121,7 +1118,7 @@ void GateDownState::onKeyEvent(Game::ItemGate* gate, const SysShape::KeyEvent& k
 			gate->mEgateEfxBC->fade();
 		}
 		gate->mSoundEvent.finish();
-		P2ASSERTLINE(997, gate->mSoundObj->getCastType() == PSM::CCT_WorkItem);
+		P2ASSERTLINE(1010, gate->mSoundObj->getCastType() == PSM::CCT_WorkItem);
 		static_cast<PSM::WorkItem*>(gate->mSoundObj)->eventFinish();
 		PSSystem::spSysIF->playSystemSe(PSSE_SY_WORK_FINISH, 0);
 	} else if (gate->mDamage > 0.0f) {
@@ -1215,7 +1212,7 @@ GenItemParm* ItemDengekiGate::Mgr::generatorNewItemParm()
  */
 void ItemDengekiGate::Mgr::generatorWrite(Stream& stream, Game::GenItemParm* param)
 {
-	P2ASSERTLINE(1177, param);
+	P2ASSERTLINE(1190, param);
 	GenGateParm* gateParam = static_cast<GenGateParm*>(param);
 	stream.textWriteTab(stream.mTabCount);
 	stream.writeFloat(gateParam->mLife);
@@ -1228,7 +1225,7 @@ void ItemDengekiGate::Mgr::generatorWrite(Stream& stream, Game::GenItemParm* par
  */
 void ItemDengekiGate::Mgr::generatorRead(Stream& stream, Game::GenItemParm* param, u32 version)
 {
-	P2ASSERTLINE(1187, param);
+	P2ASSERTLINE(1200, param);
 	GenGateParm* gateParam = static_cast<GenGateParm*>(param);
 	gateParam->mLife       = stream.readFloat();
 }
@@ -1239,7 +1236,7 @@ void ItemDengekiGate::Mgr::generatorRead(Stream& stream, Game::GenItemParm* para
  */
 BaseItem* ItemDengekiGate::Mgr::generatorBirth(Vector3f& pos, Vector3f& rot, Game::GenItemParm* param)
 {
-	P2ASSERTLINE(1197, param);
+	P2ASSERTLINE(1210, param);
 	GenGateParm* gateParam      = static_cast<GenGateParm*>(param);
 	ItemGate* gate              = static_cast<ItemGate*>(birth());
 	gate->mMaxSegmentHealth     = gateParam->mLife;

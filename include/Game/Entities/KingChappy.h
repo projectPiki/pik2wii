@@ -8,8 +8,8 @@
 #include "Game/JointFuncs.h"
 #include "Game/EnemyBase.h"
 #include "Game/WalkSmokeEffect.h"
-#include "efx/TKch.h"
-#include "efx/TEnemyHamon.h"
+#include "efx/efxEnemyBoss.h"
+#include "efx/efxEnemyGeneral.h"
 #include "SysShape/Joint.h"
 #include "Collinfo.h"
 
@@ -129,6 +129,19 @@ struct Parms : public EnemyParmsBase {
 };
 
 struct Obj : public EnemyBase {
+	// for createEffect/fadeEffect
+	enum KingEfxType {
+		KingEfx_Drool       = 0,
+		KingEfx_Dive        = 1,
+		KingEfx_Roar        = 2,
+		KingEfx_RoarInd     = 3,
+		KingEfx_EatBomb     = 4,
+		KingEfx_NoseSmoke   = 5,
+		KingEfx_AttackDrool = 6,
+		KingEfx_Dead        = 7,
+		KingEfx_Hiding      = 8,
+	};
+	
 	Obj();
 
 	//////////////// VTABLE
@@ -229,18 +242,30 @@ struct Obj : public EnemyBase {
 	void fadeEffect(int);
 	void createBounceEffect();
 
-	// for createEffect/fadeEffect
-	enum KingEfxType {
-		KingEfx_Drool       = 0,
-		KingEfx_Dive        = 1,
-		KingEfx_Roar        = 2,
-		KingEfx_RoarInd     = 3,
-		KingEfx_EatBomb     = 4,
-		KingEfx_NoseSmoke   = 5,
-		KingEfx_AttackDrool = 6,
-		KingEfx_Dead        = 7,
-		KingEfx_Hiding      = 8,
-	};
+	inline f32 turnToTargetScaled(Vector3f& target, f32 turnSpeed, f32 maxAngle, f32 scale)
+	{
+		f32 angleDist = getAngDist(target);
+		maxAngle *= scale;
+		turnSpeed *= scale;
+		f32 angle = clamp(angleDist * turnSpeed, TORADIANS(maxAngle));
+		f32 a     = roundAng(angle + getFaceDir());
+		updateFaceDir(a);
+		return angleDist;
+	}
+
+	inline bool isBombAttackable(Creature* target, f32 attackRange, f32 attackAngle)
+	{
+		return isBombAttackable(target, getAngDist(target), attackRange, attackAngle);
+	}
+
+	inline bool isBombAttackable(Creature* target, f32 angleDiff, f32 attackRange, f32 attackAngle)
+	{
+		bool result = false;
+		if (isRadiusWithin(getSqrTargetSeparation(target), attackRange) && isAngleWithin(angleDiff, attackAngle)) {
+			result = true;
+		}
+		return result;
+	}
 
 	// _00 		= VTBL
 	// _00-_2BC	= EnemyBase

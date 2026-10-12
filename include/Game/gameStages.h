@@ -25,7 +25,7 @@ struct CaveOtakara : public CNode {
 
 struct CaveOtakaraInfo {
 	CaveOtakaraInfo();
-	~CaveOtakaraInfo();
+	//~CaveOtakaraInfo();
 
 	void read(Stream&);
 
@@ -53,7 +53,7 @@ struct LimitGen : public CNode {
 
 struct LimitGenInfo {
 	LimitGenInfo();
-	~LimitGenInfo();
+	//~LimitGenInfo();
 
 	void read(Stream&);
 
@@ -110,7 +110,7 @@ struct Stages {
 
 	static void createMapMgr(CourseInfo*, RouteMgr*);
 
-	inline u16 getCourseCount() const { return mCourseCount; }
+	inline int getCourseCount() const { return mCourseCount; }
 
 	CourseInfo mCourseInfo; // _00
 	u16 mCourseCount;       // _100

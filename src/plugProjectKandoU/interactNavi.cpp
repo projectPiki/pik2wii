@@ -3,7 +3,7 @@
 #include "Game/Navi.h"
 #include "Game/NaviState.h"
 
-#include "PSM/Navi.h"
+#include "PSSystem/PSMainSide_ObjSound.h"
 
 #include "RevoSDK/rand.h"
 
@@ -28,14 +28,16 @@ bool Navi::stimulate(Game::Interaction& interaction)
  */
 bool InteractSarai::actNavi(Game::Navi* navi)
 {
-	if (!gameSystem || gameSystem->isFlag(GAMESYS_IsGameWorldActive)) {
-		if (!navi->isStickTo()) {
-			navi->startStick(mCreature, mCollPart);
-			navi->transit(NSID_Sarai, nullptr);
-		}
-
-		return true;
+	if (gameSystem && !gameSystem->isFlag(GAMESYS_IsGameWorldActive)) {
+		return false;
 	}
+
+	if (!navi->isStickTo()) {
+		navi->startStick(mCreature, mCollPart);
+		navi->transit(NSID_Sarai, nullptr);
+	}
+
+	return true;
 }
 
 /**
@@ -84,15 +86,17 @@ bool InteractWind::actNavi(Game::Navi* navi)
  */
 bool InteractDenki::actNavi(Game::Navi* navi)
 {
-	if (!gameSystem || gameSystem->isFlag(GAMESYS_IsGameWorldActive)) {
-		if (!playData->mOlimarData->hasItem(OlimarData::ODII_DreamMaterial)) {
-			NaviFlickArg flickArg(mCreature, mDirection, mDamage);
-			navi->transit(NSID_Flick, &flickArg);
-			return true;
-		}
-
+	if (gameSystem && !gameSystem->isFlag(GAMESYS_IsGameWorldActive)) {
 		return false;
 	}
+
+	if (!playData->mOlimarData->hasItem(OlimarData::ODII_DreamMaterial)) {
+		NaviFlickArg flickArg(mCreature, mDirection, mDamage);
+		navi->transit(NSID_Flick, &flickArg);
+		return true;
+	}
+
+	return false;
 }
 
 /**
@@ -112,26 +116,28 @@ bool InteractFallMeck::actNavi(Game::Navi* navi)
  */
 bool InteractFlick::actNavi(Game::Navi* navi)
 {
-	if (!gameSystem || gameSystem->isFlag(GAMESYS_IsGameWorldActive)) {
-		if (!playData->isDemoFlag(DEMO_Reunite_Captains)) {
-			return false;
-		}
-
-		f32 dir = mAngle;
-		if (dir < -10.0f) {
-			dir = navi->getFaceDir();
-		}
-
-		f32 zRot = -cosf(dir);
-		f32 xRot = -sinf(dir);
-
-		f32 knockBack = (mKnockback * 0.1f) * randFloat() + mKnockback;
-
-		Vector3f direction(xRot * knockBack, randFloat() * 50.0f + 100.0f, zRot * knockBack);
-		NaviFlickArg flickArg(mCreature, direction, mNaviDamage);
-		navi->transit(NSID_Flick, &flickArg);
-		return true;
+	if (gameSystem && !gameSystem->isFlag(GAMESYS_IsGameWorldActive)) {
+		return false;
 	}
+
+	if (!playData->isDemoFlag(DEMO_Reunite_Captains)) {
+		return false;
+	}
+
+	f32 dir = mAngle;
+	if (dir < -10.0f) {
+		dir = navi->getFaceDir();
+	}
+
+	f32 zRot = -cosf(dir);
+	f32 xRot = -sinf(dir);
+
+	f32 knockBack = (mKnockback * 0.1f) * randFloat() + mKnockback;
+
+	Vector3f direction(xRot * knockBack, randFloat() * 50.0f + 100.0f, zRot * knockBack);
+	NaviFlickArg flickArg(mCreature, direction, mNaviDamage);
+	navi->transit(NSID_Flick, &flickArg);
+	return true;
 }
 
 /**
@@ -140,23 +146,25 @@ bool InteractFlick::actNavi(Game::Navi* navi)
  */
 bool InteractPress::actNavi(Game::Navi* navi)
 {
-	if (!gameSystem || gameSystem->isFlag(GAMESYS_IsGameWorldActive)) {
-		bool alive = navi->isAlive();
-		if (!alive) {
-			return false;
-		}
-
-		NaviState* naviState = navi->mCurrentState;
-
-		if (!naviState->invincible() && naviState->pressable()) {
-			navi->addDamage(mDamage, true);
-			navi->mFsm->transit(navi, NSID_Pressed, nullptr);
-		} else {
-			return false;
-		}
-
-		return true;
+	if (gameSystem && !gameSystem->isFlag(GAMESYS_IsGameWorldActive)) {
+		return false;
 	}
+
+	bool alive = navi->isAlive();
+	if (!alive) {
+		return false;
+	}
+
+	NaviState* naviState = navi->mCurrentState;
+
+	if (!naviState->invincible() && naviState->pressable()) {
+		navi->addDamage(mDamage, true);
+		navi->mFsm->transit(navi, NSID_Pressed, nullptr);
+	} else {
+		return false;
+	}
+
+	return true;
 }
 
 /**
@@ -188,18 +196,20 @@ bool InteractFire::actNavi(Game::Navi* navi)
  */
 bool InteractBubble::actNavi(Game::Navi* navi)
 {
-	if (!gameSystem || gameSystem->isFlag(GAMESYS_IsGameWorldActive)) {
-		if (gameSystem && gameSystem->isVersusMode()) {
-			return false;
-		}
-
-		if (navi->invincible()) {
-			return false;
-		}
-
-		navi->startDamage(mDamage);
-		return true;
+	if (gameSystem && !gameSystem->isFlag(GAMESYS_IsGameWorldActive)) {
+		return false;
 	}
+
+	if (gameSystem && gameSystem->isVersusMode()) {
+		return false;
+	}
+
+	if (navi->invincible()) {
+		return false;
+	}
+
+	navi->startDamage(mDamage);
+	return true;
 }
 
 /**

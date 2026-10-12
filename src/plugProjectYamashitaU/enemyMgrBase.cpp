@@ -8,8 +8,6 @@
 #include "PSSystem/PSSystemIF.h"
 #include "System.h"
 
-PSSystem::ArcMgr<PSGame::BASARC>* PSSystem::ArcMgr<PSGame::BASARC>::sInstance;
-
 namespace Game {
 
 /**

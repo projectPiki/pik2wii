@@ -24,15 +24,9 @@ struct BasePelletMgr : public GenericObjectMgr, virtual public _BasePelletMgrPar
 	BasePelletMgr(PelletList::cKind);
 
 	////////// VTABLE
-	virtual void resetMgr()             = 0;                             // _28
-	virtual void resetMgrAndResources() = 0;                             // _38
-	virtual Pellet* birth()             = 0;                             // _3C
-	virtual void doAnimation() { }                                       // _08 (weak)
-	virtual void doEntry() { }                                           // _0C (weak)
-	virtual void doSetView(int viewportNumber) { }                       // _10 (weak)
-	virtual void doViewCalc() { }                                        // _14 (weak)
-	virtual void doSimulation(f32 rate) { }                              // _18 (weak)
-	virtual void doDirectDraw(Graphics& gfx) { }                         // _1C (weak)
+	virtual void resetMgr()                      = 0;                    // _28
+	virtual void resetMgrAndResources()          = 0;                    // _38
+	virtual Pellet* birth()                      = 0;                    // _3C
 	virtual void kill(Pellet*)                   = 0;                    // _40
 	virtual void setupResources()                = 0;                    // _44
 	virtual Pellet* birthFromTeki(PelletConfig*) = 0;                    // _48
@@ -52,6 +46,12 @@ struct BasePelletMgr : public GenericObjectMgr, virtual public _BasePelletMgrPar
 	virtual void generatorWrite(Stream&, GenPelletParm*) { }     // _74 (weak)
 	virtual void generatorRead(Stream&, GenPelletParm*, u32) { } // _78 (weak)
 	virtual u32 generatorLocalVersion() { return '0000'; }       // _7C (weak)
+	virtual void doAnimation() { }                               // _08 (weak)
+	virtual void doEntry() { }                                   // _0C (weak)
+	virtual void doSetView(int viewportNumber) { }               // _10 (weak)
+	virtual void doViewCalc() { }                                // _14 (weak)
+	virtual void doSimulation(f32 rate) { }                      // _18 (weak)
+	virtual void doDirectDraw(Graphics& gfx) { }                 // _1C (weak)
 	virtual J3DModelData* generatorGetShape(GenPelletParm*);     // _80
 	virtual GenPelletParm* generatorNewPelletParm();             // _84
 	virtual Pellet* getObjectPtr(void*) = 0;                     // _88
@@ -100,10 +100,14 @@ struct FixedSizePelletMgr : public BasePelletMgr, public Container<T> {
 		mMonoObjectMgr.resetMgr();
 		mCollPartMgr.resetMgr();
 	}
-
 	virtual void resetMgrAndResources();          // _38
+
+	void onAlloc();
+	void alloc(int);
+
 	virtual void onCreateModel(SysShape::Model*); // _54
 	virtual Pellet* birth();                      // _3C
+	virtual Pellet* birthFromTeki(PelletConfig*); // _48
 	virtual void doAnimation();                   // _08
 	virtual void doEntry();                       // _0C
 	virtual void doSetView(int viewportNumber);   // _10
@@ -111,18 +115,13 @@ struct FixedSizePelletMgr : public BasePelletMgr, public Container<T> {
 	virtual void doSimulation(f32 rate);          // _18
 	virtual void doDirectDraw(Graphics& gfx);     // _1C
 	virtual void kill(Pellet*);                   // _40
-	virtual void* getNext(void*);                 // _8C
-	virtual void* getStart();                     // _90
-
-	void onAlloc();
-	void alloc(int);
-
-	virtual Pellet* birthFromTeki(PelletConfig*); // _48
 	virtual T* getObjectPtr(void*);               // _88
 	virtual T* get(void* index)                   // _C4
 	{
 		return mMonoObjectMgr.get(index);
 	}
+	virtual void* getNext(void*);                 // _8C
+	virtual void* getStart();                     // _90
 	virtual void* getEnd();                // _94
 	virtual void setComeAlive(int slotIdx) // _4C
 	{

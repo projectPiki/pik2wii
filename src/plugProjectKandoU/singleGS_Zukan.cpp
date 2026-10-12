@@ -16,7 +16,7 @@
 #include "Game/generalEnemyMgr.h"
 #include "Game/rumble.h"
 #include "Morimura/Zukan.h"
-#include "PSGame/SceneInfo.h"
+#include "PSGame/PikScene.h"
 #include "PSM/ObjMgr.h"
 #include "PSM/Scene.h"
 #include "PSSystem/PSGame.h"
@@ -83,7 +83,7 @@ void EnemyTexMgr::create()
 	for (int i = 0; i < EnemyTypeID::EnemyID_COUNT; i++) {
 		char* name = EnemyInfoFunc::getEnemyName(i, 0xffff);
 		if (name) {
-			char buffer[64];
+			char buffer[256];
 			sprintf(buffer, "%s/texture.bti", name);
 			ResTIMG* tex = mLoader.getResTIMG(buffer);
 			if (tex) {
@@ -285,7 +285,9 @@ void Camera::doUpdate()
 
 	cameraPos *= 0.1f;
 
-	mMovementVelocity += (cameraPos - mGoalPosition) * 0.1f;
+	Vector3f delta = cameraPos - mGoalPosition;
+	delta *= 0.1f;
+	mMovementVelocity += delta;
 	mMovementVelocity *= 0.6f;
 
 	if (!Screen::gGame2DMgr->isAppearConfirmWindow()) {
@@ -350,19 +352,20 @@ void Camera::doUpdate()
 	if (dist > 0.0001f) {
 		sep *= 1.0f / dist;
 	} else {
-		sep = Vector3f(0.0f, 0.0f, -1.0f);
+		sep.set(0.0f, 0.0f, -1.0f);
 	}
 
-	Vector3f vec2(mCurrentShakeMagnitude.x + mHorizontalInputDampened, mCurrentShakeMagnitude.y + mVerticalInputDampened,
-	              mCurrentShakeMagnitude.z);
-
 	Vector3f yAxis(0.0f, 1.0f, 0.0f);
-	Vector3f crossVec  = cross(sep, yAxis);
-	Vector3f crossVec2 = cross(crossVec, yAxis);
+	Vector3f crossVec  = sep.cross(yAxis);
+	Vector3f crossVec2 = crossVec.cross(yAxis);
 
-	mTrueCurrentPhysicalPos.x = crossVec2.x * vec2.z + ((yAxis.x * vec2.y) + ((crossVec.x * vec2.x) + (mGoalPosition.x + mObjectOffset.x)));
-	mTrueCurrentPhysicalPos.y = crossVec2.y * vec2.z + ((yAxis.y * vec2.y) + ((crossVec.y * vec2.x) + (mGoalPosition.y + mObjectOffset.y)));
-	mTrueCurrentPhysicalPos.z = crossVec2.z * vec2.z + ((yAxis.z * vec2.y) + ((crossVec.z * vec2.x) + (mGoalPosition.z + mObjectOffset.z)));
+	f32 shakeX = mCurrentShakeMagnitude.x + mHorizontalInputDampened;
+	f32 shakeY = mCurrentShakeMagnitude.y + mVerticalInputDampened;
+	f32 shakeZ = mCurrentShakeMagnitude.z;
+
+	mTrueCurrentPhysicalPos.x = crossVec2.x * shakeZ + ((yAxis.x * shakeY) + ((crossVec.x * shakeX) + (mGoalPosition.x + mObjectOffset.x)));
+	mTrueCurrentPhysicalPos.y = crossVec2.y * shakeZ + ((yAxis.y * shakeY) + ((crossVec.y * shakeX) + (mGoalPosition.y + mObjectOffset.y)));
+	mTrueCurrentPhysicalPos.z = crossVec2.z * shakeZ + ((yAxis.z * shakeY) + ((crossVec.z * shakeX) + (mGoalPosition.z + mObjectOffset.z)));
 
 	updateCameraShake();
 	updateFocus();
@@ -1040,9 +1043,12 @@ void Camera::updateCameraShake()
  */
 void Camera::updateFocus()
 {
-	f32 fov = absF(mCurrViewAngle - mViewAngle);
-	f32 y   = absF(mCurrentHorizontalInput - mHorizontalInputDampened);
-	f32 x   = absF(mCurrentVerticalInput - mVerticalInputDampened);
+	f64 fovAbs = fabs(mCurrViewAngle - mViewAngle);
+	f32 fov    = (f32)fovAbs;
+	f64 yAbs   = fabs(mCurrentHorizontalInput - mHorizontalInputDampened);
+	f32 y      = (f32)yAbs;
+	f64 xAbs   = fabs(mCurrentVerticalInput - mVerticalInputDampened);
+	f32 x      = (f32)xAbs;
 	if (fov > 1.0f || x > 30.0f || y > 30.0f) {
 		mFocusLevel += 0.05f;
 	}
@@ -1135,7 +1141,7 @@ lbl_80222460:
  */
 f32 Camera::getFocus()
 {
-	f32 focus = FABS(mFocusLevel);
+	f32 focus = absF(mFocusLevel);
 	if (focus > 0.9f) {
 		focus = 0.9f;
 	}
@@ -2062,7 +2068,8 @@ void ZukanState::execTeki(SingleGameSection* game)
 			Vector3f lookAtPos = mCamera->getLookAtPosition();
 			Vector3f cameraPos = mCamera->getPosition();
 
-			Vector3f viewVec = mCamera->getViewVector();
+			Vector3f viewVec;
+			viewVec = mCamera->getViewVector();
 			viewVec.length(); // unused + regswaps
 
 			f32 randAngle = TAU * randFloat();
@@ -2669,9 +2676,9 @@ void ZukanState::draw(SingleGameSection* game, Graphics& gfx)
 		mCamera->update();
 		gfx.setupJ2DOrthoGraphDefault();
 		gfx.mOrthoGraph.setPort();
-		J2DFillBox(0.0f, 0.0f, getWindowWidth(), getWindowHeight(), mParms->mColorSetting.getActiveColorA(),
-		           mParms->mColorSetting.getActiveColorA(), mParms->mColorSetting.getActiveColorB(),
-		           mParms->mColorSetting.getActiveColorB());
+		J2DFillBox(0.0f, 0.0f, getWindowWidth(), getWindowHeight(), mParms->mColorSetting.getActiveBgTopColor(),
+		           mParms->mColorSetting.getActiveBgTopColor(), mParms->mColorSetting.getActiveBgBottomColor(),
+		           mParms->mColorSetting.getActiveBgBottomColor());
 		game->BaseGameSection::draw3D(gfx);
 		drawLightEffect(game, gfx);
 		mTexture2->capture(0, 0, (GXTexFmt)mTexture2->mTexInfo->mTextureFormat, false, 0);
@@ -2680,176 +2687,9 @@ void ZukanState::draw(SingleGameSection* game, Graphics& gfx)
 	}
 
 	gfx.mOrthoGraph.setPort();
-	JUtility::TColor color(0, 0, 0, 255);
-	u16 height = sys->getRenderModeObj()->efbHeight;
-	u16 width  = sys->getRenderModeObj()->fbWidth;
-	J2DFillBox(0.0f, 0.0f, width, height, color);
+	J2DFillBox(0.0f, 0.0f, (u16)sys->getRenderModeWidth(), (u16)sys->getRenderModeHeight(), JUtility::TColor(0, 0, 0, 255));
 	j3dSys.drawInit();
 	game->BaseGameSection::draw2D(gfx);
-	/*
-	stwu     r1, -0x60(r1)
-	mflr     r0
-	stw      r0, 0x64(r1)
-	stw      r31, 0x5c(r1)
-	mr       r31, r5
-	stw      r30, 0x58(r1)
-	mr       r30, r4
-	stw      r29, 0x54(r1)
-	mr       r29, r3
-	lbz      r0, 0x88(r3)
-	cmplwi   r0, 0
-	beq      lbl_80223D64
-	lwz      r3, 0x98(r29)
-	bl       update__6CameraFv
-	mr       r3, r31
-	bl       setupJ2DOrthoGraphDefault__8GraphicsFv
-	addi     r3, r31, 0xbc
-	lwz      r12, 0xbc(r31)
-	lwz      r12, 0x14(r12)
-	mtctr    r12
-	bctrl
-	lwz      r7, 0x100(r29)
-	li       r10, -1
-	lfs      f1, lbl_8051A128@sda21(r2)
-	addi     r3, r1, 0x3c
-	stw      r10, 8(r1)
-	addi     r4, r1, 0x34
-	lbz      r11, 0x73(r7)
-	fmr      f2, f1
-	lbz      r9, 0x72(r7)
-	addi     r5, r1, 0x2c
-	lbz      r8, 0x71(r7)
-	addi     r6, r1, 0x24
-	lbz      r0, 0x70(r7)
-	stb      r8, 9(r1)
-	stb      r0, 8(r1)
-	stb      r9, 0xa(r1)
-	stb      r11, 0xb(r1)
-	lwz      r9, 8(r1)
-	stw      r10, 0xc(r1)
-	stw      r9, 0x24(r1)
-	lwz      r7, 0x100(r29)
-	stw      r10, 0x10(r1)
-	lbz      r12, 0x73(r7)
-	lbz      r11, 0x72(r7)
-	lbz      r8, 0x71(r7)
-	lbz      r0, 0x70(r7)
-	stb      r8, 0xd(r1)
-	stb      r0, 0xc(r1)
-	stb      r11, 0xe(r1)
-	stb      r12, 0xf(r1)
-	lwz      r8, 0xc(r1)
-	stw      r10, 0x14(r1)
-	stw      r8, 0x2c(r1)
-	lwz      r7, 0x100(r29)
-	stw      r9, 0x20(r1)
-	lbz      r11, 0x6f(r7)
-	lbz      r10, 0x6e(r7)
-	lbz      r9, 0x6d(r7)
-	lbz      r0, 0x6c(r7)
-	stb      r9, 0x11(r1)
-	stb      r0, 0x10(r1)
-	stb      r10, 0x12(r1)
-	stb      r11, 0x13(r1)
-	lwz      r0, 0x10(r1)
-	stw      r8, 0x28(r1)
-	stw      r0, 0x34(r1)
-	lwz      r7, 0x100(r29)
-	stw      r0, 0x30(r1)
-	lbz      r10, 0x6f(r7)
-	lbz      r9, 0x6e(r7)
-	lbz      r8, 0x6d(r7)
-	lbz      r0, 0x6c(r7)
-	stb      r8, 0x15(r1)
-	stb      r0, 0x14(r1)
-	stb      r9, 0x16(r1)
-	stb      r10, 0x17(r1)
-	lwz      r0, 0x14(r1)
-	stw      r0, 0x3c(r1)
-	lfs      f5, 0xbc(r29)
-	lfs      f3, 0xb4(r29)
-	lfs      f4, 0xc0(r29)
-	lfs      f0, 0xb8(r29)
-	fsubs    f3, f5, f3
-	stw      r0, 0x38(r1)
-	fsubs    f4, f4, f0
-	bl
-J2DFillBox__FffffQ28JUtility6TColorQ28JUtility6TColorQ28JUtility6TColorQ28JUtility6TColor
-	mr       r3, r30
-	mr       r4, r31
-	bl       draw3D__Q24Game15BaseGameSectionFR8Graphics
-	mr       r3, r29
-	mr       r4, r30
-	mr       r5, r31
-	bl
-drawLightEffect__Q34Game10SingleGame10ZukanStateFPQ24Game17SingleGameSectionR8Graphics
-	lwz      r3, 0xcc(r29)
-	li       r4, 0
-	li       r5, 0
-	li       r7, 0
-	lwz      r6, 0x20(r3)
-	li       r8, 0
-	lbz      r6, 0(r6)
-	bl       capture__10JUTTextureFii9_GXTexFmtbUc
-	mr       r3, r29
-	mr       r4, r30
-	mr       r5, r31
-	bl
-drawGradationEffect__Q34Game10SingleGame10ZukanStateFPQ24Game17SingleGameSectionR8Graphics
-	lwz      r3, 0xcc(r29)
-	li       r4, 0
-	li       r5, 0
-	li       r6, 4
-	li       r7, 0
-	li       r8, 0
-	bl       capture__10JUTTextureFii9_GXTexFmtbUc
-
-lbl_80223D64:
-	addi     r3, r31, 0xbc
-	lwz      r12, 0xbc(r31)
-	lwz      r12, 0x14(r12)
-	mtctr    r12
-	bctrl
-	li       r3, 0
-	li       r0, 0xff
-	stb      r3, 0x18(r1)
-	stb      r3, 0x19(r1)
-	stb      r3, 0x1a(r1)
-	stb      r0, 0x1b(r1)
-	lwz      r0, 0x18(r1)
-	stw      r0, 0x1c(r1)
-	bl       getRenderModeObj__6SystemFv
-	lhz      r29, 6(r3)
-	bl       getRenderModeObj__6SystemFv
-	lhz      r4, 4(r3)
-	lis      r0, 0x4330
-	lfs      f1, lbl_8051A128@sda21(r2)
-	addi     r3, r1, 0x1c
-	stw      r4, 0x44(r1)
-	lfd      f4, lbl_8051A1E8@sda21(r2)
-	fmr      f2, f1
-	stw      r0, 0x40(r1)
-	lfd      f0, 0x40(r1)
-	stw      r29, 0x4c(r1)
-	fsubs    f3, f0, f4
-	stw      r0, 0x48(r1)
-	lfd      f0, 0x48(r1)
-	fsubs    f4, f0, f4
-	bl       J2DFillBox__FffffQ28JUtility6TColor
-	lis      r3, j3dSys@ha
-	addi     r3, r3, j3dSys@l
-	bl       drawInit__6J3DSysFv
-	mr       r3, r30
-	mr       r4, r31
-	bl       draw2D__Q24Game15BaseGameSectionFR8Graphics
-	lwz      r0, 0x64(r1)
-	lwz      r31, 0x5c(r1)
-	lwz      r30, 0x58(r1)
-	lwz      r29, 0x54(r1)
-	mtlr     r0
-	addi     r1, r1, 0x60
-	blr
-	*/
 }
 
 /**
@@ -2859,9 +2699,6 @@ lbl_80223D64:
 void ZukanState::drawGradationEffect(SingleGameSection*, Graphics& gfx)
 {
 	f32 focus = mCamera->getFocus();
-	if (focus > 0.89999998f) {
-		focus = 0.89999998f;
-	}
 	if (focus > 1.0f) {
 		focus = 1.0f;
 	}
@@ -2872,25 +2709,48 @@ void ZukanState::drawGradationEffect(SingleGameSection*, Graphics& gfx)
 	tex->capture(0, 0, GX_TF_RGB565, true, GX_FALSE);
 
 	f32 min = 3.0f;
-	f32 max = min;
 	for (int i = 0; i < 4; i++) {
 		J2DPicture pic(tex);
 		JUtility::TColor color(255, 255, 255, 127);
-		pic.setCornerColor(color);
+		{
+			JUtility::TColor color3 = color;
+			JUtility::TColor color2 = color;
+			JUtility::TColor color1 = color;
+			JUtility::TColor color0 = color;
+			pic.setCornerColorRef(color0, color1, color2, color3);
+		}
 		GXSetAlphaUpdate(GX_FALSE);
 		pic.draw(min, min, mWindowBounds.getWidth(), mWindowBounds.getHeight(), false, false, false);
 
 		color.a -= 16;
-		pic.setCornerColor(color);
-		pic.draw(max, min, mWindowBounds.getWidth(), mWindowBounds.getHeight(), false, false, false);
+		{
+			JUtility::TColor color3 = color;
+			JUtility::TColor color2 = color;
+			JUtility::TColor color1 = color;
+			JUtility::TColor color0 = color;
+			pic.setCornerColorRef(color0, color1, color2, color3);
+		}
+		pic.draw(-min, min, mWindowBounds.getWidth(), mWindowBounds.getHeight(), false, false, false);
 
 		color.a -= 16;
-		pic.setCornerColor(color);
-		pic.draw(min, max, mWindowBounds.getWidth(), mWindowBounds.getHeight(), false, false, false);
+		{
+			JUtility::TColor color3 = color;
+			JUtility::TColor color2 = color;
+			JUtility::TColor color1 = color;
+			JUtility::TColor color0 = color;
+			pic.setCornerColorRef(color0, color1, color2, color3);
+		}
+		pic.draw(min, -min, mWindowBounds.getWidth(), mWindowBounds.getHeight(), false, false, false);
 
 		color.a -= 16;
-		pic.setCornerColor(color);
-		pic.draw(max, max, mWindowBounds.getWidth(), mWindowBounds.getHeight(), false, false, false);
+		{
+			JUtility::TColor color3 = color;
+			JUtility::TColor color2 = color;
+			JUtility::TColor color1 = color;
+			JUtility::TColor color0 = color;
+			pic.setCornerColorRef(color0, color1, color2, color3);
+		}
+		pic.draw(-min, -min, mWindowBounds.getWidth(), mWindowBounds.getHeight(), false, false, false);
 
 		GXInvalidateTexAll();
 		tex->capture(0, 0, GX_TF_RGB565, true, GX_FALSE);
@@ -2902,9 +2762,8 @@ void ZukanState::drawGradationEffect(SingleGameSection*, Graphics& gfx)
 	J2DPicture pic(mTexture2);
 	J2DPicture* picPtr = &pic;
 	picPtr->insert(tex, pic.mTextureCount, 1.0f);
-	f32 inv = 1.0f - focus;
-	picPtr->setBlendColorRatio(inv, focus, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f);
-	picPtr->setBlendAlphaRatio(inv, focus, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f);
+	picPtr->setBlendColorRatio(1.0f - focus, focus, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f);
+	picPtr->setBlendAlphaRatio(1.0f - focus, focus, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f);
 	picPtr->draw(0.0f, 0.0f, 0, false, false, false);
 	/*
 	.loc_0x0:
@@ -3286,11 +3145,11 @@ void ZukanState::drawLightEffect(SingleGameSection* game, Graphics& gfx)
 		sep.y += JMath::sincosTable_.mTable[113].first;
 		sep.y /= JMath::sincosTable_.mTable[56].first;
 		sep.y += 0.1f;
-		color = mParms->mColorSetting.mActiveColorC;
+		color = mParms->mColorSetting.mActiveGlowColor;
 	} else {
 		sep.y += JMath::sincosTable_.mTable[85].first;
 		sep.y /= JMath::sincosTable_.mTable[56].first;
-		color = mParms->mColorSetting.mActiveColorC;
+		color = mParms->mColorSetting.mActiveGlowColor;
 	}
 
 	if (sep.y < 0.0f) {
@@ -3339,13 +3198,16 @@ void ZukanState::drawLightEffect(SingleGameSection* game, Graphics& gfx)
 
 			if (factor > 0.0f) {
 				f32 alphaF = factor * (f32)color.a;
-				color.a    = (alphaF >= 0.0f) ? 0.5f + alphaF : alphaF - 0.5f;
+				int alphaI = (alphaF >= 0.0f) ? 0.5f + alphaF : alphaF - 0.5f;
+				color.a    = alphaI;
 				GXSetTevColor(GX_TEVREG0, color.toGXColor());
 
-				f32 u    = 0.005f * (f32)(i + 1); // f22
-				f32 v    = -u;                    // f24
+				f32 v;
+				f32 u    = 0.005f * (f32)(i + 1);
+				v        = -u;
 
 				GXBegin(GX_TRIANGLESTRIP, GX_VTXFMT0, 4);
+
 				GXPosition3f32(0.0f, 0.0f, 0.0f);
 				GXColor4u8(255, 255, 255, 255);
 				GXPosition2f32(u, v);
@@ -3960,15 +3822,16 @@ void ZukanState::dvdloadA()
 	mMainHeap = JKRExpHeap::create(mParentHeap->getFreeSize(), mParentHeap, true);
 	mMainHeap->becomeCurrentHeap();
 	char path[PATH_MAX]; // 0x160
-	sprintf(path, "user/Yamashita/zukan/%s/%s/arc.szs", "us", sDirName[mMapIndex]);
+	const char* region = "us";
+	sprintf(path, "user/Yamashita/zukan/%s/%s/arc.szs", region, sDirName[mMapIndex]);
 	JKRArchive* arc = JKRMountArchive(path, JKRArchive::EMM_Mem, nullptr, JKRArchive::EMD_Tail);
 	P2ASSERTLINE(2486, arc);
 	mParms = new IllustratedBook::Parms;
 	mParms->loadFile(arc);
 	mGameSect->addGenNode(mParms);
 	PSSystem::SingletonBase<PSM::ObjMgr>::newInstance();
-	int newWidth  = (int)(sys->getRenderModeObj()->fbWidth * 0.6f * 0.75f * 0.25f + 0.5f) * 4;
-	int newHeight = (int)(sys->getRenderModeObj()->efbHeight * 0.75f * 0.25f + 0.5f) * 4;
+	f32 newWidth  = (int)(sys->getRenderModeObj()->fbWidth * 0.6f * 0.75f * 0.25f + 0.5f) * 4;
+	f32 newHeight = (int)(sys->getRenderModeObj()->fbWidth * 0.75f * 0.25f + 0.5f) * 4;
 	Rectf bounds(0.0f, 0.0f, newWidth, newHeight);
 	mWindowBounds = bounds;
 	mCameraAspect = 0.0f;
@@ -4006,11 +3869,11 @@ void ZukanState::dvdloadA()
 	particleMgr->start();
 	shadowMgr = new ShadowMgr(2);
 
-	gfx = sys->mGfx;
-	vp1 = gfx->getViewport(PLAYER1_VIEWPORT);
-	vp2 = gfx->getViewport(PLAYER2_VIEWPORT);
-	shadowMgr->setViewport(vp1, 0);
-	shadowMgr->setViewport(vp2, 1);
+	gfx           = sys->mGfx;
+	Viewport* vp3 = gfx->getViewport(PLAYER1_VIEWPORT);
+	Viewport* vp4 = gfx->getViewport(PLAYER2_VIEWPORT);
+	shadowMgr->setViewport(vp3, 0);
+	shadowMgr->setViewport(vp4, 1);
 	mGameSect->initLights();
 	if (!rumbleMgr) {
 		rumbleMgr = new RumbleMgr;
@@ -4025,8 +3888,8 @@ void ZukanState::dvdloadA()
 	info.mCam1Position[0] = mCamera->getSoundPositionPtr();
 	info.mCam2Position[0] = mCamera->getSoundPositionPtr();
 	info.mCameraMtx[0]    = mCamera->getSoundMatrixPtr();
-	info.mBounds.mMin.set(-1000.0f, -1000.0f, -1000.0f);
-	info.mBounds.mMax.set(1000.0f, 1000.0f, 1000.0f);
+	info.mBounds.i.set(-1000.0f, -1000.0f, -1000.0f);
+	info.mBounds.i.set(1000.0f, 1000.0f, 1000.0f);
 	info.setStageFlag(PSGame::SceneInfo::SCENEFLAG_Unk0, PSGame::SceneInfo::SFBS_1);
 	info.mSceneType = PSGame::SceneInfo::PIKLOPEDIA;
 
@@ -4826,8 +4689,8 @@ void ZukanState::dvdloadB_teki()
 			parms->mGroupID = 0;
 		}
 		f32 range                                = parms->mParms.mAppearRange(); // f31
-		u8 count                                 = parms->mParms.mAppearNum();   // r25
 		IllustratedBook::PositionParms* posParms = &mParms->mPosParmsList.mParms[id];
+		u8 count                                 = parms->mParms.mAppearNum();   // r25
 		Vector3f posOffset;
 		posOffset.set(posParms->mParms.mAppearPosX(), posParms->mParms.mAppearPosY(), posParms->mParms.mAppearPosZ()); // f30, f29, f28
 
@@ -4883,7 +4746,7 @@ void ZukanState::dvdloadB_teki()
 			for (int j = 0; j < count; j++) {
 				for (int k = j + 1; k < count; k++) {
 					Vector3f sep = spawnPositions[j] - spawnPositions[k];
-					f32 dist     = sep.length();
+					f32 dist     = sep.magnitude();
 
 					if (dist < size) {
 						sep.normalise();
@@ -4987,14 +4850,15 @@ void ZukanState::dvdloadB_teki()
 
 				Vector3f lookAtPos = mCamera->getLookAtPosition();
 
-				Vector3f viewVec = mCamera->getViewVector();
+				Vector3f viewVec;
+				viewVec = mCamera->getViewVector();
 				viewVec.length(); // unused + regswaps
 
 				f32 randAngle = TAU * randFloat();
 				f32 randDist  = 100.0f * randFloat();
 
 				Vector3f direction = Vector3f(randDist * cosf(randAngle), 0.0f, randDist * sinf(randAngle));
-				Vector3f position  = (lookAtPos + direction);
+				Vector3f position  = Vector3f(lookAtPos + direction);
 				position.y += 200.0f;
 
 				piki->setPosition(position, false);

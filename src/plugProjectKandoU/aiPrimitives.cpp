@@ -11,8 +11,7 @@
 #include "PikiAI.h"
 #include "RevoSDK/rand.h"
 #include "Vector3.h"
-#include "efx/PikiDamage.h"
-#include "efx/TPk.h"
+#include "efx/efxPikmin.h"
 #include "nans.h"
 #include "types.h"
 
@@ -1784,7 +1783,7 @@ f32 ActPathMove::getCarrySpeed()
 	int min = pellet->getPelletConfigMin();
 	int max = pellet->getPelletConfigMax();
 
-	carryPower = pellet->mCarryPower;
+	carryPower = pellet->getCarryPower();
 	JUT_ASSERTLINE(1248, max, "max is 0 [%s]\n", pellet->mConfig->mParams.mName.mData);
 
 	return minSpeed + (((1.0f + carryPower) - (f32)min) / (f32)max) * (maxSpeed - minSpeed);

@@ -1,18 +1,13 @@
-#include "efx/TOtakara.h"
-#include "efx/TTsuyuGrow.h"
-#include "efx/Container.h"
-#include "efx/TEgate.h"
-#include "efx/TKouhai.h"
-#include "efx/TPelkira.h"
-#include "efx/WarpZone.h"
-#include "JSystem/JParticle/JPAMath.h"
+#include "efx/efxObject.h"
 #include "Game/Entities/ItemOnyon.h"
+#include "JSystem/JParticle/JPAMath.h"
 
-static void _Printf(char* format) { OSReport(format, __FILE__); }
+static void _Printf(char* format)
+{
+	OSReport(format, __FILE__);
+}
 
 namespace efx {
-
-
 
 /**
  * @note Address: 0x803B57BC

@@ -39,7 +39,9 @@ inline int _tolower(int c) {
     return ((c < 0) || (c >= 0x100)) ? c : (int) (_current_locale.ctype_cmpt_ptr->lower_map_ptr[c]);
 }
 
-inline int isprintable(int c) { return (int)(__ctype_map[(u8)c] & __printable); }
+inline int isprintable(int c) { 
+    return ((c < 0) || (c >= 0x100)) ? 0 : (int)(_current_locale.ctype_cmpt_ptr->ctype_map_ptr[c] & 0x40);
+}
 // added underscore to avoid naming conflicts
 
 

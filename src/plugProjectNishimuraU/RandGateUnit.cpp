@@ -1,6 +1,12 @@
 #include "Game/Cave/RandMapMgr.h"
 #include "RevoSDK/rand.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "246-RandGateUnit";
+}
+
 namespace Game {
 namespace Cave {
 /**
@@ -38,12 +44,11 @@ void RandGateUnit::setManageClassPtr(RandMapScore* score, RandItemUnit* item)
  */
 void RandGateUnit::setGateDoor()
 {
-	MapNode* room;
 	if (mGatePlacedCount < mGateMax) {
 		for (int i = 0; i < 100; i++) {
 			GateUnit* gate = getGateUnit();
 			int roomNum;
-			room = getRoomNodePtr(roomNum);
+			MapNode* room = getRoomNodePtr(roomNum);
 
 			if (gate != nullptr && room) {
 				int doorDirect = room->getDoorDirect(roomNum);
@@ -187,8 +192,8 @@ Game::Cave::MapNode* Game::Cave::RandGateUnit::getRoomLowScoreDoor(int& idx)
 	for (MapNode* node = placedNodes->getChild(); node != nullptr; node = node->getNext()) {
 		if (node->mUnitInfo->getUnitKind() == UNITKIND_Room) {
 			for (int i = 0; i < node->getNumDoors(); i++) {
-				if ((node->mAdjustInfo[i].mDoorScore > score) && !node->isGateSetDoor(i)) {
-					score = node->mAdjustInfo[i].mDoorScore;
+				if ((node->getDoorScore(i) > score) && !node->isGateSetDoor(i)) {
+					score = node->getDoorScore(i);
 				}
 			}
 		}
@@ -200,7 +205,7 @@ Game::Cave::MapNode* Game::Cave::RandGateUnit::getRoomLowScoreDoor(int& idx)
 				if (!node->isGateSetDoor(i)) {
 					nodeArray[total]  = node;
 					idxArray[total]   = i;
-					scoreArray[total] = (score + 1) - node->mAdjustInfo[i].mDoorScore;
+					scoreArray[total] = (score + 1) - node->getDoorScore(i);
 					scoreSum += scoreArray[total];
 					total++;
 				}

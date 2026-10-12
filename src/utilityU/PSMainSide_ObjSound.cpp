@@ -2,14 +2,12 @@
 #include "Game/Entities/PelletItem.h"
 #include "Game/Entities/PelletOtakara.h"
 #include "Game/Navi.h"
+#include "Game/pelletMgr.h"
 #include "PSGame/SeMgr.h"
+#include "PSM/BossBgmFader.h"
 #include "PSM/BossSeq.h"
 #include "PSM/CreaturePrm.h"
-#include "PSM/EnemyBoss.h"
-#include "PSM/Navi.h"
 #include "PSM/ObjCalc.h"
-#include "PSM/Tsuyukusa.h"
-#include "PSM/WorkItem.h"
 #include "PSMath.h"
 #include "utilityU.h"
 
@@ -150,10 +148,12 @@ void Creature::loopCalc(FrameCalcArg& arg)
 	PSMTXMultVec(*JAIBasic::msBasic->mCameras[players].mMtx, jai->_24, &pos);
 	dist = PSMath::calcMagnitude(pos);
 
+	JAISound* se;
+	JAISound_0x34* data;
 	for (u8 i = 0; i < jai->mHandleCount; i++) {
-		JAISound* se = jai->mSounds[i];
+		se = jai->mSounds[i];
 		if (se) {
-			JAISound_0x34* data                   = se->mSoundObj;
+			data                                  = se->mSoundObj;
 			data->mPosition                       = pos;
 			data->mDistance                       = dist;
 			static_cast<SeSound*>(se)->mPlayerNum = players;
@@ -165,84 +165,6 @@ void Creature::loopCalc(FrameCalcArg& arg)
 
 	f32& dolby = *arg.mDolby;
 	dolby      = SeSound::calcDolby(pos, dist);
-	/*
-	stwu     r1, -0x20(r1)
-	mflr     r0
-	stw      r0, 0x24(r1)
-	stmw     r27, 0xc(r1)
-	mr       r27, r3
-	mr       r28, r4
-	lwz      r3, 0(r4)
-	lwz      r12, 0x28(r3)
-	lwz      r12, 0x24(r12)
-	mtctr    r12
-	bctrl
-	mr       r31, r3
-	lwz      r29, 4(r28)
-	lwz      r0, 0x24(r3)
-	addi     r30, r31, 0x28
-	cmplwi   r0, 0
-	bne      lbl_8045D324
-	lis      r3, lbl_8049CFA0@ha
-	lis      r5, lbl_8049CFB8@ha
-	addi     r3, r3, lbl_8049CFA0@l
-	li       r4, 0xaa
-	addi     r5, r5, lbl_8049CFB8@l
-	crclr    6
-	bl       panic_f__12JUTExceptionFPCciPCce
-
-lbl_8045D324:
-	lwz      r3,
-"sInstance__Q28PSSystem34SingletonBase<Q23PSM11ObjCalcBase>"@sda21(r13) mr r4,
-r27 lwz      r12, 0(r3) lwz      r12, 0xc(r12) mtctr    r12 bctrl mr       r27,
-r3 lwz      r3, msBasic__8JAIBasic@sda21(r13) clrlwi   r0, r27, 0x18 lwz r4,
-0x24(r31) mulli    r0, r0, 0xc lwz      r3, 4(r3) mr       r5, r30 add      r3,
-r3, r0 lwz      r3, 8(r3) bl       PSMTXMultVec lfs      f1, 0(r30) lfs      f0,
-4(r30) fmuls    f1, f1, f1 lfs      f2, 8(r30) fmuls    f0, f0, f0 fmuls    f2,
-f2, f2 fadds    f0, f1, f0 fadds    f1, f2, f0 bl       pikmin2_sqrtf__Ff stfs
-f1, 0(r29) li       r5, 0 b        lbl_8045D3D4
-
-lbl_8045D394:
-	lwz      r3, 0x1c(r31)
-	rlwinm   r0, r5, 2, 0x16, 0x1d
-	lwzx     r3, r3, r0
-	cmplwi   r3, 0
-	beq      lbl_8045D3D0
-	lwz      r4, 0x34(r3)
-	lfs      f0, 0(r30)
-	stfs     f0, 0(r4)
-	lfs      f0, 4(r30)
-	stfs     f0, 4(r4)
-	lfs      f0, 8(r30)
-	stfs     f0, 8(r4)
-	lfs      f0, 0(r29)
-	stfs     f0, 0x18(r4)
-	stb      r27, 0x49c(r3)
-
-lbl_8045D3D0:
-	addi     r5, r5, 1
-
-lbl_8045D3D4:
-	lbz      r0, 0x19(r31)
-	clrlwi   r3, r5, 0x18
-	cmplw    r3, r0
-	blt      lbl_8045D394
-	lwz      r27, 8(r28)
-	mr       r3, r30
-	lfs      f1, 0(r29)
-	bl       calcPan__Q23PSM7SeSoundFRC3Vecf
-	stfs     f1, 0(r27)
-	mr       r3, r30
-	lwz      r27, 0xc(r28)
-	lfs      f1, 0(r29)
-	bl       calcDolby__Q23PSM7SeSoundFRC3Vecf
-	stfs     f1, 0(r27)
-	lmw      r27, 0xc(r1)
-	lwz      r0, 0x24(r1)
-	mtlr     r0
-	addi     r1, r1, 0x20
-	blr
-	*/
 }
 
 /**
@@ -586,7 +508,7 @@ void CreatureObj::frameEnd_onPlaySe()
  * @note Address: N/A
  * @note Size: 0x118
  */
-inline CreatureAnime::CreatureAnime(Game::Creature* gameObj, u8 p2)
+CreatureAnime::CreatureAnime(Game::Creature* gameObj, u8 p2)
     : Creature(gameObj)
     , JAIAnimeSound(reinterpret_cast<Vec*>(gameObj->getSound_PosPtr()), JKRGetCurrentHeap(), p2)
     , _AC(0.0f)
@@ -669,10 +591,11 @@ void CreatureAnime::setAnime(JAIAnimeSoundData* data, u32 a1, f32 a2, f32 a3)
  */
 void CreatureAnime::playActorAnimSound(JAInter::Actor* actor, f32 pitchmod, u8 a2)
 {
+	JAIAnimeFrameSoundData* data;
 	u8 i = 0;
 	JUT_ASSERTLINE(554, mAnimID < mSoundData->mEntryNum, "JAIAnimeSound::playActorAnimSound  dataCounterが異常です。\n");
-	JAIAnimeFrameSoundData* data = &mSoundData->mSndEntries[mAnimID];
-	u8 max                       = mHandleCount;
+	data    = &mSoundData->mSndEntries[mAnimID];
+	u8 max = mHandleCount;
 	while (i < max) {
 		u8* handle = mSoundStatus;
 		if (handle[i]) {
@@ -698,7 +621,7 @@ void CreatureAnime::playActorAnimSound(JAInter::Actor* actor, f32 pitchmod, u8 a
 		if (!se[i]) {
 			break;
 		}
-		if (i == max - 1) {
+		if (i == mHandleCount - 1) {
 			u32 maxTime = 0;
 			u8 useId    = 0;
 			for (u8 j = 0; j < max; j++) {
@@ -1153,7 +1076,7 @@ void EnemyBase::battleOff()
 void EnemyBase::updateKehai()
 {
 	bool state = calcKehai();
-	bool list  = KehaiLink::mList;
+	bool list  = KehaiLink::getList();
 	if (state && !list) {
 		kehaiOn();
 	} else if (!state && list) {
@@ -1198,9 +1121,11 @@ bool EnemyBase::calcKehai()
 	{
 		Game::Navi* navi = *iterator;
 		if (navi->mController1) {
-			Vector3f position = navi->getPosition();
+			const Vector3f& position = navi->getPosition();
 			JGeometry::TVec3f pos;
-			pos.set(position.x, position.y, position.z);
+			pos.x            = position.x;
+			pos.y            = position.y;
+			pos.z            = position.z;
 			Vec naviPosition = pos;
 			if (judgeNearWithPlayer(enemypos, naviPosition, CreaturePrm::cVolZeroDist_Kehai[getCastType() - 2],
 			                        CreaturePrm::cVolZeroDist_InnerSize_Kehai[getCastType() - 2])) {
@@ -1449,18 +1374,11 @@ lbl_8045EEB8:
  */
 bool EnemyBase::judgeNearWithPlayer(const Vec& enemyPosition, const Vec& naviPosition, f32 distanceX, f32 distanceY)
 {
-	f32 x = enemyPosition.x - naviPosition.x;
-	x     = (x >= 0.0f) ? x : -x;
-
-	if (x < distanceX) {
-		x = enemyPosition.y - naviPosition.y;
-		x = (x >= 0.0f) ? x : -x;
-
-		if (x < distanceX) {
-			x = enemyPosition.z - naviPosition.z;
-			x = (x >= 0.0f) ? x : -x;
-			if (x < distanceX)
+	if (PSMath::abs(enemyPosition.x - naviPosition.x) < distanceX) {
+		if (PSMath::abs(enemyPosition.y - naviPosition.y) < distanceX) {
+			if (PSMath::abs(enemyPosition.z - naviPosition.z) < distanceX) {
 				return true;
+			}
 		}
 	}
 
@@ -1517,7 +1435,7 @@ bool EnemyBig::judgeNearWithPlayer(const Vec& pos1, const Vec& pos2, f32 min, f3
  * @note Address: N/A
  * @note Size: 0x1F0
  */
-inline EnemyBoss::EnemyBoss(Game::EnemyBase* gameObj)
+EnemyBoss::EnemyBoss(Game::EnemyBase* gameObj)
     : EnemyBase(gameObj, 4)
     , mNaviDistance(10000000.0f)
     , mDisappearTimer(-1)
@@ -1584,9 +1502,7 @@ void EnemyBoss::calcDistance()
 	{
 		Game::Navi* navi = *iterator;
 		if (navi->mController1) {
-			Vector3f pos     = mGameObj->getPosition();
-			Vector3f navipos = navi->getPosition();
-			f32 cdist        = PSMath::calcDistance(pos, navipos);
+			f32 cdist = PSMath::calcDistance(PSMath::toVec(navi->getPosition()), PSMath::toVec(mGameObj->getPosition()));
 			if (cdist < dist) {
 				dist = cdist;
 			}
@@ -1968,14 +1884,6 @@ EnemyMidBoss::EnemyMidBoss(Game::EnemyBase* gameObj)
 }
 
 /**
- * @note Address: 0x804601D0
- * @note Size: 0x1A8
- */
-EnemyBoss::~EnemyBoss()
-{
-}
-
-/**
  * @note Address: 0x80460378
  * @note Size: 0x21C
  */
@@ -2053,14 +1961,6 @@ EnemyBigBoss::EnemyBigBoss(Game::EnemyBase* gameObj)
     , mCurrBgmState(1)
 {
 	sBigBoss = this;
-}
-
-/**
- * @note Address: 0x80460854
- * @note Size: 0x1F0
- */
-EnemyMidBoss::~EnemyMidBoss()
-{
 }
 
 /**
@@ -2482,11 +2382,8 @@ PelletOtakara::PelletOtakara(Game::PelletOtakara::Object* gameObj, bool is2PBatt
 	}
 }
 
-/**
- * @note Address: 0x80461F84
- * @note Size: 0x148
- */
-Otakara::~Otakara()
+// this is here for now, since putting it in a header causes the sym on ordering to go weird and wrong
+inline Otakara::~Otakara()
 {
 }
 
@@ -2633,76 +2530,77 @@ u32 Piki::checkHappaChappySE(u32 id)
 		return id;
 	}
 
+	u32 soundID;
 	switch (id) {
 	case PSSE_PK_VC_BREAKUP:
-		id = PSSE_PK_HAPPA_BREAKUP;
+		soundID = PSSE_PK_HAPPA_BREAKUP;
 		break;
 	case PSSE_PK_VC_CALLED:
-		id = PSSE_PK_HAPPA_CALLED;
+		soundID = PSSE_PK_HAPPA_CALLED;
 		break;
 	case PSSE_PK_VC_THROW_WAIT:
-		id = PSSE_PK_HAPPA_THROW_WAIT;
+		soundID = PSSE_PK_HAPPA_THROW_WAIT;
 		break;
 	case PSSE_PK_VC_THROWN:
-		id = PSSE_PK_HAPPA_THROWN;
+		soundID = PSSE_PK_HAPPA_THROWN;
 		break;
 	case PSSE_PK_VC_EATEN:
-		id = PSSE_PK_HAPPA_EATEN;
+		soundID = PSSE_PK_HAPPA_EATEN;
 		break;
 	case PSSE_PK_VC_GHOST:
-		id = PSSE_PK_HAPPA_GHOST;
+		soundID = PSSE_PK_HAPPA_GHOST;
 		break;
 	case PSSE_PK_VC_JUMP_INTO_HOLE:
-		id = PSSE_PK_HAPPA_JUMP_HOLE;
+		soundID = PSSE_PK_HAPPA_JUMP_HOLE;
 		break;
 	case PSSE_PK_VC_FALL:
 	case PSSE_PK_VC_BLOWN_DEAD:
-		id = PSSE_PK_HAPPA_FALL;
+		soundID = PSSE_PK_HAPPA_FALL;
 		break;
 	case PSSE_PK_VC_PRESSED:
-		id = PSSE_PK_HAPPA_PRESSED;
+		soundID = PSSE_PK_HAPPA_PRESSED;
 		break;
 	case PSSE_PK_FLOWER_VOICE:
-		id = PSSE_PK_HAPPA_FLOWER;
+		soundID = PSSE_PK_HAPPA_FLOWER;
 		break;
 	case PSSE_PK_FLOWER_FALL_VOICE:
-		id = PSSE_PK_HAPPA_FLOWER_FALL;
+		soundID = PSSE_PK_HAPPA_FLOWER_FALL;
 		break;
 	case PSSE_PL_PULLOUT_PIKI:
-		id = PSSE_PK_HAPPA_PULLOUT;
+		soundID = PSSE_PK_HAPPA_PULLOUT;
 		break;
 	case PSSE_PK_VC_LIFT_TRY:
-		id = PSSE_PK_HAPPA_LIFT_TRY;
+		soundID = PSSE_PK_HAPPA_LIFT_TRY;
 		break;
 	case PSSE_PK_VC_LIFT_SUCCESS:
-		id = PSSE_PK_HAPPA_LIFT_SUCCESS;
+		soundID = PSSE_PK_HAPPA_LIFT_SUCCESS;
 		break;
 	case PSSE_PK_VC_LIFT_MOVE:
-		id = PSSE_PK_HAPPA_LIFT_MOVE;
+		soundID = PSSE_PK_HAPPA_LIFT_MOVE;
 		break;
 	case PSSE_PK_VC_ATTACK:
-		id = PSSE_PK_HAPPA_ATTACK;
+		soundID = PSSE_PK_HAPPA_ATTACK;
 		break;
 	case PSSE_PK_VC_DOPING:
-		id = PSSE_PK_HAPPA_DOPING;
+		soundID = PSSE_PK_HAPPA_DOPING;
 		break;
 	case PSSE_PK_VC_DOPE_ATTACK:
-		id = PSSE_PK_HAPPA_DOPE_ATTACK;
+		soundID = PSSE_PK_HAPPA_DOPE_ATTACK;
 		break;
 	case PSSE_PK_VC_DOPE_END:
-		id = PSSE_PK_HAPPA_DOPE_END;
+		soundID = PSSE_PK_HAPPA_DOPE_END;
 		break;
 	case PSSE_PK_VC_SCATTERED:
-		id = PSSE_PK_HAPPA_SCATTERED;
+		soundID = PSSE_PK_HAPPA_SCATTERED;
 		break;
 	case PSSE_PK_VC_DIGGING:
-		id = PSSE_PK_HAPPA_DIGGING;
+		soundID = PSSE_PK_HAPPA_DIGGING;
 		break;
 	case PSSE_PK_VC_SAVED:
-		id = PSSE_PK_HAPPA_SAVED;
+		soundID = PSSE_PK_HAPPA_SAVED;
 		break;
 	case PSSE_PK_VC_PANIC:
-		id = PSSE_PK_HAPPA_PANIC;
+		soundID = PSSE_PK_HAPPA_PANIC;
 		break;
 	case PSSE_PK_SE_ATTACH:
 	case PSSE_PK_SE_KARABURI:
@@ -2719,11 +2617,12 @@ u32 Piki::checkHappaChappySE(u32 id)
 	case PSSE_PK_SE_STABBED:
 	case PSSE_PK_VC_DRINK:
 	case PSSE_PK_SE_HIT_ELEC_GATE:
+		soundID = id;
 		break;
 	default:
-		id = -1;
+		soundID = -1;
 	}
-	return id;
+	return soundID;
 }
 
 /**
@@ -2885,7 +2784,7 @@ Navi::ManType Navi::getManType()
 	if (mRappa.mId == 13) {
 		return ManType_Olimar;
 	}
-	
+
 	if (mRappa.mId == 14) {
 		return ManType_Louie;
 	}

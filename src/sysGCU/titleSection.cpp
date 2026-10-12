@@ -176,7 +176,7 @@ void Section::init()
 	JUTFont* font = JFWSystem::systemFont;
 	int x         = 300;
 	int y         = sys->getRenderModeObj()->efbHeight - (sects * font->getHeight() + 60);
-	mMenu->setPosition(x, y);
+	mMenu->setPosition(Vector2i(x, y));
 
 	sys->heapStatusEnd("TitleSection::init");
 
@@ -288,7 +288,7 @@ void Section::drawShortCut(Graphics&, int p2, int, int, char*)
  */
 void Section::drawDebugInfo(Graphics& gfx)
 {
-	// size indicates this function was entired stubbed out before release
+	// size indicates this function was entirely stubbed out before release
 	// UNUSED FUNCTION
 }
 

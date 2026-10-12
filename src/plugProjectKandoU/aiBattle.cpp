@@ -7,8 +7,7 @@
 #include "Game/gameStat.h"
 #include "PikiAI.h"
 #include "RevoSDK/rand.h"
-#include "efx/PikiDamage.h"
-#include "efx/TPk.h"
+#include "efx/efxPikmin.h"
 #include "utilityU.h"
 
 // TODO: fix this up

@@ -3,9 +3,10 @@
 
 #include "types.h"
 #include "JSystem/JAudio/JAD/JADUtility.h"
-#include "JSystem/JAudio/JAD/JADStr.h"
 #include "JSystem/JAudio/JAS/JASTrack.h"
 #include "PSSystem/BankMgr.h"
+
+struct JAISequence;
 
 namespace PSAutoBgm {
 struct CycleBase;
@@ -20,9 +21,15 @@ struct Module : public JADUtility::PrmSetBase {
 	virtual void afterGetFromFree(); // _20
 
 	static void removeCallback(u8 idx, void* module);
-	u32 seqCpuSync_AutoBgm_Module(JASTrack*, u16, u32, JASTrack*);
+	u16 seqCpuSync_AutoBgm_Module(JASTrack*, u16, u32, JASTrack*);
 	void setTableAddress(JASTrack*);
 	u16 cycleLoop(JASTrack*);
+
+	u16 getWsData(u16 index) const
+	{
+		PSWsData* ws = mWsData;
+		return ws[index].mData[0] << 8 | ws[index].mData[1];
+	}
 
 	// _00      = VTABLE
 	// _04-_64  = PrmSetBase
@@ -60,8 +67,9 @@ struct Track : public JADUtility::PrmSetRc<PSAutoBgm::Module> {
 	virtual void afterGetFromFree(); // _20
 
 	static void removeCallback(u8 idx, void* track);
-	u32 seqCpuSync_AutoBgm_Track(JASTrack*, u16, u32, JASTrack*);
+	u16 seqCpuSync_AutoBgm_Track(JASTrack*, u16, u32, JASTrack*);
 	void incCurModule();
+	void onStartSeq(JAISequence*);
 
 	// _00      = VTABLE
 	// _04-_98  = PrmSetRc

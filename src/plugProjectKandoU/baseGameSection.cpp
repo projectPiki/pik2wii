@@ -1,3 +1,5 @@
+#include "Game/Navi.h"
+#include "Game/PikiMgr.h"
 #include "Game/BaseGameSection.h"
 #include "Game/AIConstants.h"
 #include "Game/CameraMgr.h"
@@ -13,9 +15,7 @@
 #include "Game/Farm.h"
 #include "Game/GameLight.h"
 #include "Game/MoviePlayer.h"
-#include "Game/Navi.h"
 #include "Game/PelletBirthBuffer.h"
-#include "Game/PikiMgr.h"
 #include "Game/PikiState.h"
 #include "Game/generalEnemyMgr.h"
 #include "Game/rumble.h"
@@ -29,7 +29,8 @@
 #include "Screen/Game2DMgr.h"
 #include "Sys/DrawBuffers.h"
 #include "TParticle2dMgr.h"
-#include "efx/OnyonSpot.h"
+#include "PSM/BossBgmFader.h"
+#include "efx/efxObject.h"
 #include "nans.h"
 #include "og/ogLib2D.h"
 #include "utilityU.h"
@@ -443,7 +444,7 @@ void BaseGameSection::onMovieCommand(int cmd)
  * @note Size: 0x450
  */
 
-// unfortunatly this probably isn't real inline, however I'm not writing the full code out bc that's stupid
+// unfortunately this probably isn't real inline, however I'm not writing the full code out bc that's stupid
 inline void j3dStuff(Sys::DrawBuffers*& buffer, Sys::DrawBuffer::CreateArg& drawArg, bool doFog)
 {
 
@@ -573,12 +574,12 @@ void BaseGameSection::initViewports(Graphics& gfx)
 	mTreasureGetViewport->setCamera(mTreasureZoomCamera);
 }
 
+#define LoadTextFile(x) JKRDvdToMainRam(x, nullptr, Switch_0, 0, nullptr, JKRDvdRipper::ALLOC_DIR_BOTTOM, 0, nullptr, nullptr)
+
 /**
  * @note Address: 0x8014C5CC
  * @note Size: 0x1120
  */
-#define LoadTextFile(x) JKRDvdRipper::loadToMainRAM(x, nullptr, Switch_0, 0, nullptr, JKRDvdRipper::ALLOC_DIR_BOTTOM, 0, nullptr, nullptr);
-
 void BaseGameSection::initGenerators()
 {
 
@@ -624,6 +625,7 @@ void BaseGameSection::initGenerators()
 		generatorCache->updateUseList();
 
 		int fileIdx = 0;
+		void* file;
 
 		char filenameCharArr[PATH_MAX];
 		void* generatorFiles[64];
@@ -633,15 +635,15 @@ void BaseGameSection::initGenerators()
 
 		sprintf(filenameCharArr, "%s/defaultgen.txt", mapMgr->mCourseInfo->mAbeFolder);
 
-		void* defaultGenFile = LoadTextFile(filenameCharArr);
+		file = LoadTextFile(filenameCharArr);
 
-		if (defaultGenFile) {
-			RamStream defaultGenTxt(defaultGenFile, -1);
+		if (file) {
+			RamStream defaultGenTxt(file, -1);
 			defaultGenTxt.setMode(STREAM_MODE_TEXT, 1);
 			generatorMgr->read(defaultGenTxt, false);
 			generatorMgr->updateUseList();
 
-			generatorFiles[0]    = defaultGenFile;
+			generatorFiles[0]    = file;
 			generatorManagers[0] = generatorMgr;
 			fileIdx++;
 		}
@@ -654,13 +656,13 @@ void BaseGameSection::initGenerators()
 		int entrynum = DVDConvertPathToEntrynum(filenameCharArr);
 
 		if (entrynum != -1) {
-			void* plantsgenFile = LoadTextFile(filenameCharArr);
-			if (plantsgenFile) {
-				RamStream plantsGenTxt(plantsgenFile, -1);
+			file = LoadTextFile(filenameCharArr);
+			if (file) {
+				RamStream plantsGenTxt(file, -1);
 				plantsGenTxt.setMode(STREAM_MODE_TEXT, 1);
 				plantsGeneratorMgr->read(plantsGenTxt, false);
 				plantsGeneratorMgr->updateUseList();
-				generatorFiles[fileIdx]    = plantsgenFile;
+				generatorFiles[fileIdx]    = file;
 				generatorManagers[fileIdx] = plantsGeneratorMgr;
 				fileIdx++;
 			}
@@ -677,19 +679,22 @@ void BaseGameSection::initGenerators()
 		if (!firstVisit) {
 			playData->visitCourse(courseInfo->mCourseIndex);
 			sprintf(filenameCharArr, "%s/initgen.txt", courseInfo->mAbeFolder);
-			void* initgenFile = LoadTextFile(filenameCharArr);
-			if (initgenFile) {
-				RamStream initgenTxt(initgenFile, -1);
+			file = LoadTextFile(filenameCharArr);
+			if (file) {
+				RamStream initgenTxt(file, -1);
 				initgenTxt.setMode(STREAM_MODE_TEXT, 1);
 				onceGeneratorMgr->read(initgenTxt, false);
 				onceGeneratorMgr->updateUseList();
-				generatorFiles[fileIdx]    = initgenFile;
+				generatorFiles[fileIdx]    = file;
 				generatorManagers[fileIdx] = onceGeneratorMgr;
 				fileIdx++;
 			}
 		}
 
 #pragma endregion
+		void** fileSlot;
+		GeneratorMgr** managerSlot;
+		int floorDay;
 		int today = gameSystem->mTimeMgr->mDayCount;
 
 		{ // nonloop
@@ -704,20 +709,20 @@ void BaseGameSection::initGenerators()
 
 				sprintf(filenameCharArr, "%s/nonloop/%s", courseInfo->mAbeFolder, currentGen->mName);
 
-				void* nonLoopFile = LoadTextFile(filenameCharArr);
+				file = LoadTextFile(filenameCharArr);
 
-				if (nonLoopFile) {
-					RamStream noonloopTxt(nonLoopFile, -1);
-					noonloopTxt.setMode(STREAM_MODE_TEXT, 1);
+				if (file) {
+					RamStream nonloopTxt(file, -1);
+					nonloopTxt.setMode(STREAM_MODE_TEXT, 1);
 
 					GeneratorMgr* currentNonloopMgr = new GeneratorMgr;
 					currentNonloopMgr->mUnusedFlag  = true; // is nonrepeating?
 
-					currentNonloopMgr->read(noonloopTxt, false);
+					currentNonloopMgr->read(nonloopTxt, false);
 					currentNonloopMgr->setDayLimit(currentGen->mDayLimit);
 					currentNonloopMgr->updateUseList();
 
-					generatorFiles[fileIdx]    = nonLoopFile;
+					generatorFiles[fileIdx]    = file;
 					generatorManagers[fileIdx] = currentNonloopMgr;
 					fileIdx++;
 
@@ -732,14 +737,16 @@ void BaseGameSection::initGenerators()
 			int day = gameSystem->mTimeMgr->mDayCount;
 			// int loopGenCount = courseInfo->mLoopGenInfo.mCount;
 
-			int intervalDay = today % 30;
+			today %= 30;
 
 			int intervalIterations = day / 30;
 
 			// effectively day > 30
 			if (intervalIterations >= 1) {
 
-				int floorDay = intervalIterations * 30;
+				fileSlot    = generatorFiles + fileIdx;
+				managerSlot = generatorManagers + fileIdx;
+				floorDay    = intervalIterations * 30;
 
 				for (int i = 0; i < courseInfo->mLoopGenInfo.mCount; i++) {
 					LimitGen* currentGen = static_cast<LimitGen*>(courseInfo->mLoopGenInfo.mOwner.getChildAt(i));
@@ -747,7 +754,7 @@ void BaseGameSection::initGenerators()
 					int intervalMin = currentGen->mMinimumDay % 30;
 					int intervalMax = currentGen->mMaximumDay % 30;
 
-					if (intervalMin > intervalDay || intervalDay > intervalMax)
+					if (intervalMin > today || today > intervalMax)
 						continue;
 
 					bool loopLoaded = playData->mLimitGen[courseInfo->mCourseIndex].mLoops.isFlag(i);
@@ -756,20 +763,22 @@ void BaseGameSection::initGenerators()
 						continue;
 
 					sprintf(filenameCharArr, "%s/loop/%s", courseInfo->mAbeFolder, currentGen->mName);
-					void* loopFile = LoadTextFile(filenameCharArr);
-					if (loopFile) {
-						RamStream loopTxt(loopFile, -1);
+					file = LoadTextFile(filenameCharArr);
+					if (file) {
+						RamStream loopTxt(file, -1);
 						loopTxt.setMode(STREAM_MODE_TEXT, 1);
 
 						GeneratorMgr* currentLoopMgr = new GeneratorMgr;
 						currentLoopMgr->mUnusedFlag  = true; // is nonrepeating?
 
 						currentLoopMgr->read(loopTxt, false);
-						currentLoopMgr->setDayLimit(floorDay + currentGen->mDayLimit - 30);
+						u32 dayLimit = currentGen->mDayLimit - 30;
+						dayLimit += floorDay;
+						currentLoopMgr->setDayLimit(s32(dayLimit));
 						currentLoopMgr->updateUseList();
 
-						generatorManagers[fileIdx] = currentLoopMgr;
-						generatorFiles[fileIdx]    = loopFile;
+						*fileSlot++    = file;
+						*managerSlot++ = currentLoopMgr;
 						fileIdx++;
 						limitGeneratorMgr->addMgr(currentLoopMgr);
 
@@ -784,13 +793,13 @@ void BaseGameSection::initGenerators()
 			sprintf(filenameCharArr, "%s/day/%d.txt", courseInfo->mAbeFolder, today % 30);
 			int fileNum = DVDConvertPathToEntrynum(filenameCharArr);
 			if (fileNum != -1) {
-				void* dayFile = LoadTextFile(filenameCharArr);
-				if (dayFile) {
-					RamStream dayTxt(dayFile, -1);
+				file = LoadTextFile(filenameCharArr);
+				if (file) {
+					RamStream dayTxt(file, -1);
 					dayTxt.setMode(STREAM_MODE_TEXT, 1);
 					dayGeneratorMgr->read(dayTxt, false);
 					dayGeneratorMgr->updateUseList();
-					generatorFiles[fileIdx]    = dayFile;
+					generatorFiles[fileIdx]    = file;
 					generatorManagers[fileIdx] = dayGeneratorMgr;
 					fileIdx++;
 				}
@@ -801,7 +810,7 @@ void BaseGameSection::initGenerators()
 		generalEnemyMgr->setupSoundViewerAndBas();
 		pelletMgr->setupResources();
 
-		// cleanup file ptrs that have been left lying arround
+		// cleanup file ptrs that have been left lying around
 		for (int i = fileIdx - 1; i >= 0; i--) {
 			delete[] generatorFiles[i];
 		}
@@ -823,6 +832,8 @@ void BaseGameSection::initGenerators()
 	}
 	switch (naviCount) {
 	case 0: {
+		Navi* olimar;
+		Navi* louie;
 		bool olimarAlive = false;
 		Vector3f velocity(0.0f, 0.0f, 0.0f);
 
@@ -847,7 +858,7 @@ void BaseGameSection::initGenerators()
 				velocity.set(0.0f);
 			}
 		}
-		Navi* olimar = naviMgr->birth();
+		olimar = naviMgr->birth();
 		olimar->init(nullptr);
 		olimar->mFaceDir = roundAng(mapRotation);
 		olimar->setCamera(mOlimarCamera);
@@ -864,7 +875,7 @@ void BaseGameSection::initGenerators()
 		}
 
 		mapRotation = mapMgr->getMapRotation();
-		position    = Vector3f(-60.0f, 0.0f, -10.0f);
+		position.set(-60.0f, 0.0f, -10.0f);
 		if (gameSystem->isVersusMode()) {
 			Onyon* blueOnyon = ItemOnyon::mgr->getOnyon(Blue);
 			P2ASSERTLINE(2791, blueOnyon);
@@ -876,15 +887,12 @@ void BaseGameSection::initGenerators()
 				position.x += 18.082f;
 				position.z += -11.482f;
 			} else {
-				Matrixf* demoMtx = mapMgr->getDemoMatrix();
-				Vector3f vec_0x1c78;
-				PSMTXMultVec((PSQuaternion*)demoMtx, (Vec*)&position, (Vec*)&vec_0x1c78);
-				position   = vec_0x1c78;
+				position   = mapMgr->getDemoMatrix()->mtxMult(position);
 				position.y = mapMgr->getMinY(position);
-				velocity.set(0.0f, 0.0f, 0.0f);
+				velocity.set(0.0f);
 			}
 		}
-		Navi* louie = naviMgr->birth();
+		louie = naviMgr->birth();
 		louie->init(nullptr);
 
 		louie->setCamera(mLouieCamera);
@@ -990,7 +998,12 @@ void BaseGameSection::pmTogglePlayer()
  */
 void BaseGameSection::pmPlayerJoin()
 {
-	// UNUSED FUNCTION
+	if (mPrevNaviIdx == NAVIID_Olimar) {
+		// something
+	} else if (mPrevNaviIdx == NAVIID_Louie) {
+		// something else
+	}
+	onPlayerJoin();
 }
 
 /**
@@ -999,12 +1012,14 @@ void BaseGameSection::pmPlayerJoin()
  */
 void BaseGameSection::setPlayerMode(int mode)
 {
-	// this is a really dumb regswap
-	Navi* fools[2];
-	fools[0] = naviMgr->getAt(NAVIID_Olimar);
-	fools[1] = naviMgr->getAt(NAVIID_Louie);
-	fools[0]->disableController();
-	fools[1]->disableController();
+	Navi* navis[2];
+	navis[NAVIID_Olimar] = navis[NAVIID_Louie] = nullptr;
+
+	navis[NAVIID_Olimar] = naviMgr->getAt(NAVIID_Olimar);
+	navis[NAVIID_Louie]  = naviMgr->getAt(NAVIID_Louie);
+
+	navis[NAVIID_Olimar]->disableController();
+	navis[NAVIID_Louie]->disableController();
 
 	switch (mode) {
 	case NAVIID_Olimar: {
@@ -1205,19 +1220,19 @@ void BaseGameSection::setDefaultPSSceneInfo(PSGame::SceneInfo& sceneInfo)
 	Vector3f min = box.mMin;
 	Vector3f max = box.mMax;
 
-	sceneInfo.mBounds.mMin.x = min.x;
-	sceneInfo.mBounds.mMin.y = min.y;
-	sceneInfo.mBounds.mMin.z = min.z;
-	sceneInfo.mBounds.mMax.x = max.x;
-	sceneInfo.mBounds.mMax.y = max.y;
-	sceneInfo.mBounds.mMax.z = max.z;
+	sceneInfo.mBounds.i.x = min.x;
+	sceneInfo.mBounds.i.y = min.y;
+	sceneInfo.mBounds.i.z = min.z;
+	sceneInfo.mBounds.f.x = max.x;
+	sceneInfo.mBounds.f.y = max.y;
+	sceneInfo.mBounds.f.z = max.z;
 }
 
 /**
  * @note Address: 0x8014E130
  * @note Size: 0x68C
  */
-void BaseGameSection::prepareHoleIn(Vector3f& suroundPos, bool killPikihead)
+void BaseGameSection::prepareHoleIn(Vector3f& surroundPos, bool killPikihead)
 {
 	Screen::gGame2DMgr->mScreenMgr->reset();
 	Navi* aliveOrima = naviMgr->getAliveOrima(ALIVEORIMA_Active);
@@ -1251,7 +1266,7 @@ void BaseGameSection::prepareHoleIn(Vector3f& suroundPos, bool killPikihead)
 				Vector3f suroundCircle(sinf(randAngle), 0, cosf(randAngle));
 
 				Vector3f vec = Vector3f(sinf(randAngle) * 50.0f, 0.0f, cosf(randAngle) * 50.0f);
-				vec          = vec + suroundPos;
+				vec          = vec + surroundPos;
 				vec.y        = mapMgr->getMinY(vec);
 				piki->setPosition(vec, false);
 				PikiAI::ActFormationInitArg arg(aliveOrima);
@@ -1270,7 +1285,7 @@ void BaseGameSection::prepareHoleIn(Vector3f& suroundPos, bool killPikihead)
  * @note Address: 0x8014E7BC
  * @note Size: 0x714
  */
-void BaseGameSection::prepareFountainOn(Vector3f& suroundPos)
+void BaseGameSection::prepareFountainOn(Vector3f& surroundPos)
 {
 	if (ItemBigFountain::mgr) {
 		Iterator<BaseItem> iFountain = ItemBigFountain::mgr;
@@ -1298,7 +1313,7 @@ void BaseGameSection::prepareFountainOn(Vector3f& suroundPos)
 		}
 	}
 	PikiCond_ExceptChappyPikmin pikiCond;
-	pikiMgr->moveAllPikmins(suroundPos, 50.0f, &pikiCond);
+	pikiMgr->moveAllPikmins(surroundPos, 50.0f, &pikiCond);
 	Iterator<Piki> iPiki(pikiMgr, NULL, nullptr);
 
 	CI_LOOP(iPiki)
@@ -1836,7 +1851,10 @@ void BaseGameSection::doDirectDraw(Graphics&, Viewport*)
  */
 void BaseGameSection::startHeap()
 {
-	// UNUSED FUNCTION
+	mTheExpHeap = JKRExpHeap::create(JKRGetCurrentHeap()->getFreeSize(), JKRGetCurrentHeap(), true);
+	theExpHeap  = mTheExpHeap;
+	mBackupHeap = mTheExpHeap->becomeCurrentHeap();
+	onStartHeap();
 }
 
 /**

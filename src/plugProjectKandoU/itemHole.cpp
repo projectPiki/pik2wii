@@ -21,7 +21,7 @@
 #include "System.h"
 #include "Vector3.h"
 #include "efx/Arg.h"
-#include "efx/WarpZone.h"
+#include "efx/efxObject.h"
 #include "id32.h"
 #include "mapCode.h"
 #include "nans.h"

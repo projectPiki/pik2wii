@@ -343,6 +343,32 @@ struct Creature : public CellObject {
 	void updateLOD(AILODParm& lod);
 	void updateStick(Vector3f& position);
 
+	// these are required by Creature::resolveOneColl (and only resolveOneColl)
+
+	static inline void setCollisionAcceleration(Vector3f& outputVec, const Vector3f& inputVec, f32 massRatio, f32 fps, f32 groundFactor,
+	                                            f32 airFactor)
+	{
+		outputVec.x = inputVec.x * (groundFactor * fps * massRatio);
+		outputVec.z = inputVec.z * (groundFactor * fps * massRatio);
+		outputVec.y = inputVec.y * (airFactor * fps * massRatio);
+	}
+
+	static inline void setOpposingCollisionAcceleration(Vector3f& outputVec, const Vector3f& inputVec, f32 massRatio, f32 fps,
+	                                                    f32 groundFactor, f32 airFactor)
+	{
+		outputVec.x = -inputVec.x * (groundFactor * fps * massRatio);
+		outputVec.z = -inputVec.z * (groundFactor * fps * massRatio);
+		outputVec.y = -inputVec.y * (airFactor * fps * massRatio);
+	}
+
+	static inline void addCollisionAcceleration(Vector3f& outputVec, const Vector3f& inputVec, f32 massRatio, f32 fps, f32 groundFactor,
+	                                            f32 airFactor)
+	{
+		outputVec.x += inputVec.x * (groundFactor * fps * massRatio);
+		outputVec.z += inputVec.z * (groundFactor * fps * massRatio);
+		outputVec.y += inputVec.y * (airFactor * fps * massRatio);
+	}
+
 	// unused/inlined
 	bool isStickLeader();
 

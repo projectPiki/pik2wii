@@ -10,7 +10,7 @@
 #include "id32.h"
 #include "kh/khDayEndResult.h"
 
-// HOW MUCH IS THE DEBT
+// HOW MUCH IS THE DEBT (this value only affects a couple menus, the important value is in the game's own aiConstants.txt file)
 #define DEBT_AMOUNT (10000)
 
 namespace Game {
@@ -18,12 +18,14 @@ struct CourseInfo;
 struct Pellet;
 struct BasePelletMgr;
 
+// These represent progress of a specific game, see PlayCommonData for the global flags
 enum StoryFlags {
 	STORY_DebtPaid              = 0x1, // debt has been repaid
 	STORY_AllTreasuresCollected = 0x2, // all 201 treasures have been collected
 	STORY_LouieRescued          = 0x4, // louie collected? seems to get set by PelletGoalState::checkMovie and not used
 };
 
+// Flags used to determine if cutscenes have been seen
 enum DemoFlags {
 	DEMO_Pluck_First_Pikmin      = 0,  // 20s after first seed from red onion
 	DEMO_Discover_Treasure       = 1,  // within 200u (+ radius) of standard treasure
@@ -39,8 +41,8 @@ enum DemoFlags {
 	DEMO_First_Bitter_Use        = 11, // enemy hit with bitter spray
 	DEMO_Eat_White_Pikmin        = 12, // enemy gets poisoned by eating white pikmin
 	DEMO_Purples_In_Ship         = 13, // purple in ship after another cutscene plays
-	DEMO_Whites_In_Ship          = 14, // white in ship after another cutscene plays (superceded by purple)
-	DEMO_Reds_In_Onion           = 15, // red in onion after another cutscene plays (superceded by white or purple)
+	DEMO_Whites_In_Ship          = 14, // white in ship after another cutscene plays (superseded by purple)
+	DEMO_Reds_In_Onion           = 15, // red in onion after another cutscene plays (superseded by white or purple)
 	DEMO_Find_Spicy_Drop         = 16, // captain within 40u of spicy drop
 	DEMO_Find_Bitter_Drop        = 17, // captain within 40u of bitter drop
 	DEMO_First_Globe_Day_End     = 18, // find first globe + return from cave
@@ -72,16 +74,17 @@ enum DemoFlags {
 	DEMO_Discover_Bulbmin        = 44, // whistle bulbmin for first time
 	DEMO_Whites_Digging          = 45, // first time FULLY buried treasure takes damage
 	DEMO_Reds_Purples_Tutorial   = 46, // reds and purples cutscene, 20s after both close in party
-	DEMO_Pikmin_In_Danger_Fire   = 47, //
+	DEMO_Pikmin_In_Danger_Fire   = 47, // set if a Pikmin has been on fire for 2 seconds
 	DEMO_You_Appear_Lost         = 48, // 3min after 15+ red pikmin on field if captains not reunited (needs 15w scale block or crashes)
 	DEMO_First_Number_Pellet     = 49, // collect number pellet for first time
 	DEMO_Waterwraith_Appears     = 50, // waterwraith spawning on Submerged Castle 1-4
-	DEMO_Pikmin_In_Danger_Water  = 51,
-	DEMO_Pikmin_In_Danger_Poison = 52,
-	DEMO_UNK_53                  = 53,
-	DEMO_RADAR_ENABLED           = 54, // these arent even for cutscenes, they're specifically for hud stuff
+	DEMO_Pikmin_In_Danger_Water  = 51, // set if a Pikmin is in a bubble for 2 seconds
+	DEMO_Pikmin_In_Danger_Poison = 52, // set if a Pikmin is poisoned for 2 seconds
+	DEMO_UNK_53                  = 53, // unused
+	DEMO_RADAR_ENABLED           = 54, // these aren't even for cutscenes, they're specifically for hud stuff
 	DEMO_SPICY_ENABLED           = 55,
 	DEMO_BITTER_ENABLED          = 56,
+	DEMO_COUNT // number of DemoFlag values to track
 };
 
 // What to load into after file select, i.e. where did we last save?
@@ -102,22 +105,24 @@ struct CaveSaveData {
 	void read(Stream&, u32);
 
 	bool mIsInCave;           // _00
-	int mCourseIdx;           // _04
+	int mCourseIdx;           // _04, index of the current course, gets used for non-cave related things
 	ID32 mCurrentCaveID;      // _08
-	PikiContainer mCavePikis; // _14, guessed name
-	f32 mTime;                // _1C
-	u8 mIsWaterwraithAlive;   // _20
-	f32 mWaterwraithTimer;    // _24
+	PikiContainer mCavePikis; // _14
+	f32 mDayTime;             // _1C, time of day when entering the cave, to be returned to on exit
+	u8 mIsWaterwraithAlive;   // _20, set false when a leaving a floor with the waterwraith dead, effectively unused in the normal game
+	f32 mWaterwraithTimer;    // _24, gets set to remaining time for waterwraith to fall, never read for anything
 	int mCurrentFloor;        // _28
 	u8 mActiveNaviID;         // _2C
-	PikiContainer _30;        // _30
+	PikiContainer _30;        // _30, unused extra container
 };
 
 struct KindCounter {
+	// These bit flags are only actually used for mKinds in PelletFirstMemory. For PelletCropMemory, mKinds holds how many of the pellet you
+	// have obtained instead.
 	enum Flags {
-		KCF_Unset    = 0,
-		KCF_Unknown1 = 1,
-		KCF_Earned   = 2,
+		KCF_Unset  = 0, // default
+		KCF_Earned = 2, // the pellet has been collected and should be in the treasure hoard
+		KCF_IsOld  = 4, // the pellet has been seen in the treasure hoard and is not new
 	};
 	KindCounter();
 
@@ -137,7 +142,7 @@ struct KindCounter {
 	inline int getNumKinds() const { return mNumKinds; }
 
 	u16 mNumKinds; // _00
-	u8* mKinds;    // _04
+	u8* mKinds;    // _04, stores the number of every pellet collected
 };
 
 /**
@@ -175,15 +180,8 @@ struct OlimarData {
 	void read(Stream&);
 
 	/**
-	 * Returns the map type based on the given collection flags.
-	 *
-	 * @param hasPrototypeDetector A boolean indicating whether the Prototype Detector item has been collected.
-	 * @param hasNapsack A boolean indicating whether the Five-Man Napsack item has been collected.
-	 * @return An integer representing the map type:
-	 * 		0 = None
-	 * 		1 = Prototype Detector
-	 * 		2 = Napsack
-	 * 		3 = Both
+	 * This function is never used for anything that gets seen and should be ignored for modding
+	 * Seemingly the pause map screen would have checked if you have the treasure radar/napsack unlocked
 	 */
 	static inline int getDetectorFlags(bool hasPrototypeDetector, bool hasNapsack)
 	{
@@ -207,7 +205,7 @@ struct OlimarData {
 		return mapType;
 	}
 
-	u8 mFlags[2]; // _00
+	BitFlag<u16> mFlags; // _00
 };
 
 struct PelletCropMemory {
@@ -253,10 +251,10 @@ struct PelletFirstMemory : public PelletCropMemory {
  */
 struct PlayData : public CNode {
 	enum CourseFlags {
-		PDCF_Unset    = 0x0,
-		PDCF_Open     = 0x1,
-		PDCF_JustOpen = 0x2,
-		PDCF_Visited  = 0x4,
+		PDCF_Unset    = 0x0, // default
+		PDCF_Open     = 0x1, // Course is unlocked and can be visited
+		PDCF_JustOpen = 0x2, // Course is newly unlocked and should show the world map animation
+		PDCF_Visited  = 0x4, // Course has been visited before
 	};
 	/**
 	 * @size{0xC}
@@ -415,47 +413,13 @@ struct PlayData : public CNode {
 	bool isCaveFirstReturn(int, ID32&);
 	bool closeCourse(int);
 
-	inline void setStoryFlag(StoryFlags flag) { mStoryFlags |= flag; }
-	inline bool isStoryFlag(StoryFlags flag) { return mStoryFlags & flag; }
+	inline void setStoryFlag(StoryFlags flag) { mStoryFlags.set(flag); }
+	inline bool isStoryFlag(StoryFlags flag) { return mStoryFlags.isSet(flag); }
 
 	inline bool hasGotWhites() { return !isDemoFlag(DEMO_White_Candypop); }
 	inline bool hasGotPurples() { return !isDemoFlag(DEMO_Purple_Candypop); }
 
 	inline PelletFirstMemory* getZukanStat() { return mZukanStat; }
-
-	inline void writeSprayCounts(Stream& output, char* textBuffer)
-	{
-		for (int i = 0; i < 2; i++) {
-			output.textWriteTab(output.mTabCount);
-			output.writeInt(mSprayCount[i]);
-			sprintf(textBuffer, "\t# dope[%d]\r\n", i);
-			output.textWriteText(textBuffer);
-		}
-	}
-
-	inline void writeBerryCounts(Stream& output, char* textBuffer)
-	{
-		for (int i = 0; i < 2; i++) {
-			output.textWriteTab(output.mTabCount);
-			output.writeInt(mBerryCount[i]);
-			sprintf(textBuffer, "\t# dope-実[%d]\r\n", i); // 'dope-berry'
-			output.textWriteText(textBuffer);
-		}
-	}
-
-	inline void readSprayCounts(Stream& input)
-	{
-		for (int i = 0; i < 2; i++) {
-			mSprayCount[i] = input.readInt();
-		}
-	}
-
-	inline void readBerryCounts(Stream& input)
-	{
-		for (int i = 0; i < 2; i++) {
-			mBerryCount[i] = input.readInt();
-		}
-	}
 
 	inline int getDataSize(Stream& stream, int streamStartPos)
 	{
@@ -473,7 +437,7 @@ struct PlayData : public CNode {
 
 	inline void addPokos(int pokos) { mPokoCount += pokos; }
 
-	inline u8& getDebtProgressFlags(int flagID) { return ((u8*)(&mDebtProgressFlags))[flagID]; }
+	inline BitFlag2<u16, 1>& getDebtProgressFlags() { return mDebtProgressFlags; }
 
 	inline PelletCropMemory* getCaveCropMemory() const { return mCaveCropMemory; }
 
@@ -483,16 +447,15 @@ struct PlayData : public CNode {
 	u8 mLoadType;                           // _19, see SaveFlags enum
 	void* mBeforeSaveDelegate;              // _1C
 	BitFlag<u8> mDeadNaviID;                // _20
-	u8 mDeadNaviID2;                        // _21
 	f32 mNaviLifeMax[2];                    // _24
 	u8 mHasContainerFlags;                  // _2C
 	u8 mHasBootContainerFlags;              // _2D
 	u8 mMeetPikminFlags;                    // _2E
-	u8 mStoryFlags;                         // _2F, see StoryFlags enum
+	BitFlag<u8> mStoryFlags;                         // _2F, see StoryFlags enum
 	BitFlags mDemoFlags;                    // _30, see DemoFlags enum
 	BitFlags mFindItemFlags;                // _38
 	TekiStat::Mgr mTekiStatMgr;             // _40
-	OlimarData mOlimarData[2];              // _48 // TODO: This really packs into 4 bytes?
+	OlimarData mOlimarData[2];              // _48, two probably for Olimar/Louie, but the second set doesn't seem to be used for anything
 	CaveSaveData mCaveSaveData;             // _4C
 	kh::Screen::MailSaveData mMailSaveData; // _84
 	PikiContainer mPikiContainer;           // _A8
@@ -517,8 +480,8 @@ struct PlayData : public CNode {
 
 	int mCavePokoCount; // _EC
 
-	BitFlag<u8> mDebtProgressFlags;       // _F0, represent which %of debt messages have been seen
-	BitFlag<u8> mBackupDebtProgressFlags; // _F1
+	BitFlag2<u16, 1> mDebtProgressFlags; // _F0, represent which %of debt messages have been seen
+	// this should be just BitFlag but it needs the inline when mDeadNaviID needs to not have the inline
 
 	// ptr to array of previous day's collected overworld treasure counts, per
 	// course.

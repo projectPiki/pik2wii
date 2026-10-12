@@ -6,7 +6,6 @@
 #include "Game/Data.h"
 #include "PSSystem/PSGame.h"
 #include "PSSystem/PSScene.h"
-#include "PSGame/SceneInfo.h"
 #include "PSGame/PikScene.h"
 #include "Screen/Game2DMgr.h"
 #include "Morimura/challengeResult2d.h"
@@ -15,11 +14,14 @@
 #include "System.h"
 #include "nans.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "vsGS_Result";
+}
+
 namespace Game {
 namespace VsGame {
-
-static const char vsGSResultUnusedArray[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-static const char vsGSResultName[]        = "vsGS_Result";
 
 /**
  * @note Address: 0x8022C7F4

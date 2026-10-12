@@ -564,15 +564,15 @@ void TRenderingProcessor::drawRuby()
 	f32 val31 = mRubyWidthModifier;
 	f32 val30 = val31 * f32(mRubyFont->getWidth());
 	int msgBuffer[33];
-	int* msgBuffPtr2 = msgBuffer;
-	int* msgBuffPtr  = msgBuffer;
-	f32 val28        = 0.0f;
-	f32 val27        = (mLocate.i.x - mCharacterWidth) - mRubyCurrentXPos;
+	f32 val28 = 0.0f;
+	f32 val27 = (mLocate.i.x - mCharacterWidth) - mRubyCurrentXPos;
 
-	int msgLen = 0;
-	for (int i = 0; i < mRubyBufferCurrentSize; i++, msgLen++) {
-		int byte = *((u8*)mRubyBuffer + i);
-		if (mRubyFont->isLeadByte(((u8*)mRubyBuffer)[i])) {
+	int i;
+	int msgLen;
+	for (msgLen = 0, i = 0; i < mRubyBufferCurrentSize; msgLen++, i++) {
+		u8 c     = (u8)mRubyBuffer[i];
+		int byte = c;
+		if (mRubyFont->isLeadByte(c)) {
 			byte = (byte << 8) & 0xFF00;
 			FAST_FLAG_SET(byte, *((u8*)mRubyBuffer + i++ + 1), 0, 8);
 			// byte |= ((((u8*)mRubyBuffer)[i + 1] & 0xFF)) | byte & 0xFFFFFF00;   // idk what this is meant to be
@@ -581,8 +581,7 @@ void TRenderingProcessor::drawRuby()
 		}
 
 		val28 += calcWidth(mRubyFont, byte, val30, true);
-		*msgBuffPtr = byte;
-		msgBuffPtr++;
+		msgBuffer[msgLen] = byte;
 	}
 
 	f32 len   = f32(msgLen + 1);
@@ -593,12 +592,11 @@ void TRenderingProcessor::drawRuby()
 
 	mRubyCurrentXPos = val29 + (0.5f * (val27 - (val29 * len + val28)) + mRubyCurrentXPos);
 
-	for (int i = 0; i < msgLen; i++) {
+	for (i = 0; i < msgLen; i++) {
 		mRubyCurrentXPos += doDrawRuby(mRubyCurrentXPos + mXOffset, mRubyCurrentYPos + mYOffset, val30, val31 * f32(mRubyFont->getHeight()),
-		                               *msgBuffPtr2, true);
+		                               msgBuffer[i], true);
 		mRubyCurrentXPos += val29;
 		mInfoIndex++;
-		msgBuffPtr2++;
 	}
 	mDoDrawRuby = false;
 
@@ -1051,11 +1049,13 @@ void TRenderingProcessor::setImageGX()
  */
 void TRenderingProcessor::drawImage(JUTTexture* img, f32 p2, f32 p3, f32 p4, f32 p5)
 {
+	f32 a = p4;
+	f32 b = p5;
 	img->load(GX_TEXMAP0);
 
 	p3 = mFontHeightAdjusted * f32(mMainFont->getDescent()) + p3;
-	p4 = p2 + p4;
-	p5 = p3 - p5;
+	a  = p2 + a;
+	b  = p3 - b;
 
 	JUtility::TColor colorA;
 	JUtility::TColor colorB;
@@ -1063,21 +1063,20 @@ void TRenderingProcessor::drawImage(JUTTexture* img, f32 p2, f32 p3, f32 p4, f32
 	calcColorCoe(mColorData4, &colorA);
 	calcColorCoe(mColorData5, &colorB);
 
-	f32 zero = 0.0f;
 	GXBegin(GX_QUADS, GX_VTXFMT0, 4);
-	GXPosition3f32(p2, p3, zero);
+	GXPosition3f32(p2, p3, 0.0f);
 	GXColor4u8(colorB.r, colorB.g, colorB.b, colorB.a);
 	GXTexCoord2u8(0, 16);
 
-	GXPosition3f32(p2, p5, zero);
+	GXPosition3f32(p2, b, 0.0f);
 	GXColor4u8(colorA.r, colorA.g, colorA.b, colorA.a);
 	GXTexCoord2u8(0, 0);
 
-	GXPosition3f32(p4, p5, zero);
+	GXPosition3f32(a, b, 0.0f);
 	GXColor4u8(colorA.r, colorA.g, colorA.b, colorA.a);
 	GXTexCoord2u8(16, 0);
 
-	GXPosition3f32(p4, p3, zero);
+	GXPosition3f32(a, p3, 0.0f);
 	GXColor4u8(colorB.r, colorB.g, colorB.b, colorB.a);
 	GXTexCoord2u8(16, 16);
 	/*
@@ -1465,96 +1464,20 @@ void TRenderingProcessor::reset()
  */
 f32 TRenderingProcessor::calcWidth(JUTFont* font, int p2, f32 p3, bool p4)
 {
-	f32 v1 = p3 / font->getCellWidth();
+	f32 scale = p3 / font->getCellWidth();
+	f32 width;
 	if (font->mIsFixed) {
-		return v1 * font->mFixedWidth;
+		width = scale * font->mFixedWidth;
+	} else {
+		JUTFont::TWidth widthEntry;
+		font->getWidthEntry(p2, &widthEntry);
+		if (!p4) {
+			width = (widthEntry.w1 + widthEntry.w0) * scale;
+		} else {
+			width = widthEntry.w1 * scale;
+		}
 	}
-	JUTFont::TWidth width;
-	font->getWidthEntry(p2, &width);
-
-	return (!p4) ? (width.w1 + width.w0) * v1 : (width.w1) * v1;
-	/*
-	stwu     r1, -0x40(r1)
-	mflr     r0
-	stw      r0, 0x44(r1)
-	stfd     f31, 0x30(r1)
-	psq_st   f31, 56(r1), 0, qr0
-	stw      r31, 0x2c(r1)
-	stw      r30, 0x28(r1)
-	stw      r29, 0x24(r1)
-	mr       r29, r4
-	fmr      f31, f1
-	mr       r3, r29
-	mr       r30, r5
-	lwz      r12, 0(r29)
-	mr       r31, r6
-	lwz      r12, 0x30(r12)
-	mtctr    r12
-	bctrl
-	xoris    r0, r3, 0x8000
-	lis      r3, 0x4330
-	stw      r0, 0x14(r1)
-	lbz      r0, 5(r29)
-	stw      r3, 0x10(r1)
-	lfd      f1, lbl_805208D0@sda21(r2)
-	cmplwi   r0, 0
-	lfd      f0, 0x10(r1)
-	fsubs    f0, f0, f1
-	fdivs    f31, f31, f0
-	beq      lbl_8043C3A4
-	lwz      r0, 8(r29)
-	stw      r3, 0x10(r1)
-	xoris    r0, r0, 0x8000
-	stw      r0, 0x14(r1)
-	lfd      f0, 0x10(r1)
-	fsubs    f0, f0, f1
-	fmuls    f1, f31, f0
-	b        lbl_8043C418
-
-lbl_8043C3A4:
-	mr       r3, r29
-	mr       r4, r30
-	lwz      r12, 0(r29)
-	addi     r5, r1, 8
-	lwz      r12, 0x2c(r12)
-	mtctr    r12
-	bctrl
-	clrlwi.  r0, r31, 0x18
-	bne      lbl_8043C3F8
-	lbz      r4, 9(r1)
-	lis      r0, 0x4330
-	lbz      r3, 8(r1)
-	stw      r0, 0x10(r1)
-	add      r0, r4, r3
-	lfd      f1, lbl_805208D0@sda21(r2)
-	xoris    r0, r0, 0x8000
-	stw      r0, 0x14(r1)
-	lfd      f0, 0x10(r1)
-	fsubs    f0, f0, f1
-	fmuls    f1, f31, f0
-	b        lbl_8043C418
-
-lbl_8043C3F8:
-	lbz      r3, 9(r1)
-	lis      r0, 0x4330
-	stw      r0, 0x10(r1)
-	lfd      f1, lbl_805208D8@sda21(r2)
-	stw      r3, 0x14(r1)
-	lfd      f0, 0x10(r1)
-	fsubs    f0, f0, f1
-	fmuls    f1, f0, f31
-
-lbl_8043C418:
-	psq_l    f31, 56(r1), 0, qr0
-	lwz      r0, 0x44(r1)
-	lfd      f31, 0x30(r1)
-	lwz      r31, 0x2c(r1)
-	lwz      r30, 0x28(r1)
-	lwz      r29, 0x24(r1)
-	mtlr     r0
-	addi     r1, r1, 0x40
-	blr
-	*/
+	return width;
 }
 
 /**
@@ -1728,7 +1651,7 @@ void TRenderingProcessor::setFont(JUTFont* font)
  */
 void TRenderingProcessor::setTextBoxInfo(J2DPane* pane)
 {
-	P2ASSERTLINE(1687, pane->getTypeID() == PANETYPE_TextBox);
+	P2ASSERTLINE(1680, pane->getTypeID() == PANETYPE_TextBox);
 
 	if (pane->getTypeID() != PANETYPE_TextBox) {
 		return;
@@ -1736,29 +1659,26 @@ void TRenderingProcessor::setTextBoxInfo(J2DPane* pane)
 
 	J2DTextBoxEx* text = static_cast<J2DTextBoxEx*>(pane);
 
-	JUtility::TColor chrcolor;
-	chrcolor.setRGBA(text->mCharColor);
-	JUtility::TColor gradcolor;
-	gradcolor.setRGBA(text->mGradientColor);
+	JUtility::TColor color[2];
+	color[0].setRGBA(text->mCharColor);
+	color[1].setRGBA(text->mGradientColor);
 
-	JUtility::TColor black, white;
+	JUtility::TColor white, black;
 	black = text->getBlack();
 	white = text->getWhite();
 
-	mBaseAlphaModifier = (f32)text->mColorAlpha / 255.0f;
-	mImageColorB       = white;
-	mImageColorA       = black;
-	mDefaultCharColor  = chrcolor;
-	mDefaultGradColor  = gradcolor;
-	mDefaultBlack      = black;
-	mDefaultWhite      = white;
+	mBaseAlphaModifier = text->getColorAlpha() / 255.0f;
+	setImageColorB(white);
+	setImageColorA(black);
+	setDefaultCharColor(color[0]);
+	setDefaultGradColor(color[1]);
+	setDefaultBlack(black);
+	setDefaultWhite(white);
 
-	mActiveCharWidth  = text->mCharSpacing;
-	mCharacterWidth   = text->mCharSpacing;
-	mActiveLineHeight = text->mLineSpacing;
-	mLineHeight       = text->mLineSpacing;
-	mTextBoxWidth     = text->getWidth();
-	mTextBoxHeight    = text->getHeight();
+	mCharacterWidth = mActiveCharWidth = text->mCharSpacing;
+	mLineHeight = mActiveLineHeight = text->mLineSpacing;
+	mTextBoxWidth                   = text->getWidth();
+	mTextBoxHeight                  = text->getHeight();
 
 	f32 fontWidth  = text->mFontSize.x;
 	f32 fontHeight = text->mFontSize.y;

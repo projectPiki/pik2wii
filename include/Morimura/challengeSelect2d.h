@@ -5,8 +5,7 @@
 #include "Morimura/Window.h"
 #include "Morimura/mrUtil.h"
 #include "Screen/Game2DMgr.h"
-#include "efx2d/T2DChalDive.h"
-#include "efx2d/T2DCursor.h"
+#include "efx2d/efx2dEffect.h"
 #include "og/Screen/ogScreen.h"
 
 namespace og {
@@ -63,6 +62,7 @@ struct TChallengePlayModeScreen : public TScreenBase {
 	virtual void draw(Graphics&, J2DPerspGraph*); // _10
 
 	inline bool isState(u8 state) const { return mState == state; }
+	inline bool isOpen() const { return mState != PlayModeScreen_Closed; }
 
 	// _00     = VTBL
 	// _00-_18 = TScreenBase

@@ -3,7 +3,7 @@
 #include "Game/Entities/ItemHoney.h"
 #include "Game/GameSystem.h"
 #include "RevoSDK/rand.h"
-#include "efx/TBaby.h"
+#include "efx/efxEnemy.h"
 #include "trig.h"
 
 // TODO: fix this up
@@ -268,7 +268,7 @@ void Obj::resetZukanAnimationFrame()
 void Obj::moveNoTarget()
 {
 	if (gameSystem && gameSystem->isZukanMode()) {
-		if (sqrDistanceXZ(mPosition, mTargetPos) < 500.0f) {
+		if (mPosition.sqrDistance2D(mTargetPos) < 500.0f) {
 			f32 randomAngle = randWeightFloat(100.0f) + 50.0f;
 			f32 angleToHome = JMAAtan2Radian(mPosition.x - mHomePosition.x, mPosition.z - mHomePosition.z);
 			angleToHome     = randWeightFloat(PI) + angleToHome + HALF_PI;

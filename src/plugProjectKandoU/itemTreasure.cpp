@@ -4,10 +4,10 @@
 #include "Game/PikiMgr.h"
 #include "Game/gamePlayData.h"
 #include "JSystem/JKernel/JKRDvdRipper.h"
-#include "PSM/WorkItem.h"
+#include "PSSystem/PSMainSide_ObjSound.h"
 #include "RevoSDK/rand.h"
 #include "VsOtakaraName.h"
-#include "efx/TOtakara.h"
+#include "efx/efxObject.h"
 #include "nans.h"
 
 // Don't be fooled by this files name, it is NOT related to actual treasures, those are pellets/otakara
@@ -15,8 +15,11 @@
 // the actual treasure in place until you kill, where the treasure becomes freed
 // Why they handled buried treasures this way is beyond me
 
-static const char UNUSED_1[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-static const char name[]     = "itemTreasure";
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "itemTreasure";
+}
 
 namespace Game {
 namespace ItemTreasure {
@@ -277,7 +280,7 @@ void Item::doDirectDraw(Graphics& gfx)
 bool Item::getVectorField(Sys::Sphere& bounds, Vector3f& pos)
 {
 	Vector3f diff = mPosition - bounds.mPosition;
-	f32 dist      = _normalise2(diff); // needs tweaking
+	f32 dist      = Vector3f::normalise(diff);
 
 	if (dist > getWorkRadius() + 5.0f) {
 		pos = diff;
@@ -366,7 +369,7 @@ void Item::createTreasure()
  */
 bool Item::interactAttack(InteractAttack& act)
 {
-	State* cState = mCurrentState;
+	State* cState = getCurrState();
 	if (cState) {
 		cState->onDamage(this, act.mDamage);
 

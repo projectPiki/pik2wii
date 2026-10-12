@@ -353,7 +353,7 @@ int Obj::getStickPikminNum()
 FakePiki* Obj::getAttackableTarget()
 {
 
-	if (sqrDistanceXZ(mPosition, mHomePosition) < SQUARE(C_GENERALPARMS.mTerritoryRadius())) {
+	if (mPosition.sqrDistance2D(mHomePosition) < SQUARE(C_GENERALPARMS.mTerritoryRadius())) {
 		f32 maxAngle = PI * (DEG2RAD * C_GENERALPARMS.mViewAngle());
 		f32 maxDist  = SQUARE(C_GENERALPARMS.mSightRadius());
 
@@ -366,7 +366,7 @@ FakePiki* Obj::getAttackableTarget()
 				f32 ang = getAngDist(c);
 				if (FABS(ang) <= maxAngle) {
 					Vector3f pos = c->getPosition();
-					if (sqrDistanceXZ(mPosition, pos) < maxDist) {
+					if (mPosition.sqrDistance2D(pos) < maxDist) {
 						return c;
 					}
 				}

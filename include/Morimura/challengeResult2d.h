@@ -5,7 +5,7 @@
 #include "Morimura/DayEndCount.h"
 #include "Morimura/mrUtil.h"
 #include "ebi/Save.h"
-#include "efx2d/T2DCavecomp.h"
+#include "efx2d/efx2dEffect.h"
 
 namespace Game {
 struct Challenge2D_ResultInfo;
@@ -52,14 +52,6 @@ struct TChallengeResultDemoScreen : public TScreenBase {
 	void setComplete(bool);
 	void reset();
 
-	void reset2()
-	{
-		mIsActive = true;
-		for (int i = 0; i < mAnimScreenCountMax; i++) {
-			mAnimScreens[i]->mCurrentFrame = 0.0f;
-		}
-	}
-
 	// _00     = VTBL
 	// _00-_18 = TScreenBase
 	og::Screen::AnimPane* mAnimPane1; // _18
@@ -99,7 +91,7 @@ struct TChallengeResultCounter {
 
 	void start();
 	void stop();
-	void getFillRate();
+	f32 getFillRate();
 	void update();
 
 	inline bool checkState(u8 state) { return mState == state; }

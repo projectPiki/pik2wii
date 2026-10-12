@@ -16,10 +16,10 @@ namespace Game {
 void TyreTubeShadowNode::makeShadowSRT(JointShadowParm& shadowParm, Matrixf* mat)
 {
 	Vector3f matVecs[4];
-	matVecs[0].set(mat->getColumn(0));
-	matVecs[3] = mat->getColumn(3);
+	Vector3f xVec;
+	mat->getColumn(0, xVec);
+	mat->getColumn(3, matVecs[3]);
 
-	Vector3f xVec = Vector3f(mat->getColumn(0));
 	xVec.normalise();
 	matVecs[0] = xVec * shadowParm._18;
 
@@ -254,62 +254,14 @@ void TyreShadowMgr::update()
 {
 	JointShadowParm parm;
 	parm.mPosition = mObj->getPosition();
-	parm.mRotation = Vector3f(0.0f, 1.0f, 0.0f);
+	parm.mRotation.set(0.0f, 1.0f, 0.0f);
 
-	f32 scale1 = 31.5f * mGlobalScale;
-	f32 scale2 = 17.5f * mGlobalScale;
-	parm.setBoth(scale1, scale2);
+	parm._18                 = 31.5f * mGlobalScale;
+	parm._1C                 = 17.5f * mGlobalScale;
+	parm.mShadowScale        = 0.0f;
+	parm.mPositionMultiplier = -17.5f;
 	mFrontShadow->makeShadowSRT(parm, mFrontMatrix);
 	mBackShadow->makeShadowSRT(parm, mBackMatrix);
-	/*
-	stwu     r1, -0x50(r1)
-	mflr     r0
-	stw      r0, 0x54(r1)
-	stw      r31, 0x4c(r1)
-	mr       r31, r3
-	addi     r3, r1, 8
-	lwz      r4, 0xc(r31)
-	lwz      r12, 0(r4)
-	lwz      r12, 8(r12)
-	mtctr    r12
-	bctrl
-	lfs      f4, lbl_8051D4E8@sda21(r2)
-	addi     r4, r1, 0x14
-	lfs      f2, 8(r1)
-	lfs      f1, 0xc(r1)
-	lfs      f0, 0x10(r1)
-	lfs      f3, lbl_8051D4EC@sda21(r2)
-	stfs     f2, 0x14(r1)
-	lfs      f2, lbl_8051D4F8@sda21(r2)
-	stfs     f1, 0x18(r1)
-	lfs      f1, lbl_8051D4FC@sda21(r2)
-	stfs     f0, 0x1c(r1)
-	lfs      f0, lbl_8051D500@sda21(r2)
-	stfs     f4, 0x20(r1)
-	stfs     f3, 0x24(r1)
-	stfs     f4, 0x28(r1)
-	lfs      f3, 0(r31)
-	fmuls    f2, f2, f3
-	stfs     f4, 0x34(r1)
-	fmuls    f1, f1, f3
-	stfs     f0, 0x38(r1)
-	stfs     f2, 0x2c(r1)
-	stfs     f1, 0x30(r1)
-	lwz      r3, 0x14(r31)
-	lwz      r5, 4(r31)
-	bl
-	makeShadowSRT__Q24Game18TyreTubeShadowNodeFRQ24Game15JointShadowParmP7Matrixf
-	lwz      r3, 0x18(r31)
-	addi     r4, r1, 0x14
-	lwz      r5, 8(r31)
-	bl
-	makeShadowSRT__Q24Game18TyreTubeShadowNodeFRQ24Game15JointShadowParmP7Matrixf
-	lwz      r0, 0x54(r1)
-	lwz      r31, 0x4c(r1)
-	mtlr     r0
-	addi     r1, r1, 0x50
-	blr
-	*/
 }
 } // namespace Tyre
 } // namespace Game

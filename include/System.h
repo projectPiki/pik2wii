@@ -202,7 +202,7 @@ struct System : public OSMutex {
 
 	inline f32 getDeltaTime() const { return mDeltaTime; }
 	inline f32 getFrameRate(f32 timeScale) const { return getDeltaTime() / timeScale; }
-	inline void updateTimer(f32& timer, f32 timeScale) const { timer += timeScale * mDeltaTime; }
+	inline void updateTimer(f32& timer, f32 timeScale) const { timer += timeScale * getDeltaTime(); }
 	inline Graphics* getGfx() { return mGfx; }
 
 	inline void setFlag(u32 flag) { mFlags.typeView |= flag; }
@@ -218,8 +218,8 @@ struct System : public OSMutex {
 	 */
 	inline JGeometry::TBox2f getFullScreenBox()
 	{
-		u32 height = getRenderModeHeight();
-		u32 width  = getRenderModeWidth();
+		f32 height = getRenderModeObj()->efbHeight;
+		f32 width  = getRenderModeObj()->fbWidth;
 		f32 offset = 0.0f; // Ahh... what we have to do to match a function....
 		return JGeometry::TBox2f(0, 0, offset + width, offset + height);
 	}

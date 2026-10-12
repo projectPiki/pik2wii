@@ -1,9 +1,8 @@
 #include "Game/Entities/ChappyBase.h"
 #include "Game/EnemyFunc.h"
 #include "Game/rumble.h"
-#include "efx/TEnemyDownSmoke.h"
-#include "efx/TEnemyDownWat.h"
-#include "efx/THanacho.h"
+#include "efx/efxEnemyGeneral.h"
+#include "efx/efxEnemy.h"
 
 static void __Print(const char** fmt, ...)
 {

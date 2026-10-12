@@ -1,7 +1,7 @@
 #include "Game/EnemyAnimKeyEvent.h"
 #include "Game/EnemyFunc.h"
 #include "Game/Entities/Kabuto.h"
-#include "efx/THebi.h"
+#include "efx/efxEnemyBoss.h"
 
 // TODO: fix this up
 static void __Print(const char** fmt, ...)
@@ -174,234 +174,6 @@ void Kabuto::StateTurn::exec(EnemyBase* enemy)
 	if (kabuto->mCurAnim->mIsPlaying && kabuto->mCurAnim->mType == KEYEVENT_END) {
 		transit(kabuto, kabuto->mNextState, nullptr);
 	}
-	/*
-	stwu     r1, -0x80(r1)
-	mflr     r0
-	stw      r0, 0x84(r1)
-	stfd     f31, 0x70(r1)
-	psq_st   f31, 120(r1), 0, qr0
-	stfd     f30, 0x60(r1)
-	psq_st   f30, 104(r1), 0, qr0
-	stfd     f29, 0x50(r1)
-	psq_st   f29, 88(r1), 0, qr0
-	stfd     f28, 0x40(r1)
-	psq_st   f28, 72(r1), 0, qr0
-	stw      r31, 0x3c(r1)
-	stw      r30, 0x38(r1)
-	lfs      f0, lbl_8051CDA8@sda21(r2)
-	mr       r31, r4
-	lfs      f1, 0x200(r4)
-	mr       r30, r3
-	fcmpo    cr0, f1, f0
-	cror     2, 0, 2
-	bne      lbl_802E2004
-	lwz      r12, 0(r3)
-	li       r5, 0
-	li       r6, 0
-	lwz      r12, 0x1c(r12)
-	mtctr    r12
-	bctrl
-	b        lbl_802E22A0
-
-lbl_802E2004:
-	mr       r3, r31
-	li       r4, 0
-	bl       isStartFlick__Q24Game9EnemyFuncFPQ24Game9EnemyBaseb
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_802E202C
-	li       r0, 4
-	mr       r3, r31
-	stw      r0, 0x2cc(r31)
-	bl       finishMotion__Q24Game9EnemyBaseFv
-	b        lbl_802E2264
-
-lbl_802E202C:
-	mr       r3, r31
-	bl       getSearchedTarget__Q34Game6Kabuto3ObjFv
-	cmplwi   r3, 0
-	beq      lbl_802E2164
-	lfs      f0, lbl_8051CDA8@sda21(r2)
-	mr       r4, r3
-	addi     r3, r1, 0x2c
-	stfs     f0, 0x2dc(r31)
-	lwz      r12, 0(r4)
-	lwz      r12, 8(r12)
-	mtctr    r12
-	bctrl
-	mr       r4, r31
-	lwz      r5, 0xc0(r31)
-	lwz      r12, 0(r31)
-	addi     r3, r1, 0x20
-	lfs      f29, 0x2c(r1)
-	lwz      r12, 8(r12)
-	lfs      f28, 0x34(r1)
-	lfs      f30, 0x334(r5)
-	lfs      f31, 0x30c(r5)
-	mtctr    r12
-	bctrl
-	lfs      f4, 0x20(r1)
-	lis      r3, atanTable___5JMath@ha
-	lfs      f0, 0x28(r1)
-	addi     r3, r3, atanTable___5JMath@l
-	lfs      f3, 0x24(r1)
-	fsubs    f1, f29, f4
-	fsubs    f2, f28, f0
-	stfs     f4, 0x14(r1)
-	stfs     f3, 0x18(r1)
-	stfs     f0, 0x1c(r1)
-	bl       "atan2___Q25JMath18TAtanTable<1024,f>CFff"
-	bl       roundAng__Ff
-	lwz      r12, 0(r31)
-	fmr      f29, f1
-	mr       r3, r31
-	lwz      r12, 0x64(r12)
-	mtctr    r12
-	bctrl
-	fmr      f2, f1
-	fmr      f1, f29
-	bl       angDist__Fff
-	fmuls    f29, f1, f31
-	lfs      f0, lbl_8051CDB4@sda21(r2)
-	lfs      f1, lbl_8051CDB0@sda21(r2)
-	fmuls    f0, f0, f30
-	fabs     f2, f29
-	fmuls    f1, f1, f0
-	frsp     f0, f2
-	fcmpo    cr0, f0, f1
-	ble      lbl_802E2118
-	lfs      f0, lbl_8051CDA8@sda21(r2)
-	fcmpo    cr0, f29, f0
-	ble      lbl_802E2114
-	fmr      f29, f1
-	b        lbl_802E2118
-
-lbl_802E2114:
-	fneg     f29, f1
-
-lbl_802E2118:
-	mr       r3, r31
-	lwz      r12, 0(r31)
-	lwz      r12, 0x64(r12)
-	mtctr    r12
-	bctrl
-	fadds    f1, f29, f1
-	bl       roundAng__Ff
-	stfs     f1, 0x1fc(r31)
-	mr       r3, r31
-	lfs      f0, 0x1fc(r31)
-	stfs     f0, 0x1a8(r31)
-	bl       isAttackableTarget__Q34Game6Kabuto3ObjFv
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_802E2264
-	li       r0, 5
-	mr       r3, r31
-	stw      r0, 0x2cc(r31)
-	bl       finishMotion__Q24Game9EnemyBaseFv
-	b        lbl_802E2264
-
-lbl_802E2164:
-	mr       r4, r31
-	lwz      r5, 0xc0(r31)
-	lwz      r12, 0(r31)
-	addi     r3, r1, 8
-	lfs      f28, 0x2d0(r31)
-	lwz      r12, 8(r12)
-	lfs      f31, 0x2d8(r31)
-	lfs      f29, 0x334(r5)
-	lfs      f30, 0x30c(r5)
-	mtctr    r12
-	bctrl
-	lfs      f1, 8(r1)
-	lis      r3, atanTable___5JMath@ha
-	lfs      f0, 0x10(r1)
-	addi     r3, r3, atanTable___5JMath@l
-	fsubs    f1, f28, f1
-	fsubs    f2, f31, f0
-	bl       "atan2___Q25JMath18TAtanTable<1024,f>CFff"
-	bl       roundAng__Ff
-	lwz      r12, 0(r31)
-	fmr      f31, f1
-	mr       r3, r31
-	lwz      r12, 0x64(r12)
-	mtctr    r12
-	bctrl
-	fmr      f2, f1
-	fmr      f1, f31
-	bl       angDist__Fff
-	fmr      f31, f1
-	lfs      f0, lbl_8051CDB4@sda21(r2)
-	lfs      f1, lbl_8051CDB0@sda21(r2)
-	fmuls    f0, f0, f29
-	fmuls    f29, f31, f30
-	fmuls    f1, f1, f0
-	fabs     f0, f29
-	frsp     f0, f0
-	fcmpo    cr0, f0, f1
-	ble      lbl_802E2214
-	lfs      f0, lbl_8051CDA8@sda21(r2)
-	fcmpo    cr0, f29, f0
-	ble      lbl_802E2210
-	fmr      f29, f1
-	b        lbl_802E2214
-
-lbl_802E2210:
-	fneg     f29, f1
-
-lbl_802E2214:
-	mr       r3, r31
-	lwz      r12, 0(r31)
-	lwz      r12, 0x64(r12)
-	mtctr    r12
-	bctrl
-	fadds    f1, f29, f1
-	bl       roundAng__Ff
-	fabs     f3, f31
-	stfs     f1, 0x1fc(r31)
-	lfs      f0, lbl_8051CDB8@sda21(r2)
-	lfs      f2, 0x1fc(r31)
-	frsp     f1, f3
-	stfs     f2, 0x1a8(r31)
-	fcmpo    cr0, f1, f0
-	cror     2, 0, 2
-	bne      lbl_802E2264
-	li       r0, 3
-	mr       r3, r31
-	stw      r0, 0x2cc(r31)
-	bl       finishMotion__Q24Game9EnemyBaseFv
-
-lbl_802E2264:
-	lwz      r3, 0x188(r31)
-	lbz      r0, 0x24(r3)
-	cmplwi   r0, 0
-	beq      lbl_802E22A0
-	lwz      r0, 0x1c(r3)
-	cmplwi   r0, 0x3e8
-	bne      lbl_802E22A0
-	mr       r3, r30
-	mr       r4, r31
-	lwz      r12, 0(r30)
-	li       r6, 0
-	lwz      r5, 0x2cc(r31)
-	lwz      r12, 0x1c(r12)
-	mtctr    r12
-	bctrl
-
-lbl_802E22A0:
-	psq_l    f31, 120(r1), 0, qr0
-	lfd      f31, 0x70(r1)
-	psq_l    f30, 104(r1), 0, qr0
-	lfd      f30, 0x60(r1)
-	psq_l    f29, 88(r1), 0, qr0
-	lfd      f29, 0x50(r1)
-	psq_l    f28, 72(r1), 0, qr0
-	lfd      f28, 0x40(r1)
-	lwz      r31, 0x3c(r1)
-	lwz      r0, 0x84(r1)
-	lwz      r30, 0x38(r1)
-	mtlr     r0
-	addi     r1, r1, 0x80
-	blr
-	*/
 }
 
 /**
@@ -455,13 +227,11 @@ void Kabuto::StateMove::exec(EnemyBase* enemy)
 		} else {
 			Vector3f pos       = kabuto->getPosition();
 			Vector3f targetPos = kabuto->mTargetPosition;
-			if (kabuto->mStateTimer > 6.0f || sqrDistanceXZ(pos, targetPos) < 625.0f) {
+			if (kabuto->mStateTimer > 6.0f || pos.sqrDistance2D(targetPos) < 625.0f) {
 				kabuto->mNextState = KABUTO_Wait;
 				kabuto->finishMotion();
 			} else {
 				f32 angle = kabuto->turnToTarget(targetPos, CG_GENERALPARMS(kabuto).mTurnSpeed(), CG_GENERALPARMS(kabuto).mMaxTurnAngle());
-				// f32 limit = PI * (DEG2RAD * 30.0f);
-				// f64 abs   = fabs(angle);
 				if (isAngleWithin(angle, 30.0f)) {
 					if (kabuto->mIsWalking) {
 						kabuto->setTargetSpeed(CG_GENERALPARMS(kabuto).mMoveSpeed());

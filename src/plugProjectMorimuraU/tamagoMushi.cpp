@@ -5,8 +5,7 @@
 #include "Game/PikiMgr.h"
 #include "Game/PikiState.h"
 #include "RevoSDK/rand.h"
-#include "efx/TTamagoAp.h"
-#include "efx/TUjinko.h"
+#include "efx/efxEnemy.h"
 
 // TODO: fix this up
 static void __Print(const char** fmt, ...)
@@ -470,7 +469,7 @@ bool Obj::turnFunc()
  */
 bool Obj::isReachToGoal(f32 goalRadius)
 {
-	return (u8)(sqrDistanceXZ(mPosition, mGoalPosition) < SQUARE(goalRadius));
+	return (u8)(mPosition.sqrDistance2D(mGoalPosition) < SQUARE(goalRadius));
 }
 
 /**
@@ -538,7 +537,7 @@ void Obj::appearPanic()
 
 				Vector3f pikiPos = Vector3f(piki->getPosition().x, 0.0f, piki->getPosition().z);
 
-				if (sqrDistanceXZ(pikiPos, pos) < rad) {
+				if (pikiPos.sqrDistance2D(pos) < rad) {
 					InteractAstonish astonish(this, C_PARMS->mPikiPanicMaxTime);
 					piki->stimulate(astonish);
 				}

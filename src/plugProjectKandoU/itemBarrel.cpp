@@ -9,11 +9,11 @@
 #include "JSystem/JKernel/JKRDvdRipper.h"
 #include "P2Macros.h"
 #include "PSM/ObjBase.h"
-#include "PSM/WorkItem.h"
+#include "PSSystem/PSMainSide_ObjSound.h"
 #include "PSSystem/PSSystemIF.h"
 #include "Sys/Sphere.h"
 #include "SysShape/Model.h"
-#include "efx/TBarrel.h"
+#include "efx/efxObject.h"
 #include "nans.h"
 #include "stream.h"
 
@@ -362,8 +362,8 @@ bool Item::interactAttack(InteractAttack& interaction)
 	if (interaction.mCreature->isNavi()) {
 		return false;
 	}
-	if (mCurrentState) {
-		mCurrentState->onDamage(this, interaction.mDamage);
+	if (getCurrState()) {
+		getCurrState()->onDamage(this, interaction.mDamage);
 		switch (mSoundEvent.event()) {
 		case TSE_Active:
 			P2ASSERTLINE(361, mSoundObj->getCastType() == PSM::CCT_WorkItem);

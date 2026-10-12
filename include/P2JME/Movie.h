@@ -21,7 +21,7 @@ struct WindowPane : public P2DScreen::CallBackNode {
 
 	WindowPane();
 
-	virtual ~WindowPane() { } // _08 (weak)
+	//virtual ~WindowPane() { } // _08 (weak)
 	virtual void update();    // _10
 	virtual void doInit();    // _18
 
@@ -43,7 +43,7 @@ struct WindowPane : public P2DScreen::CallBackNode {
 struct AbtnPane : public P2DScreen::CallBackNode {
 	AbtnPane(u8);
 
-	virtual ~AbtnPane() { } // _08 (weak)
+	//virtual ~AbtnPane() { } // _08 (weak)
 	virtual void update();  // _10
 	virtual void doInit();  // _18
 
@@ -55,11 +55,11 @@ struct AbtnPane : public P2DScreen::CallBackNode {
 };
 
 struct MessageWindowScreen : P2DScreen::Mgr_tuning {
-	MessageWindowScreen() { }
+	MessageWindowScreen();
 
-	virtual ~MessageWindowScreen() { } // _08 (weak)
+	//virtual ~MessageWindowScreen() { } // _08 (weak)
 
-	void open(f32);
+	void open(f32 duration) { mWindowPane->open(duration); }
 	void set(JKRArchive*);
 
 	// _00      = VTBL
@@ -81,22 +81,10 @@ struct PodIconScreen : P2DScreen::Mgr_tuning {
 
 	void reset();
 
-	void appear()
-	{
-		mMomentum = Vector3f(1.0f, randFloat(), 0.0f);
-		mMomentum.normalise();
-		mPosition.set(0.0f, 0.0f, 0.0f);
-		Game::playData->isStoryFlag(Game::STORY_DebtPaid) ? setXY(mInitialPos.x - 250.0f, mInitialPos.y - 25.0f)
-		                                                  : setXY(mInitialPos.x - 250.0f, mInitialPos.y - 10.0f);
-		// mIsVisible = true; // should be here, but we are reaching limits of inline complexity
-		mState = 0;
-	}
+	void appear();
 
-	void disappear()
-	{
-		setTrans();
-		hide();
-	}
+	void disappear();
+
 	void set(JKRArchive*);
 
 	// _00      = VTBL

@@ -6,6 +6,7 @@
 #include "JSystem/JKernel/JKRHeap.h"
 #include "RevoSDK/vec.h"
 #include "types.h"
+#include <stl/math.h>
 
 /**
  * @note Address: N/A

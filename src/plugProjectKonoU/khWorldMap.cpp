@@ -11,7 +11,7 @@
 #include "utilityU.h"
 #include "Screen/Game2DMgr.h"
 #include "PSSystem/PSSystemIF.h"
-#include "efx2d/T2DChangesmoke.h"
+#include "efx2d/efx2dEffect.h"
 
 static void _Print(char* format, ...)
 {
@@ -144,33 +144,19 @@ void khUtilColorAnmWM::do_update()
  */
 WorldMap::WorldMap()
 {
-	/* NON-MATCHING */
-	mScreenKitagawa     = nullptr;
-	mKitaAnim2          = nullptr;
-	mKitaAnim1          = nullptr;
-	mKitaAnim3          = nullptr;
-	mKitaAnim5          = nullptr;
-	mKitaAnim4          = nullptr;
-	mScreenRocket       = nullptr;
-	mRocketAnim1        = nullptr;
-	mRocketAnim2        = nullptr;
-	mScreenInfo         = nullptr;
-	mInfoAnim3          = nullptr;
-	mInfoAnim2          = nullptr;
-	mInfoAnim1          = nullptr;
-	mAnimTimers[9]      = 0.0f;
-	mAnimTimers[8]      = 0.0f;
-	mAnimTimers[7]      = 0.0f;
-	mAnimTimers[6]      = 0.0f;
-	mAnimTimers[5]      = 0.0f;
-	mAnimTimers[4]      = 0.0f;
-	mAnimTimers[3]      = 0.0f;
-	mAnimTimers[2]      = 0.0f;
-	mAnimTimers[1]      = 0.0f;
-	mAnimTimers[0]      = 0.0f;
-	mCameraZoomX        = 0.0f;
-	mCameraZoomMinFrame = 0.0f;
-	mCameraZoomY        = 1.0f;
+	mScreenKitagawa = nullptr;
+	mKitaAnim1 = mKitaAnim2 = nullptr;
+	mKitaAnim3              = nullptr;
+	mKitaAnim4 = mKitaAnim5 = nullptr;
+	mScreenRocket           = nullptr;
+	mRocketAnim1            = nullptr;
+	mRocketAnim2            = nullptr;
+	mScreenInfo             = nullptr;
+	mInfoAnim1 = mInfoAnim2 = mInfoAnim3 = nullptr;
+	mAnimTimers[0] = mAnimTimers[1] = mAnimTimers[2] = mAnimTimers[3] = mAnimTimers[4] = mAnimTimers[5] = mAnimTimers[6] = mAnimTimers[7]
+	    = mAnimTimers[8] = mAnimTimers[9] = 0.0f;
+	mCameraZoomMinFrame = mCameraZoomX = 0.0f;
+	mCameraZoomY                       = 1.0f;
 	mRocketPosition.set(0.0f, 0.0f);
 	mRocketPosition2.set(0.0f, 0.0f);
 
@@ -210,13 +196,11 @@ WorldMap::WorldMap()
 		mColorAnims[i] = nullptr;
 	}
 
-	mColorAnim2 = nullptr;
-	mArrowBlink = nullptr;
-	// possibly a substruct?
-	mCurrentState    = WMAP_Begin;
-	mRocketAngleMode = ROT_Unk1;
-	mFlags           = WMAPFLAG_IsFirstTimeEffect;
-	// end possible substruct
+	mColorAnim2          = nullptr;
+	mArrowBlink          = nullptr;
+	mCurrentState        = WMAP_Begin;
+	mRocketAngleMode     = ROT_Unk1;
+	mFlags               = WMAPFLAG_IsFirstTimeEffect;
 	mLockoutCounter      = 1;
 	mCourseJustOpenFlags = 0;
 	mOpenCourses         = 0;
@@ -576,8 +560,8 @@ void WorldMap::update(Game::WorldMap::UpdateArg& arg)
 		mAnimTimers[1] = 0.0f;
 	}
 
-	mLight01Center = Vector2f(getPaneCenterX(mScreenKitagawa->search('light01')), getPaneCenterY(mScreenKitagawa->search('light01')));
-	mStarCenter    = Vector2f(getPaneCenterX(mScreenKitagawa->search('star')), getPaneCenterY(mScreenKitagawa->search('star')));
+	mLight01Center.set(getPaneCenterX(mScreenKitagawa->search('light01')), getPaneCenterY(mScreenKitagawa->search('light01')));
+	mStarCenter.set(getPaneCenterX(mScreenKitagawa->search('star')), getPaneCenterY(mScreenKitagawa->search('star')));
 
 	u64 tagsWait[4]     = { 'Nwait0', 'Nwait1', 'Nwait2', 'Nwait3' };
 	u64 tagsPoint[4]    = { 'Npoint0', 'Npoint1', 'Npoint2', 'Npoint3' };
@@ -596,7 +580,7 @@ void WorldMap::update(Game::WorldMap::UpdateArg& arg)
 					// if a course has just opened, make the appear effect spawn over its dot
 					Vector2f efxPos(getPaneCenterX(mScreenKitagawa->search(getSerialTagName('Npoint0', i))),
 					                getPaneCenterY(mScreenKitagawa->search(getSerialTagName('Npoint0', i))));
-					efx2d::ArgScale efxArg(efxPos, msVal._28[mOpenCourses]);
+					efx2d::ArgScale efxArg(efxPos, msVal._30[mOpenCourses - 2]);
 					efx2d::WorldMap::T2DNewmap efx;
 					efx.mResMgrId = 1;
 					efx.mGroup    = 2;
@@ -661,7 +645,7 @@ void WorldMap::update(Game::WorldMap::UpdateArg& arg)
 		JGeometry::TVec2f temp;
 		temp.x       = mRocketAngle.x;
 		temp.y       = mRocketAngle.y;
-		mRocketAngle = JGeometry::TVec2f(temp.x * x - temp.y * y, temp.x * y + temp.y * x);
+		mRocketAngle.set(temp.x * x - temp.y * y, temp.x * y + temp.y * x);
 		f32 angle    = mRocketAngle.squared();
 		mRocketAngle.normalize();
 
@@ -669,8 +653,8 @@ void WorldMap::update(Game::WorldMap::UpdateArg& arg)
 		mRocketPosition.x += msVal._04 * (mRocketAngle.x * msVal._00);
 		mRocketPosition.y += msVal._04 * (mRocketAngle.y * msVal._00);
 
-		// this is the regswap
-		JGeometry::TVec2f vec(getPaneCenterX(cPointPane) - mRocketPosition.x, getPaneCenterY(cPointPane) - mRocketPosition.y);
+		y = getPaneCenterY(cPointPane) - mRocketPosition.y;
+		JGeometry::TVec2f vec(getPaneCenterX(cPointPane) - mRocketPosition.x, y);
 		f32 dist = vec.x * vec.x + vec.y + vec.y; // is this a typo?
 		if (!isFlag(WMAPFLAG_Unk4)) {
 			vec.normalize();
@@ -942,7 +926,7 @@ void WorldMap::update(Game::WorldMap::UpdateArg& arg)
 			cPointPane = mScreenKitagawa->search(tagsPoint[mCurrentCourseIndex]);
 			mScreenKitagawa->search(tagsWait[mCurrentCourseIndex]);
 			mCaveFadePane->mFinish = true;
-			mRocketPosition        = Vector2f(getPaneCenterX(cPointPane), getPaneCenterY(cPointPane));
+			mRocketPosition.set(getPaneCenterX(cPointPane), getPaneCenterY(cPointPane));
 			mRocketScale           = 0.01f;
 			paneRocket->setOffset(mRocketPosition.x, mRocketPosition.y);
 			f32 atanVal = JMAAtan2Radian(-mRocketAngle.x, -mRocketAngle.y) * JMath::TAngleConstant_<f32>::RADIAN_TO_DEGREE_FACTOR();
@@ -1084,8 +1068,8 @@ void WorldMap::draw3rd(Graphics& gfx)
 		gfx.mOrthoGraph.setPort();
 		gfx.mOrthoGraph.setColor(JUtility::TColor(0, 0, 0, mZukanFadeout));
 		f32 zero = 0.0f;
-		u16 y    = System::getRenderModeObj()->efbHeight;
-		u16 x    = System::getRenderModeObj()->fbWidth;
+		f32 y    = System::getRenderModeObj()->efbHeight;
+		f32 x    = System::getRenderModeObj()->fbWidth;
 		gfx.mOrthoGraph.fillBox(JGeometry::TBox2f(0.0f, 0.0f, zero + x, zero + y));
 	}
 	gfx.mPerspGraph.setPort();
@@ -1102,8 +1086,8 @@ void WorldMap::draw4th(Graphics& gfx)
 		gfx.mOrthoGraph.setPort();
 		gfx.mOrthoGraph.setColor(JUtility::TColor(0, 0, 0, mZukanFadeout));
 		f32 zero = 0.0f;
-		u16 y    = System::getRenderModeObj()->efbHeight;
-		u16 x    = System::getRenderModeObj()->fbWidth;
+		f32 y    = System::getRenderModeObj()->efbHeight;
+		f32 x    = System::getRenderModeObj()->fbWidth;
 		gfx.mOrthoGraph.fillBox(JGeometry::TBox2f(0.0f, 0.0f, zero + x, zero + y));
 	}
 	::Screen::gGame2DMgr->draw(gfx);
@@ -1189,7 +1173,7 @@ void WorldMap::rocketUpdate(J2DPane* pane)
 
 	mRocketScale = mRocketScale * msVal._08 + (1.0f - msVal._08) * tag2num(pane->mMessageID);
 
-	f32 scale2 = *(&msVal._1C + mOpenCourses) * mRocketScale;
+	f32 scale2 = msVal._20[mOpenCourses - 1] * mRocketScale;
 	shipPane->updateScale(scale2);
 
 	Vector2f sep = mRocketPosition;
@@ -1199,23 +1183,20 @@ void WorldMap::rocketUpdate(J2DPane* pane)
 	JGeometry::TVec3f pos2 = shipPane2->getGlbVtx(GLBVTX_BtmRight);
 	JGeometry::TVec3f pos3 = shipPane2->getGlbVtx(GLBVTX_TopLeft);
 	JGeometry::TVec3f pos4 = shipPane2->getGlbVtx(GLBVTX_TopRight);
-	// f32 factor             = msVal._1C;
-	JGeometry::TVec3f mid2;
-	mid2.set(0.5f * (pos4.x + pos3.x), 0.5f * (pos4.y + pos3.y), 0.5f * (pos4.z + pos3.z)); // f5, f4, f7
-	JGeometry::TVec3f mid1;
-	mid1.set(0.5f * (pos1.x + pos2.x), 0.5f * (pos1.y + pos2.y), 0.5f * (pos1.z + pos2.z)); //
-	// f32 inv                = 1.0f - msVal._1C[0];
-	mEffectPos = sep + Vector2f(mid1.x * (1.0f - msVal._1C) + mid2.x * msVal._1C, mid1.y * (1.0f - msVal._1C) + mid2.y * msVal._1C);
+
+	Vec vec  = { 0.0f, 0.0f, 0.0f };
+	vec.x    = 0.5f * (pos1.x + pos2.x);
+	vec.y    = 0.5f * (pos1.y + pos2.y);
+	Vec vec2 = { 0.0f, 0.0f, 0.0f };
+	vec2.x   = 0.5f * (pos4.x + pos3.x);
+	vec2.y   = 0.5f * (pos4.y + pos3.y);
+
+	f32 efxX   = sep.x + (vec.x * (1.0f - msVal._1C) + vec2.x * msVal._1C);
+	f32 efxY   = sep.y + (vec.y * (1.0f - msVal._1C) + vec2.y * msVal._1C);
+	mEffectPos = Vector2f(efxX, efxY);
 	mEffectDir = Vector2f(-mRocketAngle.x, -mRocketAngle.y);
 
-	volatile Vec vec  = { 0.0f, 0.0f, 0.0f };
-	volatile Vec vec2 = { 0.0f, 0.0f, 0.0f };
-
 	efx2d::WorldMap::ArgDirScale arg(mEffectPos, mEffectDir, scale2);
-	vec.x  = mid1.x;
-	vec.y  = mid1.y;
-	vec2.x = mid2.x;
-	vec2.y = mid2.y;
 
 	efx2d::WorldMap::T2DRocketA efx;
 	efx.create(&arg);
@@ -1538,12 +1519,13 @@ void WorldMap::changeInfo()
 	u64 tags2[4]
 	    = { '8396_01', '8398_01', '8401_01', '8410_01' }; // "Hole of Beasts" 	"White Flower Garden"	"Bulblax Kingdom" 	"Snagret Hole"
 	u64 tags3[4]     = { '8397_01', '8402_01', '8403_01',
-		                 '8411_01' }; // "Citadel of Spiders"	"Glutton's Kitchen"		"Shower Room"		"Submerged Castle"
+	                     '8411_01' }; // "Citadel of Spiders"	"Glutton's Kitchen"		"Shower Room"		"Submerged Castle"
 	u64 tags4[4]     = { '8412_01', '8413_01', '8414_01', 'no_data' }; // "Cavern of Chaos" 	"Hole of Heroes"	 	"Dream Den"
 	u64* caveTags[4] = { tags1, tags2, tags3, tags4 };
 
-	u64 unusedtags[20] = { 'Pg_p_01', 'Pg_p_02', 'Pg_c_01', 'Pg_c_02', 'P0_p_01', 'P0_p_02', 'P0_c_01', 'P0_c_02', 'P1_p_01', 'P1_p_02',
-		                   'P1_c_01', 'P1_c_02', 'P2_p_01', 'P2_p_02', 'P2_c_01', 'P2_c_02', 'P3_p_01', 'P3_p_02', 'P3_c_01', 'P3_c_02' };
+	u64 unusedtags1[4]  = { 'Pg_p_01', 'Pg_p_02', 'Pg_c_01', 'Pg_c_02' };
+	u64 unusedtags2[16] = { 'P0_p_01', 'P0_p_02', 'P0_c_01', 'P0_c_02', 'P1_p_01', 'P1_p_02', 'P1_c_01', 'P1_c_02',
+	                        'P2_p_01', 'P2_p_02', 'P2_c_01', 'P2_c_02', 'P3_p_01', 'P3_p_02', 'P3_c_01', 'P3_c_02' };
 
 	u64 floTags[4] = { 'Nca_fl0', 'Nca_fl1', 'Nca_fl2', 'Nca_fl3' };
 
@@ -1645,13 +1627,14 @@ void WorldMap::effectFirstTime()
 	u64 tags2[4]
 	    = { '8396_01', '8398_01', '8401_01', '8410_01' }; // "Hole of Beasts" 	"White Flower Garden"	"Bulblax Kingdom" 	"Snagret Hole"
 	u64 tags3[4] = { '8397_01', '8402_01', '8403_01',
-		             '8411_01' }; // "Citadel of Spiders"	"Glutton's Kitchen"		"Shower Room"		"Submerged Castle"
+	                 '8411_01' }; // "Citadel of Spiders"	"Glutton's Kitchen"		"Shower Room"		"Submerged Castle"
 	u64 tags4[4] = { '8412_01', '8413_01', '8414_01', 'no_data' }; // "Cavern of Chaos" 	"Hole of Heroes"	 	"Dream Den"
 
 	u64* caveTags[4] = { tags1, tags2, tags3, tags4 }; // Note: this generates some 0s in the rodata, so its place is important
 
-	u64 unusedtags[20] = { 'Pg_p_01', 'Pg_p_02', 'Pg_c_01', 'Pg_c_02', 'P0_p_01', 'P0_p_02', 'P0_c_01', 'P0_c_02', 'P1_p_01', 'P1_p_02',
-		                   'P1_c_01', 'P1_c_02', 'P2_p_01', 'P2_p_02', 'P2_c_01', 'P2_c_02', 'P3_p_01', 'P3_p_02', 'P3_c_01', 'P3_c_02' };
+	u64 unusedtags1[4]  = { 'Pg_p_01', 'Pg_p_02', 'Pg_c_01', 'Pg_c_02' };
+	u64 unusedtags2[16] = { 'P0_p_01', 'P0_p_02', 'P0_c_01', 'P0_c_02', 'P1_p_01', 'P1_p_02', 'P1_c_01', 'P1_c_02',
+	                        'P2_p_01', 'P2_p_02', 'P2_c_01', 'P2_c_02', 'P3_p_01', 'P3_p_02', 'P3_c_01', 'P3_c_02' };
 
 	bool isIncPoko = false;
 	bool isNewOta  = false;
@@ -1731,9 +1714,9 @@ WorldMap::OnyonDynamics::OnyonDynamics()
 {
 	mRotateAngle = 0;
 	mOnyonPane   = nullptr;
-	mOffset      = Vector2f(1000.0f, 0.0f);
-	mEfxPosition = Vector2f(1000.0f, 0.0f);
-	_28          = Vector2f(0.0f, -1.0f);
+	mOffset.set(1000.0f, 0.0f);
+	mEfxPosition.set(1000.0f, 0.0f);
+	_28.set(0.0f, -1.0f);
 
 	mVelocity.y = 0.0f;
 	mVelocity.x = 0.0f;
@@ -1832,14 +1815,14 @@ Vector2f WorldMap::OnyonDynamics::move(WorldMap* wmap, const JGeometry::TVec2f& 
  */
 void WorldMap::OnyonDynamics::update(WorldMap* map)
 {
-	f32 scale = map->mScreenRocket->search('NROCKET')->mScale.x;
+	f32 scale = map->mScreenRocket->search('NROCKET')->mScaleX;
 	mOnyonPane->setOffset((50.0f * JMASinShort(mRotateAngle)) * scale + mOffset.x, mOffset.y);
 	f32 angle = JMAAtan2Radian(-mAngle.x, -mAngle.y);
 	angle *= 57.295776f;
 	mOnyonPane->setAngle(angle);
 	mOnyonPane->updateScale(scale);
 	mEfxPosition.set(mOnyonPane->mGlobalMtx[0][3], mOnyonPane->mGlobalMtx[1][3]);
-	_28 = Vector2f(0.0f, 1.0f);
+	_28.set(0.0f, 1.0f);
 	mOnyonKira->setGlobalParticleScale(scale);
 }
 

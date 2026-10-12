@@ -4,7 +4,7 @@
 #include "PSSystem/PSMainSide_Scene.h"
 #include "RevoSDK/rand.h"
 #include "System.h"
-#include "efx2d/T2DSensor.h"
+#include "efx2d/efx2dEffect.h"
 #include "og/Screen/AngleMgr.h"
 #include "og/Screen/OtakaraSensor.h"
 #include "og/Screen/ScaleMgr.h"
@@ -14,10 +14,14 @@
 #include "og/newScreen/ogUtil.h"
 #include "trig.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "ogOtakaraSensor";
+}
+
 namespace og {
 namespace Screen {
-
-static const char otakaraSensorName[] = "ogOtakaraSensor";
 
 /**
  * @note Address: 0x8032D8E8
@@ -76,8 +80,8 @@ void OtakaraSensor::init(J2DPane* pane1, J2DPane* pane2, int state)
 		mPane2             = pane2;
 		mCurrReactionLevel = 0.0f;
 		mAngle             = 0.0f;
-		mPanePos.x         = mPane2->mOffset.x;
-		mPanePos.y         = mPane2->mOffset.y;
+		mPanePos.x         = mPane2->mTranslateX;
+		mPanePos.y         = mPane2->mTranslateY;
 		mState             = state;
 		mIsInit            = false;
 		mTreeColor         = og::Screen::capturePictureTreeColor(pane2, 30);

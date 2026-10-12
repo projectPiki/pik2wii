@@ -5,10 +5,14 @@
 #include "RevoSDK/rand.h"
 #include "types.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "246-RandItemUnit";
+}
+
 namespace Game {
 namespace Cave {
-
-static const char randItemUnitName[] = "246-RandItemUnit";
 
 /**
  * @note Address: 0x8024E38C
@@ -508,10 +512,10 @@ Vector3f RandItemUnit::getItemBaseGenPosition(MapNode* node, int score)
 		}
 
 		int counter2 = 0;
-		f32 sqrDist  = sqrDistanceXZ(onyonPos, globalPos);
+		f32 sqrDist  = onyonPos.sqrDistance2D(globalPos);
 		for (int i = 0; i < counter; i++) {
 			Vector3f genPos = node->getBaseGenGlobalPosition(genList[i]);
-			if (sqrDistanceXZ(onyonPos, genPos) < sqrDist) {
+			if (onyonPos.sqrDistance2D(genPos) < sqrDist) {
 				positions[counter2] = genPos;
 				counter2++;
 			}
@@ -591,15 +595,9 @@ Vector3f RandItemUnit::getItemBaseGenPosition(MapNode** candidates, BaseGen** sp
 		MapNode* currNode = candidates[i];
 		f32 len           = 400.0f;
 		if (redOnyonNode == currNode) {
-			Vector3f onyonPos = redOnyonGen->mPosition;
-			Vector3f genPos   = spawnerList[i]->mPosition;
-			Vector3f sep      = Vector3f(onyonPos.y - genPos.y, onyonPos.z - genPos.z, onyonPos.x - genPos.x);
-			len               = _length2(sep);
+			len               = redOnyonGen->mPosition.distance(spawnerList[i]->mPosition);
 		} else if (blueOnyonNode == currNode) {
-			Vector3f onyonPos = blueOnyonGen->mPosition;
-			Vector3f genPos   = spawnerList[i]->mPosition;
-			Vector3f sep      = Vector3f(onyonPos.y - genPos.y, onyonPos.z - genPos.z, onyonPos.x - genPos.x);
-			len               = _length2(sep);
+			len               = blueOnyonGen->mPosition.distance(spawnerList[i]->mPosition);
 		}
 
 		if (len < maxDist) {

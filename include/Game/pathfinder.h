@@ -24,7 +24,7 @@ enum PathFindFlags {
 	PATHFLAG_VsRed                     = 0x10,
 	PATHFLAG_VsBlue                    = 0x20,
 	PATHFLAG_AllowUnvisited            = 0x40,
-	PATHFLAG_TwoWayPathing             = 0x80 // used for Panmodoki and BlackMan
+	PATHFLAG_TwoWayPathing             = 0x80 // used for PanModoki and BlackMan
 };
 
 namespace PathfindContext {
@@ -89,9 +89,6 @@ struct AStarContext {
 	}
 
 	bool checkContext() { return mHandleIdx != 0 && mState == PATHFIND_Busy; }
-
-	// fabricated
-	bool isExhausted() { return mActiveList.mRootNode == nullptr; }
 
 	inline bool isFlag(PathFindFlags flag) { return mRequestFlag & flag; }
 

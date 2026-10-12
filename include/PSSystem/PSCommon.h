@@ -45,11 +45,8 @@ struct SingletonBase {
 	static T* sInstance;
 };
 
-// template <typename T>
-// SingletonBase<T>::~SingletonBase()
-// {
-// 	sInstance = nullptr;
-// }
+template <typename T>
+T* SingletonBase<T>::sInstance;
 
 struct IdLink : public JSULink<IdLink> {
 	IdLink(u32 id)
@@ -74,6 +71,14 @@ struct IdList : public JSUList<IdLink> {
 			remove(link);
 			delete (IdLink*)link->getObjectPtr();
 		}
+	}
+
+	void append(IdLink* link)
+	{
+		if (!getFirst()) {
+			mNextLink = link;
+		}
+		JSUList<IdLink>::append(link);
 	}
 
 	inline IdLink* setNextLink()

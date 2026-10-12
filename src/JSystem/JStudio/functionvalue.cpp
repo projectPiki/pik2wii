@@ -829,7 +829,7 @@ f64 TFunctionValue_list::update_INTERPOLATE_BSPLINE_dataMore3_(const TFunctionVa
 TFunctionValue_list_parameter::TFunctionValue_list_parameter()
     : mFloatData(nullptr)
     , _48(0)
-    , mData1(nullptr)
+    , mData1(*this, nullptr)
     , mData2(mData1)
     , mData3(mData1)
     , mUpdateFunction(nullptr)
@@ -874,7 +874,7 @@ void TFunctionValue_list_parameter::initialize()
 	mFloatData = nullptr;
 	_48        = 0;
 
-	TIterator_data_ iter(nullptr);
+	TIterator_data_ iter(*this, nullptr);
 	mData1          = iter;
 	mData2          = mData1;
 	mData3          = mData1;

@@ -9,7 +9,7 @@
 #include "Radar.h"
 #include "RevoSDK/rand.h"
 #include "SoundID.h"
-#include "efx/TEnemyDive.h"
+#include "efx/efxEnemyGeneral.h"
 #include "nans.h"
 
 // TODO: fix this up
@@ -454,8 +454,8 @@ void Item::onInit(CreatureInitArg* settings)
 void Item::onKill(CreatureKillArg* settings)
 {
 	Radar::Mgr::exit(this);
-	if (mCurrentState) {
-		mCurrentState->cleanup(this);
+	if (getCurrState()) {
+		getCurrState()->cleanup(this);
 	}
 	mgr->kill(this);
 	if (!settings || !settings->isFlag(CKILL_DontCountAsDeath)) {
@@ -510,10 +510,11 @@ void Item::makeTrMatrix()
 		yVec = yVec * -1.0f;
 
 		Vector3f zAxis(0.0f, 0.0f, 1.0f);
+		Vector3f zVec;
 		Vector3f xVec = yVec.cross(zAxis);
 		xVec.normalise();
 
-		Vector3f zVec = xVec.cross(yVec);
+		zVec = xVec.cross(yVec);
 		zVec.normalise();
 
 		mBaseTrMatrix.setColumn(0, xVec);
@@ -688,7 +689,7 @@ lbl_801DA0E8:
  */
 void Item::doAI()
 {
-	mFsm->exec(this);
+	FSMItem::doAI();
 	if (mAutopluckedTimer > 0.0f) {
 		mAutopluckedTimer -= sys->getDeltaTime();
 		if (mAutopluckedTimer <= 0.0f) {
@@ -718,11 +719,14 @@ void Item::doAI()
  */
 void Item::changeMaterial()
 {
-	// J3DMaterial* mat = mModel->mJ3dModel->getModelData()->getMaterialNodePointer(0);
 	if (mModel->mJ3dModel->getModelData()->getMaterialNodePointer(0)) {
-		Color4 pikiColor = Piki::pikiColors[mColor];
-		mModel->mJ3dModel->getModelData()->getMaterialNodePointer(0)->getTevBlock()->setTevColor(
-		    0, J2DGXColorS10(pikiColor.r, pikiColor.g, pikiColor.b, pikiColor.a));
+		Color4& pikiColor = Piki::pikiColors[mColor];
+		J3DGXColorS10 color;
+		color.r = pikiColor.r;
+		color.g = pikiColor.g;
+		color.b = pikiColor.b;
+		color.a = pikiColor.a;
+		mModel->mJ3dModel->getModelData()->getMaterialNodePointer(0)->getTevBlock()->setTevColor(0, color);
 	}
 
 	mModel->mJ3dModel->calcMaterial();
@@ -836,17 +840,9 @@ lbl_801DA34C:
  */
 void Item::onKeyEvent(const SysShape::KeyEvent& keyEvent)
 {
-	if (mCurrentState) {
-		mCurrentState->onKeyEvent(this, keyEvent);
+	if (getCurrState()) {
+		getCurrState()->onKeyEvent(this, keyEvent);
 	}
-}
-
-/**
- * @note Address: 0x801DA3CC
- * @note Size: 0x4
- */
-void State::onKeyEvent(Item* item, const SysShape::KeyEvent& keyEvent)
-{
 }
 
 /**
@@ -1048,7 +1044,7 @@ Item* Mgr::birth()
 		break;
 	}
 
-	return mMonoObjectMgr.birth();
+	return FixedSizeItemMgr<Item>::birth();
 }
 
 /**

@@ -1,8 +1,7 @@
 #include "Game/Entities/Tadpole.h"
 #include "PS.h"
 #include "RevoSDK/rand.h"
-#include "efx/TEnemyDive.h"
-#include "efx/TPk.h"
+#include "efx/efxEnemyGeneral.h"
 
 // TODO: fix this up
 static void __Print(const char** fmt, ...)
@@ -159,7 +158,7 @@ Vector3f Obj::getTargetPosition(Creature* target)
 	sep += tadpolePos;
 
 	f32 territory = C_GENERALPARMS.mTerritoryRadius.mValue;
-	if (sqrDistanceXZ(sep, homePos) > SQUARE(territory)) {
+	if (sep.sqrDistance2D(homePos) > SQUARE(territory)) {
 		Vector3f::getFlatDirectionFromTo(homePos, sep);
 		sep *= territory;
 		sep += homePos;

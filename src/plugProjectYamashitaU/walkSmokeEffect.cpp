@@ -4,8 +4,6 @@
 #include "JSystem/JUtility/JUTException.h"
 #include "SysShape/Joint.h"
 #include "SysShape/Model.h"
-#include "efx/TEnemyWalkSmoke.h"
-#include "types.h"
 
 // TODO: fix this up
 static void __Print(const char** fmt, ...)

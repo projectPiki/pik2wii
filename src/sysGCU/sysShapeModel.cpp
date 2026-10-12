@@ -93,8 +93,8 @@ f32 Model::getRoughBoundingRadius()
 
 	for (int i = 0; i < mJointCount; i++) {
 		J3DJoint* jnt = mJoints[i].mJ3d;
-		Vector3f max  = *(Vector3f*)jnt->getMax() - center; // stupid tvec3 cast part 100
-		Vector3f min  = *(Vector3f*)jnt->getMin() - center;
+		Vector3f max(jnt->getMax()->x - center.x, jnt->getMax()->y - center.y, jnt->getMax()->z - center.z);
+		Vector3f min(jnt->getMin()->x - center.x, jnt->getMin()->y - center.y, jnt->getMin()->z - center.z);
 
 		f32 max2 = max.length();
 		f32 min2 = min.length();
@@ -108,19 +108,19 @@ f32 Model::getRoughBoundingRadius()
 		}
 	}
 
+	f32 radius = maxlen;
 	f32 minlen = 0.0f;
 
 	for (int i = 0; i < mJointCount; i++) {
-		f32 rad = mJoints[i].mJ3d->mBoundingSphereRadius;
-		if (rad > minlen) {
-			minlen = rad;
+		if (mJoints[i].mJ3d->mBoundingSphereRadius > minlen) {
+			minlen = mJoints[i].mJ3d->mBoundingSphereRadius;
 		}
 	}
 
 	if (minlen < maxlen) {
-		maxlen = minlen;
+		radius = minlen;
 	}
-	return maxlen;
+	return radius;
 	/*
 	stwu     r1, -0x20(r1)
 	mflr     r0
@@ -411,228 +411,6 @@ void Model::initJointsRec(int id, Joint* jnt)
 		joint->mNext = &mJoints[id];
 		initJointsRec(id, jnt);
 	}
-	/*
-	stwu     r1, -0x30(r1)
-	mflr     r0
-	stw      r0, 0x34(r1)
-	mulli    r0, r4, 0x3c
-	stmw     r23, 0xc(r1)
-	mr       r30, r3
-	mr       r31, r5
-	lwz      r3, 0x10(r3)
-	add      r26, r3, r0
-	stw      r31, 0xc(r26)
-	lwz      r4, 0x18(r26)
-	lwz      r3, 0xc(r4)
-	lwz      r25, 0x10(r4)
-	cmplwi   r3, 0
-	beq      lbl_8043EE14
-	lhz      r0, 0x14(r3)
-	lwz      r3, 0x10(r30)
-	mulli    r4, r0, 0x3c
-	add      r0, r3, r4
-	stw      r0, 0x10(r26)
-	lwz      r0, 0x10(r30)
-	add      r28, r0, r4
-	stw      r26, 0xc(r28)
-	lwz      r4, 0x18(r28)
-	lwz      r3, 0xc(r4)
-	lwz      r29, 0x10(r4)
-	cmplwi   r3, 0
-	beq      lbl_8043ED74
-	lhz      r0, 0x14(r3)
-	lwz      r3, 0x10(r30)
-	mulli    r4, r0, 0x3c
-	add      r0, r3, r4
-	stw      r0, 0x10(r28)
-	lwz      r0, 0x10(r30)
-	add      r27, r0, r4
-	stw      r28, 0xc(r27)
-	lwz      r3, 0x18(r27)
-	bl       getChild__8J3DJointFv
-	mr       r23, r3
-	lwz      r3, 0x18(r27)
-	bl       getYounger__8J3DJointFv
-	cmplwi   r23, 0
-	mr       r24, r3
-	beq      lbl_8043ED44
-	mr       r3, r23
-	bl       getJntNo__8J3DJointCFv
-	clrlwi   r4, r3, 0x10
-	lwz      r6, 0x10(r30)
-	mulli    r0, r4, 0x3c
-	mr       r3, r30
-	mr       r5, r27
-	add      r0, r6, r0
-	stw      r0, 0x10(r27)
-	bl       initJointsRec__Q28SysShape5ModelFiPQ28SysShape5Joint
-
-lbl_8043ED44:
-	cmplwi   r24, 0
-	beq      lbl_8043ED74
-	mr       r3, r24
-	bl       getJntNo__8J3DJointCFv
-	clrlwi   r4, r3, 0x10
-	lwz      r6, 0x10(r30)
-	mulli    r0, r4, 0x3c
-	mr       r3, r30
-	mr       r5, r28
-	add      r0, r6, r0
-	stw      r0, 4(r27)
-	bl       initJointsRec__Q28SysShape5ModelFiPQ28SysShape5Joint
-
-lbl_8043ED74:
-	cmplwi   r29, 0
-	beq      lbl_8043EE14
-	lhz      r0, 0x14(r29)
-	lwz      r3, 0x10(r30)
-	mulli    r4, r0, 0x3c
-	add      r0, r3, r4
-	stw      r0, 4(r28)
-	lwz      r0, 0x10(r30)
-	add      r27, r0, r4
-	stw      r26, 0xc(r27)
-	lwz      r3, 0x18(r27)
-	bl       getChild__8J3DJointFv
-	mr       r24, r3
-	lwz      r3, 0x18(r27)
-	bl       getYounger__8J3DJointFv
-	cmplwi   r24, 0
-	mr       r23, r3
-	beq      lbl_8043EDE4
-	mr       r3, r24
-	bl       getJntNo__8J3DJointCFv
-	clrlwi   r4, r3, 0x10
-	lwz      r6, 0x10(r30)
-	mulli    r0, r4, 0x3c
-	mr       r3, r30
-	mr       r5, r27
-	add      r0, r6, r0
-	stw      r0, 0x10(r27)
-	bl       initJointsRec__Q28SysShape5ModelFiPQ28SysShape5Joint
-
-lbl_8043EDE4:
-	cmplwi   r23, 0
-	beq      lbl_8043EE14
-	mr       r3, r23
-	bl       getJntNo__8J3DJointCFv
-	clrlwi   r4, r3, 0x10
-	lwz      r6, 0x10(r30)
-	mulli    r0, r4, 0x3c
-	mr       r3, r30
-	mr       r5, r26
-	add      r0, r6, r0
-	stw      r0, 4(r27)
-	bl       initJointsRec__Q28SysShape5ModelFiPQ28SysShape5Joint
-
-lbl_8043EE14:
-	cmplwi   r25, 0
-	beq      lbl_8043EF88
-	lhz      r0, 0x14(r25)
-	lwz      r3, 0x10(r30)
-	mulli    r4, r0, 0x3c
-	add      r0, r3, r4
-	stw      r0, 4(r26)
-	lwz      r0, 0x10(r30)
-	add      r28, r0, r4
-	stw      r31, 0xc(r28)
-	lwz      r4, 0x18(r28)
-	lwz      r3, 0xc(r4)
-	lwz      r25, 0x10(r4)
-	cmplwi   r3, 0
-	beq      lbl_8043EEE8
-	lhz      r0, 0x14(r3)
-	lwz      r3, 0x10(r30)
-	mulli    r4, r0, 0x3c
-	add      r0, r3, r4
-	stw      r0, 0x10(r28)
-	lwz      r0, 0x10(r30)
-	add      r26, r0, r4
-	stw      r28, 0xc(r26)
-	lwz      r3, 0x18(r26)
-	bl       getChild__8J3DJointFv
-	mr       r24, r3
-	lwz      r3, 0x18(r26)
-	bl       getYounger__8J3DJointFv
-	cmplwi   r24, 0
-	mr       r23, r3
-	beq      lbl_8043EEB8
-	mr       r3, r24
-	bl       getJntNo__8J3DJointCFv
-	clrlwi   r4, r3, 0x10
-	lwz      r6, 0x10(r30)
-	mulli    r0, r4, 0x3c
-	mr       r3, r30
-	mr       r5, r26
-	add      r0, r6, r0
-	stw      r0, 0x10(r26)
-	bl       initJointsRec__Q28SysShape5ModelFiPQ28SysShape5Joint
-
-lbl_8043EEB8:
-	cmplwi   r23, 0
-	beq      lbl_8043EEE8
-	mr       r3, r23
-	bl       getJntNo__8J3DJointCFv
-	clrlwi   r4, r3, 0x10
-	lwz      r6, 0x10(r30)
-	mulli    r0, r4, 0x3c
-	mr       r3, r30
-	mr       r5, r28
-	add      r0, r6, r0
-	stw      r0, 4(r26)
-	bl       initJointsRec__Q28SysShape5ModelFiPQ28SysShape5Joint
-
-lbl_8043EEE8:
-	cmplwi   r25, 0
-	beq      lbl_8043EF88
-	lhz      r0, 0x14(r25)
-	lwz      r3, 0x10(r30)
-	mulli    r4, r0, 0x3c
-	add      r0, r3, r4
-	stw      r0, 4(r28)
-	lwz      r0, 0x10(r30)
-	add      r25, r0, r4
-	stw      r31, 0xc(r25)
-	lwz      r3, 0x18(r25)
-	bl       getChild__8J3DJointFv
-	mr       r24, r3
-	lwz      r3, 0x18(r25)
-	bl       getYounger__8J3DJointFv
-	cmplwi   r24, 0
-	mr       r23, r3
-	beq      lbl_8043EF58
-	mr       r3, r24
-	bl       getJntNo__8J3DJointCFv
-	clrlwi   r4, r3, 0x10
-	lwz      r6, 0x10(r30)
-	mulli    r0, r4, 0x3c
-	mr       r3, r30
-	mr       r5, r25
-	add      r0, r6, r0
-	stw      r0, 0x10(r25)
-	bl       initJointsRec__Q28SysShape5ModelFiPQ28SysShape5Joint
-
-lbl_8043EF58:
-	cmplwi   r23, 0
-	beq      lbl_8043EF88
-	mr       r3, r23
-	bl       getJntNo__8J3DJointCFv
-	clrlwi   r4, r3, 0x10
-	lwz      r6, 0x10(r30)
-	mulli    r0, r4, 0x3c
-	mr       r3, r30
-	mr       r5, r31
-	add      r0, r6, r0
-	stw      r0, 4(r25)
-	bl       initJointsRec__Q28SysShape5ModelFiPQ28SysShape5Joint
-
-lbl_8043EF88:
-	lmw      r23, 0xc(r1)
-	lwz      r0, 0x34(r1)
-	mtlr     r0
-	addi     r1, r1, 0x30
-	blr
-	*/
 }
 
 /**

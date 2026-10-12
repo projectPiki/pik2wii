@@ -17,10 +17,9 @@
 #define J3DTEXCOORDTABLE_DIM_3 3
 
 u8 j3dTexCoordTable[J3DTEXCOORDTABLE_DIM_0 * J3DTEXCOORDTABLE_DIM_1 * J3DTEXCOORDTABLE_DIM_2 * J3DTEXCOORDTABLE_DIM_3];
-GDCurrentDL J3DDisplayListObj::sGDLObj;
 u8 j3dTevSwapTableTable[1024];
-u8 j3dZModeTable[96];
 u8 j3dAlphaCmpTable[768];
+u8 j3dZModeTable[96];
 
 const J3DTexCoordInfo j3dDefaultTexCoordInfo[8] = {
 	// mTexGenType, mTexGenSrc, mTexGenMtx
@@ -464,11 +463,13 @@ void makeTexCoordTable()
 	};
 
 	size_t idx;
+	int j;
+	int k;
 
 	for (u32 i = 0; i < 11; i++) {
-		for (int j = 0; j < 21u; j++) {
+		for (j = 0; j < 21u; j++) {
 			// 21u makes me think there's some sizeof() shenanigans
-			for (int k = 0; k < 11; k++) {
+			for (k = 0; k < 11; k++) {
 				idx = j * 11 + i * (11 * 21) + k;
 
 				table[idx * 3 + 0] = i;
@@ -585,11 +586,12 @@ lbl_800656CC:
  */
 void makeAlphaCmpTable()
 {
-	u32 i       = 0;
+	u32 i = 0;
+	u32 j;
 	u32 iOffset = 0;
 	u8* table   = j3dAlphaCmpTable;
 	for (; i < 8; i++, iOffset += 32) {
-		u32 j       = 0;
+		j           = 0;
 		u32 jOffset = 0;
 		for (; j < 4; j++, jOffset += 8) {
 			for (u32 k = 0; k < 8; k++) {

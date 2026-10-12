@@ -250,7 +250,7 @@ void Obj::setElecHibaPosition(InitialParam* param, f32 p1)
 {
 	Vector3f initPos = mBirthPosition;
 	f32 theta        = HALF_PI + getFaceDir();
-	f32 distance     = param->mSeperation / 2;
+	f32 distance     = param->mSeparation / 2;
 
 	Vector3f finalPos = Vector3f((p1 * distance) * sinf(theta) + initPos.x, initPos.y, (p1 * distance) * cosf(theta) + initPos.z);
 	finalPos.y        = mapMgr->getMinY(finalPos);
@@ -263,29 +263,29 @@ void Obj::setElecHibaPosition(InitialParam* param, f32 p1)
  */
 void Obj::interactDenkiAttack(Vector3f& position)
 {
-	Vector3f origin(mPosition);
-	Vector3f normSep = (position + origin) / 2;
+	Vector3f normSep(0.5f * (position.x + mPosition.x), 0.5f * (position.y + mPosition.y), 0.5f * (position.z + mPosition.z));
+	Vector3f origin(mPosition.x, mPosition.y, mPosition.z);
 
-	f32 theta           = mFaceDir;
-	Vector3f forwardVec = Vector3f(sinf(theta), 0.0f, cosf(theta));
+	Vector3f forwardVec(sinf(mFaceDir), 0.0f, cosf(mFaceDir));
 
-	Vector3f posDelta(position - origin);
-	Vector3f rightVec(posDelta);
+	Vector3f rightVec = position - origin;
 	rightVec.normalise();
 
-	Vector3f upVec = forwardVec.cross(rightVec);
+	Vector3f upVec;
+	upVec = forwardVec.cross(rightVec);
 	upVec.normalise();
 
-	f32 distance = posDelta.length();
+	f32 distance = position.distance(origin);
 
-	f32 attackRange  = C_GENERALPARMS.mMaxAttackRange();
-	f32 search       = C_GENERALPARMS.mSearchDistance();
-	f32 searchHeight = C_GENERALPARMS.mSearchHeight();
+	f32 attackRange = C_GENERALPARMS.mMaxAttackRange();
 	origin.y += C_GENERALPARMS.mMaxAttackAngle();
 	f32 totalRange = distance + attackRange;
 	f32 negRange   = -attackRange;
-	Vector3f spherePos(forwardVec.x * search, 0.0f, forwardVec.z * search);
-	Sys::Sphere sphere(normSep, (totalRange - negRange) / 2);
+	f32 searchX, searchHeight, searchZ;
+	searchZ      = forwardVec.z * C_GENERALPARMS.mSearchDistance();
+	searchHeight = C_GENERALPARMS.mSearchHeight();
+	searchX      = forwardVec.x * C_GENERALPARMS.mSearchDistance();
+	Sys::Sphere sphere(normSep, 0.5f * (totalRange - negRange));
 
 	CellIteratorArg iterArg(sphere);
 	iterArg.mOptimise = true;
@@ -307,7 +307,12 @@ void Obj::interactDenkiAttack(Vector3f& position)
 						if (mVersusHibaType == VHT_Neutral) {
 
 							f32 directionScale = dotProd1 / adj;
-							Vector3f attackDirection(directionScale * spherePos.x, 0.0f, directionScale * spherePos.z);
+							Vector3f attackDirection;
+							attackDirection.y = 0.0f;
+							attackDirection.x = directionScale;
+							attackDirection.z = directionScale;
+							attackDirection.z *= searchZ;
+							attackDirection.x *= searchX;
 							if (creature->isPiki()) {
 								attackDirection.y = searchHeight;
 							}

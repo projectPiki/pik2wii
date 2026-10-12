@@ -104,8 +104,8 @@ Rappa::Rappa()
  */
 void Rappa::init(u16 id)
 {
-	s16 checkID = id;
-	P2ASSERTBOUNDSLINE(189, 0, checkID, 2);
+	bool check = (id == 0 || id == 1);
+	P2ASSERTLINE(189, check);
 
 	u32 val    = -(id == 0);
 	mId        = val + 14;
@@ -202,8 +202,9 @@ JAISound* Rappa::playRappa(bool flag, f32 x, f32 y, JAInter::Object* obj)
 
 			f32 val = (min - 1.0f);
 			val *= -1.0f;
-			f32 comp      = (val < 0.0f) ? 0.0f : (val > 1.0f) ? 1.0f : val;
-			int extraWait = comp * cRatio;
+			val = (val < 0.0f) ? 0.0f : (val > 1.0f) ? 1.0f : val;
+			val *= cRatio;
+			int extraWait = val;
 			mDelay        = extraWait + cBaseWaitTime;
 		}
 	}
@@ -574,7 +575,7 @@ Builder_EvnSe_Perspective::Builder_EvnSe_Perspective(JGeometry::TBox3f box)
     : mDoSkipSizeCheck(false)
     , mGridSizeX(0)
     , mGridSizeZ(0)
-    , mBox(box)
+    , mBox(box.i, box.f)
     , mYPosition(0.0f)
 {
 	mBox.absolute();
@@ -750,8 +751,8 @@ lbl_80340310:
 void Builder_EvnSe_Perspective::build(f32 volume, PSSystem::EnvSeMgr* mgr)
 {
 	P2ASSERTLINE(700, mgr);
-	f32 totalSizeX = mBox.mMax.x - mBox.mMin.x;
-	f32 totalSizeZ = mBox.mMax.z - mBox.mMin.z;
+	f32 totalSizeX = mBox.f.x - mBox.i.x;
+	f32 totalSizeZ = mBox.f.z - mBox.i.z;
 
 	if (!mDoSkipSizeCheck) {
 		f32* temp = &totalSizeX;
@@ -774,8 +775,8 @@ void Builder_EvnSe_Perspective::build(f32 volume, PSSystem::EnvSeMgr* mgr)
 	f32 unitSizeX = totalSizeX / f32(mGridSizeX);
 
 	f32 unitSizeZ = totalSizeZ / f32(mGridSizeZ);
-	f32 startPosX = mBox.mMin.x + unitSizeX / 2;
-	f32 startPosZ = mBox.mMin.z + unitSizeZ / 2;
+	f32 startPosX = mBox.i.x + unitSizeX / 2;
+	f32 startPosZ = mBox.i.z + unitSizeZ / 2;
 
 	for (int x = 0; x < mGridSizeX; x++) {
 		pos.x = unitSizeX * f32(x) + startPosX;

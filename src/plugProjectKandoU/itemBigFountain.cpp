@@ -2,7 +2,7 @@
 #include "Game/MapMgr.h"
 #include "Game/MoviePlayer.h"
 #include "JSystem/JKernel/JKRDvdRipper.h"
-#include "PSM/WorkItem.h"
+#include "PSSystem/PSMainSide_ObjSound.h"
 #include "PSSystem/PSSystemIF.h"
 #include "Platform.h"
 #include "Radar.h"
@@ -459,7 +459,7 @@ static void fakeFunc(Item* item)
  */
 bool Item::canRide()
 {
-	return mCurrentState->canRide();
+	return getCurrState()->canRide();
 }
 
 /**
@@ -468,8 +468,8 @@ bool Item::canRide()
  */
 bool Item::interactAttack(InteractAttack& attack)
 {
-	if (mCurrentState) {
-		mCurrentState->onDamage(this, attack.mDamage);
+	if (getCurrState()) {
+		getCurrState()->onDamage(this, attack.mDamage);
 		switch (mSoundEvent.event()) {
 		case TSE_Active:
 			P2ASSERTLINE(559, mSoundObj->getCastType() == PSM::CCT_WorkItem);
@@ -522,7 +522,7 @@ f32 Item::getWorkDistance(Sys::Sphere& sphere)
  */
 void Item::onKeyEvent(SysShape::KeyEvent const& keyEvent)
 {
-	mCurrentState->onKeyEvent(this, keyEvent);
+	getCurrState()->onKeyEvent(this, keyEvent);
 }
 
 /**

@@ -307,11 +307,10 @@ void Obj::doUpdateCarcass()
 			mHealth += (mMaxHealth / C_PROPERPARMS.mRespawnRate.mValue) * sys->getDeltaTime();
 			if (mHealth >= mMaxHealth) {
 				mPellet->kill(nullptr);
-				f32 zx = mBaseTrMatrix.mMatrix.structView.zx;
-				f32 zz = mBaseTrMatrix.mMatrix.structView.zz;
+				Vector3f matrix(mBaseTrMatrix.mMatrix.structView.zx, mBaseTrMatrix.mMatrix.structView.zy, mBaseTrMatrix.mMatrix.structView.zz);
 				EnemyBirthArg birthArg;
 				birthArg.mPosition        = mPosition;
-				birthArg.mFaceDir         = JMAAtan2Radian(zx, zz);
+				birthArg.mFaceDir         = JMAAtan2Radian(matrix.x, matrix.z);
 				birthArg.mExistenceLength = mExistDuration;
 				birthArg.mIsInPiklopedia  = (mInPiklopedia > 0); // sure.
 
@@ -469,7 +468,7 @@ void Obj::updateTargetDistance()
 {
 	f32 radius = (mNearestWaypoint) ? mNearestWaypoint->mRadius : C_GENERALPARMS.mHomeRadius.mValue;
 
-	if (sqrDistanceXZ(mPosition, mWalkTargetPosition) < radius * radius) {
+	if (mPosition.sqrDistance2D(mWalkTargetPosition) < radius * radius) {
 		setLinkWayPoint();
 		mUpdateTimer = 0.0f;
 	}

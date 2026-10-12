@@ -23,11 +23,14 @@
 #include "nans.h"
 #include "utilityU.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "vsGS_Game";
+}
+
 namespace Game {
 namespace VsGame {
-
-static const char unusedVsGSGameArray[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-static const char vsGSGameName[]        = "vsGS_Game";
 
 /**
  * @note Address: 0x802292A4
@@ -117,7 +120,7 @@ void GameState::do_init(VsGameSection* section)
 		Screen::gGame2DMgr->startCount_Floor();
 
 	} else {
-		open_GameChallenge(section, 1);
+		open_GameChallenge(section, Screen::Game2DMgr::CAVEOPEN_ReadyGo);
 		gameSystem->setPause(false, "vs-readygo", 3);
 		gameSystem->setPause(true, "vs readygo", 6);
 		gameSystem->setMoviePause(true, "vs readygo");
@@ -143,16 +146,6 @@ void GameState::do_init(VsGameSection* section)
 bool GameState::goingToCave(VsGameSection* section)
 {
 	return isFlag(VSGS_EnteringCave);
-}
-
-/**
- * This fake function is here to generate the vtables in the correct order
- * - I cannot see a way for them to generate correctly without something here to
- * spawn DispMemberChallenge2P 'before' (after) DispWinLose, so this will have to suffice. - HP
- */
-static void fakeFuncVsGsGame()
-{
-	og::Screen::DispMemberChallenge2P disp;
 }
 
 /**
@@ -210,22 +203,22 @@ void GameState::exec(VsGameSection* section)
 				u8 redLost  = getLoseCauses(VSPLAYER_Red);
 				u8 blueLost = getLoseCauses(VSPLAYER_Blue);
 
-				if (!redLost && !blueLost) { // neither player lost
-					outcome = 3;             // draw
+				if (!redLost && !blueLost) {
+					outcome = Draw;
 					VsGameSection::mDrawCount += 1;
 
-				} else if (!redLost) { // red didn't lose
-					outcome = 1;       // red win
+				} else if (!redLost) {
+					outcome = WinPlayer1;
 					VsGameSection::mRedWinCount += 1;
 					section->mVsWinner = 0;
 
-				} else if (!blueLost) { // blue didn't lose
-					outcome = 2;        // blue win
+				} else if (!blueLost) {
+					outcome = WinPlayer2;
 					VsGameSection::mBlueWinCount += 1;
 					section->mVsWinner = 1;
 
-				} else {         // both lost/something wacky happened
-					outcome = 3; // draw
+				} else { // both players lost/something wacky happened
+					outcome = Draw;
 					VsGameSection::mDrawCount += 1;
 					section->mVsWinner = -1;
 				}
@@ -352,25 +345,25 @@ void GameState::exec(VsGameSection* section)
 			int redReason  = -1;
 			int blueReason = -1;
 			if (isLoseCause(VSPLAYER_Red, VSLOSE_Finished)) {
-				blueReason = 3;
+				blueReason = MarbleCapture;
 
 			} else if (isLoseCause(VSPLAYER_Red, VSLOSE_NaviDown)) {
-				redReason = 1;
+				redReason = LeaderDown;
 
 			} else if (isLoseCause(VSPLAYER_Red, VSLOSE_Extinction)) {
-				redReason = 2;
+				redReason = PikminExtinction;
 			}
 
-			if (blueReason == 3) {
+			if (blueReason == MarbleCapture) {
 
 			} else if (isLoseCause(VSPLAYER_Blue, VSLOSE_Finished)) {
-				redReason = 3;
+				redReason = MarbleCapture;
 
 			} else if (isLoseCause(VSPLAYER_Blue, VSLOSE_NaviDown)) {
-				blueReason = 1;
+				blueReason = LeaderDown;
 
 			} else if (isLoseCause(VSPLAYER_Blue, VSLOSE_Extinction)) {
-				blueReason = 2;
+				blueReason = PikminExtinction;
 			}
 
 			kh::Screen::DispWinLoseReason winLoseReason;
@@ -474,9 +467,9 @@ void GameState::checkSMenu(VsGameSection* section)
 	if (moviePlayer->mDemoState == DEMOSTATE_Inactive && !gameSystem->paused_soft()) {
 		if (section->mControllerP1->isButtonDown(JUTGamePad::PRESS_START)) {
 			og::Screen::DispMemberSMenuAll sMenu;
-			int versus = 2;
+			int versus = og::Screen::DispMemberSMenuAll::Open_ChallengeMode;
 			if (gameSystem->isVersusMode()) {
-				versus = 1;
+				versus = og::Screen::DispMemberSMenuAll::Open_Versus;
 			}
 			sMenu.mOpenMode = versus;
 			Screen::gGame2DMgr->setGamePad(section->mControllerP1);
@@ -488,9 +481,9 @@ void GameState::checkSMenu(VsGameSection* section)
 		} else if (gameSystem->isMultiplayerMode()) {
 			if (section->mControllerP2->isButtonDown(JUTGamePad::PRESS_START)) {
 				og::Screen::DispMemberSMenuAll sMenu;
-				int versus = 2;
+				int versus = og::Screen::DispMemberSMenuAll::Open_ChallengeMode;
 				if (gameSystem->isVersusMode()) {
-					versus = 1;
+					versus = og::Screen::DispMemberSMenuAll::Open_Versus;
 				}
 				sMenu.mOpenMode = versus;
 				Screen::gGame2DMgr->setGamePad(section->mControllerP2);
@@ -727,9 +720,9 @@ void GameState::onMovieDone(VsGameSection* section, MovieConfig* config, u32 unu
 		section->setCamController();
 
 		if (isFinalFloor) {
-			open_GameChallenge(section, 3);
+			open_GameChallenge(section, Screen::Game2DMgr::CAVEOPEN_ReadyGo | Screen::Game2DMgr::CAVEOPEN_FinalFloor);
 		} else {
-			open_GameChallenge(section, 1);
+			open_GameChallenge(section, Screen::Game2DMgr::CAVEOPEN_ReadyGo);
 		}
 
 		gameSystem->setPause(true, "readygo", 6);
@@ -778,9 +771,9 @@ void GameState::onMovieDone(VsGameSection* section, MovieConfig* config, u32 unu
 		gameSystem->setFlag(GAMESYS_IsPlaying);
 		if (currFloor == 0) {
 			if (isFinalFloor) {
-				open_GameChallenge(section, 3);
+				open_GameChallenge(section, Screen::Game2DMgr::CAVEOPEN_ReadyGo | Screen::Game2DMgr::CAVEOPEN_FinalFloor);
 			} else {
-				open_GameChallenge(section, 1);
+				open_GameChallenge(section, Screen::Game2DMgr::CAVEOPEN_ReadyGo);
 			}
 
 			gameSystem->setPause(true, "readygo2", 6);
@@ -788,7 +781,7 @@ void GameState::onMovieDone(VsGameSection* section, MovieConfig* config, u32 unu
 			setFlag(VSGS_ReadyGoOpen);
 
 		} else if (isFinalFloor) {
-			open_GameChallenge(section, 2);
+			open_GameChallenge(section, Screen::Game2DMgr::CAVEOPEN_FinalFloor);
 
 		} else {
 			open_GameChallenge(section, 0);

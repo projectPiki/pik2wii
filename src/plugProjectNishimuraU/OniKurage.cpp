@@ -5,7 +5,7 @@
 #include "Game/Navi.h"
 #include "Game/PikiMgr.h"
 #include "Game/rumble.h"
-#include "PSM/Navi.h"
+#include "PSSystem/PSMainSide_ObjSound.h"
 #include "RevoSDK/rand.h"
 #include "nans.h"
 
@@ -473,7 +473,7 @@ Creature* Obj::getSearchedTarget(f32 offset)
 {
 	Creature* target = nullptr;
 
-	if (sqrDistanceXZ(mPosition, mHomePosition) < SQUARE(C_GENERALPARMS.mTerritoryRadius())) {
+	if (mPosition.sqrDistance2D(mHomePosition) < SQUARE(C_GENERALPARMS.mTerritoryRadius())) {
 		f32 currY       = mPosition.y;
 		f32 minY        = currY - offset - 50.0f;
 		f32 fovAng      = PI * (DEG2RAD * C_GENERALPARMS.mViewAngle());
@@ -496,7 +496,7 @@ Creature* Obj::getSearchedTarget(f32 offset)
 				if (isValidTarget) {
 					Vector3f pikiPos = creature->getPosition();
 					if (pikiPos.y > minY && pikiPos.y < currY) {
-						f32 dist = sqrDistanceXZ(mPosition, pikiPos);
+						f32 dist = mPosition.sqrDistance2D(pikiPos);
 						if (dist < attackRange) {
 							return creature;
 						}
@@ -758,7 +758,7 @@ bool Obj::isSuck(f32 offset, Creature* target)
 	if (target) {
 		Vector3f targetPos = target->getPosition();
 		if (targetPos.y > minY && targetPos.y < currY) {
-			if (sqrDistanceXZ(mPosition, targetPos) < maxRange) {
+			if (mPosition.sqrDistance2D(targetPos) < maxRange) {
 				return true;
 			}
 		}
@@ -778,7 +778,7 @@ bool Obj::isSuck(f32 offset, Creature* target)
 				}
 				if (isValidTarget) {
 					Vector3f pikiPos = creature->getPosition();
-					if (pikiPos.y > minY && pikiPos.y < currY && sqrDistanceXZ(mPosition, pikiPos) < maxRange) {
+					if (pikiPos.y > minY && pikiPos.y < currY && mPosition.sqrDistance2D(pikiPos) < maxRange) {
 						return true;
 					}
 				}
@@ -809,7 +809,7 @@ bool Obj::suckPikmin(f32 offset)
 		if (currPiki->isAlive() && currPiki->isPikmin() && currPiki->mSticker != this) {
 			if (mSuckedPiki < C_PROPERPARMS.mMaxSuckPiki() && randWeightFloat(1.0f) < C_PROPERPARMS.mSuckChance()) {
 				Vector3f pikiPos = currPiki->getPosition();
-				if (pikiPos.y > minY && pikiPos.y < currY && sqrDistanceXZ(mPosition, pikiPos) < maxRange) {
+				if (pikiPos.y > minY && pikiPos.y < currY && mPosition.sqrDistance2D(pikiPos) < maxRange) {
 					Vector3f suckVec = partPos - pikiPos;
 					InteractSuikomi_Test suck(this, &suckVec, nullptr, part);
 					if (currPiki->stimulate(suck)) {
@@ -843,7 +843,7 @@ bool Obj::suckNavi(f32 offset)
 		Navi* currNavi = *iter;
 		if (currNavi->isAlive() && currNavi->mSticker != this) {
 			Vector3f naviPos = currNavi->getPosition();
-			if (naviPos.y > minY && naviPos.y < currY && sqrDistanceXZ(mPosition, naviPos) < maxRange) {
+			if (naviPos.y > minY && naviPos.y < currY && mPosition.sqrDistance2D(naviPos) < maxRange) {
 				for (int i = 0; i < mMouthSlots.getMax(); i++) {
 					MouthCollPart* slot = mMouthSlots.getSlot(i);
 					if (!slot->mStuckCreature) {

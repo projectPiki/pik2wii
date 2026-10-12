@@ -12,8 +12,7 @@
 #include "Game/gameChallenge2D.h"
 #include "Graphics.h"
 #include "Vector3.h"
-#include "efx/TNaviEffect.h"
-#include "efx/TPk.h"
+#include "efx/efxPikmin.h"
 #include "stream.h"
 
 #define CH_SCORE_POKO_MULTIPLIER   10
@@ -204,7 +203,7 @@ struct CardMgr {
 	void drawSlot(Graphics&, Vector3f&, SlotMachine&);
 
 	Vector3f getSlotOrigin(int);
-	Vector2f getLampPos(int, int);
+	Vector3f getLampPos(int, int);
 	Vector3f getPlayerCard(int);
 	void clearPlayerCard();
 

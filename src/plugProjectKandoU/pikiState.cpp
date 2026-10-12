@@ -18,13 +18,12 @@
 #include "Game/rumble.h"
 #include "KandoLib/Choice.h"
 #include "P2Macros.h"
-#include "PSM/Navi.h"
+#include "PSSystem/PSMainSide_ObjSound.h"
 #include "PikiAI.h"
 #include "RevoSDK/rand.h"
 #include "System.h"
-#include "efx/TEnemyDive.h"
-#include "efx/TPiku.h"
-#include "efx/TPk.h"
+#include "efx/efxPikmin.h"
+#include "efx/efxEnemyGeneral.h"
 #include "nans.h"
 #include "trig.h"
 
@@ -236,7 +235,7 @@ void PikiCarrotState::exec(Piki* piki)
 	Vector3f pos = piki->mVelocity;
 	f32 length   = pos.normalise();
 	if (length > 0.0f) {
-		pos.negate();
+		pos.scale(-1.0f);
 		Matrixf natMatrix;
 		natMatrix.makeNaturalPosture(pos, 0.0f);
 		Matrixf matST;
@@ -1886,7 +1885,7 @@ void PikiHipDropState::exec(Piki* piki)
 			if (closestEnemy) {
 				Vector3f enemyPos = closestEnemy->getPosition();
 				enemyPos          = enemyPos - position;
-				f32 dist          = _sqrtf(enemyPos.x * enemyPos.x + enemyPos.z * enemyPos.z);
+				f32 dist          = sqrtfClamped(enemyPos.x * enemyPos.x + enemyPos.z * enemyPos.z);
 
 				if (dist > 0.0f) {
 					enemyPos *= 120.0f * (1.0f / dist);
@@ -3049,7 +3048,7 @@ void PikiSuikomiState::execMouth(Piki* piki)
 
 	Vector3f pikiPos = piki->getPosition();
 	Vector3f diff    = position - pikiPos;
-	f32 length       = _normalise2(diff);
+	f32 length       = diff.normalise();
 
 	if (length < 10.0f) {
 		if (mCollpart == nullptr) {
@@ -3332,7 +3331,7 @@ void PikiFlyingState::exec(Piki* piki)
 			throwHeight = naviMgr->mNaviParms->mNaviParms.mThrowHeightMax();
 		}
 
-		f32 heightOffset = _sqrtf(SQUARE(fallFactor) + throwHeight * 2.0f * flowerFallFactor);
+		f32 heightOffset   = sqrtfClamped(SQUARE(fallFactor) + throwHeight * 2.0f * flowerFallFactor);
 		f32 landingTime  = naviMgr->mNaviParms->mNaviParms.mLandingTime();
 
 		mVelocityDirection.x = piki->mVelocity.x;
@@ -3348,9 +3347,11 @@ void PikiFlyingState::exec(Piki* piki)
 		mDirectionalSpeed     = speed;
 		mHalfDirectionalSpeed = 0.5f * speed;
 
-		piki->mVelocity.scale2D(throwMagnitude);
-		piki->mTargetVelocity.set2D(piki->mVelocity);
-
+		piki->mVelocity.x *= throwMagnitude;
+		piki->mVelocity.z *= throwMagnitude;
+		piki->mTargetVelocity.x = piki->mVelocity.x;
+		piki->mTargetVelocity.z = piki->mVelocity.z;
+		
 		piki->mVelocity.y       = 0.0f;
 		piki->mTargetVelocity.y = 0.0f;
 		mSlowFallWaitTimer      = 0.0f;
@@ -4285,7 +4286,7 @@ void PikiDrownState::exec(Piki* piki)
 
 		if (navi) {
 			Vector3f sep = navi->getPosition() - piki->getPosition();
-			_normalise2(sep);
+			sep.normalise();
 
 			mMoveVelocity = sep * piki->getSpeed(0.5f);
 
@@ -5268,9 +5269,7 @@ Creature* PikiEscapeState::findTeki(Piki* piki)
 		Creature* creature = static_cast<Creature*>(*iter);
 		if (creature->isTeki() && creature->isLivingThing() && creature->isAlive()) {
 			Vector3f creaturePos = creature->getPosition();
-			Vector3f diff
-			    = Vector3f(creaturePos.y - sphere.mPosition.y, creaturePos.z - sphere.mPosition.z, creaturePos.x - sphere.mPosition.x);
-			f32 len = _length2(diff);
+			f32 len              = creaturePos.distance(sphere.mPosition);
 			if (len < minDist) {
 				target  = creature;
 				minDist = len;

@@ -82,7 +82,7 @@ void RandMapScore::makeObjectLayout(MapNode* mapNode, ObjectLayout* layout)
 	for (int i = 0; i < FIXNODE_Count; i++) {
 		if (mapNode == mFixObjNodes[i]) {
 			int layoutTypes[FIXNODE_Count]
-			    = { OBJLAYOUT_Pod, OBJLAYOUT_Hole, OBJLAYOUT_Fountain, OBJLAYOUT_VsRedOnyon, OBJLAYOUT_VsBlueOnyon };
+			    = { OBJLAYOUT_Pod, OBJLAYOUT_Hole, OBJLAYOUT_Fountain, OBJLAYOUT_VsBlueOnyon, OBJLAYOUT_VsRedOnyon };
 			FixObjNode* rootObjNode  = new FixObjNode(layoutTypes[i]);
 			FixObjNode* childObjNode = new FixObjNode(layoutTypes[i]);
 
@@ -196,31 +196,28 @@ void RandMapScore::clearRoomAndDoorScore()
  */
 void RandMapScore::setUnitAndDoorScore()
 {
-
 	MapNode* minScoreNode = nullptr;
-	int minScore          = 12800000;
 	int minScoreDoor      = -1;
+	int minScore          = 12800000;
 
 	FOREACH_NODE(MapNode, mGenerator->getPlacedNodes()->mChild, currNode)
 	{
 		currNode->getNodeScore();
 		int numDoors = currNode->getNumDoors();
 		for (int i = 0; i < numDoors; i++) {
-			if (currNode->isDoorScoreSetDone(i)) {
-				FOREACH_NODE(AdjustNode, currNode->getAdjustNode(i)->mChild, adjNode)
-				{
-					int doorID = adjNode->mAdjust->mDoorID;
-					if (!currNode->isDoorScoreSetDone(doorID)) {
-						Adjust* adj       = adjNode->mAdjust;
-						int enemyScore    = adj->mTekiFlags * currNode->getEnemyScore();
-						int distanceScore = adj->mDistance;
-						int tempScore     = enemyScore + currNode->mAdjustInfo[i].mDoorScore;
-						int currScore     = currNode->getGateScore(doorID) + tempScore + distanceScore;
-						if (minScore > currScore) {
-							minScore     = currScore;
-							minScoreNode = currNode;
-							minScoreDoor = doorID;
-						}
+			if (!currNode->isDoorScoreSetDone(i)) {
+				continue;
+			}
+			FOREACH_NODE(AdjustNode, currNode->getAdjustNode(i)->mChild, adjNode)
+			{
+				int doorID = adjNode->mAdjust->mDoorID;
+				if (!currNode->isDoorScoreSetDone(doorID)) {
+					int currScore = adjNode->mAdjust->mTekiFlags * currNode->getEnemyScore()
+					              + (currNode->mAdjustInfo[i].mDoorScore + adjNode->mAdjust->mDistance) + currNode->getGateScore(doorID);
+					if (minScore > currScore) {
+						minScore     = currScore;
+						minScoreNode = currNode;
+						minScoreDoor = doorID;
 					}
 				}
 			}
@@ -229,113 +226,9 @@ void RandMapScore::setUnitAndDoorScore()
 
 	if (minScoreNode) {
 		minScoreNode->setDoorScore(minScoreDoor, minScore);
-		setMapNodeScore(minScoreNode->mAdjustInfo[minScoreDoor].mMapTile, minScore);
+		MapNode* connectedNode = minScoreNode->getConnectedNode(minScoreDoor);
+		setMapNodeScore(connectedNode, minScore);
 	}
-	/*
-	stwu     r1, -0x40(r1)
-	mflr     r0
-	lis      r4, 0x00C35000@ha
-	stw      r0, 0x44(r1)
-	stmw     r20, 0x10(r1)
-	mr       r22, r3
-	addi     r27, r4, 0x00C35000@l
-	li       r29, 0
-	li       r28, -1
-	lwz      r3, 0(r3)
-	lwz      r3, 0x28(r3)
-	lwz      r26, 0x10(r3)
-	b        lbl_8024CE8C
-
-lbl_8024CDB8:
-	mr       r3, r26
-	bl       getNodeScore__Q34Game4Cave7MapNodeFv
-	mr       r3, r26
-	bl       getNumDoors__Q34Game4Cave7MapNodeFv
-	mr       r31, r3
-	li       r25, 0
-	li       r30, 0
-	b        lbl_8024CE80
-
-lbl_8024CDD8:
-	mr       r3, r26
-	mr       r4, r25
-	bl       isDoorScoreSetDone__Q34Game4Cave7MapNodeFi
-	clrlwi.  r0, r3, 0x18
-	beq      lbl_8024CE78
-	mr       r3, r26
-	mr       r4, r25
-	bl       getAdjustNode__Q34Game4Cave7MapNodeFi
-	lwz      r24, 0x10(r3)
-	b        lbl_8024CE70
-
-lbl_8024CE00:
-	lwz      r4, 0x18(r24)
-	mr       r3, r26
-	lwz      r23, 0(r4)
-	mr       r4, r23
-	bl       isDoorScoreSetDone__Q34Game4Cave7MapNodeFi
-	clrlwi.  r0, r3, 0x18
-	bne      lbl_8024CE6C
-	lwz      r20, 0x18(r24)
-	mr       r3, r26
-	bl       getEnemyScore__Q34Game4Cave7MapNodeFv
-	lwz      r0, 8(r20)
-	mr       r4, r23
-	lwz      r5, 0x28(r26)
-	mullw    r6, r0, r3
-	lwz      r20, 4(r20)
-	addi     r0, r5, 8
-	lwzx     r0, r30, r0
-	mr       r3, r26
-	add      r21, r0, r6
-	bl       getGateScore__Q34Game4Cave7MapNodeFi
-	add      r0, r21, r3
-	add      r0, r20, r0
-	cmpw     r27, r0
-	ble      lbl_8024CE6C
-	mr       r27, r0
-	mr       r29, r26
-	mr       r28, r23
-
-lbl_8024CE6C:
-	lwz      r24, 4(r24)
-
-lbl_8024CE70:
-	cmplwi   r24, 0
-	bne      lbl_8024CE00
-
-lbl_8024CE78:
-	addi     r30, r30, 0xc
-	addi     r25, r25, 1
-
-lbl_8024CE80:
-	cmpw     r25, r31
-	blt      lbl_8024CDD8
-	lwz      r26, 4(r26)
-
-lbl_8024CE8C:
-	cmplwi   r26, 0
-	bne      lbl_8024CDB8
-	cmplwi   r29, 0
-	beq      lbl_8024CEC4
-	mr       r3, r29
-	mr       r4, r28
-	mr       r5, r27
-	bl       setDoorScore__Q34Game4Cave7MapNodeFii
-	mulli    r0, r28, 0xc
-	lwz      r4, 0x28(r29)
-	mr       r3, r22
-	mr       r5, r27
-	lwzx     r4, r4, r0
-	bl       setMapNodeScore__Q34Game4Cave12RandMapScoreFPQ34Game4Cave7MapNodei
-
-lbl_8024CEC4:
-	lmw      r20, 0x10(r1)
-	lwz      r0, 0x44(r1)
-	mtlr     r0
-	addi     r1, r1, 0x40
-	blr
-	*/
 }
 
 /**
@@ -351,7 +244,7 @@ void RandMapScore::setStartMapNodeScore(MapNode* mapNode)
 			int nodeScore = mapNode->getNodeScore();
 			int doorScore = nodeScore + score + 1;
 			mapNode->setDoorScore(i, doorScore);
-			setMapNodeScore(mapNode->mAdjustInfo[i].mMapTile, doorScore);
+			setMapNodeScore(mapNode->getConnectedNode(i), doorScore);
 		}
 	}
 }
@@ -499,306 +392,6 @@ void RandMapScore::calcNodeScore(MapNode* mapNode)
 			}
 		}
 	}
-	/*
-	stwu     r1, -0x30(r1)
-	mflr     r0
-	stw      r0, 0x34(r1)
-	stmw     r25, 0x14(r1)
-	mr       r30, r3
-	mr       r31, r4
-	lwz      r3, 0(r3)
-	lwz      r3, 0x28(r3)
-	lwz      r29, 0x10(r3)
-	b        lbl_8024D3C0
-
-lbl_8024D3A0:
-	mr       r3, r29
-	bl       setEnemyScore__Q34Game4Cave7MapNodeFv
-	mr       r3, r29
-	li       r4, -1
-	bl       setNodeScore__Q34Game4Cave7MapNodeFi
-	mr       r3, r29
-	bl       resetDoorScore__Q34Game4Cave7MapNodeFv
-	lwz      r29, 4(r29)
-
-lbl_8024D3C0:
-	cmplwi   r29, 0
-	bne      lbl_8024D3A0
-	lwz      r3, 0(r30)
-	lbz      r0, 2(r3)
-	cmplwi   r0, 0
-	beq      lbl_8024D514
-	lwz      r3, 4(r30)
-	lwz      r25, 0xc(r3)
-	cmplwi   r25, 0
-	beq      lbl_8024D474
-	mr       r3, r30
-	mr       r4, r25
-	li       r5, 0
-	bl       setMapNodeScore__Q34Game4Cave12RandMapScoreFPQ34Game4Cave7MapNodei
-	li       r27, 0
-	mr       r26, r27
-	b        lbl_8024D464
-
-lbl_8024D404:
-	mr       r3, r25
-	mr       r4, r27
-	bl       isDoorScoreSetDone__Q34Game4Cave7MapNodeFi
-	clrlwi.  r0, r3, 0x18
-	bne      lbl_8024D45C
-	mr       r3, r25
-	mr       r4, r27
-	bl       getGateScore__Q34Game4Cave7MapNodeFi
-	mr       r29, r3
-	mr       r3, r25
-	bl       getNodeScore__Q34Game4Cave7MapNodeFv
-	addi     r28, r29, 1
-	mr       r4, r27
-	add      r28, r3, r28
-	mr       r3, r25
-	mr       r5, r28
-	bl       setDoorScore__Q34Game4Cave7MapNodeFii
-	lwz      r4, 0x28(r25)
-	mr       r3, r30
-	mr       r5, r28
-	lwzx     r4, r4, r26
-	bl       setMapNodeScore__Q34Game4Cave12RandMapScoreFPQ34Game4Cave7MapNodei
-
-lbl_8024D45C:
-	addi     r26, r26, 0xc
-	addi     r27, r27, 1
-
-lbl_8024D464:
-	mr       r3, r25
-	bl       getNumDoors__Q34Game4Cave7MapNodeFv
-	cmpw     r27, r3
-	blt      lbl_8024D404
-
-lbl_8024D474:
-	lwz      r3, 4(r30)
-	lwz      r25, 0x10(r3)
-	cmplwi   r25, 0
-	beq      lbl_8024D5B0
-	mr       r3, r30
-	mr       r4, r25
-	li       r5, 0
-	bl       setMapNodeScore__Q34Game4Cave12RandMapScoreFPQ34Game4Cave7MapNodei
-	li       r28, 0
-	mr       r26, r28
-	b        lbl_8024D500
-
-lbl_8024D4A0:
-	mr       r3, r25
-	mr       r4, r28
-	bl       isDoorScoreSetDone__Q34Game4Cave7MapNodeFi
-	clrlwi.  r0, r3, 0x18
-	bne      lbl_8024D4F8
-	mr       r3, r25
-	mr       r4, r28
-	bl       getGateScore__Q34Game4Cave7MapNodeFi
-	mr       r29, r3
-	mr       r3, r25
-	bl       getNodeScore__Q34Game4Cave7MapNodeFv
-	addi     r27, r29, 1
-	mr       r4, r28
-	add      r27, r3, r27
-	mr       r3, r25
-	mr       r5, r27
-	bl       setDoorScore__Q34Game4Cave7MapNodeFii
-	lwz      r4, 0x28(r25)
-	mr       r3, r30
-	mr       r5, r27
-	lwzx     r4, r4, r26
-	bl       setMapNodeScore__Q34Game4Cave12RandMapScoreFPQ34Game4Cave7MapNodei
-
-lbl_8024D4F8:
-	addi     r26, r26, 0xc
-	addi     r28, r28, 1
-
-lbl_8024D500:
-	mr       r3, r25
-	bl       getNumDoors__Q34Game4Cave7MapNodeFv
-	cmpw     r28, r3
-	blt      lbl_8024D4A0
-	b        lbl_8024D5B0
-
-lbl_8024D514:
-	lwz      r3, 4(r30)
-	lwz      r25, 0(r3)
-	cmplwi   r25, 0
-	beq      lbl_8024D5B0
-	mr       r3, r30
-	mr       r4, r25
-	li       r5, 0
-	bl       setMapNodeScore__Q34Game4Cave12RandMapScoreFPQ34Game4Cave7MapNodei
-	li       r28, 0
-	mr       r26, r28
-	b        lbl_8024D5A0
-
-lbl_8024D540:
-	mr       r3, r25
-	mr       r4, r28
-	bl       isDoorScoreSetDone__Q34Game4Cave7MapNodeFi
-	clrlwi.  r0, r3, 0x18
-	bne      lbl_8024D598
-	mr       r3, r25
-	mr       r4, r28
-	bl       getGateScore__Q34Game4Cave7MapNodeFi
-	mr       r29, r3
-	mr       r3, r25
-	bl       getNodeScore__Q34Game4Cave7MapNodeFv
-	addi     r27, r29, 1
-	mr       r4, r28
-	add      r27, r3, r27
-	mr       r3, r25
-	mr       r5, r27
-	bl       setDoorScore__Q34Game4Cave7MapNodeFii
-	lwz      r4, 0x28(r25)
-	mr       r3, r30
-	mr       r5, r27
-	lwzx     r4, r4, r26
-	bl       setMapNodeScore__Q34Game4Cave12RandMapScoreFPQ34Game4Cave7MapNodei
-
-lbl_8024D598:
-	addi     r26, r26, 0xc
-	addi     r28, r28, 1
-
-lbl_8024D5A0:
-	mr       r3, r25
-	bl       getNumDoors__Q34Game4Cave7MapNodeFv
-	cmpw     r28, r3
-	blt      lbl_8024D540
-
-lbl_8024D5B0:
-	mr       r3, r30
-	mr       r4, r31
-	li       r5, 0
-	bl       setMapNodeScore__Q34Game4Cave12RandMapScoreFPQ34Game4Cave7MapNodei
-	li       r28, 0
-	mr       r26, r28
-	b        lbl_8024D62C
-
-lbl_8024D5CC:
-	mr       r3, r31
-	mr       r4, r28
-	bl       isDoorScoreSetDone__Q34Game4Cave7MapNodeFi
-	clrlwi.  r0, r3, 0x18
-	bne      lbl_8024D624
-	mr       r3, r31
-	mr       r4, r28
-	bl       getGateScore__Q34Game4Cave7MapNodeFi
-	mr       r29, r3
-	mr       r3, r31
-	bl       getNodeScore__Q34Game4Cave7MapNodeFv
-	addi     r29, r29, 1
-	mr       r4, r28
-	add      r29, r3, r29
-	mr       r3, r31
-	mr       r5, r29
-	bl       setDoorScore__Q34Game4Cave7MapNodeFii
-	lwz      r4, 0x28(r31)
-	mr       r3, r30
-	mr       r5, r29
-	lwzx     r4, r4, r26
-	bl       setMapNodeScore__Q34Game4Cave12RandMapScoreFPQ34Game4Cave7MapNodei
-
-lbl_8024D624:
-	addi     r26, r26, 0xc
-	addi     r28, r28, 1
-
-lbl_8024D62C:
-	mr       r3, r31
-	bl       getNumDoors__Q34Game4Cave7MapNodeFv
-	cmpw     r28, r3
-	blt      lbl_8024D5CC
-	lwz      r3, 0(r30)
-	lwz      r3, 0x28(r3)
-	lwz      r29, 0x10(r3)
-	b        lbl_8024D688
-
-lbl_8024D64C:
-	li       r28, 0
-	b        lbl_8024D674
-
-lbl_8024D654:
-	mr       r3, r29
-	mr       r4, r28
-	bl       isDoorScoreSetDone__Q34Game4Cave7MapNodeFi
-	clrlwi.  r0, r3, 0x18
-	bne      lbl_8024D670
-	li       r0, 0
-	b        lbl_8024D694
-
-lbl_8024D670:
-	addi     r28, r28, 1
-
-lbl_8024D674:
-	mr       r3, r29
-	bl       getNumDoors__Q34Game4Cave7MapNodeFv
-	cmpw     r28, r3
-	blt      lbl_8024D654
-	lwz      r29, 4(r29)
-
-lbl_8024D688:
-	cmplwi   r29, 0
-	bne      lbl_8024D64C
-	li       r0, 1
-
-lbl_8024D694:
-	clrlwi.  r0, r0, 0x18
-	bne      lbl_8024D714
-	li       r25, 0
-
-lbl_8024D6A0:
-	mr       r3, r30
-	bl       setUnitAndDoorScore__Q34Game4Cave12RandMapScoreFv
-	lwz      r3, 0(r30)
-	lwz      r3, 0x28(r3)
-	lwz      r29, 0x10(r3)
-	b        lbl_8024D6F4
-
-lbl_8024D6B8:
-	li       r28, 0
-	b        lbl_8024D6E0
-
-lbl_8024D6C0:
-	mr       r3, r29
-	mr       r4, r28
-	bl       isDoorScoreSetDone__Q34Game4Cave7MapNodeFi
-	clrlwi.  r0, r3, 0x18
-	bne      lbl_8024D6DC
-	li       r0, 0
-	b        lbl_8024D700
-
-lbl_8024D6DC:
-	addi     r28, r28, 1
-
-lbl_8024D6E0:
-	mr       r3, r29
-	bl       getNumDoors__Q34Game4Cave7MapNodeFv
-	cmpw     r28, r3
-	blt      lbl_8024D6C0
-	lwz      r29, 4(r29)
-
-lbl_8024D6F4:
-	cmplwi   r29, 0
-	bne      lbl_8024D6B8
-	li       r0, 1
-
-lbl_8024D700:
-	clrlwi.  r0, r0, 0x18
-	bne      lbl_8024D714
-	addi     r25, r25, 1
-	cmpwi    r25, 0x1f4
-	blt      lbl_8024D6A0
-
-lbl_8024D714:
-	lmw      r25, 0x14(r1)
-	lwz      r0, 0x34(r1)
-	mtlr     r0
-	addi     r1, r1, 0x30
-	blr
-	*/
 }
 
 /**
@@ -1244,7 +837,6 @@ void RandMapScore::setChallengeFixObjHard()
 	int fixObjIdx[2]     = { FIXNODE_Hole, FIXNODE_Fountain };
 
 	bool fixObjEnabled[2] = { true, true };
-
 	if (mGenerator->mIsFinalFloor) {
 		fixObjEnabled[0] = false;
 	} else if (!mGenerator->mHasEscapeFountain) {
@@ -1264,8 +856,8 @@ void RandMapScore::setChallengeFixObjHard()
 			// loop over room types
 			for (int j = 0; j < UNITKIND_Count; j++) {
 				if (!mapList[0] || j < 2) {
-					FOREACH_NODE(MapNode, placedNodes->mChild, currNode)
-					{
+					for (CNode* node = placedNodes->mChild; node; node = node->mNext) {
+						MapNode* currNode = static_cast<MapNode*>(node);
 						if (roomTypes[j] == currNode->mUnitInfo->getUnitKind()) {
 							int score = currNode->getNodeScore();
 
@@ -1361,8 +953,7 @@ bool RandMapScore::isFixObjSet(MapNode* node, BaseGen* spawner)
 	if (node == getFixObjNode(FIXNODE_Pod) && spawner && getFixObjGen(FIXNODE_Pod)) {
 		Vector3f fixPos  = getFixObjGen(FIXNODE_Pod)->mPosition;
 		Vector3f testPos = spawner->mPosition;
-		Vector3f sep     = Vector3f(fixPos.y - testPos.y, fixPos.z - testPos.z, fixPos.x - testPos.x);
-		if (_length2(sep) < 150.0f) {
+		if (fixPos.distance(testPos) < 150.0f) {
 			return false;
 		}
 	}

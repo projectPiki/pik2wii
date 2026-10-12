@@ -442,7 +442,7 @@ void THiScore::doCreate(JKRArchive* arc)
 	if (disp->isID(OWNER_MRMR, MEMBER_HIGH_SCORE)) {
 		mDisp = disp;
 		P2ASSERTLINE(287, mDisp);
-		mIsAllTreasures = sys->getPlayCommonData()->mChallengeFlags.isSet(2);
+		mIsAllTreasures = sys->getPlayCommonData()->mCommonStoryFlags.isSet(Game::PlayCommonData::CommonData_AllTreasures);
 	} else {
 		mDisp      = new DispMemberHighScore;
 		mIsSection = true;
@@ -502,10 +502,10 @@ void THiScore::doCreate(JKRArchive* arc)
 	mListScreen->create("hi_score_list.blo", 0x20000);
 
 	screen         = mListScreen->getScreenObj();
-	mPaneListPos.x = screen->search('Nlist1')->mOffset.x;
-	mPaneListPos.y = screen->search('Nlist1')->mOffset.y;
-	mPaneIconPos.x = screen->search('Nselicon')->mOffset.x;
-	mPaneIconPos.y = screen->search('Nselicon')->mOffset.y;
+	mPaneListPos.x = screen->search('Nlist1')->mTranslateX;
+	mPaneListPos.y = screen->search('Nlist1')->mTranslateY;
+	mPaneIconPos.x = screen->search('Nselicon')->mTranslateX;
+	mPaneIconPos.y = screen->search('Nselicon')->mTranslateY;
 	mSelIconPane   = screen->search('Nselicon');
 	if (mSelIconPane) {
 		mSelIconCorners[0] = screen->search('Psel_lu');
@@ -528,11 +528,11 @@ void THiScore::doCreate(JKRArchive* arc)
 
 	J2DPane* pane = screen->search(tags1[mCurrMinActiveRow]);
 	P2ASSERTLINE(401, pane);
-	mMinSelYOffset = pane->mOffset.y;
+	mMinSelYOffset = pane->mTranslateY;
 
 	pane = screen->search(tags1[mCurrMaxActiveRow]);
 	P2ASSERTLINE(405, pane);
-	mMaxSelYOffset = pane->mOffset.y;
+	mMaxSelYOffset = pane->mTranslateY;
 
 	mIndexPaneList = new TIndexPane*[mNumActiveRows];
 
@@ -775,7 +775,7 @@ bool THiScore::doUpdate()
 		grp->mInitialRollSpeed    = mScrollParm._10;
 	}
 
-	mHighScorePic->setOffset(mHighScorePic->mOffset.x, mHighScorePic->getOffsetY() + mPictureOffsetY);
+	mHighScorePic->setOffset(mHighScorePic->mTranslateX, mHighScorePic->getOffsetY() + mPictureOffsetY);
 
 	if (mScaleMgrList) {
 		for (int i = 0; i < mNumActiveRows; i++) {
@@ -790,7 +790,7 @@ bool THiScore::doUpdate()
 	if (mIsAllTreasures) {
 		for (int i = 0; i < mNumActiveRows; i++) {
 			TIndexPane* pane = mIndexPaneList[i];
-			pane->mPane2->setOffset(pane->mPane->mOffset.x, 0.5f * -mPaneHeightDiff);
+			pane->mPane2->setOffset(pane->mPane->mTranslateX, 0.5f * -mPaneHeightDiff);
 		}
 	}
 
@@ -801,6 +801,7 @@ bool THiScore::doUpdate()
 		}
 		mCornerSelScale = mCornerSelScaleModifier * sinf(mCornerAnimTimer) + 0.85f;
 
+		f32 x, y;
 		f32 paneHeight = 0.0f;
 		J2DPane* pane  = mIndexPaneList[mCurrActiveRowSel]->mPane->getFirstChildPane();
 		if (mIsAllTreasures) {
@@ -809,7 +810,6 @@ bool THiScore::doUpdate()
 		}
 		pane->setBasePosition(J2DPOS_Center);
 		for (u8 i = 0; i < 4; i++) {
-			f32 y, x;
 			switch (i) {
 			case 0:
 				x = -20.0f;
@@ -1610,14 +1610,7 @@ void THiScore::doDraw(Graphics& gfx)
 	mMainScreen->draw(gfx, graf);
 	JUtility::TColor color;
 	color = JUtility::TColor(0, 0, 0, 255 - mFadeAlpha);
-	graf->setColor(color);
-	GXSetAlphaUpdate(GX_FALSE);
-
-	f32 zero = 0.0f;
-	u16 y    = System::getRenderModeObj()->efbHeight;
-	u16 x    = System::getRenderModeObj()->fbWidth;
-	graf->fillBox(JGeometry::TBox2f(0.0f, 0.0f, zero + x, zero + y));
-	GXSetAlphaUpdate(GX_TRUE);
+	drawFillScreen(graf, color);
 }
 
 /**
@@ -1713,7 +1706,7 @@ void THiScore::changePaneInfo()
 		mMainScreen->mScreenObj->search('Notakara')->show();
 	} else {
 		mHighScorePic->show();
-		if (!mIsSection && !(sys->getPlayCommonData()->mChallengeFlags.isSet(1))) {
+		if (!mIsSection && !(sys->getPlayCommonData()->mCommonStoryFlags.isSet(1))) {
 			mHighScorePic->hide();
 		}
 		mMainScreen->mScreenObj->search('Notakara')->hide();
@@ -1743,7 +1736,7 @@ void THiScore::changePaneInfo()
 
 	for (int i = 0; i < 6; i++) {
 		int score = getRecord(i, id);
-		// use compeltely different counters for the play time versus the other scores
+		// use completely different counters for the play time versus the other scores
 		if (isTime) {
 			mScaleCounter2[i]->getMotherPane()->show();
 			mScaleCounter3[i]->getMotherPane()->show();
@@ -1862,7 +1855,7 @@ int THiScore::getRecord(int type, int id)
 		if (debug) {
 			return 1.0f + 10.0f * randFloat();
 		}
-		if (sys->getPlayCommonData()->mChallengeFlags.isSet(1)) {
+		if (sys->getPlayCommonData()->mCommonStoryFlags.isSet(Game::PlayCommonData::CommonData_DebtRepayed)) {
 			return sys->getPlayCommonData()->getHighscore_clear(orderID)->getScore(0);
 		}
 		return -1;
@@ -1871,7 +1864,7 @@ int THiScore::getRecord(int type, int id)
 		if (debug) {
 			return 10.0f + 100.0f * randFloat();
 		}
-		if (sys->getPlayCommonData()->mChallengeFlags.isSet(1)) {
+		if (sys->getPlayCommonData()->mCommonStoryFlags.isSet(Game::PlayCommonData::CommonData_DebtRepayed)) {
 			return sys->getPlayCommonData()->getHighscore_clear(orderID)->getScore(1);
 		}
 		return -1;
@@ -1883,7 +1876,7 @@ int THiScore::getRecord(int type, int id)
 			}
 			return 110.0f + 1000.0f * randFloat();
 		}
-		if (sys->getPlayCommonData()->mChallengeFlags.isSet(1)) {
+		if (sys->getPlayCommonData()->mCommonStoryFlags.isSet(Game::PlayCommonData::CommonData_DebtRepayed)) {
 			return sys->getPlayCommonData()->getHighscore_clear(orderID)->getScore(2);
 		}
 		return -1;
@@ -1892,7 +1885,7 @@ int THiScore::getRecord(int type, int id)
 		if (debug) {
 			return 10.f + 100.0f * randFloat();
 		}
-		if (sys->getPlayCommonData()->mChallengeFlags.isSet(1)) {
+		if (sys->getPlayCommonData()->mCommonStoryFlags.isSet(Game::PlayCommonData::CommonData_DebtRepayed)) {
 			return sys->getPlayCommonData()->getHighscore_complete(orderID)->getScore(0);
 		}
 		return -1;
@@ -1901,7 +1894,7 @@ int THiScore::getRecord(int type, int id)
 		if (debug) {
 			return 110.0f + 100.0f * randFloat();
 		}
-		if (sys->getPlayCommonData()->mChallengeFlags.isSet(1)) {
+		if (sys->getPlayCommonData()->mCommonStoryFlags.isSet(Game::PlayCommonData::CommonData_DebtRepayed)) {
 			return sys->getPlayCommonData()->getHighscore_complete(orderID)->getScore(1);
 		}
 		return -1;
@@ -1910,7 +1903,7 @@ int THiScore::getRecord(int type, int id)
 		if (debug) {
 			return 1100.0f + 100000.0f * randFloat();
 		}
-		if (sys->getPlayCommonData()->mChallengeFlags.isSet(1)) {
+		if (sys->getPlayCommonData()->mCommonStoryFlags.isSet(Game::PlayCommonData::CommonData_DebtRepayed)) {
 			return sys->getPlayCommonData()->getHighscore_complete(orderID)->getScore(2);
 		}
 		return -1;

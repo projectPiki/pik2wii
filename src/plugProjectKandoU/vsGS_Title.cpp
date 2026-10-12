@@ -7,7 +7,6 @@
 #include "Game/Data.h"
 #include "PSSystem/PSGame.h"
 #include "PSSystem/PSScene.h"
-#include "PSGame/SceneInfo.h"
 #include "PSGame/PikScene.h"
 #include "Screen/Game2DMgr.h"
 #include "Morimura/challengeSelect2d.h"
@@ -18,8 +17,11 @@
 #include "System.h"
 #include "nans.h"
 
-static const char vsGSTitleUnusedArray[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-static const char vsGSTitleName[]        = "vsGS_Title";
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "vsGS_Title";
+}
 
 namespace {
 char* cMaps[4] = { "caveinfo.txt", "caveinfo_metal.txt", "caveinfo_conc.txt", "caveinfo_tsuchi.txt" };
@@ -305,7 +307,7 @@ void TitleState::execVs(VsGameSection* section)
 		int vsEditArr[4] = { 0, 1, 2, -1 };
 
 		// if c-stick is pointing a direction, adjust editNumber
-		if (stickMagnitude(stickPos) > 0.5f) {
+		if (stickPos.length() > 0.5f) {
 			f32 highest     = 0.0f;
 			int vsEditIndex = 0;
 			for (int i = 0; i < 4; i++) {

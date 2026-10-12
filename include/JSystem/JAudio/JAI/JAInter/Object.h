@@ -3,7 +3,6 @@
 
 #include "JSystem/JAudio/JAI/JAISound.h"
 #include "JSystem/JKernel/JKRDisposer.h"
-#include "Vector3.h"
 #include "types.h"
 
 #define JAI_NULL_HANDLE_ID  (0xFF)

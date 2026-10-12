@@ -2,13 +2,13 @@
 #define _GAME_ENTITIES_ITEMGATE_H
 
 #include "types.h"
+#include "ObjectMgr.h"
 #include "Game/BaseItem.h"
 #include "Game/itemMgr.h"
 #include "Game/PlatInstance.h"
 #include "Sys/MatBaseAnimation.h"
 #include "Sys/MatBaseAnimator.h"
-#include "efx/TEgate.h"
-#include "efx/TGate.h"
+#include "efx/efxObject.h"
 
 enum GateStates {
 	GATESTATE_Wait    = 0,

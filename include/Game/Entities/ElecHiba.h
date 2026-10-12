@@ -7,7 +7,7 @@
 #include "Game/EnemyMgrBase.h"
 #include "Game/EnemyBase.h"
 #include "Game/gameGenerator.h"
-#include "efx/TDenki.h"
+#include "efx/efxEnemy.h"
 
 /**
  * --Header for Electric Wire (ElecHiba)--
@@ -23,7 +23,7 @@ struct Obj;
 typedef enum EVersusHibaType { VHT_Neutral = 0, VHT_Red = 1, VHT_Blue = 2 } EVersusHibaType;
 
 struct InitialParam : public EnemyInitialParamBase {
-	f32 mSeperation; // _00
+	f32 mSeparation; // _00
 };
 
 struct TeamList : public CNode {

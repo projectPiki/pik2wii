@@ -5,7 +5,11 @@
 #include "ebi/Screen/TSaveMenu.h"
 #include "og/newScreen/ogUtil.h"
 
-static const char name[] = "ebiScreenSaveMenu";
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "ebiScreenSaveMenu";
+}
 
 namespace ebi {
 namespace Screen {
@@ -59,13 +63,11 @@ void TSaveMenu::doSetArchive(JKRArchive* arc)
  */
 void TSaveMenu::doOpenScreen(ArgOpen*)
 {
-	mAlpha               = 200;
-	mDrawState           = 0;
-	u32 count            = E2DFader::kFadeTime / sys->getDeltaTime();
-	mOpenCloseCounter    = count;
-	mOpenCloseCounterMax = count;
-	mDrawState           = 2;
-	mFadeTimer           = 0.0f;
+	mAlpha     = 200;
+	mDrawState = 0;
+	mOpenCloseCounter.setValue(E2DFader::kFadeTime);
+	mDrawState = 2;
+	mFadeTimer = 0.0f;
 	mFuriko->stop();
 	PSSystem::spSysIF->playSystemSe(PSSE_SY_MESSAGE_EXIT, 0);
 }
@@ -76,11 +78,9 @@ void TSaveMenu::doOpenScreen(ArgOpen*)
  */
 void TSaveMenu::doCloseScreen(ArgClose*)
 {
-	mFadeTimer           = 0.0f;
-	u32 count            = E2DFader::kFadeTime / sys->getDeltaTime();
-	mOpenCloseCounter    = count;
-	mOpenCloseCounterMax = count;
-	mDrawState           = 1;
+	mFadeTimer = 0.0f;
+	mOpenCloseCounter.setValue(E2DFader::kFadeTime);
+	mDrawState = 1;
 	PSSystem::spSysIF->playSystemSe(PSSE_SY_MESSAGE_EXIT, 0);
 }
 
@@ -106,8 +106,8 @@ void TSaveMenu::doKillScreen()
 bool TSaveMenu::doUpdateStateOpen()
 {
 	updateMsg_();
-	if (mDrawState && mOpenCloseCounter) {
-		mOpenCloseCounter--;
+	if (mDrawState) {
+		mOpenCloseCounter.update();
 	}
 	mScreenObj->update();
 	mCursor1.update();
@@ -127,8 +127,8 @@ bool TSaveMenu::doUpdateStateOpen()
 bool TSaveMenu::doUpdateStateWait()
 {
 	updateMsg_();
-	if (mDrawState && mOpenCloseCounter) {
-		mOpenCloseCounter--;
+	if (mDrawState) {
+		mOpenCloseCounter.update();
 	}
 	mScreenObj->update();
 	mCursor1.update();
@@ -143,8 +143,8 @@ bool TSaveMenu::doUpdateStateWait()
 bool TSaveMenu::doUpdateStateClose()
 {
 	updateMsg_();
-	if (mDrawState && mOpenCloseCounter) {
-		mOpenCloseCounter--;
+	if (mDrawState) {
+		mOpenCloseCounter.update();
 	}
 	mScreenObj->update();
 	mCursor1.update();
@@ -171,27 +171,14 @@ void TSaveMenu::doDraw()
 	if (mDrawState) {
 		graf2 = &sys->mGfx->mPerspGraph;
 		graf2->setPort();
-		u8 alpha = mBGColor;
 		JUtility::TColor color(mBGColor);
 		switch (mDrawState) {
 		case 1: {
-			f32 calc;
-			if (mOpenCloseCounterMax) {
-				calc = (f32)mOpenCloseCounter / (f32)mOpenCloseCounterMax;
-			} else {
-				calc = 0.0f;
-			}
-			color.a = mAlpha * calc;
+			color.a = mAlpha * mOpenCloseCounter.getRatio();
 			break;
 		}
 		case 2: {
-			f32 calc;
-			if (mOpenCloseCounterMax) {
-				calc = (f32)mOpenCloseCounter / (f32)mOpenCloseCounterMax;
-			} else {
-				calc = 0.0f;
-			}
-			color.a = mAlpha * (1.0f - calc);
+			color.a = mAlpha * (1.0f - mOpenCloseCounter.getRatio());
 			break;
 		}
 		}
@@ -327,9 +314,7 @@ void TSaveMenu::startMsgState_(enumMsgState state)
 			mAnimScreen[2]->open(0.0f);
 			PSSystem::spSysIF->playSystemSe(PSSE_SY_MEMORYCARD_OK, 0);
 		}
-		u32 count       = 0.8f / sys->getDeltaTime();
-		mTextCounter    = count;
-		mTextCounterMax = count;
+		mTextCounter.setValue(0.8f);
 		break;
 	case MSG_Close:
 		switch (mMesgState) {
@@ -347,9 +332,7 @@ void TSaveMenu::startMsgState_(enumMsgState state)
 		default:
 			JUT_PANICLINE(395, "ありえない！ありえない！たはあっ！\n"); // "Impossible! Impossible! Tahaha"
 		}
-		u32 count2      = 0.5f / sys->getDeltaTime();
-		mTextCounter    = count2;
-		mTextCounterMax = count2;
+		mTextCounter.setValue(0.5f);
 		break;
 	}
 }
@@ -360,12 +343,10 @@ void TSaveMenu::startMsgState_(enumMsgState state)
  */
 void TSaveMenu::updateMsg_()
 {
-	if (mTextCounter) {
-		mTextCounter--;
-	}
+	mTextCounter.update();
 	switch (mStateID) {
 	case MSG_Open:
-		if (!mTextCounter) {
+		if (mTextCounter.isZero()) {
 			startMsgState_(MSG_Idle);
 		}
 		break;
@@ -438,7 +419,7 @@ void TSaveMenu::updateMsg_()
 			screen = mAnimScreen[2];
 			break;
 		}
-		if (screen->mIsUpdateSuccess && !mTextCounter) {
+		if (screen->mIsUpdateSuccess && mTextCounter.isZero()) {
 			startMsgState_(MSG_Kill);
 		}
 		break;

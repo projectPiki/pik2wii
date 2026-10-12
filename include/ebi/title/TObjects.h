@@ -6,6 +6,7 @@
 #include "System.h"
 #include "Vector2.h"
 #include "Vector3.h"
+#include "ebi/Utility.h"
 
 struct J3DModel;
 struct J3DModelData;
@@ -26,14 +27,14 @@ enum CreatureType {
 struct TObjBase {
 	inline TObjBase()
 	{
-		mPosition = Vector2f(0.0f);
-		mAngle    = Vector2f(0.0f, -1.0f);
-		mParms[0] = 0.0f;
-		mParms[1] = 1.0f;
-		mParms[2] = 0.0f;
-		mParms[3] = 0.0f;
-		mParms[4] = 0.0f;
-		mModel    = nullptr;
+		mPosition.set(0.0f, 0.0f);
+		mAngle.set(0.0f, -1.0f);
+		mMoveSpeed       = 0.0f;
+		mScale           = 1.0f;
+		mCollRadius      = 0.0f;
+		mPikiReactRadius = 0.0f;
+		mCullRadius      = 0.0f;
+		mModel           = nullptr;
 	}
 
 	virtual u32 getCreatureType() { return TITLECREATURE_NULL; } // _08 (weak)
@@ -45,12 +46,21 @@ struct TObjBase {
 	void pushOut_(Vector2f&);
 
 	inline Vector2f getPosition() { return mPosition; }
+	inline void setPosition(const Vector2f& position)
+	{
+		mPosition.x = position.x;
+		mPosition.y = position.y;
+	}
 
 	// _00 = VTBL
-	Vector2f mPosition; // _04
-	Vector2f mAngle;    // _0C
-	f32 mParms[5];      // _14, 0=?, 1=scale, 2=collRadius, 3=?, 4=?
-	J3DModel* mModel;   // _28
+	Vector2f mPosition;   // _04
+	Vector2f mAngle;      // _0C
+	f32 mMoveSpeed;       // _14
+	f32 mScale;           // _18
+	f32 mCollRadius;      // _1C
+	f32 mPikiReactRadius; // _20
+	f32 mCullRadius;      // _24
+	J3DModel* mModel;     // _28
 };
 
 struct TBGEnemyBase : public TObjBase {
@@ -101,17 +111,13 @@ struct TMapBase : public TObjBase {
 
 	TMapBase()
 	{
-		mWindTimer       = 0;
-		mWindTimerMax    = 0;
 		mState           = 0;
 		mMainModelData   = nullptr;
 		mAnimWait        = nullptr;
 		mAnimMtxCalcWait = nullptr;
 		mAnimWind        = nullptr;
 		mAnimMtxCalcWind = nullptr;
-		u32 count        = 0.0f / sys->getDeltaTime();
-		mWindTimer       = count;
-		mWindTimerMax    = count;
+		mWindTimer.setValue(0.0f); // this doesn't accomplish anything
 	}
 
 	f32 determineAnimRate(f32 calc)
@@ -141,8 +147,7 @@ struct TMapBase : public TObjBase {
 	J3DFrameCtrl mFrameCtrlWind;         // _50
 	J3DAnmTransform* mAnimWind;          // _64
 	J3DMtxCalcAnmBase* mAnimMtxCalcWind; // _68
-	u32 mWindTimer;                      // _6C
-	u32 mWindTimerMax;                   // _70
+	EUTCounter mWindTimer;               // _6C
 };
 
 struct TParamBase : public Parameters {

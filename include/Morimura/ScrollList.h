@@ -34,6 +34,7 @@ struct TIndexGroup {
 	inline bool isState(u8 state) const { return mStateID == state; }
 
 	inline f32 getHeight() { return mHeight; }
+	inline f32 getScrollOffset() const { return mScrollOffset; }
 
 	f32 mMaxRollSpeed;        // _00, maximum scroll speed when holding up/down
 	f32 mSpeedSlowdownFactor; // _04, rate of deceleration near end of movement
@@ -78,7 +79,7 @@ struct TIndexPane {
 		mPaneSize     = 0.0f;
 		mIconInfos    = nullptr;
 		mOwner        = owner;
-		mYOffset      = mPane->mOffset.y;
+		mYOffset      = mPane->mTranslateY;
 	}
 
 	void setIndex(int index);
@@ -89,8 +90,8 @@ struct TIndexPane {
 
 	void doIconOffsetY();
 
-	inline void setOffset(f32 y) { mPane->setOffset(mPane->mOffset.x, mYOffset + y); }
-	
+	inline void setOffset(f32 y) { mPane->setOffset(mPane->getTranslateX(), mYOffset + y); }
+
 	inline void setPaneOffset(f32 offset) { mPane->setOffsetY(mYOffset + offset); }
 
 	inline f32 getPaneYOffset() const { return mYOffset; }
@@ -155,7 +156,7 @@ struct TScrollList : public TTestBase {
 	void changeIndex();
 
 	inline TIndexPane* getIndexPane(int i) const { return mIndexPaneList[i]; }
-	
+
 	inline void updateIDPaneYOffset(int id, f32 yoffs)
 	{
 		// should be using r4 instead of r3

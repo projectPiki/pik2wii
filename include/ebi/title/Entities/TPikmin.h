@@ -1,15 +1,16 @@
 #ifndef _EBI_TITLE_ENTITIES_TPIKMIN_H
 #define _EBI_TITLE_ENTITIES_TPIKMIN_H
 
-#include "CNode.h"
-#include "Vector2.h"
-#include "ebi/Geometry.h"
-#include "ebi/E3DGraph.h"
-#include "ebi/title/TObjects.h"
-#include "ebi/title/TCoordMgr.h"
-#include "Parameters.h"
 #include "BaseParm.h"
+#include "CNode.h"
 #include "JSystem/J3D/J3DFrameCtrl.h"
+#include "Parameters.h"
+#include "Vector2.h"
+#include "ebi/E3DGraph.h"
+#include "ebi/Geometry.h"
+#include "ebi/Utility.h"
+#include "ebi/title/TCoordMgr.h"
+#include "ebi/title/TObjects.h"
 
 struct JKRArchive;
 
@@ -128,6 +129,15 @@ struct TBoidParamMgr : public CNode {
 
 	void update();
 
+	f32 getWalkSpeed() const { return mCurrWalkSpeed; }
+	f32 getMaxTurnSpeed() const { return mCurrMaxTurnSpeed; }
+	f32 getTurnMag() const { return mCurrTurnMag; }
+	f32 getBoidCenter() const { return mCurrBoidCenter; }
+	f32 getBoidSpeedMatch() const { return mCurrBoidSpeedMatch; }
+	f32 getBoidColl() const { return mCurrBoidColl; }
+	f32 getGroupCenter() const { return mCurrGroupCenter; }
+	f32 getBoidNeighbor() const { return mCurrBoidNeighbor; }
+
 	// _00     = VTBL
 	// _00-_18 = CNode
 	u32 mCurrentState;       // _18
@@ -141,41 +151,42 @@ struct TBoidParamMgr : public CNode {
 	f32 mCurrBoidColl;       // _6C4
 	f32 mCurrGroupCenter;    // _6C8
 	f32 mCurrBoidNeighbor;   // _6CC
-	u32 mCounter;            // _6D0
-	u32 mCounter2;           // _6D4
+	EUTCounter mCounter;     // _6D0
 };
 
 // @size{0x98}
 struct TUnit : public TObjBase {
 	enum enumState {
-		STATE_Hidden = 0, // dead/off-screen
-		STATE_Unk1   = 1, // wait?
-		STATE_Unk2   = 2, // walk?
-		STATE_Unk3   = 3, // wind blow?
-		STATE_Unk4   = 4, // boid?
-		STATE_Unk5   = 5,
+		STATE_Hidden     = 0, // dead/off-screen
+		STATE_Standing   = 1, //
+		STATE_Converging = 2, //
+		STATE_WindBlow   = 3, //
+		STATE_BoidMove   = 4, //
+		STATE_EnemyMove  = 5,
 	};
 
 	TUnit()
 	{
-		mCounter            = 0;
-		mCounter2           = 0;
-		mDestPos            = Vector2f(0.0f, 0.0f);
-		mManager            = nullptr;
-		mRandAnimSpeeds     = Vector2f(1.0f, 1.0f);
-		mEnemyObj           = nullptr;
-		mTargetPos          = Vector2f(0.0f);
-		mVelocity           = Vector2f(0.0f);
-		mGroupPosDifference = Vector2f(0.0f);
-		mCurrentState       = STATE_Hidden;
-		mPreviousState      = STATE_Hidden;
-		mIsDead             = false;
+		mDestPos.set(0.0f, 0.0f);
+		mManager = nullptr;
+		mRandAnimSpeeds.set(1.0f, 1.0f);
+		mEnemyObj = nullptr;
+		mTargetPos.set(0.0f, 0.0f);
+		mVelocity.set(0.0f, 0.0f);
+		mGroupPosDifference.set(0.0f, 0.0f);
+		mCurrentState  = STATE_Hidden;
+		mPreviousState = STATE_Hidden;
+		mIsDead        = false;
 	}
-
-	~TUnit() { }
 
 	virtual u32 getCreatureType() { return TITLECREATURE_Pikmin; } // _08 (weak)
 	virtual bool isCalc();                                         // _0C
+
+	inline void setDestPos(const Vector2f& position)
+	{
+		mDestPos.x = position.x;
+		mDestPos.y = position.y;
+	}
 
 	void init(TMgr*, s32);
 	void goDestination();
@@ -187,13 +198,14 @@ struct TUnit : public TObjBase {
 	void update();
 	void updateSmoothWalk_(Vector2f&);
 	void updateEnemyReaction_();
+	bool isBoid();
 
 	// _00     = VTBL
 	// _00-_2C = TObjBase
 	Vector2f mDestPos;            // _2C
 	TMgr* mManager;               // _34
 	J3DFrameCtrl mFrameControlA;  // _38
-	J3DFrameCtrl mFrameControlB;  // _4C
+	J3DFrameCtrl mFrameControlB;  // _4C, for wind blow animation
 	Vector2f mRandAnimSpeeds;     // _60, probably not an actual Vector2 but idk
 	TObjBase* mEnemyObj;          // _68
 	Vector2f mTargetPos;          // _6C
@@ -201,8 +213,7 @@ struct TUnit : public TObjBase {
 	Vector2f mGroupPosDifference; // _7C
 	enumState mCurrentState;      // _84
 	enumState mPreviousState;     // _88
-	u32 mCounter;                 // _8C
-	u32 mCounter2;                // _90
+	EUTCounter mWindCounter;      // _8C
 	bool mIsDead;                 // _94
 };
 

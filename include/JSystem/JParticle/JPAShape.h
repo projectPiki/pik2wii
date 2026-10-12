@@ -96,8 +96,8 @@ struct JPABaseShape {
 	BOOL isGlblTexAnm() const { return mData->mFlags & 0x00004000; }
 	BOOL isPrjTex() const { return mData->mFlags & 0x00100000; }
 	BOOL isDrawFwdAhead() const { return mData->mFlags & 0x00200000; }
-	bool isDrawPrntAhead() const { return !!(mData->mFlags & 0x00400000); }
-	bool isClipOn() const { return !!(mData->mFlags & 0x00800000); }
+	BOOL isDrawPrntAhead() const { return mData->mFlags & 0x00400000; }
+	BOOL isClipOn() const { return mData->mFlags & 0x00800000; }
 	BOOL isTexCrdAnm() const { return mData->mFlags & 0x01000000; }
 	BOOL isNoDrawParent() const { return mData->mFlags >> 27 & 1; }
 	BOOL isNoDrawChild() const { return mData->mFlags >> 28 & 1; }
@@ -210,7 +210,7 @@ struct JPAChildShape {
 	bool isColorInherited() const { return mData->mFlags & 0x40000; }
 	bool isAlphaInherited() const { return mData->mFlags & 0x20000; }
 	bool isRotateOn() const { return mData->mFlags & 0x1000000; }
-	bool isClipOn() const { return mData->mFlags & 0x100000; }
+	BOOL isClipOn() const { return mData->mFlags & 0x100000; }
 	bool isScaleOutOn() const { return mData->mFlags & 0x400000; }
 	bool isAlphaOutOn() const { return mData->mFlags & 0x800000; }
 	u32 getBasePlaneType() const { return (mData->mFlags >> 10) & 1; }
@@ -242,8 +242,8 @@ struct JPAExTexShape {
 	s8 getExpScale() const { return mData->mExpScale; }
 	u8 getIndTexIdx() const { return mData->mIndTexIdx; }
 	u8 getSecTexIdx() const { return mData->mSecTexIdx; }
-	bool isUseIndirect() const { return !!(mData->mFlags & 0x01); }
-	bool isUseSecTex() const { return !!(mData->mFlags & 0x0100); }
+	BOOL isUseIndirect() const { return mData->mFlags & 0x01; }
+	BOOL isUseSecTex() const { return mData->mFlags & 0x0100; }
 
 	const JPAExTexShapeData* mData; // _00
 };

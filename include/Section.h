@@ -3,9 +3,6 @@
 
 #include "JSystem/JKernel/JKRDisposer.h"
 #include "wipe.h"
-#if BUILDTARGET == USADEMO1
-#include "Controller.h"
-#endif
 
 struct Graphics;
 struct JFWDisplay;
@@ -17,7 +14,6 @@ struct ISection : public JKRDisposer {
 	virtual void run()           = 0; // _0C
 	virtual bool update()        = 0; // _10
 	virtual void draw(Graphics&) = 0; // _14
-	virtual void init()          = 0; // _18
 };
 
 struct ISectionMgr {

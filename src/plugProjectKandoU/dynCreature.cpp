@@ -1,10 +1,16 @@
 #include "Game/DynCreature.h"
-#include "DynamicsParms.h"
 #include "Game/DynParticle.h"
 #include "Game/MapMgr.h"
 #include "Game/PlatInstance.h"
+#include "DynamicsParms.h"
 #include "Iterator.h"
 #include "types.h"
+
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "dynCreature";
+}
 
 namespace Game {
 
@@ -49,23 +55,29 @@ DynParticle* DynParticle::getAt(int idx)
 	return particle;
 }
 
-// /**
-//  * @note Address: N/A
-//  * @note Size: 0x58
-//  */
-// void DynParticle::release()
-// {
-// 	// UNUSED FUNCTION
-// }
+/**
+ * @note Address: N/A
+ * @note Size: 0x58
+ */
+void DynParticle::release()
+{
+	DynParticle* particle = this;
+	while (particle) {
+		dynParticleMgr->kill(particle);
+		DynParticle* nextParticle = particle->mNext;
+		particle->mNext           = nullptr;
+		particle                  = nextParticle;
+	}
+}
 
-// /**
-//  * @note Address: N/A
-//  * @note Size: 0x50
-//  */
-// void DynParticle::updateGlobal(Matrixf&)
-// {
-// 	// UNUSED FUNCTION
-// }
+/**
+ * @note Address: N/A
+ * @note Size: 0x50
+ */
+void DynParticle::updateGlobal(Matrixf& mtx)
+{
+	mPosition = mtx.mtxMult(mRotation);
+}
 
 /**
  * @note Address: 0x801A80E0
@@ -73,12 +85,12 @@ DynParticle* DynParticle::getAt(int idx)
  */
 DynCreature::DynCreature()
 {
-	mCurrentChildPtcl = nullptr;
-	mDynParticle      = nullptr;
+	mCurrentChildPtcl    = nullptr;
+	mDynParticle         = nullptr;
 	mRotation.set(0.0f, 0.0f, 0.0f);
 	mTransformedPosition.set(0.0f, 0.0f, 0.0f);
-	mCanBounce   = 0;
-	mHasCollided = 0;
+	mCanBounce           = 0;
+	mHasCollided         = 0;
 }
 
 /**
@@ -113,14 +125,8 @@ bool DynCreature::createParticles(int count)
  */
 void DynCreature::releaseParticles()
 {
-	DynParticle* particle = mDynParticle;
-	if (particle) {
-		while (particle) {
-			dynParticleMgr->kill(particle);
-			DynParticle* nextParticle = particle->mNext;
-			particle->mNext           = nullptr;
-			particle                  = nextParticle;
-		}
+	if (mDynParticle) {
+		mDynParticle->release();
 		mDynParticle = nullptr;
 	}
 }
@@ -132,7 +138,7 @@ void DynCreature::releaseParticles()
 void DynCreature::updateParticlePositions()
 {
 	for (DynParticle* particle = mDynParticle; particle; particle = particle->mNext) {
-		particle->mPosition = mBaseTrMatrix.mtxMult(particle->mRotation);
+		particle->updateGlobal(mBaseTrMatrix);
 	}
 }
 
@@ -200,10 +206,15 @@ void DynCreature::computeForces(f32 friction)
 		if (!particle->mIsTouching) {
 			continue;
 		}
-		Vector3f sep      = particle->mPosition - mTransformedPosition;
-		Vector3f crossVec = mRigid.mConfigs[0].mRotatedMomentum.cross(sep) + mRigid.mConfigs[0].mVelocity;
-		Vector3f vec      = particle->mCollisionNormal * crossVec.dot(particle->mCollisionNormal);
-		vec               = crossVec - vec;
+		Vector3f crossVec = mRigid.mConfigs[0].mRotatedMomentum;
+		Vector3f sep;
+		sep.x = particle->mPosition.x - mTransformedPosition.x;
+		sep.y = particle->mPosition.y - mTransformedPosition.y;
+		sep.z = particle->mPosition.z - mTransformedPosition.z;
+		crossVec.cross(crossVec, sep);
+		crossVec     = crossVec + mRigid.mConfigs[0].mVelocity;
+		Vector3f vec = particle->mCollisionNormal * crossVec.dot(particle->mCollisionNormal);
+		vec          = crossVec - vec;
 		if (DynamicsParms::mInstance->mFrictionTangentVelocity()) {
 			vec.normalise();
 		}
@@ -628,7 +639,7 @@ bool range_check(f32 val)
  */
 bool range_check(Vector3f& vec)
 {
-	return !((u8)range_check(vec.x) == false || (u8)range_check(vec.y) == false || (u8)range_check(vec.z) == false);
+	return !(!range_check(vec.x) || !range_check(vec.y) || !range_check(vec.z));
 }
 
 namespace Game {
@@ -637,9 +648,9 @@ namespace Game {
  * @note Address: N/A
  * @note Size: 0x80
  */
-void DynCreature::getContactParticeRatio()
+f32 DynCreature::getContactParticeRatio()
 {
-	// UNUSED FUNCTION
+	return (f32)getContactParticleNum() / (f32)getParticleNum();
 }
 
 /**
@@ -648,7 +659,13 @@ void DynCreature::getContactParticeRatio()
  */
 int DynCreature::getContactParticleNum()
 {
-	// UNUSED FUNCTION
+	int count = 0;
+	for (DynParticle* particle = mDynParticle; particle; particle = particle->mNext) {
+		if (particle->mIsTouching) {
+			count++;
+		}
+	}
+	return count;
 }
 
 /**
@@ -657,7 +674,11 @@ int DynCreature::getContactParticleNum()
  */
 int DynCreature::getParticleNum()
 {
-	// UNUSED FUNCTION
+	int count = 0;
+	for (DynParticle* particle = mDynParticle; particle; particle = particle->mNext) {
+		count++;
+	}
+	return count;
 }
 
 /**
@@ -669,7 +690,7 @@ void DynCreature::simulate(f32 rate)
 	mCanBounce   = mHasCollided;
 	mHasCollided = 0;
 
-	RigidBodyCallback delegate(this, &DynCreature::tracemoveCallback);
+	RigidBodyCallback delegate = RigidBodyCallback(this, &DynCreature::tracemoveCallback);
 
 	mTransformedPosition = mBaseTrMatrix.mtxMult(mRotation);
 	mRigid.integrate(rate, 0);
@@ -677,10 +698,13 @@ void DynCreature::simulate(f32 rate)
 	Vector3f velocity;
 	Sys::Sphere moveSphere;
 	for (DynParticle* particle = mDynParticle; particle; particle = particle->mNext) {
-		particle->mPosition = mBaseTrMatrix.mtxMult(particle->mRotation);
+		particle->updateGlobal(mBaseTrMatrix);
 
-		velocity     = mRigid.mConfigs[0].mRotatedMomentum;
-		Vector3f sep = particle->mPosition - mTransformedPosition;
+		velocity = mRigid.mConfigs[0].mRotatedMomentum;
+		Vector3f sep;
+		sep.x = particle->mPosition.x - mTransformedPosition.x;
+		sep.y = particle->mPosition.y - mTransformedPosition.y;
+		sep.z = particle->mPosition.z - mTransformedPosition.z;
 		velocity.cross(velocity, sep);
 		velocity = velocity + mRigid.mConfigs[0].mVelocity;
 

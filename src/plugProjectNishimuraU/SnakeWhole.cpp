@@ -7,10 +7,9 @@
 #include "Game/SingleGameSection.h"
 #include "Game/Stickers.h"
 #include "Game/rumble.h"
-#include "PSM/EnemyBoss.h"
 #include "PSSystem/PSMainSide_ObjSound.h"
 #include "RevoSDK/rand.h"
-#include "efx/THebi.h"
+#include "efx/efxEnemyBoss.h"
 
 // TODO: fix this up
 static void __Print(const char** fmt, ...)
@@ -248,7 +247,7 @@ void Obj::getThrowupItemPosition(Vector3f* pos)
  */
 bool Obj::isOutTerritory()
 {
-	return (u8)(sqrDistanceXZ(mPosition, mHomePosition) > SQUARE(C_GENERALPARMS.mTerritoryRadius()));
+	return (u8)(mPosition.sqrDistance2D(mHomePosition) > SQUARE(C_GENERALPARMS.mTerritoryRadius()));
 }
 
 /**
@@ -257,7 +256,7 @@ bool Obj::isOutTerritory()
  */
 bool Obj::isInHomeRange()
 {
-	return (u8)(sqrDistanceXZ(mPosition, mHomePosition) < SQUARE(C_GENERALPARMS.mHomeRadius()));
+	return (u8)(mPosition.sqrDistance2D(mHomePosition) < SQUARE(C_GENERALPARMS.mHomeRadius()));
 }
 
 /**
@@ -341,7 +340,7 @@ void Obj::appearNearByTarget(Creature* target)
 	newPos *= 120.0f;
 	newPos += targetPos;
 
-	if (sqrDistanceXZ(mHomePosition, newPos) > SQUARE(C_GENERALPARMS.mTerritoryRadius())) {
+	if (mHomePosition.sqrDistance2D(newPos) > SQUARE(C_GENERALPARMS.mTerritoryRadius())) {
 		faceDir = JMAAtan2Radian(targetPos.x - mHomePosition.x, targetPos.z - mHomePosition.z);
 
 		faceDir = faceDir + (randWeightFloat(PI) - HALF_PI);
@@ -359,7 +358,7 @@ void Obj::appearNearByTarget(Creature* target)
 		newPos.y = info.mMaxY;
 	} else {
 		faceDir = JMAAtan2Radian(targetPos.x - mHomePosition.x, targetPos.z - mHomePosition.z);
-		newPos  = Vector3f(-sinf(faceDir), 0.0f, -cosf(faceDir));
+		newPos  = Vector3f(-sinfc(faceDir), 0.0f, -cosfc(faceDir));
 		newPos *= 120.0f;
 		newPos += targetPos;
 		CurrTriInfo newInfo;
@@ -751,13 +750,11 @@ void Obj::setAttackPosition()
 	f32 array2[5] = { 0.0f, 0.0f, 0.0f, 80.0f, -80.0f };
 
 	for (int i = 0; i < 5; i++) {
-		f32 dirFactor       = array1[i];
-		f32 orthoDirFactor  = array2[i];
+		Vector3f forward  = dir;
+		Vector3f sideways = orthoDir;
+		forward *= array1[i];
+		sideways *= array2[i];
 		mAttackPositions[i] = mPosition;
-		Vector3f forward    = dir;
-		Vector3f sideways   = orthoDir;
-		forward *= dirFactor;
-		sideways *= orthoDirFactor;
 		mAttackPositions[i] += forward;
 		mAttackPositions[i] += sideways;
 		mAttackPositions[i].y = mapMgr->getMinY(mAttackPositions[i]);

@@ -1,13 +1,16 @@
 #ifndef _GAME_ENTITIES_BOMB_H
 #define _GAME_ENTITIES_BOMB_H
 
-#include "Game/EnemyStateMachine.h"
-#include "Game/EnemyAnimatorBase.h"
-#include "Game/EnemyParmsBase.h"
-#include "Game/EnemyMgrBase.h"
-#include "Game/EnemyBase.h"
-#include "efx/TBombrock.h"
 #include "Collinfo.h"
+#include "Game/EnemyAnimatorBase.h"
+#include "Game/EnemyBase.h"
+#include "Game/EnemyMgrBase.h"
+#include "Game/EnemyParmsBase.h"
+#include "Game/EnemyStateMachine.h"
+
+namespace efx {
+struct TBombrockLight;
+}
 
 /**
  * --Header for Bomb-Rock (Bomb)--
@@ -196,8 +199,8 @@ struct State : public EnemyFSMState {
 	int mExplodeDelayTimer; // _10
 };
 
-struct StateBomb : public State {
-	StateBomb(int);
+struct StateWait : public State {
+	StateWait(int);
 
 	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
 	virtual void exec(EnemyBase* enemy);                     // _0C
@@ -206,8 +209,8 @@ struct StateBomb : public State {
 	// _00-_10 	= EnemyFSMState
 };
 
-struct StateWait : public State {
-	StateWait(int);
+struct StateBomb : public State {
+	StateBomb(int);
 
 	virtual void init(EnemyBase* enemy, StateArg* settings); // _08
 	virtual void exec(EnemyBase* enemy);                     // _0C

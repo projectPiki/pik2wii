@@ -4,9 +4,15 @@
 #include "Game/generalEnemyMgr.h"
 #include "Game/Entities/ShijimiChou.h"
 #include "Game/GameSystem.h"
-#include "efx/TWatage.h"
-#include "PSM/Navi.h"
+#include "efx/efxEnemy.h"
+#include "PSSystem/PSMainSide_ObjSound.h"
 #include "nans.h"
+
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "plants";
+}
 
 namespace Game {
 

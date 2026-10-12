@@ -8,7 +8,11 @@
 #include "System.h"
 #include "nans.h"
 
-static const u32 padding[3] = { 0, 0, 0 };
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "seaMgr";
+}
 
 namespace Game {
 
@@ -381,11 +385,11 @@ void AABBWaterBox::globalise(Game::AABBWaterBox* other, Matrixf& globalMatrix)
 	mBounds.getMax(cornerPoints[2]);
 
 	// Get the other two corner points of the bounding box
-	cornerPoints[1] = Vector3f(mBounds.mMin.x, mBounds.mMin.y, mBounds.mMax.z);
-	cornerPoints[3] = Vector3f(mBounds.mMax.x, mBounds.mMin.y, mBounds.mMin.z);
+	cornerPoints[1].set(mBounds.mMin.x, mBounds.mMin.y, mBounds.mMax.z);
+	cornerPoints[3].set(mBounds.mMax.x, mBounds.mMin.y, mBounds.mMin.z);
 
-	mBounds.mMin = Vector3f(SHORT_FLOAT_MAX);
-	mBounds.mMax = Vector3f(-SHORT_FLOAT_MAX);
+	mBounds.mMin.set(SHORT_FLOAT_MAX, SHORT_FLOAT_MAX, SHORT_FLOAT_MAX);
+	mBounds.mMax.set(-SHORT_FLOAT_MAX, -SHORT_FLOAT_MAX, -SHORT_FLOAT_MAX);
 
 	// Transform each corner point with the global matrix and include it back into the bounding box
 	for (int i = 0; i < 4; i++) {

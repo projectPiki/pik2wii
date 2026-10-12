@@ -14,7 +14,7 @@ namespace Screen {
 struct TOmake : public TScreenBase {
 	TOmake();
 
-	~TOmake() { }
+	//~TOmake() { }
 
 	virtual void doSetArchive(JKRArchive*);      // _24
 	virtual void doOpenScreen(ArgOpen*);         // _28
@@ -32,24 +32,12 @@ struct TOmake : public TScreenBase {
 	void openFromMovie_();
 	void openFromCardE_();
 
-	// this has to exist like this for doUpdateStateClose to work
-	inline bool isFadeoutFinished()
-	{
-		bool ret;
-		if (mCounter != 0)
-			ret = false;
-		else
-			ret = true;
-
-		return ret;
-	}
-
 	void setMsgColor(J2DTextBox* pane)
 	{
-		pane->setCharColor(mColor8);
-		pane->setGradColor(mColor9);
-		pane->setWhite(mColor10);
-		pane->setBlack(mColor11);
+		pane->setCharColor(mFontColorInactive.mCol1);
+		pane->setGradColor(mFontColorInactive.mCol2);
+		pane->setWhite(mFontColorInactive.mWhite);
+		pane->setBlack(mFontColorInactive.mBlack);
 	}
 
 	// _00     = VTBL
@@ -61,40 +49,30 @@ struct TOmake : public TScreenBase {
 	JUtility::TColor mColorBase;          // _44
 	u8 mAlpha;                            // _48
 	int mState;                           // _4C
-	u32 mCounter;                         // _50
-	u32 mCounterMax;                      // _54
+	EUTCounter mCounter;                  // _50
 	P2DScreen::Mgr_tuning* mScreenMain;   // _58
 	J2DPane* mPaneWindow;                 // _5C
 	J2DPane* mPaneTitle;                  // _60
 	J2DPane* mPaneAButton;                // _64
 	J2DPane* mPaneBButton;                // _68
-	J2DPane* mPaneList1[7];               // _6C
+	J2DPane* mPaneList1[6];               // _6C
 	J2DPane* mPaneSelect;                 // _88
-	J2DPane* mPaneList2[7];               // _8C
-	J2DTextBox* mPaneListMesg[7];         // _A8
-	J2DPane* mPaneListMesgShadow[7];      // _C4
+	J2DPane* mPaneList2[6];               // _8C
+	J2DTextBox* mPaneListMesg[6];         // _A8
+	J2DPane* mPaneListMesgShadow[6];      // _C4
 	E2DCallBack_AnmBase mAnims1;          // _E0
 	E2DCallBack_AnmBase mAnims2;          // _11C
 	E2DCallBack_CalcAnimation mAnims3;    // _158
 	E2DCallBack_WindowCursor mCursor;     // _178
-	E2DCallBack_BlinkFontColor mFonts[7]; // _1E4
-	u64 mMesgTags[7];                     // _3F8
-	JUtility::TColor mColor0;             // _430, cant be an array of colors for ctor to work
-	JUtility::TColor mColor1;             // _430
-	JUtility::TColor mColor2;             // _430
-	JUtility::TColor mColor3;             // _430
-	JUtility::TColor mColor4;             // _430
-	JUtility::TColor mColor5;             // _430
-	JUtility::TColor mColor6;             // _430
-	JUtility::TColor mColor7;             // _430
-	JUtility::TColor mColor8;             // _430
-	JUtility::TColor mColor9;             // _430
-	JUtility::TColor mColor10;            // _430
-	JUtility::TColor mColor11;            // _430
+	E2DCallBack_BlinkFontColor mFonts[6]; // _1E4
+	u64 mMesgTags[6];                     // _3F8
+	E2DFullFontColor mFontColorSelect;    // _430
+	E2DFullFontColor mFontColorDefault;   // _440
+	E2DFullFontColor mFontColorInactive;  // _450
 };
 struct TOmakeCardE : public TScreenBase {
 	TOmakeCardE();
-	~TOmakeCardE() { }
+	//~TOmakeCardE() { }
 
 	enum CardEState { MainMenu, InZoomed, ExitingZoomed, EnteringZoomed };
 
@@ -127,7 +105,7 @@ struct TOmakeCardE : public TScreenBase {
 
 struct TOmakeGame : public TScreenBase {
 	TOmakeGame();
-	~TOmakeGame() { }
+	//~TOmakeGame() { }
 
 	enum MsgDescType { GameDesc = 0, Transferring = 1, TransferFinished = 2, TransferFailed = 3, TransferUnable = 4 };
 	enum GameID { PikminPluck, PikminPart, PikminPath, GameCount };
