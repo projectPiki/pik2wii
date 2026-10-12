@@ -673,7 +673,7 @@ f32 Sys::Triangle::calcDist(Plane& plane, Sys::VertexTable& vertTable)
  * @note Address: N/A
  * @note Size: 0x1EC
  */
-bool Triangle::intersect(Sys::VertexTable& verts, BoundBox2d& bounds)
+inline bool Triangle::intersect(Sys::VertexTable& verts, BoundBox2d& bounds)
 {
 	f32 triMinX = 12800000.0f;
 	f32 triMinZ = 12800000.0f;

@@ -981,6 +981,7 @@ void Obj::walkFunc()
  */
 bool Obj::isReachToGoal(f32 radius)
 {
+	f32 rad = radius;
 	if (isDead()) {
 		return false;
 	}
@@ -988,14 +989,16 @@ bool Obj::isReachToGoal(f32 radius)
 	Creature* creature = mTargetCreature;
 	if (creature) {
 		P2ASSERTLINE(1202, creature);
-		radius += static_cast<Pellet*>(creature)->mConfig->mParams.mRadius.mData;
+		rad += static_cast<Pellet*>(creature)->mConfig->mParams.mRadius.mData;
 	} else {
-		radius *= 2.0f;
+		rad *= 2.0f;
 	}
 
-	if (insideRadius2D(radius, mPosition, mNextWayPointPosition)) {
+	rad *= rad;
+	if (mPosition.sqrDistance2D(mNextWayPointPosition) < rad) {
 		if (getStateID() == PANMODOKI_Walk && mTargetCreature) {
-			if (isCreatureIn2DRadius(radius, mPosition)) {
+			Vector3f targetPos(mTargetCreature->getPosition().x, 0.0f, mTargetCreature->getPosition().z);
+			if (mPosition.sqrDistance2D(targetPos) < rad) {
 				mFsm->transit(this, PANMODOKI_Stick, nullptr);
 			}
 		}

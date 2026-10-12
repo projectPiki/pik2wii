@@ -428,20 +428,14 @@ struct Otakara : public EventBase {
 
 	inline bool canFinish()
 	{
-		bool test = true;
 		u32 type  = mBedamaType;
-		if (type - 2 <= PSMBedama_Cherry || (int)type == PSMBedama_Yellow) {
-			test = true;
-		} else if (type - 1 <= PSMBedama_Red || (int)type == PSMBedama_Yellow) {
-			if (!mOnyon) {
-				test = true;
-			} else {
-				test = false;
-			}
+		if (type - 2 <= PSMBedama_Red) {
+			return true;
+		} else if (type - 1 <= PSMBedama_Blue) {
+			return mOnyon ? false : true;
 		} else {
-			test = false;
+			return false;
 		}
-		return test;
 	}
 
 	// _00      = VTABLE

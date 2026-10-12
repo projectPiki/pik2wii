@@ -126,7 +126,7 @@ static f32 getYDegree(Quat& quat, Vector3f& vec)
 	Quat inverseQuat;
 	inverseQuat = quat.inverse();
 
-	intermediateQuat = Quat::multiply(quat, yAxisQuat);
+	intermediateQuat = quat * yAxisQuat;
 
 	intermediateQuat = intermediateQuat * inverseQuat;
 

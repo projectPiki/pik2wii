@@ -335,6 +335,7 @@ void TMainTitleMgr::draw()
 			}
 			case 2: {
 				f32 alpha = 1.0f - mOpenMenuCounter.getRatio();
+				color.a   = (f32)mDrawAlpha * alpha;
 				break;
 			}
 			}

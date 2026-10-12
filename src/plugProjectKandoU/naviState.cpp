@@ -1964,15 +1964,14 @@ void NaviNukuAdjustState::exec(Navi* navi)
 
 	mNaviPosition = navi->getPosition();
 
-	Vector3f diff;
-	diff = mPikiHead->getPosition() - navi->getPosition();
-	diff.length(); // unused
+	Vector3f sproutToNavi = mPikiHead->getPosition() - navi->getPosition();
+	sproutToNavi.length(); // unused
 
-	diff                     = mTargetPosition - navi->getPosition();
-	f32 targetToNaviDistance = Vector2f(diff.x, diff.z).length();
-	f32 absoluteDeltaY       = absF(diff.y);
+	Vector3f targetToNavi    = mTargetPosition - navi->getPosition(); // f26, f27, f28
+	f32 targetToNaviDistance = targetToNavi.length2D();               // f31
+	f32 absoluteDeltaY       = absF(targetToNavi.y);
 
-	f32 normalisedDistance = diff.normalise();
+	f32 normalisedDistance = targetToNavi.normalise(); // f30, why tho
 
 	f32 newFaceDir = mAngleToPiki;
 	f32 angle      = angDist(newFaceDir, navi->mFaceDir);
@@ -2019,9 +2018,9 @@ void NaviNukuAdjustState::exec(Navi* navi)
 			speed = 0.5f / sys->getDeltaTime();
 		}
 
-		navi->mVelocity       = diff * speed;
+		navi->mVelocity       = targetToNavi * speed;
 		navi->mTargetVelocity.set(0.0f, 0.0f, 0.0f);
-		navi->mTargetVelocity = diff * speed;
+		navi->mTargetVelocity = targetToNavi * speed;
 	}
 
 	if (mWallHitCounter > 10) {
@@ -2038,40 +2037,34 @@ void NaviNukuAdjustState::exec(Navi* navi)
 		return;
 	}
 
-	Vector3f currentVel = navi->mVelocity;
+	Vector3f currentVel = navi->mVelocity; // f31, f30, f29
 	mIsMoving--;
 	Vector3f naviPos = navi->getPosition();
 
-	diff                 = mCollidedPikiPosition;
-	f32 heightDifference = diff.y - naviPos.y;
-	diff                 = diff - naviPos;
-	diff.y               = heightDifference;
-
-	f32 distancePikiToNavi = diff.normalise();
+	Vector3f pikiToNavi    = mCollidedPikiPosition - naviPos;
+	f32 distancePikiToNavi = pikiToNavi.normalise();
 
 	// If the distance is 0, return
 	if (!(distancePikiToNavi > 0.0f)) {
 		return;
 	}
 
-	f32 velocityDifference = diff.z * currentVel.x - diff.x * currentVel.z;
-	Vector3f newVel(-diff.z, 0.0f, diff.x);
+	f32 velocityDifference = pikiToNavi.z * currentVel.z - targetToNavi.x * currentVel.x;
+	Vector3f newVel(pikiToNavi.x, 0.0f, -pikiToNavi.z);
 
 	f32 simSpeed = currentVel.length();
 
-	newVel.x = newVel.x * simSpeed;
-	newVel.y = newVel.y * simSpeed;
-	newVel.z = newVel.z * simSpeed;
+	newVel *= simSpeed;
 	if (!(velocityDifference < 0.0f)) {
 		newVel *= -1.0f;
 	}
 
 	// Interpolate 35% current velocity and 65% new velocity
-	diff = currentVel * 0.35f + newVel * 0.65f;
+	Vector3f blendedVel = currentVel * 0.35f + newVel * 0.65f;
 
-	f32 speed = diff.normalise();
+	f32 speed = blendedVel.normalise();
 	if (speed != 0.0f) {
-		Vector3f finalVel     = diff * simSpeed;
+		Vector3f finalVel     = blendedVel * simSpeed;
 		navi->mVelocity       = finalVel;
 		navi->mTargetVelocity = finalVel;
 	}

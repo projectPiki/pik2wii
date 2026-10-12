@@ -545,8 +545,8 @@ void Chappy::TUnit::update()
 
 	J3DModel* model = mModel;
 	if (mAnim.mAnimRes != nullptr) {
-		mAnim.mAnimRes->mAnimTransform->setFrame(mAnim.mAnimStartTime);
-		model->mModelData->getJointNodePointer(0)->mMtxCalc = mAnim.mAnimRes->mAnmCalcMtx;
+		mAnim.mAnimRes->mAnimTransform->mCurrentFrame      = mAnim.mAnimStartTime;
+		model->mModelData->mJointTree.mJoints[0]->mMtxCalc = mAnim.mAnimRes->mAnmCalcMtx;
 	}
 	mModel->calc();
 	mModel->entry();

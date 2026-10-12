@@ -458,13 +458,8 @@ inline f32 Vector3f::magnitude() const
 template <>
 inline f32 Vector3f::length2D() const
 {
-	if (sqrMagnitude2D() > 0.0f) {
-		Vector3f vec = Vector3f(x, y, z);
-		f32 sqrLen   = SQUARE(vec.x) + SQUARE(z);
-		return sqrtfInPlace(sqrLen);
-	} else {
-		return 0.0f;
-	}
+	f32 sqrLen = sqrMagnitude2D();
+	return sqrtfClamped(sqrLen);
 }
 
 template <>

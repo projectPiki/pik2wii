@@ -171,7 +171,7 @@ void StateMove::exec(EnemyBase* enemy)
 	Vector3f targetPos = Vector3f(bug->mTargetPosition);
 
 	Vector3f currentPos = bug->getPosition();
-	if (outsideRadius2D(25.0f, currentPos, targetPos)) {
+	if (currentPos.sqrDistance2D(targetPos) > 525.0f) {
 		EnemyFunc::walkToTarget(bug, targetPos, CG_GENERALPARMS(bug).mMoveSpeed(), CG_GENERALPARMS(bug).mTurnSpeed(),
 		                        CG_GENERALPARMS(bug).mMaxTurnAngle());
 

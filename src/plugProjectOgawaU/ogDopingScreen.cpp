@@ -125,7 +125,7 @@ void DopingScreen::update()
 	}
 	mDopingCheck->update();
 
-	mPaneAll->setOffset(mRootPosition.x, mTranslateX, mRootPosition.y, mTranslateY);
+	mPaneAll->setOffset(mRootPosition.x + mOffset.x, mRootPosition.y + mOffset.y);
 
 	// when spray 0 is first goten
 	if (mHasGotSpicySpray && mSpicySprayGet < 1.0f) {
@@ -170,8 +170,8 @@ void DopingScreen::update()
  */
 void DopingScreen::adjPos(f32 x, f32 y)
 {
-	mTranslateX = x;
-	mTranslateY = y;
+	mOffset.x = x;
+	mOffset.y = y;
 }
 
 /**

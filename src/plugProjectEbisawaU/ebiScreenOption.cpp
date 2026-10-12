@@ -236,6 +236,7 @@ bool TOption::doUpdateStateOpen()
 		mCounterOpen.update();
 	}
 	mMainScreen->update();
+	mOptionPanes[0]->hide();
 
 	if (mAnimOpenScreen.isFinish() && mCounterOpen.isZero()) {
 		return true;
