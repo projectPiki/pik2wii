@@ -3845,10 +3845,9 @@ bool Navi::releasePikis()
 					f32 dist      = diff.qNormalise();
 					dist          = dist - distList[cColor] - distList[j];
 					if (dist < 20.0f) {
-						dist          = 20.0f - dist;
-						Vector3f push = diff * dist;
-						position[cColor] += push;
-						position[j] -= push;
+						dist = 20.0f - dist;
+						position[cColor] += diff * dist;
+						position[j] -= diff * dist;
 					}
 				}
 			}

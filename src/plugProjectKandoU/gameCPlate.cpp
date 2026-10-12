@@ -4,6 +4,12 @@
 #include "P2Macros.h"
 #include "RevoSDK/os.h"
 
+// TODO: fix this up
+static void __Print(const char** fmt, ...)
+{
+	*fmt = "cplate";
+}
+
 namespace Game {
 
 /**
@@ -330,8 +336,8 @@ void CPlate::sortByColor(Creature* piki, int happaType)
 			int iPrio;
 			int jPrio;
 			if (happaType == -1) {
-				iPrio = happa != iPiki->getHappa();
 				jPrio = happa != jPiki->getHappa();
+				iPrio = happa != iPiki->getHappa();
 			} else {
 				jPrio = happaSlots[jPiki->getHappa()];
 				iPrio = happaSlots[iPiki->getHappa()];

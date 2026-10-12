@@ -318,9 +318,9 @@ void Uja::update(BoidParms& parms)
 
 	Vector3f moveDir(0.0f); // 0x2f4, 0x2f0
 
-	sys->mTimers->_start("AI PIKI", true);
+	sys->mTimers->start("AI PIKI", true);
 	updateBuffer();
-	sys->mTimers->_stop("AI PIKI");
+	sys->mTimers->stop("AI PIKI");
 
 	Vector3f separationVec; // 0x2B4
 	separationVec = mFlockMgr->mFlockCentre - *this;
@@ -331,7 +331,7 @@ void Uja::update(BoidParms& parms)
 	f32 alignmentThreshold = 1280.0f;
 
 	// AI Alignment
-	sys->mTimers->_start("AI ALN", true);
+	sys->mTimers->start("AI ALN", true);
 
 	Vector3f alignmentVec; // f22, f21, f20
 	if (!mUpdateContext.updatable()) {
@@ -402,7 +402,7 @@ void Uja::update(BoidParms& parms)
 		}
 	}
 
-	sys->mTimers->_stop("AI ALN");
+	sys->mTimers->stop("AI ALN");
 
 	// UNUSED
 	Vector3f directionTo_44(0.0f); // 0x280
